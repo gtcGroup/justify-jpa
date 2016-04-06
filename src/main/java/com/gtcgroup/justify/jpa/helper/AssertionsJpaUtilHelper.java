@@ -52,13 +52,13 @@ public class AssertionsJpaUtilHelper {
 	/**
 	 * This method persists, and deletes an entity.
 	 *
-	 * @param <DE>
+	 * @param <ENTITY>
 	 * @param persistenceUnitName
 	 * @param entities
 	 * @return boolean
 	 */
-	public static <DE extends Object> List<Object> assertCreateAndDeleteEntityArray(final String persistenceUnitName,
-			final DE... entities) {
+	public static <ENTITY extends Object> List<Object> assertCreateAndDeleteEntities(final String persistenceUnitName,
+			final ENTITY... entities) {
 
 		List<Object> createdList = null;
 
@@ -90,12 +90,12 @@ public class AssertionsJpaUtilHelper {
 	 * @param entityIdentity
 	 * @return boolean
 	 */
-	public static <ENTITY extends Object> boolean assertExist(final String persistenceUnitName,
+	public static <ENTITY extends Object> boolean assertExists(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		if (false == assertExistPrivate(persistenceUnitName, entityClass, entityIdentity)) {
+		if (false == assertExistsPrivate(persistenceUnitName, entityClass, entityIdentity)) {
 
-			Assert.fail("The class [" + entityClass.getSimpleName() + "] instance is not available from database ["
+			Assert.fail("The class [" + entityClass.getSimpleName() + "] instance is not available from the database ["
 					+ persistenceUnitName + "].");
 		}
 		return true;
@@ -109,12 +109,12 @@ public class AssertionsJpaUtilHelper {
 	 * @return boolean
 	 */
 
-	public static <ENTITY extends Object> boolean assertExistArray(final String persistenceUnitName,
+	public static <ENTITY extends Object> boolean assertExistsArray(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
 		final List<Object> entityIdentityList = Arrays.asList(entityIdentities);
 
-		return assertExistList(persistenceUnitName, entityClass, entityIdentityList);
+		return assertExistsList(persistenceUnitName, entityClass, entityIdentityList);
 	}
 
 	/**
@@ -124,10 +124,10 @@ public class AssertionsJpaUtilHelper {
 	 * @param entityIdentityList
 	 * @return boolean
 	 */
-	public static <ENTITY extends Object> boolean assertExistList(final String persistenceUnitName,
+	public static <ENTITY extends Object> boolean assertExistsList(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
 
-		if (false == assertExistListPrivate(persistenceUnitName, entityClass, entityIdentityList)) {
+		if (false == assertExistsListPrivate(persistenceUnitName, entityClass, entityIdentityList)) {
 
 			Assert.fail(
 					"The class [" + entityClass.getSimpleName() + "] instances are not available from the database.");
@@ -144,7 +144,7 @@ public class AssertionsJpaUtilHelper {
 	 * @param entityIdentityList
 	 * @return boolean
 	 */
-	private static <ENTITY extends Object> boolean assertExistListPrivate(final String persistenceUnitName,
+	private static <ENTITY extends Object> boolean assertExistsListPrivate(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
 
 		EntityManager entityManager = null;
@@ -178,7 +178,7 @@ public class AssertionsJpaUtilHelper {
 	 * @param entityIdentity
 	 * @return boolean
 	 */
-	private static <ENTITY extends Object> boolean assertExistPrivate(final String persistenceUnitName,
+	private static <ENTITY extends Object> boolean assertExistsPrivate(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
 		EntityManager entityManager = null;
@@ -207,12 +207,12 @@ public class AssertionsJpaUtilHelper {
 	 * @param entityIdentity
 	 * @return boolean
 	 */
-	public static <ENTITY extends Object> boolean assertNotExist(final String persistenceUnitName,
+	public static <ENTITY extends Object> boolean assertNotExists(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		if (true == assertExistPrivate(persistenceUnitName, entityClass, entityIdentity)) {
+		if (true == assertExistsPrivate(persistenceUnitName, entityClass, entityIdentity)) {
 			Assert.fail("The class [" + entityClass.getSimpleName()
-					+ "] instance is incorrectly available from database [" + persistenceUnitName + "].");
+					+ "] instance is incorrectly available from the database [" + persistenceUnitName + "].");
 		}
 		return true;
 
@@ -225,12 +225,12 @@ public class AssertionsJpaUtilHelper {
 	 * @param entityIdentities
 	 * @return boolean
 	 */
-	public static <ENTITY extends Object> boolean assertNotExistArray(final String persistenceUnitName,
+	public static <ENTITY extends Object> boolean assertNotExistsArray(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
 		final List<Object> entityIdentityList = Arrays.asList(entityIdentities);
 
-		return assertNotExistList(persistenceUnitName, entityClass, entityIdentityList);
+		return assertNotExistsList(persistenceUnitName, entityClass, entityIdentityList);
 	}
 
 	/**
@@ -240,12 +240,12 @@ public class AssertionsJpaUtilHelper {
 	 * @param entityIdentityList
 	 * @return boolean
 	 */
-	public static <ENTITY extends Object> boolean assertNotExistList(final String persistenceUnitName,
+	public static <ENTITY extends Object> boolean assertNotExistsList(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
 
-		if (true == assertExistListPrivate(persistenceUnitName, entityClass, entityIdentityList)) {
+		if (true == assertExistsListPrivate(persistenceUnitName, entityClass, entityIdentityList)) {
 
-			Assert.fail("The class [" + entityClass.getSimpleName() + "] instance is not available from database ["
+			Assert.fail("The class [" + entityClass.getSimpleName() + "] instance is not available from the database ["
 					+ persistenceUnitName + "].");
 		}
 		return true;
