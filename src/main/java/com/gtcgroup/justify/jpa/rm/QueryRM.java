@@ -91,7 +91,29 @@ public class QueryRM extends BaseRM {
 				CacheStoreMode.BYPASS);
 	}
 
-	private EntityManager entityManager;
+	/**
+	 * @param message
+	 */
+	private static void throwException(final Exception e) {
+
+		throw new TestingRuntimeException(e);
+	}
+
+	/**
+	 * @param entity
+	 * @param identity
+	 * @param <ENTITY>
+	 * @return
+	 */
+	private static <ENTITY> ENTITY throwExceptionForNull(final Class<ENTITY> entityClass, final ENTITY entity) {
+
+		if (null == entity) {
+
+			throw new TestingRuntimeException(
+					"Unable to find an instance for class [" + entityClass.getSimpleName() + "].");
+		}
+		return entity;
+	}
 
 	/**
 	 * This method executes a SELECT query returning a result list.
@@ -100,7 +122,6 @@ public class QueryRM extends BaseRM {
 	 * @param query
 	 * @return {@link List}
 	 */
-	@SuppressWarnings("unchecked")
 	protected static <ENTITY> List<ENTITY> queryResultList(final Query query) {
 
 		List<ENTITY> entityList = null;
@@ -140,29 +161,7 @@ public class QueryRM extends BaseRM {
 		return entity;
 	}
 
-	/**
-	 * @param message
-	 */
-	private static void throwException(final Exception e) {
-
-		throw new TestingRuntimeException(e);
-	}
-
-	/**
-	 * @param entity
-	 * @param identity
-	 * @param <ENTITY>
-	 * @return
-	 */
-	private static <ENTITY> ENTITY throwExceptionForNull(final Class<ENTITY> entityClass, final ENTITY entity) {
-
-		if (null == entity) {
-
-			throw new TestingRuntimeException(
-					"Unable to find an instance for class [" + entityClass.getSimpleName() + "].");
-		}
-		return entity;
-	}
+	private EntityManager entityManager;
 
 	/**
 	 * This method returns the number of records in the table or view. It may be
