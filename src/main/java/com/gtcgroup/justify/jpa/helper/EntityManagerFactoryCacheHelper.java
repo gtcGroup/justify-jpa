@@ -27,7 +27,6 @@
 package com.gtcgroup.justify.jpa.helper;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.EntityManager;
@@ -56,7 +55,7 @@ public enum EntityManagerFactoryCacheHelper {
 
 	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new ConcurrentHashMap<String, EntityManagerFactory>();
 
-	private static final String JNDI_ENTITY_MANAGER_FACTORY = "java:justify/EntityManagerFactory";
+	private static final String JNDI_NAME_ENTITY_MANAGER_FACTORY_MAP = "java:justify/EntityManagerFactoryMap";
 
 	/**
 	 * This method closes the {@link EntityManager}.
@@ -99,7 +98,7 @@ public enum EntityManagerFactoryCacheHelper {
 	 */
 	public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName) {
 
-		return retrieveEntityManagerFactoryStatic(persistenceUnitName, null).createEntityManager();
+		return retrieveEntityManagerFactory(persistenceUnitName, null).createEntityManager();
 
 	}
 
@@ -111,7 +110,7 @@ public enum EntityManagerFactoryCacheHelper {
 	public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName,
 			final Map<String, Object> propertyOverrideMap) {
 
-		return retrieveEntityManagerFactoryStatic(persistenceUnitName, propertyOverrideMap).createEntityManager();
+		return retrieveEntityManagerFactory(persistenceUnitName, propertyOverrideMap).createEntityManager();
 
 	}
 
@@ -122,7 +121,7 @@ public enum EntityManagerFactoryCacheHelper {
 	public static QueryRM createQueryRmToBeClosed(final String persistenceUnitName) {
 
 		return new QueryRM()
-				.setEntityManager(retrieveEntityManagerFactoryStatic(persistenceUnitName, null).createEntityManager());
+				.setEntityManager(retrieveEntityManagerFactory(persistenceUnitName, null).createEntityManager());
 
 	}
 
@@ -132,38 +131,17 @@ public enum EntityManagerFactoryCacheHelper {
 	 *            or null
 	 * @return {@link EntityManagerFactory}
 	 */
-	public static EntityManagerFactory retrieveEntityManagerFactoryStatic(final String persistenceUnitName,
+	public static EntityManagerFactory retrieveEntityManagerFactory(final String persistenceUnitName,
 			final Map<String, Object> propertyOverrideMap) {
 
-		final StringBuilder mapKey = new StringBuilder();
+		final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
 
-		mapKey.append(persistenceUnitName);
+		EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceUnitName, entityManagerFactory);
 
-		if (null != propertyOverrideMap) {
+		JstJndiUtilHelper.rebind(EntityManagerFactoryCacheHelper.JNDI_NAME_ENTITY_MANAGER_FACTORY_MAP,
+				EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP);
 
-			for (final Entry<String, Object> entry : propertyOverrideMap.entrySet()) {
-
-				mapKey.append(":");
-				mapKey.append(entry.getKey());
-				mapKey.append(",");
-				mapKey.append(entry.getValue());
-			}
-		}
-
-		final String mapKeys = mapKey.toString();
-
-		if (!EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(mapKeys)) {
-
-			final EntityManagerFactory entityManagerFactory = Persistence
-					.createEntityManagerFactory(persistenceUnitName);
-
-			EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(mapKey.toString(), entityManagerFactory);
-
-			JstJndiUtilHelper.bind(EntityManagerFactoryCacheHelper.JNDI_ENTITY_MANAGER_FACTORY,
-					EntityManagerFactoryCacheHelper.INSTANCE);
-
-		}
-		return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(mapKeys);
+		return entityManagerFactory;
 	}
 
 	/**
@@ -175,7 +153,6 @@ public enum EntityManagerFactoryCacheHelper {
 	public EntityManagerFactory retrieveEntityManagerFactoryInstance(final String persistenceUnitName,
 			final Map<String, Object> propertyOverrideMap) {
 
-		return EntityManagerFactoryCacheHelper.retrieveEntityManagerFactoryStatic(persistenceUnitName,
-				propertyOverrideMap);
+		return EntityManagerFactoryCacheHelper.retrieveEntityManagerFactory(persistenceUnitName, propertyOverrideMap);
 	}
 }
