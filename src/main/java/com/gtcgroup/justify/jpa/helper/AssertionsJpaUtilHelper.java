@@ -28,11 +28,14 @@ package com.gtcgroup.justify.jpa.helper;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
 import org.junit.Assert;
 
+import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.jpa.po.JstCascadeTypesPO;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
 
 /**
@@ -48,6 +51,35 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
  */
 
 public class AssertionsJpaUtilHelper {
+
+	/**
+	 * TODO: This method...
+	 *
+	 * @param persistenceUnitName
+	 * @param cascadeTypesPO
+	 */
+	public static void assertCascadeTypes(final String persistenceUnitName, final JstCascadeTypesPO cascadeTypesPO) {
+
+		assertCreateAndDeleteEntities(persistenceUnitName, cascadeTypesPO.getEntity());
+
+		final Map<String, Object> cascadeRemoveMap = cascadeTypesPO.getCascadeRemoveMap();
+
+		for (final Map.Entry<String, Object> entry : cascadeRemoveMap.entrySet()) {
+			final String className = entry.getKey();
+			final Object entityIdentity = entry.getValue();
+
+			try {
+
+				assertNotExist(persistenceUnitName, Class.forName(className), entityIdentity);
+
+			} catch (final ClassNotFoundException e) {
+
+				throw new TestingRuntimeException(e);
+			}
+		}
+		return;
+
+	}
 
 	/**
 	 * This method persists, and deletes an entity.
@@ -86,19 +118,6 @@ public class AssertionsJpaUtilHelper {
 	/**
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
-	 * @param entityInstance
-	 * @param entityIdentity
-	 * @return boolean
-	 */
-	public static <ENTITY extends Object> boolean assertExist(final String persistenceUnitName,
-			final Object entityInstance, final Object entityIdentity) {
-
-		return assertExist(persistenceUnitName, entityInstance.getClass(), entityIdentity);
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
 	 * @param entityClass
 	 * @param entityIdentity
 	 * @return boolean
@@ -112,6 +131,19 @@ public class AssertionsJpaUtilHelper {
 					+ persistenceUnitName + "].");
 		}
 		return true;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entityInstance
+	 * @param entityIdentity
+	 * @return boolean
+	 */
+	public static <ENTITY extends Object> boolean assertExists(final String persistenceUnitName,
+			final Object entityInstance, final Object entityIdentity) {
+
+		return assertExists(persistenceUnitName, entityInstance.getClass(), entityIdentity);
 	}
 
 	/**
@@ -140,76 +172,13 @@ public class AssertionsJpaUtilHelper {
 	public static <ENTITY extends Object> boolean assertExistsList(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
 
-		if (false == assertExistsListPrivate(persistenceUnitName, entityClass, entityIdentityList)) {
+		if (false == assertExistsListInternal(persistenceUnitName, entityClass, entityIdentityList)) {
 
 			Assert.fail(
 					"The class [" + entityClass.getSimpleName() + "] instances are not available from the database.");
 
 		}
 
-		return true;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentityList
-	 * @return boolean
-	 */
-	private static <ENTITY extends Object> boolean assertExistsListPrivate(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
-
-		EntityManager entityManager = null;
-
-		try {
-
-			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-
-			final QueryRM queryRM = new QueryRM().setEntityManager(entityManager);
-
-			for (final Object entityIdentity : entityIdentityList) {
-
-				if (!queryRM.exists(entityClass, entityIdentity)) {
-
-					return false;
-				}
-
-			}
-
-		} finally {
-
-			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-		}
-		return true;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentity
-	 * @return boolean
-	 */
-	private static <ENTITY extends Object> boolean assertExistsInternal(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final Object entityIdentity) {
-
-		EntityManager entityManager = null;
-
-		try {
-			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-
-			final QueryRM queryRM = new QueryRM().setEntityManager(entityManager);
-
-			if (false == queryRM.exists(entityClass, entityIdentity)) {
-
-				return false;
-			}
-
-		} finally {
-
-			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-		}
 		return true;
 	}
 
@@ -256,7 +225,7 @@ public class AssertionsJpaUtilHelper {
 	public static <ENTITY extends Object> boolean assertNotExistList(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
 
-		if (true == assertExistsListPrivate(persistenceUnitName, entityClass, entityIdentityList)) {
+		if (true == assertExistsListInternal(persistenceUnitName, entityClass, entityIdentityList)) {
 
 			Assert.fail("The class [" + entityClass.getSimpleName() + "] instance is not available from database ["
 					+ persistenceUnitName + "].");
@@ -307,10 +276,73 @@ public class AssertionsJpaUtilHelper {
 	public static <ENTITY extends Object> boolean assertNotExistsList(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
 
-		if (true == assertExistsListPrivate(persistenceUnitName, entityClass, entityIdentityList)) {
+		if (true == assertExistsListInternal(persistenceUnitName, entityClass, entityIdentityList)) {
 
 			Assert.fail("The class [" + entityClass.getSimpleName() + "] instance is not available from the database ["
 					+ persistenceUnitName + "].");
+		}
+		return true;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entityClass
+	 * @param entityIdentity
+	 * @return boolean
+	 */
+	private static <ENTITY extends Object> boolean assertExistsInternal(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object entityIdentity) {
+
+		EntityManager entityManager = null;
+
+		try {
+			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			final QueryRM queryRM = new QueryRM().setEntityManager(entityManager);
+
+			if (false == queryRM.exists(entityClass, entityIdentity)) {
+
+				return false;
+			}
+
+		} finally {
+
+			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
+		return true;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entityClass
+	 * @param entityIdentityList
+	 * @return boolean
+	 */
+	private static <ENTITY extends Object> boolean assertExistsListInternal(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
+
+		EntityManager entityManager = null;
+
+		try {
+
+			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			final QueryRM queryRM = new QueryRM().setEntityManager(entityManager);
+
+			for (final Object entityIdentity : entityIdentityList) {
+
+				if (!queryRM.exists(entityClass, entityIdentity)) {
+
+					return false;
+				}
+
+			}
+
+		} finally {
+
+			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 		return true;
 	}

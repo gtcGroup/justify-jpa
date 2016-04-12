@@ -32,7 +32,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 /**
- * This Helper class provides persistence transaction support.
+ * This Util Helper class provides persistence transaction support.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
@@ -43,14 +43,6 @@ import javax.persistence.EntityManager;
  * @since v3.0
  */
 public class TransactionUtilHelper {
-
-	/**
-	 * Constructor
-	 */
-	private TransactionUtilHelper() {
-		super();
-		return;
-	}
 
 	/**
 	 * This method typically commits one or more parent entities. If any of the
@@ -118,5 +110,13 @@ public class TransactionUtilHelper {
 			entityManager.remove(entity);
 		}
 		entityManager.getTransaction().commit();
+	}
+
+	/**
+	 * Constructor
+	 */
+	private TransactionUtilHelper() {
+		super();
+		return;
 	}
 }
