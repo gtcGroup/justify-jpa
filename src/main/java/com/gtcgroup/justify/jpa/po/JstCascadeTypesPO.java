@@ -47,9 +47,21 @@ public class JstCascadeTypesPO {
 
 	private final Map<String, Object> cascadeMergeMap = new HashMap<String, Object>();
 
+	private final Map<String, Object> cascadePersistMap = new HashMap<String, Object>();
+
 	private final Map<String, Object> cascadeRefreshMap = new HashMap<String, Object>();
 
 	private final Map<String, Object> cascadeRemoveMap = new HashMap<String, Object>();
+
+	private final Map<String, Object> cascadeDetachMapFalse = new HashMap<String, Object>();
+
+	private final Map<String, Object> cascadeMergeMapFalse = new HashMap<String, Object>();
+
+	private final Map<String, Object> cascadePersistMapFalse = new HashMap<String, Object>();
+
+	private final Map<String, Object> cascadeRefreshMapFalse = new HashMap<String, Object>();
+
+	private final Map<String, Object> cascadeRemoveMapFalse = new HashMap<String, Object>();
 
 	/**
 	 * Constructor
@@ -60,6 +72,7 @@ public class JstCascadeTypesPO {
 
 		super();
 		this.entity = entity;
+
 		return;
 	}
 
@@ -72,6 +85,7 @@ public class JstCascadeTypesPO {
 
 		this.cascadeDetachMap.put(className, entityIdentity);
 		this.cascadeMergeMap.put(className, entityIdentity);
+		this.cascadePersistMap.put(className, entityIdentity);
 		this.cascadeRefreshMap.put(className, entityIdentity);
 		this.cascadeRemoveMap.put(className, entityIdentity);
 		return this;
@@ -82,42 +96,104 @@ public class JstCascadeTypesPO {
 	 * @param entityIdentity
 	 * @return {@link JstCascadeTypesPO}
 	 */
-	public JstCascadeTypesPO addCascadeDetach(final String className, final Object entityIdentity) {
+	public JstCascadeTypesPO addCascadeAllExceptRemove(final String className, final Object entityIdentity) {
 
 		this.cascadeDetachMap.put(className, entityIdentity);
-		return this;
-	}
-
-	/**
-	 * @param className
-	 * @param entityIdentity
-	 * @return {@link JstCascadeTypesPO}
-	 */
-	public JstCascadeTypesPO addCascadeMerge(final String className, final Object entityIdentity) {
-
 		this.cascadeMergeMap.put(className, entityIdentity);
-		return this;
-	}
-
-	/**
-	 * @param className
-	 * @param entityIdentity
-	 * @return {@link JstCascadeTypesPO}
-	 */
-	public JstCascadeTypesPO addCascadeRefresh(final String className, final Object entityIdentity) {
-
+		this.cascadePersistMap.put(className, entityIdentity);
 		this.cascadeRefreshMap.put(className, entityIdentity);
+
+		this.cascadeRemoveMapFalse.put(className, entityIdentity);
 		return this;
 	}
 
 	/**
 	 * @param className
 	 * @param entityIdentity
+	 * @param isTrue
 	 * @return {@link JstCascadeTypesPO}
 	 */
-	public JstCascadeTypesPO addCascadeRemove(final String className, final Object entityIdentity) {
+	public JstCascadeTypesPO addCascadeDetach(final String className, final Object entityIdentity,
+			final boolean isTrue) {
 
-		this.cascadeRemoveMap.put(className, entityIdentity);
+		if (isTrue) {
+			this.cascadeDetachMap.put(className, entityIdentity);
+		} else {
+			this.cascadeDetachMapFalse.put(className, entityIdentity);
+		}
+
+		return this;
+	}
+
+	/**
+	 * @param className
+	 * @param entityIdentity
+	 * @param isTrue
+	 * @return {@link JstCascadeTypesPO}
+	 */
+	public JstCascadeTypesPO addCascadeMerge(final String className, final Object entityIdentity,
+			final boolean isTrue) {
+
+		if (isTrue) {
+			this.cascadeMergeMap.put(className, entityIdentity);
+		} else {
+			this.cascadeMergeMapFalse.put(className, entityIdentity);
+		}
+
+		return this;
+	}
+
+	/**
+	 * @param className
+	 * @param entityIdentity
+	 * @param isTrue
+	 * @return {@link JstCascadeTypesPO}
+	 */
+	public JstCascadeTypesPO addCascadePersist(final String className, final Object entityIdentity,
+			final boolean isTrue) {
+
+		if (isTrue) {
+			this.cascadePersistMap.put(className, entityIdentity);
+		} else {
+			this.cascadePersistMapFalse.put(className, entityIdentity);
+		}
+
+		return this;
+	}
+
+	/**
+	 * @param className
+	 * @param entityIdentity
+	 * @param isTrue
+	 * @return {@link JstCascadeTypesPO}
+	 */
+	public JstCascadeTypesPO addCascadeRefresh(final String className, final Object entityIdentity,
+			final boolean isTrue) {
+
+		if (isTrue) {
+			this.cascadeRefreshMap.put(className, entityIdentity);
+		} else {
+			this.cascadeRefreshMapFalse.put(className, entityIdentity);
+		}
+
+		return this;
+	}
+
+	/**
+	 * @param className
+	 * @param entityIdentity
+	 * @param isTrue
+	 * @return {@link JstCascadeTypesPO}
+	 */
+	public JstCascadeTypesPO addCascadeRemove(final String className, final Object entityIdentity,
+			final boolean isTrue) {
+
+		if (isTrue) {
+			this.cascadeRemoveMap.put(className, entityIdentity);
+		} else {
+			this.cascadeRemoveMapFalse.put(className, entityIdentity);
+		}
+
 		return this;
 	}
 
@@ -131,8 +207,36 @@ public class JstCascadeTypesPO {
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
+	public Map<String, Object> getCascadeDetachMapFalse() {
+		return this.cascadeDetachMapFalse;
+	}
+
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
 	public Map<String, Object> getCascadeMergeMap() {
 		return this.cascadeMergeMap;
+	}
+
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
+	public Map<String, Object> getCascadeMergeMapFalse() {
+		return this.cascadeMergeMapFalse;
+	}
+
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
+	public Map<String, Object> getCascadePersistMap() {
+		return this.cascadePersistMap;
+	}
+
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
+	public Map<String, Object> getCascadePersistMapFalse() {
+		return this.cascadePersistMapFalse;
 	}
 
 	/**
@@ -145,8 +249,22 @@ public class JstCascadeTypesPO {
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
+	public Map<String, Object> getCascadeRefreshMapFalse() {
+		return this.cascadeRefreshMapFalse;
+	}
+
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
 	public Map<String, Object> getCascadeRemoveMap() {
 		return this.cascadeRemoveMap;
+	}
+
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
+	public Map<String, Object> getCascadeRemoveMapFalse() {
+		return this.cascadeRemoveMapFalse;
 	}
 
 	/**

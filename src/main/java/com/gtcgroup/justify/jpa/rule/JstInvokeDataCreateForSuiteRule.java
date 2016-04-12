@@ -151,7 +151,7 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 			final List<Object> createList = ((JstBaseCreateForSuiteBeanHelper) createBeanHelper)
 					.populateDomainEntityCreateListTM(new QueryRM().setEntityManager(entityManager));
 
-			TransactionUtilHelper.transactCreatesOrUpdates(entityManager, createList);
+			TransactionUtilHelper.transactCreateOrUpdate(entityManager, createList);
 
 		} catch (final Exception e) {
 

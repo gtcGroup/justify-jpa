@@ -54,7 +54,7 @@ public class TransactionUtilHelper {
 	 * @param entityList
 	 * @return {@link List}
 	 */
-	public static <ENTITY> List<ENTITY> transactCreatesOrUpdates(final EntityManager entityManager,
+	public static <ENTITY> List<ENTITY> transactCreateOrUpdate(final EntityManager entityManager,
 			final List<ENTITY> entityList) {
 
 		entityManager.getTransaction().begin();
@@ -83,13 +83,13 @@ public class TransactionUtilHelper {
 	 * @param entities
 	 * @return {@link List}
 	 */
-	public static <ENTITY> List<ENTITY> transactCreatesOrUpdatesArray(final EntityManager entityManager,
+	public static <ENTITY> List<ENTITY> transactCreateOrUpdateArray(final EntityManager entityManager,
 			final Object... entities) {
 
 		@SuppressWarnings("unchecked")
 		final List<ENTITY> entityList = (List<ENTITY>) Arrays.asList(entities);
 
-		return transactCreatesOrUpdates(entityManager, entityList);
+		return transactCreateOrUpdate(entityManager, entityList);
 	}
 
 	/**
@@ -110,6 +110,68 @@ public class TransactionUtilHelper {
 			entityManager.remove(entity);
 		}
 		entityManager.getTransaction().commit();
+	}
+
+	/**
+	 * This method merges the state of the given entity into the current
+	 * persistence context.
+	 *
+	 * @param <ENTITY>
+	 * @param entityManager
+	 * @param entityList
+	 * @return {@link List}
+	 */
+	public static <ENTITY> List<ENTITY> transactMerge(final EntityManager entityManager,
+			final List<ENTITY> entityList) {
+
+		return transactCreateOrUpdate(entityManager, entityList);
+	}
+
+	/**
+	 * This method typically commits one or more parent entities. If any of the
+	 * related children in the object graph are not marked for cascading then
+	 * they need to be explicitly included.
+	 *
+	 * @param <ENTITY>
+	 * @param entityManager
+	 * @param entityList
+	 * @return {@link List}
+	 */
+	public static <ENTITY> List<ENTITY> transactPersist(final EntityManager entityManager,
+			final List<ENTITY> entityList) {
+
+		entityManager.getTransaction().begin();
+
+		final List<ENTITY> resultList = new ArrayList<ENTITY>();
+
+		for (final Object entity : entityList) {
+
+			entityManager.persist(entity);
+
+		}
+
+		entityManager.getTransaction().commit();
+
+		return resultList;
+	}
+
+	/**
+	 * This method typically commits one or more parent entities. If any of the
+	 * related children in the object graph are not marked for cascading then
+	 * they need to be explicitly included.
+	 *
+	 * @param <ENTITY>
+	 * @param entityManager
+	 * @param entities
+	 * @return {@link List}
+	 */
+	public static <ENTITY> List<ENTITY> transactPersistArray(final EntityManager entityManager,
+			final Object... entities) {
+
+		@SuppressWarnings("unchecked")
+		final List<ENTITY> entityList = (List<ENTITY>) Arrays.asList(entities);
+
+		return transactPersist(entityManager, entityList);
 	}
 
 	/**

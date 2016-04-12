@@ -26,6 +26,7 @@
 
 package com.gtcgroup.justify.jpa.helper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -53,30 +54,32 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
 public class AssertionsJpaUtilHelper {
 
 	/**
-	 * TODO: This method...
+	 * TODO: This method is incomplete.
 	 *
 	 * @param persistenceUnitName
 	 * @param cascadeTypesPO
 	 */
 	public static void assertCascadeTypes(final String persistenceUnitName, final JstCascadeTypesPO cascadeTypesPO) {
 
-		assertCreateAndDeleteEntities(persistenceUnitName, cascadeTypesPO.getEntity());
+		assertPersistedEntities(persistenceUnitName, cascadeTypesPO.getEntity());
 
-		final Map<String, Object> cascadeRemoveMap = cascadeTypesPO.getCascadeRemoveMap();
+		verifyPersist(persistenceUnitName, cascadeTypesPO);
 
-		for (final Map.Entry<String, Object> entry : cascadeRemoveMap.entrySet()) {
-			final String className = entry.getKey();
-			final Object entityIdentity = entry.getValue();
+		final List<Object> deleteList = new ArrayList<Object>();
+		deleteList.add(cascadeTypesPO.getEntity());
 
-			try {
+		assertDeleteEntities(persistenceUnitName, deleteList);
 
-				assertNotExist(persistenceUnitName, Class.forName(className), entityIdentity);
+		final List<Object> createdList = assertUpdateEntities(persistenceUnitName, cascadeTypesPO.getEntity());
 
-			} catch (final ClassNotFoundException e) {
+		verifyMerge(persistenceUnitName, cascadeTypesPO);
 
-				throw new TestingRuntimeException(e);
-			}
-		}
+		verifyRefresh(persistenceUnitName, cascadeTypesPO);
+
+		assertDeleteEntities(persistenceUnitName, createdList);
+
+		verifyRemove(persistenceUnitName, cascadeTypesPO);
+
 		return;
 
 	}
@@ -100,19 +103,40 @@ public class AssertionsJpaUtilHelper {
 
 			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
 
-			createdList = TransactionUtilHelper.transactCreatesOrUpdatesArray(entityManager, entities);
+			createdList = assertUpdateEntities(persistenceUnitName, entities);
 
-			TransactionUtilHelper.transactDelete(entityManager, createdList);
-
-		} catch (@SuppressWarnings("unused") final Exception e) {
-
-			Assert.fail("The domain entities could not be handled by the assert method.");
+			assertDeleteEntities(persistenceUnitName, createdList);
 
 		} finally {
 
 			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 		return createdList;
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 * @param entities
+	 */
+	private static void assertDeleteEntities(final String persistenceUnitName, final List<Object> createList) {
+
+		EntityManager entityManager = null;
+
+		try {
+
+			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			TransactionUtilHelper.transactDelete(entityManager, createList);
+
+		} catch (@SuppressWarnings("unused") final Exception e) {
+
+			Assert.fail("The domain entities could not be deleted by the assert method.");
+
+		} finally {
+
+			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
+		return;
 	}
 
 	/**
@@ -166,128 +190,6 @@ public class AssertionsJpaUtilHelper {
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
 	 * @param entityClass
-	 * @param entityIdentityList
-	 * @return boolean
-	 */
-	public static <ENTITY extends Object> boolean assertExistsList(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
-
-		if (false == assertExistsListInternal(persistenceUnitName, entityClass, entityIdentityList)) {
-
-			Assert.fail(
-					"The class [" + entityClass.getSimpleName() + "] instances are not available from the database.");
-
-		}
-
-		return true;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentity
-	 * @return boolean
-	 */
-	public static <ENTITY extends Object> boolean assertNotExist(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final Object entityIdentity) {
-
-		if (true == assertExistsInternal(persistenceUnitName, entityClass, entityIdentity)) {
-			Assert.fail("The class [" + entityClass.getSimpleName()
-					+ "] instance is incorrectly available from database [" + persistenceUnitName + "].");
-		}
-		return true;
-
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentities
-	 * @return boolean
-	 */
-	public static <ENTITY extends Object> boolean assertNotExistArray(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final Object... entityIdentities) {
-
-		final List<Object> entityIdentityList = Arrays.asList(entityIdentities);
-
-		return assertNotExistList(persistenceUnitName, entityClass, entityIdentityList);
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentityList
-	 * @return boolean
-	 */
-	public static <ENTITY extends Object> boolean assertNotExistList(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
-
-		if (true == assertExistsListInternal(persistenceUnitName, entityClass, entityIdentityList)) {
-
-			Assert.fail("The class [" + entityClass.getSimpleName() + "] instance is not available from database ["
-					+ persistenceUnitName + "].");
-		}
-		return true;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentity
-	 * @return boolean
-	 */
-	public static <ENTITY extends Object> boolean assertNotExists(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final Object entityIdentity) {
-
-		if (true == assertExistsInternal(persistenceUnitName, entityClass, entityIdentity)) {
-			Assert.fail("The class [" + entityClass.getSimpleName()
-					+ "] instance is incorrectly available from the database [" + persistenceUnitName + "].");
-		}
-		return true;
-
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentities
-	 * @return boolean
-	 */
-	public static <ENTITY extends Object> boolean assertNotExistsArray(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final Object... entityIdentities) {
-
-		final List<Object> entityIdentityList = Arrays.asList(entityIdentities);
-
-		return assertNotExistsList(persistenceUnitName, entityClass, entityIdentityList);
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentityList
-	 * @return boolean
-	 */
-	public static <ENTITY extends Object> boolean assertNotExistsList(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
-
-		if (true == assertExistsListInternal(persistenceUnitName, entityClass, entityIdentityList)) {
-
-			Assert.fail("The class [" + entityClass.getSimpleName() + "] instance is not available from the database ["
-					+ persistenceUnitName + "].");
-		}
-		return true;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
 	 * @param entityIdentity
 	 * @return boolean
 	 */
@@ -310,6 +212,26 @@ public class AssertionsJpaUtilHelper {
 
 			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
+		return true;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entityClass
+	 * @param entityIdentityList
+	 * @return boolean
+	 */
+	public static <ENTITY extends Object> boolean assertExistsList(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
+
+		if (false == assertExistsListInternal(persistenceUnitName, entityClass, entityIdentityList)) {
+
+			Assert.fail(
+					"The class [" + entityClass.getSimpleName() + "] instances are not available from the database.");
+
+		}
+
 		return true;
 	}
 
@@ -345,6 +267,248 @@ public class AssertionsJpaUtilHelper {
 			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 		return true;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entityClass
+	 * @param entityIdentity
+	 * @return boolean
+	 */
+	public static <ENTITY extends Object> boolean assertNotExists(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object entityIdentity) {
+
+		if (true == assertExistsInternal(persistenceUnitName, entityClass, entityIdentity)) {
+			Assert.fail("The class [" + entityClass.getSimpleName()
+					+ "] instance is incorrectly available from database [" + persistenceUnitName + "].");
+		}
+		return true;
+
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entityClass
+	 * @param entityIdentities
+	 * @return boolean
+	 */
+	public static <ENTITY extends Object> boolean assertNotExistsArray(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object... entityIdentities) {
+
+		final List<Object> entityIdentityList = Arrays.asList(entityIdentities);
+
+		return assertNotExistsList(persistenceUnitName, entityClass, entityIdentityList);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entityClass
+	 * @param entityIdentityList
+	 * @return boolean
+	 */
+	public static <ENTITY extends Object> boolean assertNotExistsList(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
+
+		if (true == assertExistsListInternal(persistenceUnitName, entityClass, entityIdentityList)) {
+
+			Assert.fail("The class [" + entityClass.getSimpleName() + "] instance is not available from database ["
+					+ persistenceUnitName + "].");
+		}
+		return true;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entities
+	 * @return boolean
+	 */
+	private static <ENTITY extends Object> boolean assertPersistedEntities(final String persistenceUnitName,
+			final ENTITY... entities) {
+
+		EntityManager entityManager = null;
+
+		try {
+
+			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			TransactionUtilHelper.transactPersistArray(entityManager, entities);
+
+		} catch (@SuppressWarnings("unused") final Exception e) {
+
+			Assert.fail("The domain entities could not be created by the assert method.");
+
+		} finally {
+
+			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
+		return true;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entities
+	 * @return boolean
+	 */
+	public static <ENTITY extends Object> List<Object> assertUpdateEntities(final String persistenceUnitName,
+			final ENTITY... entities) {
+
+		List<Object> createdList = null;
+
+		EntityManager entityManager = null;
+
+		try {
+
+			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			createdList = TransactionUtilHelper.transactCreateOrUpdateArray(entityManager, entities);
+
+		} finally {
+
+			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
+		return createdList;
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 * @param cascadeRemoveMap
+	 */
+	private static void verifyMerge(final String persistenceUnitName, final JstCascadeTypesPO cascadeTypesPO) {
+
+		for (final Map.Entry<String, Object> entry : cascadeTypesPO.getCascadeMergeMap().entrySet()) {
+
+			try {
+
+				assertExists(persistenceUnitName, Class.forName(entry.getKey()), entry.getValue());
+
+			} catch (final ClassNotFoundException e) {
+
+				throw new TestingRuntimeException(e);
+			}
+		}
+
+		for (final Map.Entry<String, Object> entry : cascadeTypesPO.getCascadeMergeMapFalse().entrySet()) {
+
+			try {
+
+				assertNotExists(persistenceUnitName, Class.forName(entry.getKey()), entry.getValue());
+
+			} catch (final ClassNotFoundException e) {
+
+				throw new TestingRuntimeException(e);
+			}
+		}
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 * @param cascadeRemoveMap
+	 */
+	private static void verifyPersist(final String persistenceUnitName, final JstCascadeTypesPO cascadeTypesPO) {
+
+		for (final Map.Entry<String, Object> entry : cascadeTypesPO.getCascadePersistMap().entrySet()) {
+
+			try {
+
+				assertExists(persistenceUnitName, Class.forName(entry.getKey()), entry.getValue());
+
+			} catch (final ClassNotFoundException e) {
+
+				throw new TestingRuntimeException(e);
+			}
+		}
+
+		for (final Map.Entry<String, Object> entry : cascadeTypesPO.getCascadePersistMapFalse().entrySet()) {
+
+			try {
+
+				assertNotExists(persistenceUnitName, Class.forName(entry.getKey()), entry.getValue());
+
+			} catch (final ClassNotFoundException e) {
+
+				throw new TestingRuntimeException(e);
+			}
+		}
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 * @param cascadeRemoveMap
+	 */
+	private static void verifyRefresh(final String persistenceUnitName,
+			@SuppressWarnings("unused") final JstCascadeTypesPO cascadeTypesPO) {
+
+		// TODO: Implement to verify cascading refresh.
+
+		// for (final Map.Entry<String, Object> entry :
+		// cascadeTypesPO.getCascadeRefreshMap().entrySet()) {
+		//
+		// try {
+		//
+		// assertRefresh(persistenceUnitName, Class.forName(entry.getKey()),
+		// entry.getValue());
+		//
+		// } catch (final ClassNotFoundException e) {
+		//
+		// throw new TestingRuntimeException(e);
+		// }
+		// }
+		//
+		// for (final Map.Entry<String, Object> entry :
+		// cascadeTypesPO.getCascadeRefreshMapFalse().entrySet()) {
+		//
+		// try {
+		//
+		// assertNotExists(persistenceUnitName, Class.forName(entry.getKey()),
+		// entry.getValue());
+		//
+		// } catch (final ClassNotFoundException e) {
+		//
+		// throw new TestingRuntimeException(e);
+		// }
+		// }
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 * @param cascadeRemoveMap
+	 */
+	private static void verifyRemove(final String persistenceUnitName, final JstCascadeTypesPO cascadeTypesPO) {
+
+		for (final Map.Entry<String, Object> entry : cascadeTypesPO.getCascadeRemoveMap().entrySet()) {
+
+			final String className = entry.getKey();
+			final Object entityIdentity = entry.getValue();
+
+			try {
+
+				assertNotExists(persistenceUnitName, Class.forName(className), entityIdentity);
+
+			} catch (final ClassNotFoundException e) {
+
+				throw new TestingRuntimeException(e);
+			}
+		}
+
+		for (final Map.Entry<String, Object> entry : cascadeTypesPO.getCascadeRemoveMapFalse().entrySet()) {
+
+			final String className = entry.getKey();
+			final Object entityIdentity = entry.getValue();
+
+			try {
+
+				assertExists(persistenceUnitName, Class.forName(className), entityIdentity);
+
+			} catch (final ClassNotFoundException e) {
+
+				throw new TestingRuntimeException(e);
+			}
+		}
 	}
 
 	/**
