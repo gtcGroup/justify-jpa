@@ -32,8 +32,8 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.base.JstBaseForSuiteRule;
+import com.gtcgroup.justify.core.exception.internal.TestingConstructorRuleException;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
-import com.gtcgroup.justify.core.helper.internal.DisplayRuleMessagesUtilHelper;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.core.pattern.palette.internal.BaseRule;
 import com.gtcgroup.justify.core.si.UniqueForSuiteRuleSI;
@@ -99,13 +99,8 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 						.instantiatePublicConstructorNoArgument(clazz));
 			} else {
 
-				final TestingRuntimeException testingRuntimeException = new TestingRuntimeException(
-						"\nThe class [" + clazz.getSimpleName()
-								+ "] does not appear to extend a base class for creating persistence test data.\n");
-
-				DisplayRuleMessagesUtilHelper.displayConstructorException(testingRuntimeException);
-
-				throw testingRuntimeException;
+				throw new TestingConstructorRuleException("\nThe class [" + clazz.getSimpleName()
+						+ "] does not appear to extend a base class for creating persistence test data.\n");
 			}
 		}
 

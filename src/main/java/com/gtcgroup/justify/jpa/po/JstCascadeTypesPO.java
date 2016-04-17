@@ -146,6 +146,21 @@ public class JstCascadeTypesPO {
 	/**
 	 * @param className
 	 * @param entityIdentity
+	 * @return {@link JstCascadeTypesPO}
+	 */
+	public JstCascadeTypesPO addCascadeNone(final String className, final Object entityIdentity) {
+
+		this.cascadeDetachMapFalse.put(className, entityIdentity);
+		this.cascadeMergeMapFalse.put(className, entityIdentity);
+		this.cascadePersistMapFalse.put(className, entityIdentity);
+		this.cascadeRefreshMapFalse.put(className, entityIdentity);
+		this.cascadeRemoveMapFalse.put(className, entityIdentity);
+		return this;
+	}
+
+	/**
+	 * @param className
+	 * @param entityIdentity
 	 * @param isTrue
 	 * @return {@link JstCascadeTypesPO}
 	 */

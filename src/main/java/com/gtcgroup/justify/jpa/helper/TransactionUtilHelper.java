@@ -31,6 +31,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+
 /**
  * This Util Helper class provides persistence transaction support.
  *
@@ -54,6 +56,7 @@ public class TransactionUtilHelper {
 	 * @param entityList
 	 * @return {@link List}
 	 */
+	@SuppressWarnings("unchecked")
 	public static <ENTITY> List<ENTITY> transactCreateOrUpdate(final EntityManager entityManager,
 			final List<ENTITY> entityList) {
 
@@ -63,12 +66,23 @@ public class TransactionUtilHelper {
 
 		for (final Object entity : entityList) {
 
-			@SuppressWarnings("unchecked")
-			final ENTITY tempEntity = (ENTITY) entityManager.merge(entity);
+			ENTITY tempEntity;
+			try {
+				tempEntity = (ENTITY) entityManager.merge(entity);
+			} catch (final Exception e) {
+
+				throw new TestingRuntimeException(e);
+			}
 			resultList.add(tempEntity);
 		}
 
-		entityManager.getTransaction().commit();
+		try {
+			entityManager.getTransaction().commit();
+
+		} catch (final Exception e) {
+
+			throw new TestingRuntimeException(e);
+		}
 
 		return resultList;
 	}
