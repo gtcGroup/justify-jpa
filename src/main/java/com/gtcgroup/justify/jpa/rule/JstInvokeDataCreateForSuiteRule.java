@@ -36,7 +36,7 @@ import com.gtcgroup.justify.core.exception.internal.TestingConstructorRuleExcept
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.core.pattern.palette.internal.BaseRule;
-import com.gtcgroup.justify.core.si.UniqueForSuiteRuleSI;
+import com.gtcgroup.justify.core.si.JstUniqueForSuiteRuleSI;
 import com.gtcgroup.justify.jpa.helper.EntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstBaseCreateForSuiteBeanHelper;
 import com.gtcgroup.justify.jpa.helper.TransactionUtilHelper;
@@ -55,7 +55,7 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
  */
 public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 
-	protected final List<UniqueForSuiteRuleSI> createList;
+	protected final List<JstUniqueForSuiteRuleSI> createList;
 
 	private final String persistenceUnitName;
 
@@ -89,7 +89,7 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 
 		this.propertyOverrideMap = propertyOverrideMap;
 
-		final List<UniqueForSuiteRuleSI> createListTemp = new ArrayList<UniqueForSuiteRuleSI>();
+		final List<JstUniqueForSuiteRuleSI> createListTemp = new ArrayList<JstUniqueForSuiteRuleSI>();
 
 		for (final Class<?> clazz : createForSuiteBeanHelperClasses) {
 
@@ -113,20 +113,20 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 	@Override
 	public void beforeTM() {
 
-		for (final UniqueForSuiteRuleSI createBeanHelper : this.createList) {
+		for (final JstUniqueForSuiteRuleSI createBeanHelper : this.createList) {
 			processCreateBeanHelperAsTransaction(createBeanHelper);
 		}
 	}
 
 	/**
-	 * @see UniqueForSuiteRuleSI#uniqueSuiteIdentityTM()
+	 * @see JstUniqueForSuiteRuleSI#uniqueSuiteIdentityTM()
 	 */
 	@Override
 	public String uniqueSuiteIdentityTM() {
 
 		final StringBuilder uniqueIdentity = new StringBuilder();
 
-		for (final UniqueForSuiteRuleSI createBeanHelper : this.createList) {
+		for (final JstUniqueForSuiteRuleSI createBeanHelper : this.createList) {
 			uniqueIdentity.append(createBeanHelper.uniqueSuiteIdentityTM());
 		}
 		return uniqueIdentity.toString();
@@ -135,7 +135,7 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 	/**
 	 * @param createBeanHelper
 	 */
-	protected void processCreateBeanHelperAsTransaction(final UniqueForSuiteRuleSI createBeanHelper) {
+	protected void processCreateBeanHelperAsTransaction(final JstUniqueForSuiteRuleSI createBeanHelper) {
 
 		EntityManager entityManager = null;
 

@@ -32,7 +32,7 @@ import javax.persistence.EntityManager;
 import com.gtcgroup.justify.core.base.JstBaseForSuiteRule;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.pattern.palette.internal.BaseRule;
-import com.gtcgroup.justify.core.si.UniqueForSuiteRuleSI;
+import com.gtcgroup.justify.core.si.JstUniqueForSuiteRuleSI;
 import com.gtcgroup.justify.jpa.helper.EntityManagerFactoryCacheHelper;
 
 /**
@@ -102,7 +102,7 @@ public class JstConfigureJpaForSuiteRule extends JstBaseForSuiteRule {
 	}
 
 	/**
-	 * @see UniqueForSuiteRuleSI#uniqueSuiteIdentityTM()
+	 * @see JstUniqueForSuiteRuleSI#uniqueSuiteIdentityTM()
 	 */
 	@Override
 	public String uniqueSuiteIdentityTM() {
