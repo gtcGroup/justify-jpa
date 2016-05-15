@@ -36,7 +36,7 @@ import javax.persistence.EntityManager;
 import org.junit.Assert;
 
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
-import com.gtcgroup.justify.jpa.po.JstCascadeTypesPO;
+import com.gtcgroup.justify.jpa.po.JstAssertJpaPO;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
 
 /**
@@ -50,7 +50,6 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
  * @author Marvin Toll
  * @since v3.0
  */
-
 public class AssertionsJpaUtilHelper {
 
 	/**
@@ -59,18 +58,18 @@ public class AssertionsJpaUtilHelper {
 	 * @param persistenceUnitName
 	 * @param cascadeTypesPO
 	 */
-	public static void assertCascadeTypes(final String persistenceUnitName, final JstCascadeTypesPO cascadeTypesPO) {
+	public static void assertCascadeTypes(final String persistenceUnitName, final JstAssertJpaPO cascadeTypesPO) {
 
-		assertPersistedEntities(persistenceUnitName, cascadeTypesPO.getEntity());
+		assertPersistedEntities(persistenceUnitName, cascadeTypesPO.getDomainEntity());
 
 		verifyPersist(persistenceUnitName, cascadeTypesPO);
 
 		final List<Object> deleteList = new ArrayList<Object>();
-		deleteList.add(cascadeTypesPO.getEntity());
+		deleteList.add(cascadeTypesPO.getDomainEntity());
 
 		assertDeleteEntities(persistenceUnitName, deleteList);
 
-		final List<Object> createdList = assertUpdateEntities(persistenceUnitName, cascadeTypesPO.getEntity());
+		final List<Object> createdList = assertUpdateEntities(persistenceUnitName, cascadeTypesPO.getDomainEntity());
 
 		verifyMerge(persistenceUnitName, cascadeTypesPO);
 
@@ -112,6 +111,31 @@ public class AssertionsJpaUtilHelper {
 			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 		return createdList;
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 * @param entities
+	 */
+	private static void assertDeleteEntities(final String persistenceUnitName, final List<Object> createList) {
+
+		EntityManager entityManager = null;
+
+		try {
+
+			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			TransactionUtilHelper.transactDelete(entityManager, createList);
+
+		} catch (@SuppressWarnings("unused") final Exception e) {
+
+			Assert.fail("The domain entities could not be deleted by the assert method.");
+
+		} finally {
+
+			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
+		return;
 	}
 
 	/**
@@ -165,6 +189,35 @@ public class AssertionsJpaUtilHelper {
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
 	 * @param entityClass
+	 * @param entityIdentity
+	 * @return boolean
+	 */
+	private static <ENTITY extends Object> boolean assertExistsInternal(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object entityIdentity) {
+
+		EntityManager entityManager = null;
+
+		try {
+			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			final QueryRM queryRM = new QueryRM().setEntityManager(entityManager);
+
+			if (false == queryRM.exists(entityClass, entityIdentity)) {
+
+				return false;
+			}
+
+		} finally {
+
+			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
+		return true;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entityClass
 	 * @param entityIdentityList
 	 * @return boolean
 	 */
@@ -175,9 +228,42 @@ public class AssertionsJpaUtilHelper {
 
 			Assert.fail(
 					"The class [" + entityClass.getSimpleName() + "] instances are not available from the database.");
-
 		}
 
+		return true;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entityClass
+	 * @param entityIdentityList
+	 * @return boolean
+	 */
+	private static <ENTITY extends Object> boolean assertExistsListInternal(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
+
+		EntityManager entityManager = null;
+
+		try {
+
+			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			final QueryRM queryRM = new QueryRM().setEntityManager(entityManager);
+
+			for (final Object entityIdentity : entityIdentityList) {
+
+				if (!queryRM.exists(entityClass, entityIdentity)) {
+
+					return false;
+				}
+
+			}
+
+		} finally {
+
+			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
 		return true;
 	}
 
@@ -238,120 +324,6 @@ public class AssertionsJpaUtilHelper {
 	 * @param entities
 	 * @return boolean
 	 */
-	public static <ENTITY extends Object> List<Object> assertUpdateEntities(final String persistenceUnitName,
-			final ENTITY... entities) {
-
-		List<Object> createdList = null;
-
-		EntityManager entityManager = null;
-
-		try {
-
-			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-
-			createdList = TransactionUtilHelper.transactCreateOrUpdateArray(entityManager, entities);
-
-		} finally {
-
-			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-		}
-		return createdList;
-	}
-
-	/**
-	 * @param persistenceUnitName
-	 * @param entities
-	 */
-	private static void assertDeleteEntities(final String persistenceUnitName, final List<Object> createList) {
-
-		EntityManager entityManager = null;
-
-		try {
-
-			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-
-			TransactionUtilHelper.transactDelete(entityManager, createList);
-
-		} catch (@SuppressWarnings("unused") final Exception e) {
-
-			Assert.fail("The domain entities could not be deleted by the assert method.");
-
-		} finally {
-
-			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-		}
-		return;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentity
-	 * @return boolean
-	 */
-	private static <ENTITY extends Object> boolean assertExistsInternal(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final Object entityIdentity) {
-
-		EntityManager entityManager = null;
-
-		try {
-			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-
-			final QueryRM queryRM = new QueryRM().setEntityManager(entityManager);
-
-			if (false == queryRM.exists(entityClass, entityIdentity)) {
-
-				return false;
-			}
-
-		} finally {
-
-			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-		}
-		return true;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentityList
-	 * @return boolean
-	 */
-	private static <ENTITY extends Object> boolean assertExistsListInternal(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final List<Object> entityIdentityList) {
-
-		EntityManager entityManager = null;
-
-		try {
-
-			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-
-			final QueryRM queryRM = new QueryRM().setEntityManager(entityManager);
-
-			for (final Object entityIdentity : entityIdentityList) {
-
-				if (!queryRM.exists(entityClass, entityIdentity)) {
-
-					return false;
-				}
-
-			}
-
-		} finally {
-
-			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-		}
-		return true;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entities
-	 * @return boolean
-	 */
 	private static <ENTITY extends Object> boolean assertPersistedEntities(final String persistenceUnitName,
 			final ENTITY... entities) {
 
@@ -375,10 +347,36 @@ public class AssertionsJpaUtilHelper {
 	}
 
 	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entities
+	 * @return boolean
+	 */
+	public static <ENTITY extends Object> List<Object> assertUpdateEntities(final String persistenceUnitName,
+			final ENTITY... entities) {
+
+		List<Object> createdList = null;
+
+		EntityManager entityManager = null;
+
+		try {
+
+			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			createdList = TransactionUtilHelper.transactCreateOrUpdateArray(entityManager, entities);
+
+		} finally {
+
+			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
+		return createdList;
+	}
+
+	/**
 	 * @param persistenceUnitName
 	 * @param cascadeRemoveMap
 	 */
-	private static void verifyMerge(final String persistenceUnitName, final JstCascadeTypesPO cascadeTypesPO) {
+	private static void verifyMerge(final String persistenceUnitName, final JstAssertJpaPO cascadeTypesPO) {
 
 		for (final Map.Entry<String, Object> entry : cascadeTypesPO.getCascadeMergeMap().entrySet()) {
 
@@ -409,7 +407,7 @@ public class AssertionsJpaUtilHelper {
 	 * @param persistenceUnitName
 	 * @param cascadeRemoveMap
 	 */
-	private static void verifyPersist(final String persistenceUnitName, final JstCascadeTypesPO cascadeTypesPO) {
+	private static void verifyPersist(final String persistenceUnitName, final JstAssertJpaPO cascadeTypesPO) {
 
 		for (final Map.Entry<String, Object> entry : cascadeTypesPO.getCascadePersistMap().entrySet()) {
 
@@ -440,7 +438,7 @@ public class AssertionsJpaUtilHelper {
 	 * @param persistenceUnitName
 	 * @param cascadeRemoveMap
 	 */
-	private static void verifyRefresh(final String persistenceUnitName, final JstCascadeTypesPO cascadeTypesPO) {
+	private static void verifyRefresh(final String persistenceUnitName, final JstAssertJpaPO cascadeTypesPO) {
 
 		EntityManager entityManager = null;
 
@@ -483,7 +481,7 @@ public class AssertionsJpaUtilHelper {
 	 * @param persistenceUnitName
 	 * @param cascadeRemoveMap
 	 */
-	private static void verifyRemove(final String persistenceUnitName, final JstCascadeTypesPO cascadeTypesPO) {
+	private static void verifyRemove(final String persistenceUnitName, final JstAssertJpaPO cascadeTypesPO) {
 
 		for (final Map.Entry<String, Object> entry : cascadeTypesPO.getCascadeRemoveMap().entrySet()) {
 

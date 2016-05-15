@@ -134,9 +134,20 @@ public enum EntityManagerFactoryCacheHelper {
 	public static EntityManagerFactory retrieveEntityManagerFactory(final String persistenceUnitName,
 			final Map<String, Object> propertyOverrideMap) {
 
-		final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
 
-		EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceUnitName, entityManagerFactory);
+		final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
+				propertyOverrideMap);
+
+		String key = persistenceUnitName;
+
+		if (null != propertyOverrideMap) {
+			key = key + "." + propertyOverrideMap.hashCode();
+
+			// TODO: Remove this.
+			System.out.println(key);
+		}
+
+		EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(key, entityManagerFactory);
 
 		JstJndiUtilHelper.rebind(EntityManagerFactoryCacheHelper.JNDI_NAME_ENTITY_MANAGER_FACTORY_MAP,
 				EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP);

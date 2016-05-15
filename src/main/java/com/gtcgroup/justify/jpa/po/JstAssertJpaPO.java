@@ -39,9 +39,19 @@ import java.util.Map;
  * @author
  * @since v.6.0
  */
-public class JstCascadeTypesPO {
+public class JstAssertJpaPO {
 
-	private final Object entity;
+	/**
+	 * This method initializes the class.
+	 *
+	 * @param domainEntity
+	 * @return {@link JstAssertJpaPO}
+	 */
+	public static JstAssertJpaPO usingDomainEntity(final Object domainEntity) {
+		return new JstAssertJpaPO(domainEntity);
+	}
+
+	private final Object domainEntity;
 
 	private final Map<String, Object> cascadeDetachMap = new HashMap<String, Object>();
 
@@ -66,12 +76,12 @@ public class JstCascadeTypesPO {
 	/**
 	 * Constructor
 	 *
-	 * @param entity
+	 * @param domainEntity
 	 */
-	public JstCascadeTypesPO(final Object entity) {
+	private JstAssertJpaPO(final Object entity) {
 
 		super();
-		this.entity = entity;
+		this.domainEntity = entity;
 
 		return;
 	}
@@ -79,41 +89,10 @@ public class JstCascadeTypesPO {
 	/**
 	 * @param className
 	 * @param entityIdentity
-	 * @return {@link JstCascadeTypesPO}
-	 */
-	public JstCascadeTypesPO addCascadeAll(final String className, final Object entityIdentity) {
-
-		this.cascadeDetachMap.put(className, entityIdentity);
-		this.cascadeMergeMap.put(className, entityIdentity);
-		this.cascadePersistMap.put(className, entityIdentity);
-		this.cascadeRefreshMap.put(className, entityIdentity);
-		this.cascadeRemoveMap.put(className, entityIdentity);
-		return this;
-	}
-
-	/**
-	 * @param className
-	 * @param entityIdentity
-	 * @return {@link JstCascadeTypesPO}
-	 */
-	public JstCascadeTypesPO addCascadeAllExceptRemove(final String className, final Object entityIdentity) {
-
-		this.cascadeDetachMap.put(className, entityIdentity);
-		this.cascadeMergeMap.put(className, entityIdentity);
-		this.cascadePersistMap.put(className, entityIdentity);
-		this.cascadeRefreshMap.put(className, entityIdentity);
-
-		this.cascadeRemoveMapFalse.put(className, entityIdentity);
-		return this;
-	}
-
-	/**
-	 * @param className
-	 * @param entityIdentity
 	 * @param isTrue
-	 * @return {@link JstCascadeTypesPO}
+	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstCascadeTypesPO addCascadeDetach(final String className, final Object entityIdentity,
+	public JstAssertJpaPO addCascadeDetach(final String className, final Object entityIdentity,
 			final boolean isTrue) {
 
 		if (isTrue) {
@@ -129,9 +108,9 @@ public class JstCascadeTypesPO {
 	 * @param className
 	 * @param entityIdentity
 	 * @param isTrue
-	 * @return {@link JstCascadeTypesPO}
+	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstCascadeTypesPO addCascadeMerge(final String className, final Object entityIdentity,
+	public JstAssertJpaPO addCascadeMerge(final String className, final Object entityIdentity,
 			final boolean isTrue) {
 
 		if (isTrue) {
@@ -146,9 +125,9 @@ public class JstCascadeTypesPO {
 	/**
 	 * @param className
 	 * @param entityIdentity
-	 * @return {@link JstCascadeTypesPO}
+	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstCascadeTypesPO addCascadeNone(final String className, final Object entityIdentity) {
+	public JstAssertJpaPO usingCascadeNone(final String className, final Object entityIdentity) {
 
 		this.cascadeDetachMapFalse.put(className, entityIdentity);
 		this.cascadeMergeMapFalse.put(className, entityIdentity);
@@ -162,9 +141,9 @@ public class JstCascadeTypesPO {
 	 * @param className
 	 * @param entityIdentity
 	 * @param isTrue
-	 * @return {@link JstCascadeTypesPO}
+	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstCascadeTypesPO addCascadePersist(final String className, final Object entityIdentity,
+	public JstAssertJpaPO addCascadePersist(final String className, final Object entityIdentity,
 			final boolean isTrue) {
 
 		if (isTrue) {
@@ -180,9 +159,9 @@ public class JstCascadeTypesPO {
 	 * @param className
 	 * @param entityIdentity
 	 * @param isTrue
-	 * @return {@link JstCascadeTypesPO}
+	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstCascadeTypesPO addCascadeRefresh(final String className, final Object entityIdentity,
+	public JstAssertJpaPO addCascadeRefresh(final String className, final Object entityIdentity,
 			final boolean isTrue) {
 
 		if (isTrue) {
@@ -198,9 +177,9 @@ public class JstCascadeTypesPO {
 	 * @param className
 	 * @param entityIdentity
 	 * @param isTrue
-	 * @return {@link JstCascadeTypesPO}
+	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstCascadeTypesPO addCascadeRemove(final String className, final Object entityIdentity,
+	public JstAssertJpaPO addCascadeRemove(final String className, final Object entityIdentity,
 			final boolean isTrue) {
 
 		if (isTrue) {
@@ -285,7 +264,49 @@ public class JstCascadeTypesPO {
 	/**
 	 * @return Object
 	 */
+	public Object getDomainEntity() {
+		return this.domainEntity;
+	}
+
+	/**
+	 * @return Object
+	 */
 	public Object getEntity() {
-		return this.entity;
+		return getDomainEntity();
+	}
+
+	/**
+	 * @param clazz
+	 * @param entityIdentity
+	 * @return {@link JstAssertJpaPO}
+	 */
+	public JstAssertJpaPO setCascadeAll(final Class<?> clazz, final Object entityIdentity) {
+
+		final String className = clazz.getName();
+
+		this.cascadeDetachMap.put(className, entityIdentity);
+		this.cascadeMergeMap.put(className, entityIdentity);
+		this.cascadePersistMap.put(className, entityIdentity);
+		this.cascadeRefreshMap.put(className, entityIdentity);
+		this.cascadeRemoveMap.put(className, entityIdentity);
+		return this;
+	}
+
+	/**
+	 * @param clazz
+	 * @param entityIdentity
+	 * @return {@link JstAssertJpaPO}
+	 */
+	public JstAssertJpaPO setCascadeAllExceptRemove(final Class<?> clazz, final Object entityIdentity) {
+
+		final String className = clazz.getName();
+
+		this.cascadeDetachMap.put(className, entityIdentity);
+		this.cascadeMergeMap.put(className, entityIdentity);
+		this.cascadePersistMap.put(className, entityIdentity);
+		this.cascadeRefreshMap.put(className, entityIdentity);
+
+		this.cascadeRemoveMapFalse.put(className, entityIdentity);
+		return this;
 	}
 }

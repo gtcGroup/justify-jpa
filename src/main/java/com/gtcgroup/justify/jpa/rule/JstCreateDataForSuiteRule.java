@@ -53,9 +53,9 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
+public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 
-	protected final List<JstUniqueForSuiteRuleSI> createList;
+	protected final List<JstUniqueForSuiteRuleSI> createBeanHelperList;
 
 	private final String persistenceUnitName;
 
@@ -65,12 +65,12 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 	 * Constructor
 	 *
 	 * @param persistenceUnitName
-	 * @param createForSuiteBeanHelperClasses
+	 * @param createBeanHelperList
 	 */
-	public JstInvokeDataCreateForSuiteRule(final String persistenceUnitName,
-			final Class<?>... createForSuiteBeanHelperClasses) {
+	public JstCreateDataForSuiteRule(final String persistenceUnitName,
+			final Class<?>... createBeanHelperList) {
 
-		this(persistenceUnitName, null, createForSuiteBeanHelperClasses);
+		this(persistenceUnitName, null, createBeanHelperList);
 	}
 
 	/**
@@ -78,10 +78,10 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 	 *
 	 * @param persistenceUnitName
 	 * @param propertyOverrideMap
-	 * @param createForSuiteBeanHelperClasses
+	 * @param createBeanHelperList
 	 */
-	public JstInvokeDataCreateForSuiteRule(final String persistenceUnitName,
-			final Map<String, Object> propertyOverrideMap, final Class<?>... createForSuiteBeanHelperClasses) {
+	public JstCreateDataForSuiteRule(final String persistenceUnitName,
+			final Map<String, Object> propertyOverrideMap, final Class<?>... createBeanHelperList) {
 
 		super();
 
@@ -91,7 +91,7 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 
 		final List<JstUniqueForSuiteRuleSI> createListTemp = new ArrayList<JstUniqueForSuiteRuleSI>();
 
-		for (final Class<?> clazz : createForSuiteBeanHelperClasses) {
+		for (final Class<?> clazz : createBeanHelperList) {
 
 			if (JstBaseCreateForSuiteBeanHelper.class.isAssignableFrom(clazz)) {
 
@@ -100,11 +100,11 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 			} else {
 
 				throw new TestingConstructorRuleException("\nThe class [" + clazz.getSimpleName()
-						+ "] does not appear to extend a base class for creating persistence test data.\n");
+				+ "] does not appear to extend a base class for creating persistence test data.\n");
 			}
 		}
 
-		this.createList = createListTemp;
+		this.createBeanHelperList = createListTemp;
 	}
 
 	/**
@@ -113,23 +113,9 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 	@Override
 	public void beforeTM() {
 
-		for (final JstUniqueForSuiteRuleSI createBeanHelper : this.createList) {
+		for (final JstUniqueForSuiteRuleSI createBeanHelper : this.createBeanHelperList) {
 			processCreateBeanHelperAsTransaction(createBeanHelper);
 		}
-	}
-
-	/**
-	 * @see JstUniqueForSuiteRuleSI#uniqueSuiteIdentityTM()
-	 */
-	@Override
-	public String uniqueSuiteIdentityTM() {
-
-		final StringBuilder uniqueIdentity = new StringBuilder();
-
-		for (final JstUniqueForSuiteRuleSI createBeanHelper : this.createList) {
-			uniqueIdentity.append(createBeanHelper.uniqueSuiteIdentityTM());
-		}
-		return uniqueIdentity.toString();
 	}
 
 	/**
@@ -144,7 +130,7 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 					this.propertyOverrideMap);
 
 			final List<Object> createList = ((JstBaseCreateForSuiteBeanHelper) createBeanHelper)
-					.populateDomainEntityCreateListTM(new QueryRM().setEntityManager(entityManager));
+					.populateCreateListTM(new QueryRM().setEntityManager(entityManager));
 
 			TransactionUtilHelper.transactCreateOrUpdate(entityManager, createList);
 
@@ -155,5 +141,19 @@ public class JstInvokeDataCreateForSuiteRule extends JstBaseForSuiteRule {
 
 			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
+	}
+
+	/**
+	 * @see JstUniqueForSuiteRuleSI#uniqueSuiteIdentityTM()
+	 */
+	@Override
+	public String uniqueSuiteIdentityTM() {
+
+		final StringBuilder uniqueIdentity = new StringBuilder();
+
+		for (final JstUniqueForSuiteRuleSI createBeanHelper : this.createBeanHelperList) {
+			uniqueIdentity.append(createBeanHelper.uniqueSuiteIdentityTM());
+		}
+		return uniqueIdentity.toString();
 	}
 }

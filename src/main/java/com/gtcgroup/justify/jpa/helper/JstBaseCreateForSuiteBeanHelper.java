@@ -52,6 +52,6 @@ public abstract class JstBaseCreateForSuiteBeanHelper extends BaseBeanHelper imp
 	 * @param queryRM
 	 * @return {@link List}
 	 */
-	public abstract List<Object> populateDomainEntityCreateListTM(QueryRM queryRM);
+	public abstract List<Object> populateCreateListTM(QueryRM queryRM);
 
 }
