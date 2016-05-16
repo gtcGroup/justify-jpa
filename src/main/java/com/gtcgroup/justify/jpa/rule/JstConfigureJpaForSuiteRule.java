@@ -48,27 +48,51 @@ import com.gtcgroup.justify.jpa.helper.EntityManagerFactoryCacheHelper;
  */
 public class JstConfigureJpaForSuiteRule extends JstBaseForSuiteRule {
 
+	/**
+	 * @param <RULE>
+	 * @param persistenceUnitName
+	 * @return {@link JstConfigureJpaForSuiteRule}
+	 */
+	@SuppressWarnings("unchecked")
+	public static <RULE extends JstConfigureJpaForSuiteRule> RULE withPersistenceUnitName(final String persistenceUnitName) {
+
+		return (RULE) new JstConfigureJpaForSuiteRule(persistenceUnitName);
+	}
+
+	/**
+	 * @param <RULE>
+	 * @param persistenceUnitName
+	 * @param propertyOverrideMap
+	 * @return {@link JstConfigureJpaForSuiteRule}
+	 */
+	@SuppressWarnings("unchecked")
+	public static <RULE extends JstConfigureJpaForSuiteRule> RULE withPersistenceUnitName(final String persistenceUnitName,
+			final Map<String, Object> propertyOverrideMap) {
+
+		return (RULE) new JstConfigureJpaForSuiteRule(persistenceUnitName, propertyOverrideMap);
+	}
+
 	private final String persistenceUnitName;
 
 	private final Map<String, Object> propertyOverrideMap;
 
 	/**
-	 * Constructor
+	 * Constructor - protected
 	 *
 	 * @param persistenceUnitName
 	 */
-	public JstConfigureJpaForSuiteRule(final String persistenceUnitName) {
+	protected JstConfigureJpaForSuiteRule(final String persistenceUnitName) {
 
 		this(persistenceUnitName, null);
 	}
 
 	/**
-	 * Constructor
+	 * Constructor - protected
 	 *
 	 * @param persistenceUnitName
 	 * @param propertyOverrideMap
 	 */
-	public JstConfigureJpaForSuiteRule(final String persistenceUnitName,
+	protected JstConfigureJpaForSuiteRule(final String persistenceUnitName,
 			final Map<String, Object> propertyOverrideMap) {
 
 		super();

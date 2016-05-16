@@ -55,6 +55,37 @@ import com.gtcgroup.justify.jpa.rm.TransactionRM;
  */
 public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 
+	/**
+	 *
+	 * 
+	 * @param <RULE>
+	 * @param persistenceUnitName
+	 * @param createBeanHelperList
+	 * @return {@link JstConfigureJpaForSuiteRule}
+	 */
+	@SuppressWarnings("unchecked")
+	public static <RULE extends JstCreateDataForSuiteRule> RULE withCreateBeanHelper(
+			final String persistenceUnitName, final Class<?>... createBeanHelperList) {
+
+		return (RULE) new JstCreateDataForSuiteRule(persistenceUnitName, createBeanHelperList);
+	}
+
+	/**
+	 * @param <RULE>
+	 * @param persistenceUnitName
+	 * @param propertyOverrideMap
+	 * @param createBeanHelperList
+	 * @return {@link JstConfigureJpaForSuiteRule}
+	 */
+	@SuppressWarnings("unchecked")
+	public static <RULE extends JstCreateDataForSuiteRule> RULE withCreateBeanHelper(
+			final String persistenceUnitName, final Map<String, Object> propertyOverrideMap,
+			final Class<?>... createBeanHelperList) {
+
+		return (RULE) new JstCreateDataForSuiteRule(persistenceUnitName, propertyOverrideMap,
+				createBeanHelperList);
+	}
+
 	protected final List<JstUniqueForSuiteRuleSI> createBeanHelperList;
 
 	private final String persistenceUnitName;
@@ -62,24 +93,24 @@ public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 	private final Map<String, Object> propertyOverrideMap;
 
 	/**
-	 * Constructor
+	 * Constructor - protected
 	 *
 	 * @param persistenceUnitName
 	 * @param createBeanHelperList
 	 */
-	public JstCreateDataForSuiteRule(final String persistenceUnitName, final Class<?>... createBeanHelperList) {
+	protected JstCreateDataForSuiteRule(final String persistenceUnitName, final Class<?>... createBeanHelperList) {
 
 		this(persistenceUnitName, null, createBeanHelperList);
 	}
 
 	/**
-	 * Constructor
+	 * Constructor - protected
 	 *
 	 * @param persistenceUnitName
 	 * @param propertyOverrideMap
 	 * @param createBeanHelperList
 	 */
-	public JstCreateDataForSuiteRule(final String persistenceUnitName, final Map<String, Object> propertyOverrideMap,
+	protected JstCreateDataForSuiteRule(final String persistenceUnitName, final Map<String, Object> propertyOverrideMap,
 			final Class<?>... createBeanHelperList) {
 
 		super();
