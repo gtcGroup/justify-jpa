@@ -162,7 +162,7 @@ public class QueryRM extends BaseRM {
 		return entity;
 	}
 
-	private EntityManager entityManager;
+	private  EntityManager entityManager;
 
 	/**
 	 * This method returns the number of records in the table or view. It may be
@@ -195,6 +195,8 @@ public class QueryRM extends BaseRM {
 
 		return count;
 	}
+
+
 
 	/**
 	 * @param <ENTITY>
@@ -323,12 +325,12 @@ public class QueryRM extends BaseRM {
 	/**
 	 * @param <ENTITY>
 	 * @param entityClass
-	 * @param identity
+	 * @param entityIdentity
 	 * @return {@link Object}
 	 */
-	public <ENTITY> ENTITY findModifiableOrException(final Class<ENTITY> entityClass, final Object identity) {
+	public <ENTITY> ENTITY findModifiableOrException(final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		final ENTITY entity = findModifiableOrNull(entityClass, identity);
+		final ENTITY entity = findModifiableOrNull(entityClass, entityIdentity);
 
 		return throwExceptionForNull(entityClass, entity);
 	}
@@ -336,23 +338,23 @@ public class QueryRM extends BaseRM {
 	/**
 	 * @param <ENTITY>
 	 * @param entityClass
-	 * @param identity
+	 * @param entityIdentity
 	 * @return {@link Object}
 	 */
-	public <ENTITY> ENTITY findModifiableOrNull(final Class<ENTITY> entityClass, final Object identity) {
+	public <ENTITY> ENTITY findModifiableOrNull(final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		return getEntityManager().find(entityClass, identity);
+		return getEntityManager().find(entityClass, entityIdentity);
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param entityClass
-	 * @param identity
+	 * @param entityIdentity
 	 * @return {@link Object}
 	 */
-	public <ENTITY> ENTITY findReadOnlyOrException(final Class<ENTITY> entityClass, final Object identity) {
+	public <ENTITY> ENTITY findReadOnlyOrException(final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		final ENTITY entity = findReadOnlyOrNull(entityClass, identity);
+		final ENTITY entity = findReadOnlyOrNull(entityClass, entityIdentity);
 
 		return throwExceptionForNull(entityClass, entity);
 	}
@@ -360,12 +362,12 @@ public class QueryRM extends BaseRM {
 	/**
 	 * @param <ENTITY>
 	 * @param entityClass
-	 * @param identity
+	 * @param entityIdentity
 	 * @return {@link Object}
 	 */
-	public <ENTITY> ENTITY findReadOnlyOrNull(final Class<ENTITY> entityClass, final Object identity) {
+	public <ENTITY> ENTITY findReadOnlyOrNull(final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		return getEntityManager().find(entityClass, identity, QueryRM.FIND_READ_ONLY);
+		return getEntityManager().find(entityClass, entityIdentity, QueryRM.FIND_READ_ONLY);
 	}
 
 	/**
@@ -536,11 +538,14 @@ public class QueryRM extends BaseRM {
 	}
 
 	/**
+	 * @param <RM>
 	 * @param entityManager
 	 * @return {@link QueryRM}
 	 */
-	public QueryRM setEntityManager(final EntityManager entityManager) {
+	@SuppressWarnings("unchecked")
+	public <RM extends QueryRM> RM withEntityManager(final EntityManager entityManager) {
+
 		this.entityManager = entityManager;
-		return this;
+		return (RM) this;
 	}
 }

@@ -121,7 +121,7 @@ public enum EntityManagerFactoryCacheHelper {
 	public static QueryRM createQueryRmToBeClosed(final String persistenceUnitName) {
 
 		return new QueryRM()
-				.setEntityManager(retrieveEntityManagerFactory(persistenceUnitName, null).createEntityManager());
+				.withEntityManager(retrieveEntityManagerFactory(persistenceUnitName, null).createEntityManager());
 
 	}
 

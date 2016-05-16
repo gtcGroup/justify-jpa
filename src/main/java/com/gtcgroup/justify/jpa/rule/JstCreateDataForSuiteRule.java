@@ -39,8 +39,8 @@ import com.gtcgroup.justify.core.pattern.palette.internal.BaseRule;
 import com.gtcgroup.justify.core.si.JstUniqueForSuiteRuleSI;
 import com.gtcgroup.justify.jpa.helper.EntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstBaseCreateForSuiteBeanHelper;
-import com.gtcgroup.justify.jpa.helper.TransactionUtilHelper;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
+import com.gtcgroup.justify.jpa.rm.TransactionRM;
 
 /**
  * This Rule class initializes persistence.
@@ -67,8 +67,7 @@ public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 	 * @param persistenceUnitName
 	 * @param createBeanHelperList
 	 */
-	public JstCreateDataForSuiteRule(final String persistenceUnitName,
-			final Class<?>... createBeanHelperList) {
+	public JstCreateDataForSuiteRule(final String persistenceUnitName, final Class<?>... createBeanHelperList) {
 
 		this(persistenceUnitName, null, createBeanHelperList);
 	}
@@ -80,10 +79,14 @@ public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 	 * @param propertyOverrideMap
 	 * @param createBeanHelperList
 	 */
-	public JstCreateDataForSuiteRule(final String persistenceUnitName,
-			final Map<String, Object> propertyOverrideMap, final Class<?>... createBeanHelperList) {
+	public JstCreateDataForSuiteRule(final String persistenceUnitName, final Map<String, Object> propertyOverrideMap,
+			final Class<?>... createBeanHelperList) {
 
 		super();
+
+		if (0 == createBeanHelperList.length) {
+			throw new TestingRuntimeException("This rule requires specifying at least one class that loads data.");
+		}
 
 		this.persistenceUnitName = persistenceUnitName;
 
@@ -130,9 +133,9 @@ public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 					this.propertyOverrideMap);
 
 			final List<Object> createList = ((JstBaseCreateForSuiteBeanHelper) createBeanHelper)
-					.populateCreateListTM(new QueryRM().setEntityManager(entityManager));
+					.populateCreateListTM(new QueryRM().withEntityManager(entityManager));
 
-			TransactionUtilHelper.transactCreateOrUpdate(entityManager, createList);
+			TransactionRM.withEntityManager(entityManager).transactCreateOrUpdateFromList(createList);
 
 		} catch (final Exception e) {
 
