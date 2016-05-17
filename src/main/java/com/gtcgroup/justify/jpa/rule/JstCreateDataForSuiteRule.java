@@ -31,6 +31,8 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import org.junit.rules.TestRule;
+
 import com.gtcgroup.justify.core.base.JstBaseForSuiteRule;
 import com.gtcgroup.justify.core.exception.internal.TestingConstructorRuleException;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
@@ -56,16 +58,14 @@ import com.gtcgroup.justify.jpa.rm.TransactionRM;
 public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 
 	/**
-	 *
-	 * 
 	 * @param <RULE>
 	 * @param persistenceUnitName
 	 * @param createBeanHelperList
-	 * @return {@link JstConfigureJpaForSuiteRule}
+	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <RULE extends JstCreateDataForSuiteRule> RULE withCreateBeanHelper(
-			final String persistenceUnitName, final Class<?>... createBeanHelperList) {
+	public static <RULE extends TestRule> RULE withCreateBeanHelper(final String persistenceUnitName,
+			final Class<?>... createBeanHelperList) {
 
 		return (RULE) new JstCreateDataForSuiteRule(persistenceUnitName, createBeanHelperList);
 	}
@@ -75,15 +75,13 @@ public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 	 * @param persistenceUnitName
 	 * @param propertyOverrideMap
 	 * @param createBeanHelperList
-	 * @return {@link JstConfigureJpaForSuiteRule}
+	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <RULE extends JstCreateDataForSuiteRule> RULE withCreateBeanHelper(
-			final String persistenceUnitName, final Map<String, Object> propertyOverrideMap,
-			final Class<?>... createBeanHelperList) {
+	public static <RULE extends TestRule> RULE withCreateBeanHelper(final String persistenceUnitName,
+			final Map<String, Object> propertyOverrideMap, final Class<?>... createBeanHelperList) {
 
-		return (RULE) new JstCreateDataForSuiteRule(persistenceUnitName, propertyOverrideMap,
-				createBeanHelperList);
+		return (RULE) new JstCreateDataForSuiteRule(persistenceUnitName, propertyOverrideMap, createBeanHelperList);
 	}
 
 	protected final List<JstUniqueForSuiteRuleSI> createBeanHelperList;

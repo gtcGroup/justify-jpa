@@ -29,6 +29,8 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import org.junit.rules.TestRule;
+
 import com.gtcgroup.justify.core.base.JstBaseForSuiteRule;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.pattern.palette.internal.BaseRule;
@@ -51,10 +53,10 @@ public class JstConfigureJpaForSuiteRule extends JstBaseForSuiteRule {
 	/**
 	 * @param <RULE>
 	 * @param persistenceUnitName
-	 * @return {@link JstConfigureJpaForSuiteRule}
+	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <RULE extends JstConfigureJpaForSuiteRule> RULE withPersistenceUnitName(final String persistenceUnitName) {
+	public static <RULE extends TestRule> RULE withPersistenceUnitName(final String persistenceUnitName) {
 
 		return (RULE) new JstConfigureJpaForSuiteRule(persistenceUnitName);
 	}
@@ -63,10 +65,10 @@ public class JstConfigureJpaForSuiteRule extends JstBaseForSuiteRule {
 	 * @param <RULE>
 	 * @param persistenceUnitName
 	 * @param propertyOverrideMap
-	 * @return {@link JstConfigureJpaForSuiteRule}
+	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <RULE extends JstConfigureJpaForSuiteRule> RULE withPersistenceUnitName(final String persistenceUnitName,
+	public static <RULE extends TestRule> RULE withPersistenceUnitName(final String persistenceUnitName,
 			final Map<String, Object> propertyOverrideMap) {
 
 		return (RULE) new JstConfigureJpaForSuiteRule(persistenceUnitName, propertyOverrideMap);
