@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
+import org.junit.Rule;
 import org.junit.rules.TestRule;
 
 import com.gtcgroup.justify.core.base.JstBaseForSuiteRule;
@@ -45,7 +47,7 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
 import com.gtcgroup.justify.jpa.rm.TransactionRM;
 
 /**
- * This Rule class initializes persistence.
+ * This {@link Rule} class creates test data.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
@@ -86,9 +88,9 @@ public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 
 	protected final List<JstUniqueForSuiteRuleSI> createBeanHelperList;
 
-	private final String persistenceUnitName;
+	protected final String persistenceUnitName;
 
-	private final Map<String, Object> propertyOverrideMap;
+	protected final Map<String, Object> propertyOverrideMap;
 
 	/**
 	 * Constructor - protected
@@ -132,7 +134,7 @@ public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 			} else {
 
 				throw new TestingConstructorRuleException("\nThe class [" + clazz.getSimpleName()
-				+ "] does not appear to extend a base class for creating persistence test data.\n");
+						+ "] does not appear to extend a base class for creating persistence test data.\n");
 			}
 		}
 
@@ -148,6 +150,30 @@ public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 		for (final JstUniqueForSuiteRuleSI createBeanHelper : this.createBeanHelperList) {
 			processCreateBeanHelperAsTransaction(createBeanHelper);
 		}
+	}
+
+	/**
+	 * @see JstUniqueForSuiteRuleSI#uniqueSuiteIdentityTM()
+	 */
+	@Override
+	public String uniqueSuiteIdentityTM() {
+
+		final StringBuilder uniqueIdentity = new StringBuilder();
+
+		for (final JstUniqueForSuiteRuleSI createBeanHelper : this.createBeanHelperList) {
+			uniqueIdentity.append(createBeanHelper.uniqueSuiteIdentityTM());
+		}
+		return uniqueIdentity.toString();
+	}
+
+	/**
+	 * This method enables a subclass to cache for production code the same
+	 * {@link EntityManagerFactory} that is cached for testing.
+	 *
+	 * @param entityManagerFactory
+	 */
+	protected void cacheEntityManagerFactory(final EntityManagerFactory entityManagerFactory) {
+		// Override this method if required.
 	}
 
 	/**
@@ -173,19 +199,8 @@ public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 
 			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
-	}
 
-	/**
-	 * @see JstUniqueForSuiteRuleSI#uniqueSuiteIdentityTM()
-	 */
-	@Override
-	public String uniqueSuiteIdentityTM() {
-
-		final StringBuilder uniqueIdentity = new StringBuilder();
-
-		for (final JstUniqueForSuiteRuleSI createBeanHelper : this.createBeanHelperList) {
-			uniqueIdentity.append(createBeanHelper.uniqueSuiteIdentityTM());
-		}
-		return uniqueIdentity.toString();
+		cacheEntityManagerFactory(EntityManagerFactoryCacheHelper.retrieveEntityManagerFactory(this.persistenceUnitName,
+				this.propertyOverrideMap));
 	}
 }

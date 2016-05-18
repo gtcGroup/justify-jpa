@@ -34,7 +34,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
-import com.gtcgroup.justify.core.helper.JstJndiUtilHelper;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
 
 /**
@@ -54,8 +53,6 @@ public enum EntityManagerFactoryCacheHelper {
 	INSTANCE;
 
 	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new ConcurrentHashMap<String, EntityManagerFactory>();
-
-	private static final String JNDI_NAME_ENTITY_MANAGER_FACTORY_MAP = "java:justify/EntityManagerFactoryMap";
 
 	/**
 	 * This method closes the {@link EntityManager}.
@@ -134,23 +131,22 @@ public enum EntityManagerFactoryCacheHelper {
 	public static EntityManagerFactory retrieveEntityManagerFactory(final String persistenceUnitName,
 			final Map<String, Object> propertyOverrideMap) {
 
+		String key = persistenceUnitName;
+
+		if (null != propertyOverrideMap) {
+
+			key = key + "." + propertyOverrideMap.hashCode();
+		}
+
+		// RETURN
+		if (EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(key)) {
+			return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(key);
+		}
 
 		final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
 				propertyOverrideMap);
 
-		String key = persistenceUnitName;
-
-		if (null != propertyOverrideMap) {
-			key = key + "." + propertyOverrideMap.hashCode();
-
-			// TODO: Remove this.
-			System.out.println(key);
-		}
-
 		EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(key, entityManagerFactory);
-
-		JstJndiUtilHelper.rebind(EntityManagerFactoryCacheHelper.JNDI_NAME_ENTITY_MANAGER_FACTORY_MAP,
-				EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP);
 
 		return entityManagerFactory;
 	}

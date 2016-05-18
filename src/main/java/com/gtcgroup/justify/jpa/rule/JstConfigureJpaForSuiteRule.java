@@ -28,7 +28,9 @@ package com.gtcgroup.justify.jpa.rule;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
+import org.junit.Rule;
 import org.junit.rules.TestRule;
 
 import com.gtcgroup.justify.core.base.JstBaseForSuiteRule;
@@ -38,7 +40,7 @@ import com.gtcgroup.justify.core.si.JstUniqueForSuiteRuleSI;
 import com.gtcgroup.justify.jpa.helper.EntityManagerFactoryCacheHelper;
 
 /**
- * This Rule class initializes persistence.
+ * This {@link Rule} class initializes persistence.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
@@ -74,9 +76,9 @@ public class JstConfigureJpaForSuiteRule extends JstBaseForSuiteRule {
 		return (RULE) new JstConfigureJpaForSuiteRule(persistenceUnitName, propertyOverrideMap);
 	}
 
-	private final String persistenceUnitName;
+	protected final String persistenceUnitName;
 
-	private final Map<String, Object> propertyOverrideMap;
+	protected final Map<String, Object> propertyOverrideMap;
 
 	/**
 	 * Constructor - protected
@@ -125,6 +127,9 @@ public class JstConfigureJpaForSuiteRule extends JstBaseForSuiteRule {
 			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 
+		cacheEntityManagerFactory(EntityManagerFactoryCacheHelper.retrieveEntityManagerFactory(this.persistenceUnitName,
+				this.propertyOverrideMap));
+
 	}
 
 	/**
@@ -133,6 +138,23 @@ public class JstConfigureJpaForSuiteRule extends JstBaseForSuiteRule {
 	@Override
 	public String uniqueSuiteIdentityTM() {
 
-		return this.persistenceUnitName + "." + this.persistenceUnitName;
+		String key = this.persistenceUnitName;
+
+		if (null != this.propertyOverrideMap) {
+
+			key = key + "." + this.propertyOverrideMap.hashCode();
+		}
+
+		return this.persistenceUnitName + "." + key;
+	}
+
+	/**
+	 * This method enables a subclass to cache for production code the same
+	 * {@link EntityManagerFactory} that is cached for testing.
+	 *
+	 * @param entityManagerFactory
+	 */
+	protected void cacheEntityManagerFactory(final EntityManagerFactory entityManagerFactory) {
+		// Override this method if required.
 	}
 }
