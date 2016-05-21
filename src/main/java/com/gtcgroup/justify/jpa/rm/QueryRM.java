@@ -92,36 +92,13 @@ public class QueryRM extends BaseRM {
 	}
 
 	/**
-	 * @param message
-	 */
-	private static void throwException(final Exception e) {
-
-		throw new TestingRuntimeException(e);
-	}
-
-	/**
-	 * @param entity
-	 * @param identity
-	 * @param <ENTITY>
-	 * @return
-	 */
-	private static <ENTITY> ENTITY throwExceptionForNull(final Class<ENTITY> entityClass, final ENTITY entity) {
-
-		if (null == entity) {
-
-			throw new TestingRuntimeException(
-					"Unable to find an instance for class [" + entityClass.getSimpleName() + "].");
-		}
-		return entity;
-	}
-
-	/**
 	 * This method executes a SELECT query returning a result list.
 	 *
 	 * @param <ENTITY>
 	 * @param query
 	 * @return {@link List}
 	 */
+	@SuppressWarnings("unchecked")
 	protected static <ENTITY> List<ENTITY> queryResultList(final Query query) {
 
 		List<ENTITY> entityList = null;
@@ -161,6 +138,30 @@ public class QueryRM extends BaseRM {
 		return entity;
 	}
 
+	/**
+	 * @param message
+	 */
+	private static void throwException(final Exception e) {
+
+		throw new TestingRuntimeException(e);
+	}
+
+	/**
+	 * @param entity
+	 * @param identity
+	 * @param <ENTITY>
+	 * @return
+	 */
+	private static <ENTITY> ENTITY throwExceptionForNull(final Class<ENTITY> entityClass, final ENTITY entity) {
+
+		if (null == entity) {
+
+			throw new TestingRuntimeException(
+					"Unable to find an instance for class [" + entityClass.getSimpleName() + "].");
+		}
+		return entity;
+	}
+
 	private EntityManager entityManager;
 
 	/**
@@ -193,6 +194,97 @@ public class QueryRM extends BaseRM {
 		}
 
 		return count;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param entityClass
+	 * @return {@link Query}
+	 */
+	protected <ENTITY> Query createCriteriaQueryModifiable(final Class<ENTITY> entityClass) {
+
+		final CriteriaQuery<ENTITY> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
+		final Root<ENTITY> rootEntry = criteriaQuery.from(entityClass);
+		final CriteriaQuery<ENTITY> criteria = criteriaQuery.select(rootEntry);
+
+		return getEntityManager().createQuery(criteria);
+	}
+
+	/**
+	 * @param queryLanguageString
+	 * @return {@link Query}
+	 */
+	protected Query createCriteriaQueryModifiable(final String queryLanguageString) {
+
+		return getEntityManager().createQuery(queryLanguageString);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param entityClass
+	 * @return {@link Query}
+	 */
+	protected <ENTITY> Query createCriteriaQueryReadOnly(final Class<ENTITY> entityClass) {
+
+		final Query query = createCriteriaQueryModifiable(entityClass);
+		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+
+		return query;
+	}
+
+	/**
+	 * @param queryLanguageString
+	 * @return {@link Query}
+	 */
+	protected Query createCriteriaQueryReadOnly(final String queryLanguageString) {
+
+		final Query query = createCriteriaQueryModifiable(queryLanguageString);
+		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+
+		return query;
+	}
+
+	/**
+	 * @param name
+	 * @return {@link Query}
+	 */
+	protected Query createNamedQueryModifiable(final String name) {
+
+		final Query query = getEntityManager().createNamedQuery(name);
+		return querySingleResult(query);
+	}
+
+	/**
+	 * @param name
+	 * @return {@link Query}
+	 */
+	protected Query createNamedQueryReadOnly(final String name) {
+
+		final Query query = getEntityManager().createNamedQuery(name);
+		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+
+		return query;
+	}
+
+	/**
+	 * @param sqlString
+	 * @return {@link Query}
+	 */
+	protected Query createNativeQueryModifiable(final String sqlString) {
+
+		return getEntityManager().createNativeQuery(sqlString);
+	}
+
+	/**
+	 * @param sqlString
+	 * @return {@link Query}
+	 */
+	protected Query createNativeQueryReadOnly(final String sqlString) {
+
+		final Query query = createNativeQueryModifiable(sqlString);
+		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+
+		return query;
 	}
 
 	/**
@@ -453,96 +545,5 @@ public class QueryRM extends BaseRM {
 
 		this.entityManager = entityManager;
 		return (RM) this;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param entityClass
-	 * @return {@link Query}
-	 */
-	protected <ENTITY> Query createCriteriaQueryModifiable(final Class<ENTITY> entityClass) {
-
-		final CriteriaQuery<ENTITY> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
-		final Root<ENTITY> rootEntry = criteriaQuery.from(entityClass);
-		final CriteriaQuery<ENTITY> criteria = criteriaQuery.select(rootEntry);
-
-		return getEntityManager().createQuery(criteria);
-	}
-
-	/**
-	 * @param queryLanguageString
-	 * @return {@link Query}
-	 */
-	protected Query createCriteriaQueryModifiable(final String queryLanguageString) {
-
-		return getEntityManager().createQuery(queryLanguageString);
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param entityClass
-	 * @return {@link Query}
-	 */
-	protected <ENTITY> Query createCriteriaQueryReadOnly(final Class<ENTITY> entityClass) {
-
-		final Query query = createCriteriaQueryModifiable(entityClass);
-		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-
-		return query;
-	}
-
-	/**
-	 * @param queryLanguageString
-	 * @return {@link Query}
-	 */
-	protected Query createCriteriaQueryReadOnly(final String queryLanguageString) {
-
-		final Query query = createCriteriaQueryModifiable(queryLanguageString);
-		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-
-		return query;
-	}
-
-	/**
-	 * @param name
-	 * @return {@link Query}
-	 */
-	protected Query createNamedQueryModifiable(final String name) {
-
-		final Query query = getEntityManager().createNamedQuery(name);
-		return querySingleResult(query);
-	}
-
-	/**
-	 * @param name
-	 * @return {@link Query}
-	 */
-	protected Query createNamedQueryReadOnly(final String name) {
-
-		final Query query = getEntityManager().createNamedQuery(name);
-		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-
-		return query;
-	}
-
-	/**
-	 * @param sqlString
-	 * @return {@link Query}
-	 */
-	protected Query createNativeQueryModifiable(final String sqlString) {
-
-		return getEntityManager().createNativeQuery(sqlString);
-	}
-
-	/**
-	 * @param sqlString
-	 * @return {@link Query}
-	 */
-	protected Query createNativeQueryReadOnly(final String sqlString) {
-
-		final Query query = createNativeQueryModifiable(sqlString);
-		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-
-		return query;
 	}
 }

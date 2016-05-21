@@ -54,6 +54,26 @@ public enum EntityManagerFactoryCacheHelper {
 
 	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new ConcurrentHashMap<String, EntityManagerFactory>();
 
+	public static EntityManagerFactory CURRENT_ENTITY_MANAGER_FACTORY;
+
+	/**
+	 * @param persistenceUnitName
+	 * @param persistencePropertyMap
+	 * @return {@link String}
+	 */
+	public static String calculateKey(final String persistenceUnitName,
+			final Map<String, Object> persistencePropertyMap) {
+
+		String key = persistenceUnitName;
+
+		if (null != persistencePropertyMap) {
+
+			key = key + "." + persistencePropertyMap.hashCode();
+		}
+
+		return key;
+	}
+
 	/**
 	 * This method closes the {@link EntityManager}.
 	 *
@@ -91,23 +111,50 @@ public enum EntityManagerFactoryCacheHelper {
 
 	/**
 	 * @param persistenceUnitName
+	 * @param persistencePropertyMap
+	 *            or null
+	 * @return {@link EntityManagerFactory}
+	 */
+	public static EntityManagerFactory createEntityManagerFactory(final String persistenceUnitName,
+			final Map<String, Object> persistencePropertyMap) {
+
+		String key = persistenceUnitName;
+
+		key = calculateKey(persistenceUnitName, persistencePropertyMap);
+
+		// RETURN
+		if (EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(key)) {
+			return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(key);
+		}
+
+		final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
+				persistencePropertyMap);
+
+		// Ensures retrieval with either key.
+		EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(key, entityManagerFactory);
+
+		return entityManagerFactory;
+	}
+
+	/**
+	 * @param persistenceUnitName
 	 * @return {@link EntityManager}
 	 */
 	public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName) {
 
-		return retrieveEntityManagerFactory(persistenceUnitName, null).createEntityManager();
+		return createEntityManagerFactory(persistenceUnitName, null).createEntityManager();
 
 	}
 
 	/**
 	 * @param persistenceUnitName
-	 * @param propertyOverrideMap
+	 * @param persistencePropertyMap
 	 * @return {@link EntityManager}
 	 */
 	public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName,
-			final Map<String, Object> propertyOverrideMap) {
+			final Map<String, Object> persistencePropertyMap) {
 
-		return retrieveEntityManagerFactory(persistenceUnitName, propertyOverrideMap).createEntityManager();
+		return createEntityManagerFactory(persistenceUnitName, persistencePropertyMap).createEntityManager();
 
 	}
 
@@ -118,48 +165,35 @@ public enum EntityManagerFactoryCacheHelper {
 	public static QueryRM createQueryRmToBeClosed(final String persistenceUnitName) {
 
 		return new QueryRM()
-				.withEntityManager(retrieveEntityManagerFactory(persistenceUnitName, null).createEntityManager());
+				.withEntityManager(createEntityManagerFactory(persistenceUnitName, null).createEntityManager());
 
 	}
 
 	/**
 	 * @param persistenceUnitName
-	 * @param propertyOverrideMap
-	 *            or null
 	 * @return {@link EntityManagerFactory}
 	 */
-	public static EntityManagerFactory retrieveEntityManagerFactory(final String persistenceUnitName,
-			final Map<String, Object> propertyOverrideMap) {
+	public static EntityManagerFactory getCurrentEntityManagerFactory(final String persistenceUnitName) {
 
-		String key = persistenceUnitName;
-
-		if (null != propertyOverrideMap) {
-
-			key = key + "." + propertyOverrideMap.hashCode();
-		}
-
-		// RETURN
-		if (EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(key)) {
-			return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(key);
-		}
-
-		final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
-				propertyOverrideMap);
-
-		EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(key, entityManagerFactory);
-
-		return entityManagerFactory;
+		return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
+				.get(persistenceUnitName);
 	}
 
 	/**
-	 * @param persistenceUnitName
-	 * @param propertyOverrideMap
-	 * @return {@link EntityManagerFactory}
+	 * @return {@link Map}<String,EntityManagerFactory>
+	 */
+	public static Map<String, EntityManagerFactory> getEntityManagerFactoryMap() {
+		return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP;
+	}
+
+	/**
+	 * @param entityManagerFactory
 	 */
 	@SuppressWarnings("static-method")
-	public EntityManagerFactory retrieveEntityManagerFactoryInstance(final String persistenceUnitName,
-			final Map<String, Object> propertyOverrideMap) {
+	public void putCurrentEntityManagerFactory(final EntityManagerFactory entityManagerFactory) {
 
-		return EntityManagerFactoryCacheHelper.retrieveEntityManagerFactory(persistenceUnitName, propertyOverrideMap);
+		EntityManagerFactoryCacheHelper.CURRENT_ENTITY_MANAGER_FACTORY = entityManagerFactory;
 	}
+
+
 }

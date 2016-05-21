@@ -29,7 +29,6 @@ package com.gtcgroup.justify.jpa.helper;
 import java.util.List;
 
 import com.gtcgroup.justify.core.pattern.palette.internal.BaseBeanHelper;
-import com.gtcgroup.justify.core.si.JstUniqueForSuiteRuleSI;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
 
 /**
@@ -43,8 +42,7 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
  * @author Marvin Toll
  * @since v3.0
  */
-
-public abstract class JstBaseCreateForSuiteBeanHelper extends BaseBeanHelper implements JstUniqueForSuiteRuleSI {
+public abstract class JstBaseCreateForSuiteBeanHelper extends BaseBeanHelper {
 
 	/**
 	 * This method requires implementation of a Template Method.

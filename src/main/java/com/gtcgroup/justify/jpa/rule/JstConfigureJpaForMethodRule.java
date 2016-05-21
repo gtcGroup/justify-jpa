@@ -26,6 +26,7 @@
 package com.gtcgroup.justify.jpa.rule;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,19 +36,18 @@ import javax.persistence.EntityManagerFactory;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
-import com.gtcgroup.justify.core.base.JstBaseForSuiteRule;
+import com.gtcgroup.justify.core.base.JstBaseForMethodRule;
 import com.gtcgroup.justify.core.exception.internal.TestingConstructorRuleException;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.core.pattern.palette.internal.BaseRule;
-import com.gtcgroup.justify.core.si.JstUniqueForSuiteRuleSI;
 import com.gtcgroup.justify.jpa.helper.EntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstBaseCreateForSuiteBeanHelper;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
 import com.gtcgroup.justify.jpa.rm.TransactionRM;
 
 /**
- * This {@link Rule} class creates test data.
+ * This {@link Rule} class initializes persistence.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
@@ -57,88 +57,106 @@ import com.gtcgroup.justify.jpa.rm.TransactionRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
+public class JstConfigureJpaForMethodRule extends JstBaseForMethodRule {
+
+	protected static List<String> createBeanHelperProcessedList = new ArrayList<String>();
 
 	/**
 	 * @param <RULE>
 	 * @param persistenceUnitName
-	 * @param createBeanHelperList
+	 * @param createBeanHelpers
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <RULE extends TestRule> RULE withCreateBeanHelper(final String persistenceUnitName,
-			final Class<?>... createBeanHelperList) {
+	public static <RULE extends TestRule> RULE withOptionalDataLoad(final String persistenceUnitName,
+			final Class<?>... createBeanHelpers) {
 
-		return (RULE) new JstCreateDataForSuiteRule(persistenceUnitName, createBeanHelperList);
+		return (RULE) new JstConfigureJpaForMethodRule(persistenceUnitName, null, createBeanHelpers);
 	}
 
 	/**
 	 * @param <RULE>
 	 * @param persistenceUnitName
-	 * @param propertyOverrideMap
-	 * @param createBeanHelperList
+	 * @param persistencePropertyMap
+	 * @param createBeanHelpers
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <RULE extends TestRule> RULE withCreateBeanHelper(final String persistenceUnitName,
-			final Map<String, Object> propertyOverrideMap, final Class<?>... createBeanHelperList) {
+	public static <RULE extends TestRule> RULE withOptionalDataLoad(final String persistenceUnitName,
+			final Map<String, Object> persistencePropertyMap, final Class<?>... createBeanHelpers) {
 
-		return (RULE) new JstCreateDataForSuiteRule(persistenceUnitName, propertyOverrideMap, createBeanHelperList);
+		return (RULE) new JstConfigureJpaForMethodRule(persistenceUnitName, persistencePropertyMap);
 	}
 
-	protected final List<JstUniqueForSuiteRuleSI> createBeanHelperList;
+	private final Map<String, JstBaseCreateForSuiteBeanHelper> createBeanHelperToBeProcessedMap = new HashMap<String, JstBaseCreateForSuiteBeanHelper>();
 
 	protected final String persistenceUnitName;
 
-	protected final Map<String, Object> propertyOverrideMap;
+	protected final Map<String, Object> persistencePropertyMap;
 
 	/**
 	 * Constructor - protected
 	 *
 	 * @param persistenceUnitName
-	 * @param createBeanHelperList
 	 */
-	protected JstCreateDataForSuiteRule(final String persistenceUnitName, final Class<?>... createBeanHelperList) {
+	protected JstConfigureJpaForMethodRule(final String persistenceUnitName) {
 
-		this(persistenceUnitName, null, createBeanHelperList);
+		this(persistenceUnitName, null);
 	}
 
 	/**
 	 * Constructor - protected
 	 *
 	 * @param persistenceUnitName
-	 * @param propertyOverrideMap
-	 * @param createBeanHelperList
+	 * @param persistencePropertyMap
+	 * @param createBeanHelpers
 	 */
-	protected JstCreateDataForSuiteRule(final String persistenceUnitName, final Map<String, Object> propertyOverrideMap,
-			final Class<?>... createBeanHelperList) {
+	protected JstConfigureJpaForMethodRule(final String persistenceUnitName,
+			final Map<String, Object> persistencePropertyMap, final Class<?>... createBeanHelpers) {
 
 		super();
 
-		if (0 == createBeanHelperList.length) {
-			throw new TestingRuntimeException("This rule requires specifying at least one class that loads data.");
-		}
-
 		this.persistenceUnitName = persistenceUnitName;
 
-		this.propertyOverrideMap = propertyOverrideMap;
+		this.persistencePropertyMap = persistencePropertyMap;
 
-		final List<JstUniqueForSuiteRuleSI> createListTemp = new ArrayList<JstUniqueForSuiteRuleSI>();
+		if (0 == createBeanHelpers.length) {
 
-		for (final Class<?> clazz : createBeanHelperList) {
+			//
 
-			if (JstBaseCreateForSuiteBeanHelper.class.isAssignableFrom(clazz)) {
+		} else {
 
-				createListTemp.add((JstBaseCreateForSuiteBeanHelper) ReflectionUtilHelper
-						.instantiatePublicConstructorNoArgument(clazz));
-			} else {
 
-				throw new TestingConstructorRuleException("\nThe class [" + clazz.getSimpleName()
-						+ "] does not appear to extend a base class for creating persistence test data.\n");
+			for (final Class<?> clazz : createBeanHelpers) {
+
+				final String key = EntityManagerFactoryCacheHelper.calculateKey(persistenceUnitName,
+						persistencePropertyMap) + " @ " + clazz.getName();
+
+				if (JstConfigureJpaForMethodRule.createBeanHelperProcessedList.contains(key)) {
+					break;
+				}
+
+				if (JstBaseCreateForSuiteBeanHelper.class.isAssignableFrom(clazz)) {
+
+					this.createBeanHelperToBeProcessedMap.put(key,
+							(JstBaseCreateForSuiteBeanHelper) ReflectionUtilHelper
+							.instantiatePublicConstructorNoArgument(clazz));
+				} else {
+
+					throw new TestingConstructorRuleException("\nThe class [" + clazz.getSimpleName()
+					+ "] does not appear to extend a base class for creating persistence test data.\n");
+				}
 			}
 		}
+	}
 
-		this.createBeanHelperList = createListTemp;
+	/**
+	 * @see BaseRule#afterTM()
+	 */
+	@Override
+	public void afterTM() throws Throwable {
+
+		return;
 	}
 
 	/**
@@ -147,47 +165,37 @@ public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 	@Override
 	public void beforeTM() {
 
-		for (final JstUniqueForSuiteRuleSI createBeanHelper : this.createBeanHelperList) {
-			processCreateBeanHelperAsTransaction(createBeanHelper);
+		final EntityManagerFactory entityManagerFactory = EntityManagerFactoryCacheHelper
+				.createEntityManagerFactory(this.persistenceUnitName, this.persistencePropertyMap);
+
+		EntityManagerFactoryCacheHelper.INSTANCE.putCurrentEntityManagerFactory(entityManagerFactory);
+
+		if (0 != this.createBeanHelperToBeProcessedMap.size()) {
+
+			for (final Map.Entry<String, JstBaseCreateForSuiteBeanHelper> entry : this.createBeanHelperToBeProcessedMap
+					.entrySet()) {
+
+				processCreateBeanHelper(entry.getValue());
+
+				JstConfigureJpaForMethodRule.createBeanHelperProcessedList.add(entry.getKey());
+
+			}
+
 		}
-	}
-
-	/**
-	 * @see JstUniqueForSuiteRuleSI#uniqueSuiteIdentityTM()
-	 */
-	@Override
-	public String uniqueSuiteIdentityTM() {
-
-		final StringBuilder uniqueIdentity = new StringBuilder();
-
-		for (final JstUniqueForSuiteRuleSI createBeanHelper : this.createBeanHelperList) {
-			uniqueIdentity.append(createBeanHelper.uniqueSuiteIdentityTM());
-		}
-		return uniqueIdentity.toString();
-	}
-
-	/**
-	 * This method enables a subclass to cache for production code the same
-	 * {@link EntityManagerFactory} that is cached for testing.
-	 *
-	 * @param entityManagerFactory
-	 */
-	protected void cacheEntityManagerFactory(final EntityManagerFactory entityManagerFactory) {
-		// Override this method if required.
 	}
 
 	/**
 	 * @param createBeanHelper
 	 */
-	protected void processCreateBeanHelperAsTransaction(final JstUniqueForSuiteRuleSI createBeanHelper) {
+	protected void processCreateBeanHelper(final JstBaseCreateForSuiteBeanHelper createBeanHelper) {
 
 		EntityManager entityManager = null;
 
 		try {
 			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName,
-					this.propertyOverrideMap);
+					this.persistencePropertyMap);
 
-			final List<Object> createList = ((JstBaseCreateForSuiteBeanHelper) createBeanHelper)
+			final List<Object> createList = createBeanHelper
 					.populateCreateListTM(new QueryRM().withEntityManager(entityManager));
 
 			TransactionRM.withEntityManager(entityManager).transactCreateOrUpdateFromList(createList);
@@ -200,7 +208,5 @@ public class JstCreateDataForSuiteRule extends JstBaseForSuiteRule {
 			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 
-		cacheEntityManagerFactory(EntityManagerFactoryCacheHelper.retrieveEntityManagerFactory(this.persistenceUnitName,
-				this.propertyOverrideMap));
 	}
 }
