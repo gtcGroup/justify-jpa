@@ -42,7 +42,7 @@ import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.core.pattern.palette.internal.BaseRule;
 import com.gtcgroup.justify.jpa.helper.EntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.helper.JstBaseCreateForSuiteBeanHelper;
+import com.gtcgroup.justify.jpa.helper.JstBasePopulateDataBeanHelper;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
 import com.gtcgroup.justify.jpa.rm.TransactionRM;
 
@@ -59,50 +59,41 @@ import com.gtcgroup.justify.jpa.rm.TransactionRM;
  */
 public class JstConfigureJpaForMethodRule extends JstBaseForMethodRule {
 
-	protected static List<String> createBeanHelperProcessedList = new ArrayList<String>();
+	protected static List<String> populateDataBeanHelperProcessedList = new ArrayList<String>();
 
 	/**
 	 * @param <RULE>
 	 * @param persistenceUnitName
-	 * @param createBeanHelpers
+	 * @param populateDataBeanHelpers
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
 	public static <RULE extends TestRule> RULE withOptionalDataLoad(final String persistenceUnitName,
-			final Class<?>... createBeanHelpers) {
+			final Class<?>... populateDataBeanHelpers) {
 
-		return (RULE) new JstConfigureJpaForMethodRule(persistenceUnitName, null, createBeanHelpers);
+		return (RULE) new JstConfigureJpaForMethodRule(persistenceUnitName, null, populateDataBeanHelpers);
 	}
 
 	/**
 	 * @param <RULE>
 	 * @param persistenceUnitName
 	 * @param persistencePropertyMap
-	 * @param createBeanHelpers
+	 * @param populateDataBeanHelpers
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
 	public static <RULE extends TestRule> RULE withOptionalDataLoad(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMap, final Class<?>... createBeanHelpers) {
+			final Map<String, Object> persistencePropertyMap, final Class<?>... populateDataBeanHelpers) {
 
-		return (RULE) new JstConfigureJpaForMethodRule(persistenceUnitName, persistencePropertyMap);
+		return (RULE) new JstConfigureJpaForMethodRule(persistenceUnitName, persistencePropertyMap,
+				populateDataBeanHelpers);
 	}
 
-	private final Map<String, JstBaseCreateForSuiteBeanHelper> createBeanHelperToBeProcessedMap = new HashMap<String, JstBaseCreateForSuiteBeanHelper>();
+	private final Map<String, JstBasePopulateDataBeanHelper> createBeanHelperToBeProcessedMap = new HashMap<String, JstBasePopulateDataBeanHelper>();
 
 	protected final String persistenceUnitName;
 
 	protected final Map<String, Object> persistencePropertyMap;
-
-	/**
-	 * Constructor - protected
-	 *
-	 * @param persistenceUnitName
-	 */
-	protected JstConfigureJpaForMethodRule(final String persistenceUnitName) {
-
-		this(persistenceUnitName, null);
-	}
 
 	/**
 	 * Constructor - protected
@@ -126,25 +117,23 @@ public class JstConfigureJpaForMethodRule extends JstBaseForMethodRule {
 
 		} else {
 
-
 			for (final Class<?> clazz : createBeanHelpers) {
 
 				final String key = EntityManagerFactoryCacheHelper.calculateKey(persistenceUnitName,
 						persistencePropertyMap) + " @ " + clazz.getName();
 
-				if (JstConfigureJpaForMethodRule.createBeanHelperProcessedList.contains(key)) {
+				if (JstConfigureJpaForMethodRule.populateDataBeanHelperProcessedList.contains(key)) {
 					break;
 				}
 
-				if (JstBaseCreateForSuiteBeanHelper.class.isAssignableFrom(clazz)) {
+				if (JstBasePopulateDataBeanHelper.class.isAssignableFrom(clazz)) {
 
-					this.createBeanHelperToBeProcessedMap.put(key,
-							(JstBaseCreateForSuiteBeanHelper) ReflectionUtilHelper
+					this.createBeanHelperToBeProcessedMap.put(key, (JstBasePopulateDataBeanHelper) ReflectionUtilHelper
 							.instantiatePublicConstructorNoArgument(clazz));
 				} else {
 
 					throw new TestingConstructorRuleException("\nThe class [" + clazz.getSimpleName()
-					+ "] does not appear to extend a base class for creating persistence test data.\n");
+							+ "] does not appear to extend a base class for populating persistence test data.\n");
 				}
 			}
 		}
@@ -172,12 +161,12 @@ public class JstConfigureJpaForMethodRule extends JstBaseForMethodRule {
 
 		if (0 != this.createBeanHelperToBeProcessedMap.size()) {
 
-			for (final Map.Entry<String, JstBaseCreateForSuiteBeanHelper> entry : this.createBeanHelperToBeProcessedMap
+			for (final Map.Entry<String, JstBasePopulateDataBeanHelper> entry : this.createBeanHelperToBeProcessedMap
 					.entrySet()) {
 
 				processCreateBeanHelper(entry.getValue());
 
-				JstConfigureJpaForMethodRule.createBeanHelperProcessedList.add(entry.getKey());
+				JstConfigureJpaForMethodRule.populateDataBeanHelperProcessedList.add(entry.getKey());
 
 			}
 
@@ -187,7 +176,7 @@ public class JstConfigureJpaForMethodRule extends JstBaseForMethodRule {
 	/**
 	 * @param createBeanHelper
 	 */
-	protected void processCreateBeanHelper(final JstBaseCreateForSuiteBeanHelper createBeanHelper) {
+	protected void processCreateBeanHelper(final JstBasePopulateDataBeanHelper createBeanHelper) {
 
 		EntityManager entityManager = null;
 

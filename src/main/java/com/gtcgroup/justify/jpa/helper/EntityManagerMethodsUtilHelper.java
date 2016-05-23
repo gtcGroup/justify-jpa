@@ -28,7 +28,6 @@ package com.gtcgroup.justify.jpa.helper;
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
-import com.gtcgroup.justify.core.pattern.palette.internal.BaseBeanHelper;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
 
 /**
@@ -42,15 +41,10 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public class EntityManagerMethodsUtilHelper extends BaseBeanHelper {
+public enum EntityManagerMethodsUtilHelper {
 
-	/**
-	 * Constructor
-	 */
-	private EntityManagerMethodsUtilHelper() {
-		super();
-		return;
-	}
+	@SuppressWarnings("javadoc")
+	INSTANCE;
 
 	/**
 	 * This method clears the persistence context (final L1 cache), causing all

@@ -42,7 +42,7 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public abstract class JstBaseCreateForSuiteBeanHelper extends BaseBeanHelper {
+public abstract class JstBasePopulateDataBeanHelper extends BaseBeanHelper {
 
 	/**
 	 * This method requires implementation of a Template Method.

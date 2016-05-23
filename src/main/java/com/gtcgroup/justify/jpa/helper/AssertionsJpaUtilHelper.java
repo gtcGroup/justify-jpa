@@ -47,7 +47,10 @@ import com.gtcgroup.justify.jpa.rm.TransactionRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public class AssertionsJpaUtilHelper {
+public enum AssertionsJpaUtilHelper {
+
+	@SuppressWarnings("javadoc")
+	INSTANCE;
 
 	private static JstAssertJpaPO assertJpaPO;
 
@@ -131,7 +134,7 @@ public class AssertionsJpaUtilHelper {
 					.createEntityManagerToBeClosed(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
 
 			TransactionRM.withEntityManager(entityManager)
-			.transactDelete(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
+					.transactDelete(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
 
 		} finally {
 
@@ -240,7 +243,8 @@ public class AssertionsJpaUtilHelper {
 
 	}
 
-	private static void verifyUsingMaps(final Map<String, Object> existsMap, final Map<String, Object> notExistsMap, final String createOrDelete) {
+	private static void verifyUsingMaps(final Map<String, Object> existsMap, final Map<String, Object> notExistsMap,
+			final String createOrDelete) {
 
 		for (final Map.Entry<String, Object> entry : existsMap.entrySet()) {
 
@@ -265,14 +269,5 @@ public class AssertionsJpaUtilHelper {
 				throw new TestingRuntimeException(e);
 			}
 		}
-	}
-
-	/**
-	 * Constructor
-	 */
-	private AssertionsJpaUtilHelper() {
-
-		super();
-		return;
 	}
 }
