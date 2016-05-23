@@ -54,6 +54,7 @@ public enum EntityManagerFactoryCacheHelper {
 
 	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new ConcurrentHashMap<String, EntityManagerFactory>();
 
+	@SuppressWarnings("javadoc")
 	public static EntityManagerFactory CURRENT_ENTITY_MANAGER_FACTORY;
 
 	/**
