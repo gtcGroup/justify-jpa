@@ -54,9 +54,6 @@ public enum EntityManagerFactoryCacheHelper {
 
 	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new ConcurrentHashMap<String, EntityManagerFactory>();
 
-	@SuppressWarnings("javadoc")
-	public static EntityManagerFactory CURRENT_ENTITY_MANAGER_FACTORY;
-
 	/**
 	 * @param persistenceUnitName
 	 * @param persistencePropertyMap
@@ -69,7 +66,7 @@ public enum EntityManagerFactoryCacheHelper {
 
 		if (null != persistencePropertyMap) {
 
-			key = key + "." + persistencePropertyMap.hashCode();
+			key = key + "." + persistencePropertyMap.toString();
 		}
 
 		return key;
@@ -176,8 +173,7 @@ public enum EntityManagerFactoryCacheHelper {
 	 */
 	public static EntityManagerFactory getCurrentEntityManagerFactory(final String persistenceUnitName) {
 
-		return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
-				.get(persistenceUnitName);
+		return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(persistenceUnitName);
 	}
 
 	/**
@@ -186,15 +182,4 @@ public enum EntityManagerFactoryCacheHelper {
 	public static Map<String, EntityManagerFactory> getEntityManagerFactoryMap() {
 		return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP;
 	}
-
-	/**
-	 * @param entityManagerFactory
-	 */
-	@SuppressWarnings("static-method")
-	public void putCurrentEntityManagerFactory(final EntityManagerFactory entityManagerFactory) {
-
-		EntityManagerFactoryCacheHelper.CURRENT_ENTITY_MANAGER_FACTORY = entityManagerFactory;
-	}
-
-
 }
