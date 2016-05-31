@@ -31,7 +31,7 @@ import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
 
 /**
- * This Helper class provides persistence {@link EntityManager} support.
+ * This Util Helper class provides persistence {@link EntityManager} support.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
@@ -41,7 +41,7 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum EntityManagerMethodsUtilHelper {
+public enum EntityUtilHelper {
 
 	@SuppressWarnings("javadoc")
 	INSTANCE;
@@ -55,13 +55,7 @@ public enum EntityManagerMethodsUtilHelper {
 	 */
 	public static void clearAllInstancesFromPersistenceContext(final EntityManager entityManager) {
 
-		try {
-			entityManager.clear();
-		} catch (final Exception e) {
-
-			throw new TestingRuntimeException(e);
-		}
-		return;
+		entityManager.clear();
 	}
 
 	/**
@@ -94,13 +88,7 @@ public enum EntityManagerMethodsUtilHelper {
 	 */
 	public static void evictAllEntitiesFromSharedCache(final EntityManager entityManager) {
 
-		try {
-			entityManager.getEntityManagerFactory().getCache().evictAll();
-
-		} catch (final Exception e) {
-
-			throw new TestingRuntimeException(e);
-		}
+		entityManager.getEntityManagerFactory().getCache().evictAll();
 	}
 
 	/**
@@ -113,14 +101,7 @@ public enum EntityManagerMethodsUtilHelper {
 	public static void evictEntityInstanceFromSharedCache(final Object entity, final Object entityIdentity,
 			final EntityManager entityManager) {
 
-		try {
-			entityManager.getEntityManagerFactory().getCache().evict(entity.getClass(), entityIdentity);
-
-		} catch (final Exception e) {
-
-			throw new TestingRuntimeException(e);
-		}
-		return;
+		entityManager.getEntityManagerFactory().getCache().evict(entity.getClass(), entityIdentity);
 	}
 
 	/**
@@ -134,14 +115,7 @@ public enum EntityManagerMethodsUtilHelper {
 	public static <ENTITY extends Object> void evictEntityInstancesFromSharedCache(final Class<ENTITY> entityClass,
 			final EntityManager entityManager) {
 
-		try {
-			entityManager.getEntityManagerFactory().getCache().evict(entityClass);
-
-		} catch (final Exception e) {
-
-			throw new TestingRuntimeException(e);
-		}
-		return;
+		entityManager.getEntityManagerFactory().getCache().evict(entityClass);
 	}
 
 	/**
