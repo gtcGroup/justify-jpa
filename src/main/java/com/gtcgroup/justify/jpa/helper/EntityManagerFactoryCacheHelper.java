@@ -33,7 +33,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
 
 /**
@@ -83,17 +82,12 @@ public enum EntityManagerFactoryCacheHelper {
 			return;
 		}
 
-		try {
+		if (entityManager.isOpen()) {
 
-			if (entityManager.isOpen()) {
-
-				entityManager.clear();
-				entityManager.close();
-			}
-
-		} catch (final Exception e) {
-			throw new TestingRuntimeException(e);
+			entityManager.clear();
+			entityManager.close();
 		}
+
 		return;
 	}
 

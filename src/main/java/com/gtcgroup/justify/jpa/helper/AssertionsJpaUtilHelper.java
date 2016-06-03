@@ -102,7 +102,7 @@ public enum AssertionsJpaUtilHelper {
 
 			final QueryRM queryRM = new QueryRM().withEntityManager(entityManager);
 
-			final boolean verdict = queryRM.exists(entityClass, entityIdentity);
+			final boolean verdict = queryRM.existsEntity(entityClass, entityIdentity);
 
 			if (exists) {
 
