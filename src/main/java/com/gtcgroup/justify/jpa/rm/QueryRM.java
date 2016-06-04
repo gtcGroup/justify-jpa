@@ -96,14 +96,19 @@ public class QueryRM extends BaseRM {
 	 *
 	 * @param <ENTITY>
 	 * @param query
+	 * @param parameterValuesInOrder
 	 * @return {@link List}
 	 */
 	@SuppressWarnings("unchecked")
-	protected static <ENTITY> List<ENTITY> queryResultList(final Query query) {
+	protected static <ENTITY> List<ENTITY> queryResultList(final Query query, final Object... parameterValuesInOrder) {
 
 		List<ENTITY> entityList = null;
 
 		try {
+
+			for (int i = 0; i < parameterValuesInOrder.length; i++) {
+				query.setParameter(i + 1, parameterValuesInOrder[i]);
+			}
 
 			entityList = query.getResultList();
 
@@ -119,14 +124,19 @@ public class QueryRM extends BaseRM {
 	 *
 	 * @param <ENTITY>
 	 * @param query
+	 * @param parameterValuesInOrder
 	 * @return ENTITY
 	 */
 	@SuppressWarnings("unchecked")
-	protected static <ENTITY> ENTITY querySingleResult(final Query query) {
+	protected static <ENTITY> ENTITY querySingleResult(final Query query, final Object... parameterValuesInOrder) {
 
 		ENTITY entity = null;
 
 		try {
+
+			for (int i = 0; i < parameterValuesInOrder.length; i++) {
+				query.setParameter(i + 1, parameterValuesInOrder[i]);
+			}
 
 			entity = (ENTITY) query.getSingleResult();
 
@@ -248,7 +258,7 @@ public class QueryRM extends BaseRM {
 	 * @param queryName
 	 * @return {@link Query}
 	 */
-	protected Query createNamedQuery(final String queryName) {
+	protected Query createNamedQueryModifiable(final String queryName) {
 
 		Query query;
 		try {
@@ -267,31 +277,52 @@ public class QueryRM extends BaseRM {
 	 */
 	protected Query createNamedQueryReadOnly(final String name) {
 
-		final Query query = createNamedQuery(name);
+		final Query query = createNamedQueryModifiable(name);
 		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
 
 		return query;
 	}
 
 	/**
+	 * @param <ENTITY>
 	 * @param sqlString
+	 * @param clazz
 	 * @return {@link Query}
 	 */
-	protected Query createNativeQueryModifiable(final String sqlString) {
+	protected <ENTITY> Query createNativeQueryModifiable(final String sqlString, final Class<ENTITY> clazz) {
 
-		return getEntityManager().createNativeQuery(sqlString);
+		return getEntityManager().createNativeQuery(sqlString, clazz);
 	}
 
 	/**
+	 * @param <ENTITY>
 	 * @param sqlString
+	 * @param clazz
 	 * @return {@link Query}
 	 */
-	protected Query createNativeQueryReadOnly(final String sqlString) {
+	protected <ENTITY> Query createNativeQueryReadOnly(final String sqlString, final Class<ENTITY> clazz) {
 
-		final Query query = createNativeQueryModifiable(sqlString);
+		final Query query = createNativeQueryModifiable(sqlString, clazz);
 		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
 
 		return query;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param entityClass
+	 * @param entityIdentities
+	 * @return boolean
+	 */
+	public <ENTITY> boolean existsArray(final Class<ENTITY> entityClass, final Object... entityIdentities) {
+
+		for (final Object entityIdentity : entityIdentities) {
+
+			if (false == existsEntity(entityClass, entityIdentity)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -312,23 +343,6 @@ public class QueryRM extends BaseRM {
 
 		if (null == entity) {
 			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param entityClass
-	 * @param entityIdentities
-	 * @return boolean
-	 */
-	public <ENTITY> boolean existsArray(final Class<ENTITY> entityClass, final Object... entityIdentities) {
-
-		for (final Object entityIdentity : entityIdentities) {
-
-			if (false == existsEntity(entityClass, entityIdentity)) {
-				return false;
-			}
 		}
 		return true;
 	}
@@ -471,39 +485,91 @@ public class QueryRM extends BaseRM {
 	/**
 	 * @param <ENTITY>
 	 * @param queryName
+	 * @param parameterValuesInOrder
 	 * @return {@link List}<ENTITY>
 	 */
-	public <ENTITY> List<ENTITY> queryNamedModifiableList(final String queryName) {
+	public <ENTITY> List<ENTITY> queryNamedModifiableList(final String queryName,
+			final Object... parameterValuesInOrder) {
 
-		return queryResultList(createNamedQuery(queryName));
+		return queryResultList(createNamedQueryModifiable(queryName), parameterValuesInOrder);
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param queryName
+	 * @param parameterValuesInOrder
 	 * @return ENTITY
 	 */
-	public <ENTITY> ENTITY queryNamedModifiableSingle(final String queryName) {
+	public <ENTITY> ENTITY queryNamedModifiableSingle(final String queryName, final Object... parameterValuesInOrder) {
 
-		return querySingleResult(createNamedQuery(queryName));
+		return querySingleResult(createNamedQueryModifiable(queryName), parameterValuesInOrder);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param queryName
+	 * @param parameterValuesInOrder
+	 * @return {@link List}<ENTITY>
+	 */
+	public <ENTITY> List<ENTITY> queryNamedNativeModifiableList(final String queryName,
+			final Object... parameterValuesInOrder) {
+
+		return queryResultList(createNamedQueryModifiable(queryName), parameterValuesInOrder);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param queryName
+	 * @param parameterValuesInOrder
+	 * @return ENTITY
+	 */
+	public <ENTITY> ENTITY queryNamedNativeModifiableSingle(final String queryName,
+			final Object... parameterValuesInOrder) {
+
+		return querySingleResult(createNamedQueryModifiable(queryName), parameterValuesInOrder);
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param name
+	 * @param parameterValuesInOrder
 	 * @return ENTITY
 	 */
-	public <ENTITY> List<ENTITY> queryNamedReadOnlyList(final String name) {
+	public <ENTITY> List<ENTITY> queryNamedNativeReadOnlyList(final String name,
+			final Object... parameterValuesInOrder) {
 
-		return queryResultList(createNamedQueryReadOnly(name));
+		return queryResultList(createNamedQueryReadOnly(name), parameterValuesInOrder);
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param name
+	 * @param parameterValuesInOrder
 	 * @return ENTITY
 	 */
-	public <ENTITY> ENTITY queryNamedReadOnlySingle(final String name) {
+	public <ENTITY> ENTITY queryNamedNativeReadOnlySingle(final String name, final Object... parameterValuesInOrder) {
+
+		return querySingleResult(createNamedQueryReadOnly(name), parameterValuesInOrder);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param name
+	 * @param parameterValuesInOrder
+	 * @return ENTITY
+	 */
+	public <ENTITY> List<ENTITY> queryNamedReadOnlyList(final String name, final Object... parameterValuesInOrder) {
+
+		return queryResultList(createNamedQueryReadOnly(name), parameterValuesInOrder);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param name
+	 * @param parameterValuesInOrder
+	 * @return ENTITY
+	 */
+	public <ENTITY> ENTITY queryNamedReadOnlySingle(final String name, final Object... parameterValuesInOrder) {
 
 		return querySingleResult(createNamedQueryReadOnly(name));
 	}
@@ -511,41 +577,53 @@ public class QueryRM extends BaseRM {
 	/**
 	 * @param <ENTITY>
 	 * @param sqlString
+	 * @param clazz
+	 * @param parameterValuesInOrder
 	 * @return {@link List}<ENTITY>
 	 */
-	public <ENTITY> List<ENTITY> queryNativeModifiableList(final String sqlString) {
+	public <ENTITY> List<ENTITY> queryNativeModifiableList(final String sqlString, final Class<ENTITY> clazz,
+			final Object... parameterValuesInOrder) {
 
-		return queryResultList(createNativeQueryModifiable(sqlString));
+		return queryResultList(createNativeQueryModifiable(sqlString, clazz), parameterValuesInOrder);
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param sqlString
+	 * @param clazz
+	 * @param parameterValuesInOrder
 	 * @return ENTITY
 	 */
-	public <ENTITY> ENTITY queryNativeModifiableSingle(final String sqlString) {
+	public <ENTITY> ENTITY queryNativeModifiableSingle(final String sqlString, final Class<ENTITY> clazz,
+			final Object... parameterValuesInOrder) {
 
-		return querySingleResult(createNativeQueryModifiable(sqlString));
+		return querySingleResult(createNativeQueryModifiable(sqlString, clazz), parameterValuesInOrder);
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param sqlString
+	 * @param clazz
+	 * @param parameterValuesInOrder
 	 * @return {@link List}<ENTITY>
 	 */
-	public <ENTITY> List<ENTITY> queryNativeReadOnlyList(final String sqlString) {
+	public <ENTITY> List<ENTITY> queryNativeReadOnlyList(final String sqlString, final Class<ENTITY> clazz,
+			final Object... parameterValuesInOrder) {
 
-		return queryResultList(createNativeQueryReadOnly(sqlString));
+		return queryResultList(createNativeQueryReadOnly(sqlString, clazz), parameterValuesInOrder);
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param sqlString
+	 * @param clazz
+	 * @param parameterValuesInOrder
 	 * @return ENTITY
 	 */
-	public <ENTITY> ENTITY queryNativeReadOnlySingle(final String sqlString) {
+	public <ENTITY> ENTITY queryNativeReadOnlySingle(final String sqlString, final Class<ENTITY> clazz,
+			final Object... parameterValuesInOrder) {
 
-		return querySingleResult(createNamedQueryReadOnly(sqlString));
+		return querySingleResult(createNativeQueryReadOnly(sqlString, clazz), parameterValuesInOrder);
 	}
 
 	/**
