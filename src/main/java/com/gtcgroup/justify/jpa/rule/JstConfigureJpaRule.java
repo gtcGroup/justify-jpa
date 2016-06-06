@@ -113,6 +113,16 @@ public class JstConfigureJpaRule extends JstBaseRule {
 		return (RULE) new JstConfigureJpaRule(persistenceUnitName, null);
 	}
 
+	private static EntityManagerFactory initializeJPA(final String persistenceUnitName) {
+
+		final EntityManager entityManager = EntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(persistenceUnitName);
+		entityManager.contains(null);
+		EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+
+		return entityManager.getEntityManagerFactory();
+	}
+
 	/**
 	 * @param <RULE>
 	 * @param persistenceUnitName
@@ -214,16 +224,6 @@ public class JstConfigureJpaRule extends JstBaseRule {
 
 			}
 		}
-	}
-
-	private EntityManagerFactory initializeJPA(final String persistenceUnitName) {
-
-		final EntityManager entityManager = EntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(persistenceUnitName);
-		entityManager.contains(null);
-		EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-
-		return entityManager.getEntityManagerFactory();
 	}
 
 	/**
