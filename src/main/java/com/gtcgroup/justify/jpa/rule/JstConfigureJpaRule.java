@@ -65,34 +65,6 @@ public class JstConfigureJpaRule extends JstBaseRule {
 	/**
 	 * @param <RULE>
 	 * @param persistenceUnitName
-	 * @param persistencePropertyMap
-	 * @param createBeanHelpers
-	 * @return {@link TestRule}
-	 */
-	@SuppressWarnings("unchecked")
-	protected static <RULE extends TestRule> RULE processRule(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMap,
-			final Map<String, EntityManagerFactory> entityManagerFactoryMap, final Class<?>... createBeanHelpers) {
-
-		JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP = entityManagerFactoryMap;
-
-		return (RULE) new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap, createBeanHelpers);
-	}
-
-	/**
-	 * @param <RULE>
-	 * @param persistenceUnitName
-	 * @return {@link TestRule}
-	 */
-	@SuppressWarnings("unchecked")
-	public static <RULE extends TestRule> RULE withPersistenceUnitName(final String persistenceUnitName) {
-
-		return (RULE) new JstConfigureJpaRule(persistenceUnitName, null);
-	}
-
-	/**
-	 * @param <RULE>
-	 * @param persistenceUnitName
 	 * @param createBeanHelpers
 	 * @return {@link TestRule}
 	 */
@@ -130,6 +102,34 @@ public class JstConfigureJpaRule extends JstBaseRule {
 		return (RULE) new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap);
 	}
 
+	/**
+	 * @param <RULE>
+	 * @param persistenceUnitName
+	 * @return {@link TestRule}
+	 */
+	@SuppressWarnings("unchecked")
+	public static <RULE extends TestRule> RULE withPersistenceUnitName(final String persistenceUnitName) {
+
+		return (RULE) new JstConfigureJpaRule(persistenceUnitName, null);
+	}
+
+	/**
+	 * @param <RULE>
+	 * @param persistenceUnitName
+	 * @param persistencePropertyMap
+	 * @param createBeanHelpers
+	 * @return {@link TestRule}
+	 */
+	@SuppressWarnings("unchecked")
+	protected static <RULE extends TestRule> RULE processRule(final String persistenceUnitName,
+			final Map<String, Object> persistencePropertyMap,
+			final Map<String, EntityManagerFactory> entityManagerFactoryMap, final Class<?>... createBeanHelpers) {
+
+		JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP = entityManagerFactoryMap;
+
+		return (RULE) new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap, createBeanHelpers);
+	}
+
 	private final Map<String, JstBasePopulateDataBeanHelper> createBeanHelperToBeProcessedMap = new LinkedHashMap<String, JstBasePopulateDataBeanHelper>();
 
 	protected final String persistenceUnitName;
@@ -143,8 +143,8 @@ public class JstConfigureJpaRule extends JstBaseRule {
 	 * @param persistencePropertyMap
 	 * @param createBeanHelpers
 	 */
-	protected JstConfigureJpaRule(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMap, final Class<?>... createBeanHelpers) {
+	protected JstConfigureJpaRule(final String persistenceUnitName, final Map<String, Object> persistencePropertyMap,
+			final Class<?>... createBeanHelpers) {
 
 		super();
 
@@ -170,9 +170,12 @@ public class JstConfigureJpaRule extends JstBaseRule {
 				} else {
 
 					throw new TestingConstructorRuleException("\nThe class [" + clazz.getSimpleName()
-					+ "] does not appear to extend a base class for creating persistence test data.\n");
+							+ "] does not appear to extend a base class for creating persistence test data.\n");
 				}
 			}
+		} else {
+			initializeJPA(persistenceUnitName);
+
 		}
 	}
 
@@ -196,8 +199,7 @@ public class JstConfigureJpaRule extends JstBaseRule {
 
 		if (null != JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP) {
 
-			final EntityManager entityManager = entityManagerFactory.createEntityManager();
-			entityManager.close();
+			initializeJPA(this.persistenceUnitName);
 			JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP.put(this.persistenceUnitName, entityManagerFactory);
 		}
 
@@ -212,6 +214,16 @@ public class JstConfigureJpaRule extends JstBaseRule {
 
 			}
 		}
+	}
+
+	private EntityManagerFactory initializeJPA(final String persistenceUnitName) {
+
+		final EntityManager entityManager = EntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(persistenceUnitName);
+		entityManager.contains(null);
+		EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+
+		return entityManager.getEntityManagerFactory();
 	}
 
 	/**

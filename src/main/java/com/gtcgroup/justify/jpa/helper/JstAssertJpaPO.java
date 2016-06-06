@@ -48,7 +48,7 @@ public class JstAssertJpaPO {
 	 * @param domainEntity
 	 * @return {@link JstAssertJpaPO}
 	 */
-	public static JstAssertJpaPO usingDomainEntity(final String persistenceUnitName, final Object domainEntity) {
+	public static JstAssertJpaPO withDomainEntity(final String persistenceUnitName, final Object domainEntity) {
 
 		return new JstAssertJpaPO(persistenceUnitName, domainEntity);
 	}

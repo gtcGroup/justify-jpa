@@ -62,24 +62,25 @@ public enum AssertionsJpaUtilHelper {
 	 */
 	public static <ENTITY> void assertCascadeTypes(final JstAssertJpaPO assertJpaPO) {
 
-		// TODO: Future support for:
-		// verifyMerge();
-		// verifyRefresh();
-		// verifyDetach();
+		try {
+			AssertionsJpaUtilHelper.assertJpaPO = assertJpaPO;
 
-		AssertionsJpaUtilHelper.assertJpaPO = assertJpaPO;
+			@SuppressWarnings("unchecked")
+			final ENTITY entity = (ENTITY) retrieveMergedEntityFromCreate();
+			AssertionsJpaUtilHelper.assertJpaPO.setDomainEntity(entity);
 
-		@SuppressWarnings("unchecked")
-		final ENTITY entity = (ENTITY) retrieveMergedEntityFromCreate();
-		AssertionsJpaUtilHelper.assertJpaPO.setDomainEntity(entity);
+			verifyCascadeTypePersist();
 
-		verifyCascadeTypePersist();
+		} catch (final RuntimeException e) {
 
-		deleteEntity();
+			deleteEntity();
 
-		verifyCascadeTypeRemove();
+			verifyCascadeTypeRemove();
 
-		deleteRemainingEntities();
+			deleteRemainingEntities();
+
+			throw e;
+		}
 
 		return;
 	}
