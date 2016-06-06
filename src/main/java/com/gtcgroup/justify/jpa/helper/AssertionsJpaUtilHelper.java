@@ -58,9 +58,10 @@ public enum AssertionsJpaUtilHelper {
 	 * This method verifies cascade annotations.
 	 *
 	 * @param <ENTITY>
+	 * @param <PO>
 	 * @param assertJpaPO
 	 */
-	public static <ENTITY> void assertCascadeTypes(final JstAssertJpaPO assertJpaPO) {
+	public static <ENTITY, PO extends JstAssertJpaPO> void assertCascadeTypes(final PO assertJpaPO) {
 
 		try {
 			AssertionsJpaUtilHelper.assertJpaPO = assertJpaPO;
@@ -135,7 +136,7 @@ public enum AssertionsJpaUtilHelper {
 					.createEntityManagerToBeClosed(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
 
 			TransactionRM.withEntityManager(entityManager)
-					.transactDelete(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
+			.transactDelete(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
 
 		} finally {
 
