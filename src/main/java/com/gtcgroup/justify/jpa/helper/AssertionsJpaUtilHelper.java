@@ -49,8 +49,7 @@ import com.gtcgroup.justify.jpa.rm.TransactionRM;
  */
 public enum AssertionsJpaUtilHelper {
 
-	@SuppressWarnings("javadoc")
-	INSTANCE;
+	@SuppressWarnings("javadoc") INSTANCE;
 
 	private static JstAssertJpaPO assertJpaPO;
 
@@ -63,27 +62,41 @@ public enum AssertionsJpaUtilHelper {
 	 */
 	public static <ENTITY, PO extends JstAssertJpaPO> void assertCascadeTypes(final PO assertJpaPO) {
 
-		try {
-			AssertionsJpaUtilHelper.assertJpaPO = assertJpaPO;
+		String assertionErrorMessage = null;
 
-			@SuppressWarnings("unchecked")
-			final ENTITY entity = (ENTITY) retrieveMergedEntityFromCreate();
-			AssertionsJpaUtilHelper.assertJpaPO.setDomainEntity(entity);
+		AssertionsJpaUtilHelper.assertJpaPO = assertJpaPO;
 
-			verifyCascadeTypePersist();
+		@SuppressWarnings("unchecked")
+		final ENTITY entity = (ENTITY) retrieveMergedEntityFromCreate();
+		AssertionsJpaUtilHelper.assertJpaPO.setDomainEntity(entity);
 
-		} catch (final RuntimeException e) {
+		assertionErrorMessage = verifyCascadeTypePersist();
+
+		if (!assertionErrorMessage.isEmpty()) {
 
 			deleteEntity();
-
-			verifyCascadeTypeRemove();
-
 			deleteRemainingEntities();
 
-			throw e;
+			throwAssertionError(assertionErrorMessage);
 		}
 
-		return;
+		assertionErrorMessage = deleteEntity();
+
+		if (!assertionErrorMessage.isEmpty()) {
+
+			deleteRemainingEntities();
+			throwAssertionError(assertionErrorMessage);
+		}
+
+		assertionErrorMessage = verifyCascadeTypeRemove();
+
+		if (!assertionErrorMessage.isEmpty()) {
+
+			deleteRemainingEntities();
+			throwAssertionError(assertionErrorMessage);
+		}
+
+		deleteRemainingEntities();
 	}
 
 	/**
@@ -93,10 +106,11 @@ public enum AssertionsJpaUtilHelper {
 	 * @param entityIdentity
 	 * @return boolean
 	 */
-	private static <ENTITY extends Object> boolean assertExists(final Class<ENTITY> entityClass,
+	private static <ENTITY extends Object> String assertExists(final Class<ENTITY> entityClass,
 			final Object entityIdentity, final boolean exists, final String createOrDelete) {
 
 		EntityManager entityManager = null;
+		String message = new String();
 
 		try {
 			entityManager = EntityManagerFactoryCacheHelper
@@ -104,18 +118,18 @@ public enum AssertionsJpaUtilHelper {
 
 			final QueryRM queryRM = new QueryRM().withEntityManager(entityManager);
 
-			final boolean verdict = queryRM.existsEntity(entityClass, entityIdentity);
+			final boolean verdict = queryRM.existsSingleEntity(entityClass, entityIdentity);
 
 			if (exists) {
 
 				if (false == verdict) {
 
-					displayError(entityClass, "not", createOrDelete);
+					message = createAssertionErrorMessage(entityClass, "not", createOrDelete);
 				}
 			} else {
 				if (true == verdict) {
 
-					displayError(entityClass, "incorrectly", createOrDelete);
+					message = createAssertionErrorMessage(entityClass, "incorrectly", createOrDelete);
 				}
 			}
 
@@ -123,26 +137,55 @@ public enum AssertionsJpaUtilHelper {
 
 			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
-		return true;
+		return message;
 	}
 
-	private static void deleteEntity() {
+	private static <ENTITY> String createAssertionErrorMessage(final Class<ENTITY> entityClass, final String outcome,
+			final String createOrDelete) {
+
+		final StringBuilder assertionErrorMessage = new StringBuilder();
+
+		assertionErrorMessage.append("The instance [");
+		assertionErrorMessage.append(entityClass.getSimpleName());
+		assertionErrorMessage.append("] for cascade type [");
+		assertionErrorMessage.append(createOrDelete);
+		assertionErrorMessage.append("] is ");
+		assertionErrorMessage.append(outcome);
+		assertionErrorMessage.append(" available from the database [");
+		assertionErrorMessage.append(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
+		assertionErrorMessage.append("].");
+
+		return assertionErrorMessage.toString();
+
+	}
+
+	private static String deleteEntity() {
 
 		EntityManager entityManager = null;
+		final String assertionErrorMessage = new String();
 
 		try {
 
 			entityManager = EntityManagerFactoryCacheHelper
 					.createEntityManagerToBeClosed(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
 
-			TransactionRM.withEntityManager(entityManager)
+			final boolean exists = new QueryRM().withEntityManager(entityManager)
+					.existsSingleEntity(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
+
+			if (!exists) {
+				createAssertionErrorMessage(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity().getClass(),
+						"not available",
+						"delete");
+			}
+
+			new TransactionRM().withEntityManager(entityManager)
 			.transactDelete(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
 
 		} finally {
 
 			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
-		return;
+		return assertionErrorMessage;
 	}
 
 	private static void deleteRemainingEntities() {
@@ -159,7 +202,7 @@ public enum AssertionsJpaUtilHelper {
 
 				final Object entity = entityManager.find(Class.forName(entry.getKey()), entry.getValue());
 
-				TransactionRM.withEntityManager(entityManager).transactDelete(entity);
+				new TransactionRM().withEntityManager(entityManager).transactDelete(entity);
 
 			}
 
@@ -173,24 +216,6 @@ public enum AssertionsJpaUtilHelper {
 		}
 		return;
 
-	}
-
-	private static <ENTITY> void displayError(final Class<ENTITY> entityClass, final String outcome,
-			final String createOrDelete) {
-
-		final StringBuilder message = new StringBuilder();
-
-		message.append("The instance [");
-		message.append(entityClass.getSimpleName());
-		message.append("] for cascade type [");
-		message.append(createOrDelete);
-		message.append("] is ");
-		message.append(outcome);
-		message.append(" available from the database [");
-		message.append(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
-		message.append("].");
-
-		Assert.fail(message.toString());
 	}
 
 	/**
@@ -210,7 +235,7 @@ public enum AssertionsJpaUtilHelper {
 			entityManager = EntityManagerFactoryCacheHelper
 					.createEntityManagerToBeClosed(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
 
-			mergedEntity = (ENTITY) TransactionRM.withEntityManager(entityManager)
+			mergedEntity = (ENTITY) new TransactionRM().withEntityManager(entityManager)
 					.transactCreateOrUpdate(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
 
 		} catch (@SuppressWarnings("unused") final Exception e) {
@@ -224,36 +249,47 @@ public enum AssertionsJpaUtilHelper {
 		return mergedEntity;
 	}
 
+	private static void throwAssertionError(final String assertionErrorMessage) throws AssertionError {
+
+		throw new AssertionError(assertionErrorMessage);
+	}
+
 	/**
 	 * @param persistenceUnitName
 	 * @param cascadeRemoveMap
 	 */
-	private static void verifyCascadeTypePersist() {
+	private static String verifyCascadeTypePersist() {
 
-		verifyUsingMaps(AssertionsJpaUtilHelper.assertJpaPO.getCascadePersistMap(),
+		return verifyUsingMaps(AssertionsJpaUtilHelper.assertJpaPO.getCascadePersistMap(),
 				AssertionsJpaUtilHelper.assertJpaPO.getCascadePersistNotMap(), "Create");
 	}
 
 	/**
 	 * @param persistenceUnitName
 	 * @param cascadeRemoveMap
+	 * @return
 	 */
-	private static void verifyCascadeTypeRemove() {
+	private static String verifyCascadeTypeRemove() {
 
-		verifyUsingMaps(AssertionsJpaUtilHelper.assertJpaPO.getCascadeRemoveNotMap(),
+		return verifyUsingMaps(AssertionsJpaUtilHelper.assertJpaPO.getCascadeRemoveNotMap(),
 				AssertionsJpaUtilHelper.assertJpaPO.getCascadeRemoveMap(), "delete");
 
 	}
 
-	private static void verifyUsingMaps(final Map<String, Object> existsMap, final Map<String, Object> notExistsMap,
+	private static String verifyUsingMaps(final Map<String, Object> existsMap, final Map<String, Object> notExistsMap,
 			final String createOrDelete) {
+
+		String assertionErrorMessage = new String();
 
 		for (final Map.Entry<String, Object> entry : existsMap.entrySet()) {
 
 			try {
 
-				assertExists(Class.forName(entry.getKey()), entry.getValue(), true, createOrDelete);
-
+				final String tempMessage = assertExists(Class.forName(entry.getKey()), entry.getValue(), true,
+						createOrDelete);
+				if (!tempMessage.isEmpty()) {
+					assertionErrorMessage += "[" + tempMessage + "] ";
+				}
 			} catch (final ClassNotFoundException e) {
 
 				throw new TestingRuntimeException(e);
@@ -264,12 +300,17 @@ public enum AssertionsJpaUtilHelper {
 
 			try {
 
-				assertExists(Class.forName(entry.getKey()), entry.getValue(), false, createOrDelete);
+				final String tempMessage = assertExists(Class.forName(entry.getKey()), entry.getValue(), false,
+						createOrDelete);
+				if (!tempMessage.isEmpty()) {
+					assertionErrorMessage += "[" + tempMessage + "] ";
+				}
 
 			} catch (final ClassNotFoundException e) {
 
 				throw new TestingRuntimeException(e);
 			}
 		}
+		return assertionErrorMessage;
 	}
 }

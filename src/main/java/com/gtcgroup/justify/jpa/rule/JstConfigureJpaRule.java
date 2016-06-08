@@ -62,6 +62,33 @@ public class JstConfigureJpaRule extends JstBaseRule {
 
 	protected static List<String> createBeanHelperProcessedList = new ArrayList<String>();
 
+	private static void initializeJPA(final String persistenceUnitName) {
+
+		final EntityManager entityManager = EntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(persistenceUnitName);
+		entityManager.setProperty(null, "toForceCompletingConfiguration");
+		EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+
+		return;
+	}
+
+	/**
+	 * @param <RULE>
+	 * @param persistenceUnitName
+	 * @param persistencePropertyMap
+	 * @param createBeanHelpers
+	 * @return {@link TestRule}
+	 */
+	@SuppressWarnings("unchecked")
+	protected static <RULE extends TestRule> RULE processRule(final String persistenceUnitName,
+			final Map<String, Object> persistencePropertyMap,
+			final Map<String, EntityManagerFactory> entityManagerFactoryMap, final Class<?>... createBeanHelpers) {
+
+		JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP = entityManagerFactoryMap;
+
+		return (RULE) new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap, createBeanHelpers);
+	}
+
 	/**
 	 * @param <RULE>
 	 * @param persistenceUnitName
@@ -113,33 +140,6 @@ public class JstConfigureJpaRule extends JstBaseRule {
 		return (RULE) new JstConfigureJpaRule(persistenceUnitName, null);
 	}
 
-	private static EntityManagerFactory initializeJPA(final String persistenceUnitName) {
-
-		final EntityManager entityManager = EntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(persistenceUnitName);
-		entityManager.contains(null);
-		EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-
-		return entityManager.getEntityManagerFactory();
-	}
-
-	/**
-	 * @param <RULE>
-	 * @param persistenceUnitName
-	 * @param persistencePropertyMap
-	 * @param createBeanHelpers
-	 * @return {@link TestRule}
-	 */
-	@SuppressWarnings("unchecked")
-	protected static <RULE extends TestRule> RULE processRule(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMap,
-			final Map<String, EntityManagerFactory> entityManagerFactoryMap, final Class<?>... createBeanHelpers) {
-
-		JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP = entityManagerFactoryMap;
-
-		return (RULE) new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap, createBeanHelpers);
-	}
-
 	private final Map<String, JstBasePopulateDataBeanHelper> createBeanHelperToBeProcessedMap = new LinkedHashMap<String, JstBasePopulateDataBeanHelper>();
 
 	protected final String persistenceUnitName;
@@ -180,7 +180,7 @@ public class JstConfigureJpaRule extends JstBaseRule {
 				} else {
 
 					throw new TestingConstructorRuleException("\nThe class [" + clazz.getSimpleName()
-							+ "] does not appear to extend a base class for creating persistence test data.\n");
+					+ "] does not appear to extend a base class for creating persistence test data.\n");
 				}
 			}
 		} else {
@@ -240,7 +240,7 @@ public class JstConfigureJpaRule extends JstBaseRule {
 			final List<Object> createList = createBeanHelper
 					.populateCreateListTM(new QueryRM().withEntityManager(entityManager));
 
-			TransactionRM.withEntityManager(entityManager).transactCreateOrUpdateFromList(createList);
+			new TransactionRM().withEntityManager(entityManager).transactCreateOrUpdateFromList(createList);
 
 		} catch (final Exception e) {
 

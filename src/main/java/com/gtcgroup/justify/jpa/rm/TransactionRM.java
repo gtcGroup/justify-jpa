@@ -46,28 +46,7 @@ import com.gtcgroup.justify.core.pattern.palette.internal.BaseRM;
  */
 public class TransactionRM extends BaseRM {
 
-	/**
-	 * @param <RM>
-	 * @param entityManager
-	 * @return {@link QueryRM}
-	 */
-	@SuppressWarnings("unchecked")
-	public static <RM extends TransactionRM> RM withEntityManager(final EntityManager entityManager) {
-
-		return (RM) new TransactionRM(entityManager);
-	}
-
-	private final EntityManager entityManager;
-
-	/**
-	 * Constructor - protected
-	 *
-	 * @param entityManager
-	 */
-	protected TransactionRM(final EntityManager entityManager) {
-		this.entityManager = entityManager;
-		return;
-	}
+	private EntityManager entityManager;
 
 	/**
 	 * This method is typically used for committing. If any of the related
@@ -148,7 +127,7 @@ public class TransactionRM extends BaseRM {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 * 
+	 *
 	 * @param <ENTITY>
 	 * @param entityList
 	 */
@@ -162,5 +141,17 @@ public class TransactionRM extends BaseRM {
 			this.entityManager.remove(entity);
 		}
 		this.entityManager.getTransaction().commit();
+	}
+
+	/**
+	 * @param <RM>
+	 * @param entityManager
+	 * @return {@link QueryRM}
+	 */
+	@SuppressWarnings("unchecked")
+	public <RM extends TransactionRM> RM withEntityManager(final EntityManager entityManager) {
+
+		this.entityManager = entityManager;
+		return (RM) this;
 	}
 }
