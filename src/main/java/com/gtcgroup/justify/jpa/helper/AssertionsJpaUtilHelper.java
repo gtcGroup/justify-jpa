@@ -99,6 +99,8 @@ public enum AssertionsJpaUtilHelper {
 		deleteRemainingEntities();
 	}
 
+
+
 	/**
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
@@ -118,7 +120,7 @@ public enum AssertionsJpaUtilHelper {
 
 			final QueryRM queryRM = new QueryRM().withEntityManager(entityManager);
 
-			final boolean verdict = queryRM.existsSingleEntity(entityClass, entityIdentity);
+			final boolean verdict = queryRM.existsEntityIdentities(entityClass, entityIdentity);
 
 			if (exists) {
 
@@ -140,6 +142,57 @@ public enum AssertionsJpaUtilHelper {
 		return message;
 	}
 
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entities
+	 */
+	public static <ENTITY> void assertExistsEntity(final String persistenceUnitName,
+			final Object... entities) {
+
+		QueryRM queryRM = null;
+
+		try {
+			queryRM = EntityManagerFactoryCacheHelper.createQueryRmToBeClosed(persistenceUnitName);
+			final boolean result = queryRM.existsEntityInstances(entities);
+			if (!result) {
+				final String assertionErrorMessage = createAssertionExistsMessage(entities[0].getClass(),
+						persistenceUnitName);
+				throwAssertionError(assertionErrorMessage);
+			}
+
+		} finally {
+			EntityManagerFactoryCacheHelper.closeQueryRM(queryRM);
+		}
+		return;
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entityClass
+	 * @param identities
+	 */
+	public static <ENTITY> void assertExistsById(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object... identities) {
+
+		QueryRM queryRM = null;
+
+		try {
+			queryRM = EntityManagerFactoryCacheHelper.createQueryRmToBeClosed(persistenceUnitName);
+			final boolean result = queryRM.existsEntityIdentities(entityClass, identities);
+			if (!result) {
+				final String assertionErrorMessage = createAssertionExistsMessage(entityClass, persistenceUnitName);
+				throwAssertionError(assertionErrorMessage);
+			}
+
+		} finally {
+			EntityManagerFactoryCacheHelper.closeQueryRM(queryRM);
+		}
+
+		return;
+	}
+
 	private static <ENTITY> String createAssertionErrorMessage(final Class<ENTITY> entityClass, final String outcome,
 			final String createOrDelete) {
 
@@ -159,6 +212,20 @@ public enum AssertionsJpaUtilHelper {
 
 	}
 
+	private static <ENTITY> String createAssertionExistsMessage(final Class<ENTITY> entityClass, final String persistenceUnitName) {
+
+		final StringBuilder assertionErrorMessage = new StringBuilder();
+
+		assertionErrorMessage.append("An expected instance of [");
+		assertionErrorMessage.append(entityClass.getSimpleName());
+		assertionErrorMessage.append("] is unavailable from the database [");
+		assertionErrorMessage.append(persistenceUnitName);
+		assertionErrorMessage.append("].");
+
+		return assertionErrorMessage.toString();
+
+	}
+
 	private static String deleteEntity() {
 
 		EntityManager entityManager = null;
@@ -170,7 +237,7 @@ public enum AssertionsJpaUtilHelper {
 					.createEntityManagerToBeClosed(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
 
 			final boolean exists = new QueryRM().withEntityManager(entityManager)
-					.existsSingleEntity(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
+					.existsEntityInstances(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
 
 			if (!exists) {
 				createAssertionErrorMessage(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity().getClass(),

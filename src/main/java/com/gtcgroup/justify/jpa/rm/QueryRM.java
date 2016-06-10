@@ -314,11 +314,11 @@ public class QueryRM extends BaseRM {
 	 * @param entityIdentities
 	 * @return boolean
 	 */
-	public <ENTITY> boolean existsEntityArray(final Class<ENTITY> entityClass, final Object... entityIdentities) {
+	public <ENTITY> boolean existsEntityIdentities(final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
 		for (final Object entityIdentity : entityIdentities) {
 
-			if (false == existsSingleEntity(entityClass, entityIdentity)) {
+			if (false == existsEntityIdentity(entityClass, entityIdentity)) {
 				return false;
 			}
 		}
@@ -331,7 +331,7 @@ public class QueryRM extends BaseRM {
 	 * @param entityIdentity
 	 * @return boolean
 	 */
-	public <ENTITY> boolean existsSingleEntity(final Class<ENTITY> entityClass, final Object entityIdentity) {
+	protected <ENTITY> boolean existsEntityIdentity(final Class<ENTITY> entityClass, final Object entityIdentity) {
 
 		Object entity;
 		try {
@@ -349,22 +349,29 @@ public class QueryRM extends BaseRM {
 
 	/**
 	 * @param <ENTITY>
-	 * @param entityWithIdentity
+	 * @param entitiesWithIdentity
 	 * @return boolean
 	 */
-	public <ENTITY> boolean existsSingleEntity(final Object entityWithIdentity) {
+	public <ENTITY> boolean existsEntityInstances(final Object... entitiesWithIdentity) {
 
-		boolean result = false;
-		try {
+		boolean result = true;
 
-			final Object entityIdentity = getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
-					.getIdentifier(entityWithIdentity);
-			result = existsSingleEntity(entityWithIdentity.getClass(), entityIdentity);
-		} catch (final Exception e) {
+		for (final Object entity : entitiesWithIdentity) {
 
-			throw new TestingRuntimeException(e);
+			try {
+
+				final Object entityIdentity = getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
+						.getIdentifier(entity);
+
+				if (!existsEntityIdentity(entity.getClass(), entityIdentity)) {
+					result = false;
+				}
+
+			} catch (final Exception e) {
+
+				throw new TestingRuntimeException(e);
+			}
 		}
-
 		return result;
 	}
 
@@ -543,7 +550,7 @@ public class QueryRM extends BaseRM {
 	 */
 	public <ENTITY> ENTITY queryNamedReadOnlySingle(final String name, final Object... parameterValuesInOrder) {
 
-		return querySingleResult(createNamedQueryReadOnly(name));
+		return querySingleResult(createNamedQueryReadOnly(name), parameterValuesInOrder);
 	}
 
 	/**
