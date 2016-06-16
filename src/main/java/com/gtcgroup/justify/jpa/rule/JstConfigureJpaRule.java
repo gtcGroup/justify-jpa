@@ -62,10 +62,11 @@ public class JstConfigureJpaRule extends JstBaseRule {
 
 	protected static List<String> createBeanHelperProcessedList = new ArrayList<String>();
 
-	private static void initializeJPA(final String persistenceUnitName) {
+	private static void initializeJPA(final String persistenceUnitName,
+			final Map<String, Object> persistencePropertyMap) {
 
 		final EntityManager entityManager = EntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(persistenceUnitName);
+				.createEntityManagerToBeClosed(persistenceUnitName, persistencePropertyMap);
 		entityManager.setProperty(null, "toForceCompletingConfiguration");
 		EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 
@@ -183,10 +184,8 @@ public class JstConfigureJpaRule extends JstBaseRule {
 					+ "] does not appear to extend a base class for creating persistence test data.\n");
 				}
 			}
-		} else {
-			initializeJPA(persistenceUnitName);
-
 		}
+		initializeJPA(persistenceUnitName, persistencePropertyMap);
 	}
 
 	/**
@@ -209,7 +208,7 @@ public class JstConfigureJpaRule extends JstBaseRule {
 
 		if (null != JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP) {
 
-			initializeJPA(this.persistenceUnitName);
+			initializeJPA(this.persistenceUnitName, this.persistencePropertyMap);
 			JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP.put(this.persistenceUnitName, entityManagerFactory);
 		}
 
@@ -221,7 +220,6 @@ public class JstConfigureJpaRule extends JstBaseRule {
 				processCreateBeanHelper(entry.getValue());
 
 				JstConfigureJpaRule.createBeanHelperProcessedList.add(entry.getKey());
-
 			}
 		}
 	}

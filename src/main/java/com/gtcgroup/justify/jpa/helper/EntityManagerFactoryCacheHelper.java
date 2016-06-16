@@ -51,6 +51,9 @@ public enum EntityManagerFactoryCacheHelper {
 	/** Instance */
 	INSTANCE;
 
+	/** Key suffix for cached {@link EntityManagerFactory}. */
+	public static final String NO_PERSISTENCE_PROPERTY_MAP = ".noPersistencePropertyMap";
+
 	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new ConcurrentHashMap<String, EntityManagerFactory>();
 
 	/**
@@ -65,7 +68,10 @@ public enum EntityManagerFactoryCacheHelper {
 
 		if (null != persistencePropertyMap) {
 
-			key = key + "." + persistencePropertyMap.toString();
+			key += "." + persistencePropertyMap.toString();
+		} else {
+
+			key += EntityManagerFactoryCacheHelper.NO_PERSISTENCE_PROPERTY_MAP;
 		}
 
 		return key;
@@ -116,7 +122,10 @@ public enum EntityManagerFactoryCacheHelper {
 
 		// RETURN
 		if (EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(key)) {
-			return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(key);
+			final EntityManagerFactory entityManagerFactory = EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
+					.get(key);
+			EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceUnitName, entityManagerFactory);
+			return entityManagerFactory;
 		}
 
 		final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
@@ -124,6 +133,7 @@ public enum EntityManagerFactoryCacheHelper {
 
 		// Ensures retrieval with either key.
 		EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(key, entityManagerFactory);
+		EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceUnitName, entityManagerFactory);
 
 		return entityManagerFactory;
 	}
