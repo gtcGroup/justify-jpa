@@ -31,7 +31,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.core.pattern.palette.internal.BaseRM;
+import com.gtcgroup.justify.core.base.BaseRM;
 
 /**
  * This Resource Manager provides convenience methods for transactions.

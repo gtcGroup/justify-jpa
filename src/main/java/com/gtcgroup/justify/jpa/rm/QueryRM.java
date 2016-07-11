@@ -43,8 +43,8 @@ import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
+import com.gtcgroup.justify.core.base.BaseRM;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
-import com.gtcgroup.justify.core.pattern.palette.internal.BaseRM;
 
 /**
  * This Resource Manager provides convenience methods for queries.

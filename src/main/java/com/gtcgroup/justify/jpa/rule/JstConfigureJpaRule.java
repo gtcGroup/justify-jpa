@@ -36,10 +36,10 @@ import javax.persistence.EntityManagerFactory;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
+import com.gtcgroup.justify.core.base.JstBaseRule;
 import com.gtcgroup.justify.core.exception.internal.TestingConstructorRuleException;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
-import com.gtcgroup.justify.core.pattern.palette.internal.JstBaseRule;
 import com.gtcgroup.justify.jpa.helper.EntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstBasePopulateDataBeanHelper;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
