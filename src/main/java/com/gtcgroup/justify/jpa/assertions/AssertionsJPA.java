@@ -24,7 +24,7 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gtcgroup.justify.jpa.helper;
+package com.gtcgroup.justify.jpa.assertions;
 
 import java.util.Map;
 
@@ -33,6 +33,7 @@ import javax.persistence.EntityManager;
 import org.junit.Assert;
 
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.jpa.helper.EntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.rm.QueryRM;
 import com.gtcgroup.justify.jpa.rm.TransactionRM;
 
@@ -47,11 +48,11 @@ import com.gtcgroup.justify.jpa.rm.TransactionRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum AssertionsJpaUtilHelper {
+public enum AssertionsJPA {
 
 	@SuppressWarnings("javadoc") INSTANCE;
 
-	private static JstAssertJpaPO assertJpaPO;
+	private static JstAssertsJpaPO assertJpaPO;
 
 	/**
 	 * This method verifies cascade annotations.
@@ -60,15 +61,15 @@ public enum AssertionsJpaUtilHelper {
 	 * @param <PO>
 	 * @param assertJpaPO
 	 */
-	public static <ENTITY, PO extends JstAssertJpaPO> void assertCascadeTypes(final PO assertJpaPO) {
+	public static <ENTITY, PO extends JstAssertsJpaPO> void assertCascadeTypes(final PO assertJpaPO) {
 
 		String assertionErrorMessage = null;
 
-		AssertionsJpaUtilHelper.assertJpaPO = assertJpaPO;
+		AssertionsJPA.assertJpaPO = assertJpaPO;
 
 		@SuppressWarnings("unchecked")
 		final ENTITY entity = (ENTITY) retrieveMergedEntityFromCreate();
-		AssertionsJpaUtilHelper.assertJpaPO.setDomainEntity(entity);
+		AssertionsJPA.assertJpaPO.setDomainEntity(entity);
 
 		assertionErrorMessage = verifyCascadeTypePersist();
 
@@ -99,8 +100,6 @@ public enum AssertionsJpaUtilHelper {
 		deleteRemainingEntities();
 	}
 
-
-
 	/**
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
@@ -116,7 +115,7 @@ public enum AssertionsJpaUtilHelper {
 
 		try {
 			entityManager = EntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
+					.createEntityManagerToBeClosed(AssertionsJPA.assertJpaPO.getPersistenceUnitName());
 
 			final QueryRM queryRM = new QueryRM().withEntityManager(entityManager);
 
@@ -145,36 +144,11 @@ public enum AssertionsJpaUtilHelper {
 	/**
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
-	 * @param entities
-	 */
-	public static <ENTITY> void assertExistsEntity(final String persistenceUnitName,
-			final Object... entities) {
-
-		QueryRM queryRM = null;
-
-		try {
-			queryRM = EntityManagerFactoryCacheHelper.createQueryRmToBeClosed(persistenceUnitName);
-			final boolean result = queryRM.existsEntityInstances(entities);
-			if (!result) {
-				final String assertionErrorMessage = createAssertionExistsMessage(entities[0].getClass(),
-						persistenceUnitName);
-				throwAssertionError(assertionErrorMessage);
-			}
-
-		} finally {
-			EntityManagerFactoryCacheHelper.closeQueryRM(queryRM);
-		}
-		return;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
 	 * @param entityClass
 	 * @param identities
 	 */
-	public static <ENTITY> void assertExistsById(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final Object... identities) {
+	public static <ENTITY> void assertExistsById(final String persistenceUnitName, final Class<ENTITY> entityClass,
+			final Object... identities) {
 
 		QueryRM queryRM = null;
 
@@ -193,6 +167,30 @@ public enum AssertionsJpaUtilHelper {
 		return;
 	}
 
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entities
+	 */
+	public static <ENTITY> void assertExistsEntity(final String persistenceUnitName, final Object... entities) {
+
+		QueryRM queryRM = null;
+
+		try {
+			queryRM = EntityManagerFactoryCacheHelper.createQueryRmToBeClosed(persistenceUnitName);
+			final boolean result = queryRM.existsEntityInstances(entities);
+			if (!result) {
+				final String assertionErrorMessage = createAssertionExistsMessage(entities[0].getClass(),
+						persistenceUnitName);
+				throwAssertionError(assertionErrorMessage);
+			}
+
+		} finally {
+			EntityManagerFactoryCacheHelper.closeQueryRM(queryRM);
+		}
+		return;
+	}
+
 	private static <ENTITY> String createAssertionErrorMessage(final Class<ENTITY> entityClass, final String outcome,
 			final String createOrDelete) {
 
@@ -205,14 +203,15 @@ public enum AssertionsJpaUtilHelper {
 		assertionErrorMessage.append("] is ");
 		assertionErrorMessage.append(outcome);
 		assertionErrorMessage.append(" available from the database [");
-		assertionErrorMessage.append(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
+		assertionErrorMessage.append(AssertionsJPA.assertJpaPO.getPersistenceUnitName());
 		assertionErrorMessage.append("].");
 
 		return assertionErrorMessage.toString();
 
 	}
 
-	private static <ENTITY> String createAssertionExistsMessage(final Class<ENTITY> entityClass, final String persistenceUnitName) {
+	private static <ENTITY> String createAssertionExistsMessage(final Class<ENTITY> entityClass,
+			final String persistenceUnitName) {
 
 		final StringBuilder assertionErrorMessage = new StringBuilder();
 
@@ -234,19 +233,18 @@ public enum AssertionsJpaUtilHelper {
 		try {
 
 			entityManager = EntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
+					.createEntityManagerToBeClosed(AssertionsJPA.assertJpaPO.getPersistenceUnitName());
 
 			final boolean exists = new QueryRM().withEntityManager(entityManager)
-					.existsEntityInstances(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
+					.existsEntityInstances(AssertionsJPA.assertJpaPO.getDomainEntity());
 
 			if (!exists) {
-				createAssertionErrorMessage(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity().getClass(),
-						"not available",
-						"delete");
+				createAssertionErrorMessage(AssertionsJPA.assertJpaPO.getDomainEntity().getClass(),
+						"not available", "delete");
 			}
 
 			new TransactionRM().withEntityManager(entityManager)
-			.transactDelete(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
+			.transactDelete(AssertionsJPA.assertJpaPO.getDomainEntity());
 
 		} finally {
 
@@ -261,11 +259,11 @@ public enum AssertionsJpaUtilHelper {
 
 		try {
 
-			for (final Map.Entry<String, Object> entry : AssertionsJpaUtilHelper.assertJpaPO.getCascadeRemoveNotMap()
+			for (final Map.Entry<String, Object> entry : AssertionsJPA.assertJpaPO.getCascadeRemoveNotMap()
 					.entrySet()) {
 
 				entityManager = EntityManagerFactoryCacheHelper
-						.createEntityManagerToBeClosed(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
+						.createEntityManagerToBeClosed(AssertionsJPA.assertJpaPO.getPersistenceUnitName());
 
 				final Object entity = entityManager.find(Class.forName(entry.getKey()), entry.getValue());
 
@@ -300,10 +298,10 @@ public enum AssertionsJpaUtilHelper {
 		try {
 
 			entityManager = EntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(AssertionsJpaUtilHelper.assertJpaPO.getPersistenceUnitName());
+					.createEntityManagerToBeClosed(AssertionsJPA.assertJpaPO.getPersistenceUnitName());
 
 			mergedEntity = (ENTITY) new TransactionRM().withEntityManager(entityManager)
-					.transactCreateOrUpdate(AssertionsJpaUtilHelper.assertJpaPO.getDomainEntity());
+					.transactCreateOrUpdate(AssertionsJPA.assertJpaPO.getDomainEntity());
 
 		} catch (@SuppressWarnings("unused") final Exception e) {
 
@@ -327,8 +325,8 @@ public enum AssertionsJpaUtilHelper {
 	 */
 	private static String verifyCascadeTypePersist() {
 
-		return verifyUsingMaps(AssertionsJpaUtilHelper.assertJpaPO.getCascadePersistMap(),
-				AssertionsJpaUtilHelper.assertJpaPO.getCascadePersistNotMap(), "Create");
+		return verifyUsingMaps(AssertionsJPA.assertJpaPO.getCascadePersistMap(),
+				AssertionsJPA.assertJpaPO.getCascadePersistNotMap(), "Create");
 	}
 
 	/**
@@ -338,8 +336,8 @@ public enum AssertionsJpaUtilHelper {
 	 */
 	private static String verifyCascadeTypeRemove() {
 
-		return verifyUsingMaps(AssertionsJpaUtilHelper.assertJpaPO.getCascadeRemoveNotMap(),
-				AssertionsJpaUtilHelper.assertJpaPO.getCascadeRemoveMap(), "delete");
+		return verifyUsingMaps(AssertionsJPA.assertJpaPO.getCascadeRemoveNotMap(),
+				AssertionsJPA.assertJpaPO.getCascadeRemoveMap(), "delete");
 
 	}
 

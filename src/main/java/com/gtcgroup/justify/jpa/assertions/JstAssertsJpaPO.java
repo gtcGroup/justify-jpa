@@ -23,7 +23,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.helper;
+package com.gtcgroup.justify.jpa.assertions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,18 +39,18 @@ import java.util.Map;
  * @author
  * @since v.6.0
  */
-public class JstAssertJpaPO {
+public class JstAssertsJpaPO {
 
 	/**
 	 * This method initializes the class.
 	 *
 	 * @param persistenceUnitName
 	 * @param domainEntity
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertsJpaPO}
 	 */
-	public static JstAssertJpaPO withDomainEntity(final String persistenceUnitName, final Object domainEntity) {
+	public static JstAssertsJpaPO withDomainEntity(final String persistenceUnitName, final Object domainEntity) {
 
-		return new JstAssertJpaPO(persistenceUnitName, domainEntity);
+		return new JstAssertsJpaPO(persistenceUnitName, domainEntity);
 	}
 
 	private Object domainEntity;
@@ -71,7 +71,7 @@ public class JstAssertJpaPO {
 	 * @param persistenceUnitName
 	 * @param domainEntity
 	 */
-	protected JstAssertJpaPO(final String persistenceUnitName, final Object domainEntity) {
+	protected JstAssertsJpaPO(final String persistenceUnitName, final Object domainEntity) {
 
 		super();
 
@@ -85,9 +85,9 @@ public class JstAssertJpaPO {
 	 * @param className
 	 * @param entityIdentity
 	 * @param isTrue
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertsJpaPO}
 	 */
-	public JstAssertJpaPO addCascadePersist(final String className, final Object entityIdentity, final boolean isTrue) {
+	public JstAssertsJpaPO addCascadePersist(final String className, final Object entityIdentity, final boolean isTrue) {
 
 		if (isTrue) {
 			this.cascadePersistMap.put(className, entityIdentity);
@@ -102,9 +102,9 @@ public class JstAssertJpaPO {
 	 * @param className
 	 * @param entityIdentity
 	 * @param isTrue
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertsJpaPO}
 	 */
-	public JstAssertJpaPO addCascadeRemove(final String className, final Object entityIdentity, final boolean isTrue) {
+	public JstAssertsJpaPO addCascadeRemove(final String className, final Object entityIdentity, final boolean isTrue) {
 
 		if (isTrue) {
 			this.cascadeRemoveMap.put(className, entityIdentity);
@@ -196,9 +196,9 @@ public class JstAssertJpaPO {
 	/**
 	 * @param className
 	 * @param entityIdentity
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertsJpaPO}
 	 */
-	public JstAssertJpaPO usingCascadeNone(final String className, final Object entityIdentity) {
+	public JstAssertsJpaPO usingCascadeNone(final String className, final Object entityIdentity) {
 
 		this.cascadePersistNotMap.put(className, entityIdentity);
 		this.cascadeRemoveNotMap.put(className, entityIdentity);
@@ -209,9 +209,9 @@ public class JstAssertJpaPO {
 	/**
 	 * @param clazz
 	 * @param entityIdentity
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertsJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeAll(final Class<?> clazz, final Object entityIdentity) {
+	public JstAssertsJpaPO withCascadeAll(final Class<?> clazz, final Object entityIdentity) {
 
 		final String className = clazz.getName();
 
@@ -224,9 +224,9 @@ public class JstAssertJpaPO {
 	/**
 	 * @param clazz
 	 * @param entityIdentity
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertsJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeAllExceptRemove(final Class<?> clazz, final Object entityIdentity) {
+	public JstAssertsJpaPO withCascadeAllExceptRemove(final Class<?> clazz, final Object entityIdentity) {
 
 		final String className = clazz.getName();
 
