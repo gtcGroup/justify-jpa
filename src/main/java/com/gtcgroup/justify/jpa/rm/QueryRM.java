@@ -43,7 +43,7 @@ import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
-import com.gtcgroup.justify.core.base.BaseRM;
+import com.gtcgroup.justify.core.base.JstBaseTestingRM;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 
 /**
@@ -57,7 +57,7 @@ import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
  * @author Marvin Toll
  * @since v3.0
  */
-public class QueryRM extends BaseRM {
+public class QueryRM extends JstBaseTestingRM {
 
 	/**
 	 * Optimization for reading from the database. Often used when there are

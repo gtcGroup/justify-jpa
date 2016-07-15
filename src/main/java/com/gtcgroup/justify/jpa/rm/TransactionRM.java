@@ -31,7 +31,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.core.base.BaseRM;
+import com.gtcgroup.justify.core.base.JstBaseTestingRM;
 
 /**
  * This Resource Manager provides convenience methods for transactions.
@@ -44,7 +44,7 @@ import com.gtcgroup.justify.core.base.BaseRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public class TransactionRM extends BaseRM {
+public class TransactionRM extends JstBaseTestingRM {
 
 	private EntityManager entityManager;
 

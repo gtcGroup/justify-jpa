@@ -36,7 +36,7 @@ import javax.persistence.EntityManagerFactory;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
-import com.gtcgroup.justify.core.base.JstBaseRule;
+import com.gtcgroup.justify.core.base.JstBaseTestingRule;
 import com.gtcgroup.justify.core.exception.internal.TestingConstructorRuleException;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
@@ -56,7 +56,7 @@ import com.gtcgroup.justify.jpa.rm.TransactionRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public class JstConfigureJpaRule extends JstBaseRule {
+public class JstConfigureJpaRule extends JstBaseTestingRule {
 
 	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP;
 
@@ -189,7 +189,7 @@ public class JstConfigureJpaRule extends JstBaseRule {
 	}
 
 	/**
-	 * @see JstBaseRule#afterTM()
+	 * @see JstBaseTestingRule#afterTM()
 	 */
 	@Override
 	public void afterTM() throws Throwable {
@@ -198,7 +198,7 @@ public class JstConfigureJpaRule extends JstBaseRule {
 	}
 
 	/**
-	 * @see JstBaseRule#beforeTM()
+	 * @see JstBaseTestingRule#beforeTM()
 	 */
 	@Override
 	public void beforeTM() {
