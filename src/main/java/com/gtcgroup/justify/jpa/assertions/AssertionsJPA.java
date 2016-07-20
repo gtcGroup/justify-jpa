@@ -52,7 +52,7 @@ public enum AssertionsJPA {
 
 	@SuppressWarnings("javadoc") INSTANCE;
 
-	private static JstAssertsJpaPO assertJpaPO;
+	private static JstAssertionsJpaPO assertJpaPO;
 
 	/**
 	 * This method verifies cascade annotations.
@@ -61,7 +61,7 @@ public enum AssertionsJPA {
 	 * @param <PO>
 	 * @param assertJpaPO
 	 */
-	public static <ENTITY, PO extends JstAssertsJpaPO> void assertCascadeTypes(final PO assertJpaPO) {
+	public static <ENTITY, PO extends JstAssertionsJpaPO> void assertCascadeTypes(final PO assertJpaPO) {
 
 		String assertionErrorMessage = null;
 

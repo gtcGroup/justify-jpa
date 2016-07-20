@@ -58,7 +58,7 @@ import com.gtcgroup.justify.jpa.rm.TransactionRM;
  */
 public class JstConfigureJpaRule extends JstBaseTestingRule {
 
-	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP;
+	protected static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP;
 
 	protected static List<String> createBeanHelperProcessedList = new ArrayList<String>();
 

@@ -52,7 +52,7 @@ public enum EntityManagerFactoryCacheHelper {
 	INSTANCE;
 
 	/** Key suffix for cached {@link EntityManagerFactory}. */
-	public static final String NO_PERSISTENCE_PROPERTY_MAP = ".noPersistencePropertyMap";
+	public static final String NO_PERSISTENCE_PROPERTY_MAP = "_noPersistencePropertyMap";
 
 	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new ConcurrentHashMap<String, EntityManagerFactory>();
 
@@ -68,7 +68,7 @@ public enum EntityManagerFactoryCacheHelper {
 
 		if (null != persistencePropertyMap) {
 
-			key += "." + persistencePropertyMap.toString();
+			key += "_" + persistencePropertyMap.toString();
 		} else {
 
 			key += EntityManagerFactoryCacheHelper.NO_PERSISTENCE_PROPERTY_MAP;
@@ -120,15 +120,30 @@ public enum EntityManagerFactoryCacheHelper {
 
 		key = calculateKey(persistenceUnitName, persistencePropertyMap);
 
+		EntityManagerFactory entityManagerFactory = null;
+
 		// RETURN
 		if (EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(key)) {
-			final EntityManagerFactory entityManagerFactory = EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
+
+			entityManagerFactory = EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
 					.get(key);
+			// Ensure that both entries stay synchronized.
 			EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceUnitName, entityManagerFactory);
+
 			return entityManagerFactory;
 		}
 
-		final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
+		// RETURN
+		if (null == persistencePropertyMap
+				&& EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(persistenceUnitName)) {
+
+			entityManagerFactory = EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
+					.get(persistenceUnitName);
+
+			return entityManagerFactory;
+		}
+
+		entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
 				persistencePropertyMap);
 
 		// Ensures retrieval with either key.
