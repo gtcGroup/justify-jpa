@@ -40,10 +40,10 @@ import com.gtcgroup.justify.core.base.JstBaseTestingRule;
 import com.gtcgroup.justify.core.exception.internal.TestingConstructorRuleException;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
-import com.gtcgroup.justify.jpa.helper.EntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.helper.JstBasePopulateDataBeanHelper;
-import com.gtcgroup.justify.jpa.rm.QueryRM;
-import com.gtcgroup.justify.jpa.rm.TransactionRM;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
+import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.rm.JstQueryRM;
+import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
 
 /**
  * This {@link Rule} class initializes persistence.
@@ -60,15 +60,15 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 
 	protected static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP;
 
-	protected static List<String> createBeanHelperProcessedList = new ArrayList<String>();
+	protected static List<String> dataPopulatorProcessedList = new ArrayList<String>();
 
 	private static void initializeJPA(final String persistenceUnitName,
 			final Map<String, Object> persistencePropertyMap) {
 
-		final EntityManager entityManager = EntityManagerFactoryCacheHelper
+		final EntityManager entityManager = JstEntityManagerFactoryCacheHelper
 				.createEntityManagerToBeClosed(persistenceUnitName, persistencePropertyMap);
 		entityManager.setProperty(null, "toForceCompletingConfiguration");
-		EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 
 		return;
 	}
@@ -77,44 +77,44 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 	 * @param <RULE>
 	 * @param persistenceUnitName
 	 * @param persistencePropertyMap
-	 * @param createBeanHelpers
+	 * @param dataPopulators
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
 	protected static <RULE extends TestRule> RULE processRule(final String persistenceUnitName,
 			final Map<String, Object> persistencePropertyMap,
-			final Map<String, EntityManagerFactory> entityManagerFactoryMap, final Class<?>... createBeanHelpers) {
+			final Map<String, EntityManagerFactory> entityManagerFactoryMap, final Class<?>... dataPopulators) {
 
 		JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP = entityManagerFactoryMap;
 
-		return (RULE) new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap, createBeanHelpers);
+		return (RULE) new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap, dataPopulators);
 	}
 
 	/**
 	 * @param <RULE>
 	 * @param persistenceUnitName
-	 * @param createBeanHelpers
+	 * @param dataPopulators
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <RULE extends TestRule> RULE withDataLoad(final String persistenceUnitName,
-			final Class<?>... createBeanHelpers) {
+	public static <RULE extends TestRule> RULE withDataPopulator(final String persistenceUnitName,
+			final Class<?>... dataPopulators) {
 
-		return (RULE) new JstConfigureJpaRule(persistenceUnitName, null, createBeanHelpers);
+		return (RULE) new JstConfigureJpaRule(persistenceUnitName, null, dataPopulators);
 	}
 
 	/**
 	 * @param <RULE>
 	 * @param persistenceUnitName
 	 * @param persistencePropertyMap
-	 * @param createBeanHelpers
+	 * @param dataPopulators
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <RULE extends TestRule> RULE withDataLoad(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMap, final Class<?>... createBeanHelpers) {
+	public static <RULE extends TestRule> RULE withDataPopulator(final String persistenceUnitName,
+			final Map<String, Object> persistencePropertyMap, final Class<?>... dataPopulators) {
 
-		return (RULE) new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap, createBeanHelpers);
+		return (RULE) new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap, dataPopulators);
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 		return (RULE) new JstConfigureJpaRule(persistenceUnitName, null);
 	}
 
-	private final Map<String, JstBasePopulateDataBeanHelper> createBeanHelperToBeProcessedMap = new LinkedHashMap<String, JstBasePopulateDataBeanHelper>();
+	private final Map<String, JstBaseDataPopulator> dataPopulatorToBeProcessedMap = new LinkedHashMap<String, JstBaseDataPopulator>();
 
 	protected final String persistenceUnitName;
 
@@ -152,10 +152,10 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 	 *
 	 * @param persistenceUnitName
 	 * @param persistencePropertyMap
-	 * @param createBeanHelpers
+	 * @param dataPopulators
 	 */
 	protected JstConfigureJpaRule(final String persistenceUnitName, final Map<String, Object> persistencePropertyMap,
-			final Class<?>... createBeanHelpers) {
+			final Class<?>... dataPopulators) {
 
 		super();
 
@@ -163,20 +163,20 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 
 		this.persistencePropertyMap = persistencePropertyMap;
 
-		if (0 != createBeanHelpers.length) {
+		if (0 != dataPopulators.length) {
 
-			for (final Class<?> clazz : createBeanHelpers) {
+			for (final Class<?> clazz : dataPopulators) {
 
-				final String key = EntityManagerFactoryCacheHelper.calculateKey(persistenceUnitName,
+				final String key = JstEntityManagerFactoryCacheHelper.calculateKey(persistenceUnitName,
 						persistencePropertyMap) + " @ " + clazz.getName();
 
-				if (JstConfigureJpaRule.createBeanHelperProcessedList.contains(key)) {
+				if (JstConfigureJpaRule.dataPopulatorProcessedList.contains(key)) {
 					break;
 				}
 
-				if (JstBasePopulateDataBeanHelper.class.isAssignableFrom(clazz)) {
+				if (JstBaseDataPopulator.class.isAssignableFrom(clazz)) {
 
-					this.createBeanHelperToBeProcessedMap.put(key, (JstBasePopulateDataBeanHelper) ReflectionUtilHelper
+					this.dataPopulatorToBeProcessedMap.put(key, (JstBaseDataPopulator) ReflectionUtilHelper
 							.instantiatePublicConstructorNoArgument(clazz));
 				} else {
 
@@ -203,7 +203,7 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 	@Override
 	public void beforeTM() {
 
-		final EntityManagerFactory entityManagerFactory = EntityManagerFactoryCacheHelper
+		final EntityManagerFactory entityManagerFactory = JstEntityManagerFactoryCacheHelper
 				.createEntityManagerFactory(this.persistenceUnitName, this.persistencePropertyMap);
 
 		if (null != JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP) {
@@ -212,40 +212,40 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 			JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP.put(this.persistenceUnitName, entityManagerFactory);
 		}
 
-		if (0 != this.createBeanHelperToBeProcessedMap.size()) {
+		if (0 != this.dataPopulatorToBeProcessedMap.size()) {
 
-			for (final Map.Entry<String, JstBasePopulateDataBeanHelper> entry : this.createBeanHelperToBeProcessedMap
+			for (final Map.Entry<String, JstBaseDataPopulator> entry : this.dataPopulatorToBeProcessedMap
 					.entrySet()) {
 
-				processCreateBeanHelper(entry.getValue());
+				processdataPopulator(entry.getValue());
 
-				JstConfigureJpaRule.createBeanHelperProcessedList.add(entry.getKey());
+				JstConfigureJpaRule.dataPopulatorProcessedList.add(entry.getKey());
 			}
 		}
 	}
 
 	/**
-	 * @param createBeanHelper
+	 * @param dataPopulator
 	 */
-	protected void processCreateBeanHelper(final JstBasePopulateDataBeanHelper createBeanHelper) {
+	protected void processdataPopulator(final JstBaseDataPopulator dataPopulator) {
 
 		EntityManager entityManager = null;
 
 		try {
-			entityManager = EntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName,
+			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName,
 					this.persistencePropertyMap);
 
-			final List<Object> createList = createBeanHelper
-					.populateCreateListTM(new QueryRM().withEntityManager(entityManager));
+			final List<Object> createList = dataPopulator
+					.populateCreateListTM(new JstQueryRM().withEntityManager(entityManager));
 
-			new TransactionRM().withEntityManager(entityManager).transactCreateOrUpdateFromList(createList);
+			new JstTransactionRM().withEntityManager(entityManager).transactCreateOrUpdateFromList(createList);
 
 		} catch (final Exception e) {
 
 			throw new TestingRuntimeException(e);
 		} finally {
 
-			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 	}
 }

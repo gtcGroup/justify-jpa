@@ -33,9 +33,9 @@ import javax.persistence.EntityManager;
 import org.junit.Assert;
 
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
-import com.gtcgroup.justify.jpa.helper.EntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.rm.QueryRM;
-import com.gtcgroup.justify.jpa.rm.TransactionRM;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
+import com.gtcgroup.justify.jpa.rm.JstQueryRM;
+import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
 
 /**
  * This Util Helper class provides support for assertion processing.
@@ -52,24 +52,25 @@ public enum AssertionsJPA {
 
 	@SuppressWarnings("javadoc") INSTANCE;
 
-	private static JstAssertionsJpaPO assertJpaPO;
+	private static JstAssertionsJpaCascadePO assertionsJpaCascadePO;
 
 	/**
 	 * This method verifies cascade annotations.
 	 *
 	 * @param <ENTITY>
 	 * @param <PO>
-	 * @param assertJpaPO
+	 * @param assertionsJpaCascadePO
 	 */
-	public static <ENTITY, PO extends JstAssertionsJpaPO> void assertCascadeTypes(final PO assertJpaPO) {
+	public static <ENTITY, PO extends JstAssertionsJpaCascadePO> void assertCascadeTypes(
+			final PO assertionsJpaCascadePO) {
 
 		String assertionErrorMessage = null;
 
-		AssertionsJPA.assertJpaPO = assertJpaPO;
+		AssertionsJPA.assertionsJpaCascadePO = assertionsJpaCascadePO;
 
 		@SuppressWarnings("unchecked")
 		final ENTITY entity = (ENTITY) retrieveMergedEntityFromCreate();
-		AssertionsJPA.assertJpaPO.setDomainEntity(entity);
+		AssertionsJPA.assertionsJpaCascadePO.setDomainEntity(entity);
 
 		assertionErrorMessage = verifyCascadeTypePersist();
 
@@ -114,12 +115,12 @@ public enum AssertionsJPA {
 		String message = new String();
 
 		try {
-			entityManager = EntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(AssertionsJPA.assertJpaPO.getPersistenceUnitName());
+			entityManager = JstEntityManagerFactoryCacheHelper
+					.createEntityManagerToBeClosed(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
 
-			final QueryRM queryRM = new QueryRM().withEntityManager(entityManager);
+			final JstQueryRM jstQueryRM = new JstQueryRM().withEntityManager(entityManager);
 
-			final boolean verdict = queryRM.existsEntityIdentities(entityClass, entityIdentity);
+			final boolean verdict = jstQueryRM.existsEntityIdentities(entityClass, entityIdentity);
 
 			if (exists) {
 
@@ -136,7 +137,7 @@ public enum AssertionsJPA {
 
 		} finally {
 
-			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 		return message;
 	}
@@ -150,18 +151,18 @@ public enum AssertionsJPA {
 	public static <ENTITY> void assertExistsById(final String persistenceUnitName, final Class<ENTITY> entityClass,
 			final Object... identities) {
 
-		QueryRM queryRM = null;
+		JstQueryRM jstQueryRM = null;
 
 		try {
-			queryRM = EntityManagerFactoryCacheHelper.createQueryRmToBeClosed(persistenceUnitName);
-			final boolean result = queryRM.existsEntityIdentities(entityClass, identities);
+			jstQueryRM = JstEntityManagerFactoryCacheHelper.createQueryRmToBeClosed(persistenceUnitName);
+			final boolean result = jstQueryRM.existsEntityIdentities(entityClass, identities);
 			if (!result) {
 				final String assertionErrorMessage = createAssertionExistsMessage(entityClass, persistenceUnitName);
 				throwAssertionError(assertionErrorMessage);
 			}
 
 		} finally {
-			EntityManagerFactoryCacheHelper.closeQueryRM(queryRM);
+			JstEntityManagerFactoryCacheHelper.closeQueryRM(jstQueryRM);
 		}
 
 		return;
@@ -174,11 +175,11 @@ public enum AssertionsJPA {
 	 */
 	public static <ENTITY> void assertExistsEntity(final String persistenceUnitName, final Object... entities) {
 
-		QueryRM queryRM = null;
+		JstQueryRM jstQueryRM = null;
 
 		try {
-			queryRM = EntityManagerFactoryCacheHelper.createQueryRmToBeClosed(persistenceUnitName);
-			final boolean result = queryRM.existsEntityInstances(entities);
+			jstQueryRM = JstEntityManagerFactoryCacheHelper.createQueryRmToBeClosed(persistenceUnitName);
+			final boolean result = jstQueryRM.existsEntityInstances(entities);
 			if (!result) {
 				final String assertionErrorMessage = createAssertionExistsMessage(entities[0].getClass(),
 						persistenceUnitName);
@@ -186,7 +187,7 @@ public enum AssertionsJPA {
 			}
 
 		} finally {
-			EntityManagerFactoryCacheHelper.closeQueryRM(queryRM);
+			JstEntityManagerFactoryCacheHelper.closeQueryRM(jstQueryRM);
 		}
 		return;
 	}
@@ -203,7 +204,7 @@ public enum AssertionsJPA {
 		assertionErrorMessage.append("] is ");
 		assertionErrorMessage.append(outcome);
 		assertionErrorMessage.append(" available from the database [");
-		assertionErrorMessage.append(AssertionsJPA.assertJpaPO.getPersistenceUnitName());
+		assertionErrorMessage.append(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
 		assertionErrorMessage.append("].");
 
 		return assertionErrorMessage.toString();
@@ -232,23 +233,23 @@ public enum AssertionsJPA {
 
 		try {
 
-			entityManager = EntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(AssertionsJPA.assertJpaPO.getPersistenceUnitName());
+			entityManager = JstEntityManagerFactoryCacheHelper
+					.createEntityManagerToBeClosed(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
 
-			final boolean exists = new QueryRM().withEntityManager(entityManager)
-					.existsEntityInstances(AssertionsJPA.assertJpaPO.getDomainEntity());
+			final boolean exists = new JstQueryRM().withEntityManager(entityManager)
+					.existsEntityInstances(AssertionsJPA.assertionsJpaCascadePO.getDomainEntity());
 
 			if (!exists) {
-				createAssertionErrorMessage(AssertionsJPA.assertJpaPO.getDomainEntity().getClass(),
+				createAssertionErrorMessage(AssertionsJPA.assertionsJpaCascadePO.getDomainEntity().getClass(),
 						"not available", "delete");
 			}
 
-			new TransactionRM().withEntityManager(entityManager)
-			.transactDelete(AssertionsJPA.assertJpaPO.getDomainEntity());
+			new JstTransactionRM().withEntityManager(entityManager)
+			.transactDelete(AssertionsJPA.assertionsJpaCascadePO.getDomainEntity());
 
 		} finally {
 
-			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 		return assertionErrorMessage;
 	}
@@ -259,15 +260,15 @@ public enum AssertionsJPA {
 
 		try {
 
-			for (final Map.Entry<String, Object> entry : AssertionsJPA.assertJpaPO.getCascadeRemoveNotMap()
+			for (final Map.Entry<String, Object> entry : AssertionsJPA.assertionsJpaCascadePO.getCascadeRemoveNotMap()
 					.entrySet()) {
 
-				entityManager = EntityManagerFactoryCacheHelper
-						.createEntityManagerToBeClosed(AssertionsJPA.assertJpaPO.getPersistenceUnitName());
+				entityManager = JstEntityManagerFactoryCacheHelper
+						.createEntityManagerToBeClosed(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
 
 				final Object entity = entityManager.find(Class.forName(entry.getKey()), entry.getValue());
 
-				new TransactionRM().withEntityManager(entityManager).transactDelete(entity);
+				new JstTransactionRM().withEntityManager(entityManager).transactDelete(entity);
 
 			}
 
@@ -277,7 +278,7 @@ public enum AssertionsJPA {
 
 		} finally {
 
-			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 		return;
 
@@ -297,11 +298,11 @@ public enum AssertionsJPA {
 
 		try {
 
-			entityManager = EntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(AssertionsJPA.assertJpaPO.getPersistenceUnitName());
+			entityManager = JstEntityManagerFactoryCacheHelper
+					.createEntityManagerToBeClosed(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
 
-			mergedEntity = (ENTITY) new TransactionRM().withEntityManager(entityManager)
-					.transactCreateOrUpdate(AssertionsJPA.assertJpaPO.getDomainEntity());
+			mergedEntity = (ENTITY) new JstTransactionRM().withEntityManager(entityManager)
+					.transactCreateOrUpdate(AssertionsJPA.assertionsJpaCascadePO.getDomainEntity());
 
 		} catch (@SuppressWarnings("unused") final Exception e) {
 
@@ -309,7 +310,7 @@ public enum AssertionsJPA {
 
 		} finally {
 
-			EntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 		return mergedEntity;
 	}
@@ -325,8 +326,8 @@ public enum AssertionsJPA {
 	 */
 	private static String verifyCascadeTypePersist() {
 
-		return verifyUsingMaps(AssertionsJPA.assertJpaPO.getCascadePersistMap(),
-				AssertionsJPA.assertJpaPO.getCascadePersistNotMap(), "Create");
+		return verifyUsingMaps(AssertionsJPA.assertionsJpaCascadePO.getCascadePersistMap(),
+				AssertionsJPA.assertionsJpaCascadePO.getCascadePersistNotMap(), "Create");
 	}
 
 	/**
@@ -336,8 +337,8 @@ public enum AssertionsJPA {
 	 */
 	private static String verifyCascadeTypeRemove() {
 
-		return verifyUsingMaps(AssertionsJPA.assertJpaPO.getCascadeRemoveNotMap(),
-				AssertionsJPA.assertJpaPO.getCascadeRemoveMap(), "delete");
+		return verifyUsingMaps(AssertionsJPA.assertionsJpaCascadePO.getCascadeRemoveNotMap(),
+				AssertionsJPA.assertionsJpaCascadePO.getCascadeRemoveMap(), "delete");
 
 	}
 

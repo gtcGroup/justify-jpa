@@ -28,8 +28,8 @@ package com.gtcgroup.justify.jpa.helper;
 
 import java.util.List;
 
-import com.gtcgroup.justify.core.base.JstBaseTestingBeanHelper;
-import com.gtcgroup.justify.jpa.rm.QueryRM;
+import com.gtcgroup.justify.core.base.JstBaseTestingClass;
+import com.gtcgroup.justify.jpa.rm.JstQueryRM;
 
 /**
  * This Helper class provides support for creating test data.
@@ -42,14 +42,23 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public abstract class JstBasePopulateDataBeanHelper extends JstBaseTestingBeanHelper {
+public abstract class JstBaseDataPopulator extends JstBaseTestingClass {
+
+	/**
+	 * @see JstBaseTestingClass#assignPatternSuffixTM()
+	 */
+	@Override
+	protected String assignPatternSuffixTM() {
+
+		return "DataPopulator";
+	}
 
 	/**
 	 * This method requires implementation of a Template Method.
 	 *
-	 * @param queryRM
+	 * @param jstQueryRM
 	 * @return {@link List}
 	 */
-	public abstract List<Object> populateCreateListTM(QueryRM queryRM);
+	public abstract List<Object> populateCreateListTM(JstQueryRM jstQueryRM);
 
 }

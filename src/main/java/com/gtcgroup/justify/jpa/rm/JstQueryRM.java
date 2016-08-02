@@ -45,6 +45,7 @@ import org.eclipse.persistence.config.QueryHints;
 
 import com.gtcgroup.justify.core.base.JstBaseTestingRM;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.jpa.helper.internal.QueryUtilHelper;
 
 /**
  * This Resource Manager provides convenience methods for queries.
@@ -57,7 +58,7 @@ import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
  * @author Marvin Toll
  * @since v3.0
  */
-public class QueryRM extends JstBaseTestingRM {
+public class JstQueryRM extends JstBaseTestingRM {
 
 	/**
 	 * Optimization for reading from the database. Often used when there are
@@ -75,19 +76,19 @@ public class QueryRM extends JstBaseTestingRM {
 	public static final ConcurrentMap<String, Object> FIND_READ_ONLY = new ConcurrentHashMap<String, Object>();
 
 	static {
-		QueryRM.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
+		JstQueryRM.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
 	}
 
 	static {
-		QueryRM.FIND_FORCING_DATABASE_TRIP_AND_CACHE_REFRESH.put(QueryHints.CACHE_RETRIEVE_MODE,
+		JstQueryRM.FIND_FORCING_DATABASE_TRIP_AND_CACHE_REFRESH.put(QueryHints.CACHE_RETRIEVE_MODE,
 				CacheRetrieveMode.BYPASS);
 
-		QueryRM.FIND_FORCING_DATABASE_TRIP_AND_CACHE_REFRESH.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
+		JstQueryRM.FIND_FORCING_DATABASE_TRIP_AND_CACHE_REFRESH.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
 
-		QueryRM.FIND_FORCING_DATABASE_TRIP_WITH_NO_IMPACT_TO_CACHE.put(QueryHints.CACHE_RETRIEVE_MODE,
+		JstQueryRM.FIND_FORCING_DATABASE_TRIP_WITH_NO_IMPACT_TO_CACHE.put(QueryHints.CACHE_RETRIEVE_MODE,
 				CacheUsage.DoNotCheckCache);
 
-		QueryRM.FIND_FORCING_DATABASE_TRIP_WITH_NO_IMPACT_TO_CACHE.put(QueryHints.CACHE_STORE_MODE,
+		JstQueryRM.FIND_FORCING_DATABASE_TRIP_WITH_NO_IMPACT_TO_CACHE.put(QueryHints.CACHE_STORE_MODE,
 				CacheStoreMode.BYPASS);
 	}
 
@@ -120,41 +121,13 @@ public class QueryRM extends JstBaseTestingRM {
 	}
 
 	/**
-	 * This method executes a SELECT query that returns a single untyped result.
-	 *
-	 * @param <ENTITY>
-	 * @param query
-	 * @param parameterValuesInOrder
-	 * @return ENTITY
-	 */
-	@SuppressWarnings("unchecked")
-	protected static <ENTITY> ENTITY querySingleResult(final Query query, final Object... parameterValuesInOrder) {
-
-		ENTITY entity = null;
-
-		try {
-
-			for (int i = 0; i < parameterValuesInOrder.length; i++) {
-				query.setParameter(i + 1, parameterValuesInOrder[i]);
-			}
-
-			entity = (ENTITY) query.getSingleResult();
-
-		} catch (final Exception e) {
-
-			throwException(e);
-		}
-
-		return entity;
-	}
-
-	/**
 	 * @param message
 	 */
 	private static void throwException(final Exception e) {
 
 		throw new TestingRuntimeException(e);
 	}
+
 
 	/**
 	 * @param entity
@@ -335,7 +308,7 @@ public class QueryRM extends JstBaseTestingRM {
 
 		Object entity;
 		try {
-			entity = getEntityManager().find(entityClass, entityIdentity, QueryRM.FIND_READ_ONLY);
+			entity = getEntityManager().find(entityClass, entityIdentity, JstQueryRM.FIND_READ_ONLY);
 		} catch (final Exception e) {
 
 			throw new TestingRuntimeException(e);
@@ -421,7 +394,7 @@ public class QueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY findReadOnlySingleOrNull(final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		return getEntityManager().find(entityClass, entityIdentity, QueryRM.FIND_READ_ONLY);
+		return getEntityManager().find(entityClass, entityIdentity, JstQueryRM.FIND_READ_ONLY);
 	}
 
 	/**
@@ -544,13 +517,23 @@ public class QueryRM extends JstBaseTestingRM {
 
 	/**
 	 * @param <ENTITY>
-	 * @param name
-	 * @param parameterValuesInOrder
+	 * @param queryPO
 	 * @return ENTITY
 	 */
-	public <ENTITY> ENTITY queryNamedReadOnlySingle(final String name, final Object... parameterValuesInOrder) {
+	public <ENTITY> ENTITY queryNamedReadOnlySingle(final JstJpaQueryPO queryPO) {
 
-		return querySingleResult(createNamedQueryReadOnly(name), parameterValuesInOrder);
+		return QueryUtilHelper.querySingleResult(createNamedQueryReadOnly(queryPO.getQueryName()),
+				queryPO);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param queryName
+	 * @return ENTITY
+	 */
+	public <ENTITY> ENTITY queryNamedReadOnlySingle(final String queryName) {
+
+		return QueryUtilHelper.querySingleResult(createNamedQueryReadOnly(queryName));
 	}
 
 	/**
@@ -638,10 +621,10 @@ public class QueryRM extends JstBaseTestingRM {
 	/**
 	 * @param <RM>
 	 * @param entityManager
-	 * @return {@link QueryRM}
+	 * @return {@link JstQueryRM}
 	 */
 	@SuppressWarnings("unchecked")
-	public <RM extends QueryRM> RM withEntityManager(final EntityManager entityManager) {
+	public <RM extends JstQueryRM> RM withEntityManager(final EntityManager entityManager) {
 
 		this.entityManager = entityManager;
 		return (RM) this;

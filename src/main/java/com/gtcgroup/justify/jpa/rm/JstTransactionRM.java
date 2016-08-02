@@ -44,7 +44,7 @@ import com.gtcgroup.justify.core.base.JstBaseTestingRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public class TransactionRM extends JstBaseTestingRM {
+public class JstTransactionRM extends JstBaseTestingRM {
 
 	private EntityManager entityManager;
 
@@ -146,10 +146,10 @@ public class TransactionRM extends JstBaseTestingRM {
 	/**
 	 * @param <RM>
 	 * @param entityManager
-	 * @return {@link QueryRM}
+	 * @return {@link JstQueryRM}
 	 */
 	@SuppressWarnings("unchecked")
-	public <RM extends TransactionRM> RM withEntityManager(final EntityManager entityManager) {
+	public <RM extends JstTransactionRM> RM withEntityManager(final EntityManager entityManager) {
 
 		this.entityManager = entityManager;
 		return (RM) this;

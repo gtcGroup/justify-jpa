@@ -33,7 +33,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import com.gtcgroup.justify.jpa.rm.QueryRM;
+import com.gtcgroup.justify.jpa.rm.JstQueryRM;
 
 /**
  * This Helper class caches {@link EntityManagerFactory}s.
@@ -46,7 +46,7 @@ import com.gtcgroup.justify.jpa.rm.QueryRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum EntityManagerFactoryCacheHelper {
+public enum JstEntityManagerFactoryCacheHelper {
 
 	/** Instance */
 	INSTANCE;
@@ -71,7 +71,7 @@ public enum EntityManagerFactoryCacheHelper {
 			key += "_" + persistencePropertyMap.toString();
 		} else {
 
-			key += EntityManagerFactoryCacheHelper.NO_PERSISTENCE_PROPERTY_MAP;
+			key += JstEntityManagerFactoryCacheHelper.NO_PERSISTENCE_PROPERTY_MAP;
 		}
 
 		return key;
@@ -100,11 +100,11 @@ public enum EntityManagerFactoryCacheHelper {
 	/**
 	 * This method closes the {@link EntityManager}.
 	 *
-	 * @param queryRM
+	 * @param jstQueryRM
 	 */
-	public static void closeQueryRM(final QueryRM queryRM) {
+	public static void closeQueryRM(final JstQueryRM jstQueryRM) {
 
-		closeEntityManager(queryRM.getEntityManager());
+		closeEntityManager(jstQueryRM.getEntityManager());
 	}
 
 	/**
@@ -123,21 +123,21 @@ public enum EntityManagerFactoryCacheHelper {
 		EntityManagerFactory entityManagerFactory = null;
 
 		// RETURN
-		if (EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(key)) {
+		if (JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(key)) {
 
-			entityManagerFactory = EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
+			entityManagerFactory = JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
 					.get(key);
 			// Ensure that both entries stay synchronized.
-			EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceUnitName, entityManagerFactory);
+			JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceUnitName, entityManagerFactory);
 
 			return entityManagerFactory;
 		}
 
 		// RETURN
 		if (null == persistencePropertyMap
-				&& EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(persistenceUnitName)) {
+				&& JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(persistenceUnitName)) {
 
-			entityManagerFactory = EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
+			entityManagerFactory = JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
 					.get(persistenceUnitName);
 
 			return entityManagerFactory;
@@ -147,8 +147,8 @@ public enum EntityManagerFactoryCacheHelper {
 				persistencePropertyMap);
 
 		// Ensures retrieval with either key.
-		EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(key, entityManagerFactory);
-		EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceUnitName, entityManagerFactory);
+		JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(key, entityManagerFactory);
+		JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceUnitName, entityManagerFactory);
 
 		return entityManagerFactory;
 	}
@@ -179,9 +179,9 @@ public enum EntityManagerFactoryCacheHelper {
 	 * @param persistenceUnitName
 	 * @return {@link EntityManager}
 	 */
-	public static QueryRM createQueryRmToBeClosed(final String persistenceUnitName) {
+	public static JstQueryRM createQueryRmToBeClosed(final String persistenceUnitName) {
 
-		return new QueryRM()
+		return new JstQueryRM()
 				.withEntityManager(createEntityManagerFactory(persistenceUnitName, null).createEntityManager());
 
 	}
@@ -192,13 +192,13 @@ public enum EntityManagerFactoryCacheHelper {
 	 */
 	public static EntityManagerFactory getCurrentEntityManagerFactory(final String persistenceUnitName) {
 
-		return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(persistenceUnitName);
+		return JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(persistenceUnitName);
 	}
 
 	/**
 	 * @return {@link Map}<String,EntityManagerFactory>
 	 */
 	public static Map<String, EntityManagerFactory> getEntityManagerFactoryMap() {
-		return EntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP;
+		return JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP;
 	}
 }

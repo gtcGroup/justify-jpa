@@ -39,18 +39,18 @@ import java.util.Map;
  * @author
  * @since v.6.0
  */
-public class JstAssertionsJpaPO {
+public class JstAssertionsJpaCascadePO {
 
 	/**
 	 * This method initializes the class.
 	 *
 	 * @param persistenceUnitName
 	 * @param domainEntity
-	 * @return {@link JstAssertionsJpaPO}
+	 * @return {@link JstAssertionsJpaCascadePO}
 	 */
-	public static JstAssertionsJpaPO withDomainEntity(final String persistenceUnitName, final Object domainEntity) {
+	public static JstAssertionsJpaCascadePO withDomainEntity(final String persistenceUnitName, final Object domainEntity) {
 
-		return new JstAssertionsJpaPO(persistenceUnitName, domainEntity);
+		return new JstAssertionsJpaCascadePO(persistenceUnitName, domainEntity);
 	}
 
 	private Object domainEntity;
@@ -71,7 +71,7 @@ public class JstAssertionsJpaPO {
 	 * @param persistenceUnitName
 	 * @param domainEntity
 	 */
-	protected JstAssertionsJpaPO(final String persistenceUnitName, final Object domainEntity) {
+	protected JstAssertionsJpaCascadePO(final String persistenceUnitName, final Object domainEntity) {
 
 		super();
 
@@ -85,9 +85,9 @@ public class JstAssertionsJpaPO {
 	 * @param className
 	 * @param entityIdentity
 	 * @param isTrue
-	 * @return {@link JstAssertionsJpaPO}
+	 * @return {@link JstAssertionsJpaCascadePO}
 	 */
-	public JstAssertionsJpaPO addCascadePersist(final String className, final Object entityIdentity, final boolean isTrue) {
+	public JstAssertionsJpaCascadePO addCascadePersist(final String className, final Object entityIdentity, final boolean isTrue) {
 
 		if (isTrue) {
 			this.cascadePersistMap.put(className, entityIdentity);
@@ -102,9 +102,9 @@ public class JstAssertionsJpaPO {
 	 * @param className
 	 * @param entityIdentity
 	 * @param isTrue
-	 * @return {@link JstAssertionsJpaPO}
+	 * @return {@link JstAssertionsJpaCascadePO}
 	 */
-	public JstAssertionsJpaPO addCascadeRemove(final String className, final Object entityIdentity, final boolean isTrue) {
+	public JstAssertionsJpaCascadePO addCascadeRemove(final String className, final Object entityIdentity, final boolean isTrue) {
 
 		if (isTrue) {
 			this.cascadeRemoveMap.put(className, entityIdentity);
@@ -118,7 +118,7 @@ public class JstAssertionsJpaPO {
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
-	public Map<String, Object> getCascadePersistMap() {
+	Map<String, Object> getCascadePersistMap() {
 
 		return this.cascadePersistMap;
 	}
@@ -126,14 +126,14 @@ public class JstAssertionsJpaPO {
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
-	public Map<String, Object> getCascadePersistMapFalse() {
+	Map<String, Object> getCascadePersistMapFalse() {
 		return getCascadePersistNotMap();
 	}
 
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
-	public Map<String, Object> getCascadePersistNotMap() {
+	Map<String, Object> getCascadePersistNotMap() {
 
 		return this.cascadePersistNotMap;
 	}
@@ -141,7 +141,7 @@ public class JstAssertionsJpaPO {
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
-	public Map<String, Object> getCascadeRemoveMap() {
+	Map<String, Object> getCascadeRemoveMap() {
 
 		return this.cascadeRemoveMap;
 	}
@@ -149,14 +149,14 @@ public class JstAssertionsJpaPO {
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
-	public Map<String, Object> getCascadeRemoveMapFalse() {
+	Map<String, Object> getCascadeRemoveMapFalse() {
 		return getCascadeRemoveNotMap();
 	}
 
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
-	public Map<String, Object> getCascadeRemoveNotMap() {
+	Map<String, Object> getCascadeRemoveNotMap() {
 
 		return this.cascadeRemoveNotMap;
 	}
@@ -164,7 +164,7 @@ public class JstAssertionsJpaPO {
 	/**
 	 * @return Object
 	 */
-	public Object getDomainEntity() {
+	Object getDomainEntity() {
 
 		return this.domainEntity;
 	}
@@ -172,7 +172,7 @@ public class JstAssertionsJpaPO {
 	/**
 	 * @return Object
 	 */
-	public Object getEntity() {
+	Object getEntity() {
 
 		return getDomainEntity();
 	}
@@ -180,7 +180,7 @@ public class JstAssertionsJpaPO {
 	/**
 	 * @return String
 	 */
-	public String getPersistenceUnitName() {
+	String getPersistenceUnitName() {
 
 		return this.persistenceUnitName;
 	}
@@ -194,24 +194,11 @@ public class JstAssertionsJpaPO {
 	}
 
 	/**
-	 * @param className
-	 * @param entityIdentity
-	 * @return {@link JstAssertionsJpaPO}
-	 */
-	public JstAssertionsJpaPO usingCascadeNone(final String className, final Object entityIdentity) {
-
-		this.cascadePersistNotMap.put(className, entityIdentity);
-		this.cascadeRemoveNotMap.put(className, entityIdentity);
-
-		return this;
-	}
-
-	/**
 	 * @param clazz
 	 * @param entityIdentity
-	 * @return {@link JstAssertionsJpaPO}
+	 * @return {@link JstAssertionsJpaCascadePO}
 	 */
-	public JstAssertionsJpaPO withCascadeAll(final Class<?> clazz, final Object entityIdentity) {
+	public JstAssertionsJpaCascadePO withCascadeAll(final Class<?> clazz, final Object entityIdentity) {
 
 		final String className = clazz.getName();
 
@@ -224,13 +211,26 @@ public class JstAssertionsJpaPO {
 	/**
 	 * @param clazz
 	 * @param entityIdentity
-	 * @return {@link JstAssertionsJpaPO}
+	 * @return {@link JstAssertionsJpaCascadePO}
 	 */
-	public JstAssertionsJpaPO withCascadeAllExceptRemove(final Class<?> clazz, final Object entityIdentity) {
+	public JstAssertionsJpaCascadePO withCascadeAllExceptRemove(final Class<?> clazz, final Object entityIdentity) {
 
 		final String className = clazz.getName();
 
 		this.cascadePersistMap.put(className, entityIdentity);
+		this.cascadeRemoveNotMap.put(className, entityIdentity);
+
+		return this;
+	}
+
+	/**
+	 * @param className
+	 * @param entityIdentity
+	 * @return {@link JstAssertionsJpaCascadePO}
+	 */
+	public JstAssertionsJpaCascadePO withCascadeNone(final String className, final Object entityIdentity) {
+
+		this.cascadePersistNotMap.put(className, entityIdentity);
 		this.cascadeRemoveNotMap.put(className, entityIdentity);
 
 		return this;

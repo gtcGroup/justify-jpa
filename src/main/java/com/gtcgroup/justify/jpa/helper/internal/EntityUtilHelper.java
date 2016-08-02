@@ -23,12 +23,12 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.helper;
+package com.gtcgroup.justify.jpa.helper.internal;
 
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
-import com.gtcgroup.justify.jpa.rm.QueryRM;
+import com.gtcgroup.justify.jpa.rm.JstQueryRM;
 
 /**
  * This Util Helper class provides persistence {@link EntityManager} support.
@@ -135,7 +135,7 @@ public enum EntityUtilHelper {
 		try {
 
 			result = entityManager.find(entity.getClass(), entityIdentity,
-					QueryRM.FIND_FORCING_DATABASE_TRIP_WITH_NO_IMPACT_TO_CACHE);
+					JstQueryRM.FIND_FORCING_DATABASE_TRIP_WITH_NO_IMPACT_TO_CACHE);
 
 		} catch (final Exception e) {
 
