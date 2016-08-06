@@ -34,11 +34,10 @@ import org.junit.Assert;
 
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.rm.JstQueryRM;
-import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
+import com.gtcgroup.justify.jpa.helper.internal.EntityManagerUtilHelper;
 
 /**
- * This Util Helper class provides support for assertion processing.
+ * This Assertions class provides convenience methods for assertion processing.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
@@ -50,9 +49,11 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
  */
 public enum AssertionsJPA {
 
-	@SuppressWarnings("javadoc") INSTANCE;
+	@SuppressWarnings("javadoc")
+	INSTANCE;
 
 	private static JstAssertionsJpaCascadePO assertionsJpaCascadePO;
+	private static EntityManager entityManager;
 
 	/**
 	 * This method verifies cascade annotations.
@@ -64,82 +65,69 @@ public enum AssertionsJPA {
 	public static <ENTITY, PO extends JstAssertionsJpaCascadePO> void assertCascadeTypes(
 			final PO assertionsJpaCascadePO) {
 
-		String assertionErrorMessage = null;
-
 		AssertionsJPA.assertionsJpaCascadePO = assertionsJpaCascadePO;
+		Object entityIdentity = null;
 
-		@SuppressWarnings("unchecked")
-		final ENTITY entity = (ENTITY) retrieveMergedEntityFromCreate();
-		AssertionsJPA.assertionsJpaCascadePO.setDomainEntity(entity);
+		AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
 
-		assertionErrorMessage = verifyCascadeTypePersist();
+		try {
 
-		if (!assertionErrorMessage.isEmpty()) {
+			entityIdentity = createEntity();
 
-			deleteEntity();
-			deleteRemainingEntities();
+			verifyCascadeTypePersist();
 
-			throwAssertionError(assertionErrorMessage);
+			verifyNoCascadeTypePersist();
+
+			deleteEntity(entityIdentity);
+
+			verifyCascadeTypeRemove();
+
+			verifyNoCascadeTypeRemove();
+
+		} finally {
+
+			try {
+				EntityManagerUtilHelper.removeEntity(AssertionsJPA.entityManager,
+						AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass(), entityIdentity);
+
+				deleteRemainingEntities();
+
+			} catch (final Exception e) {
+
+				JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
+
+				throw new TestingRuntimeException(e);
+			}
 		}
-
-		assertionErrorMessage = deleteEntity();
-
-		if (!assertionErrorMessage.isEmpty()) {
-
-			deleteRemainingEntities();
-			throwAssertionError(assertionErrorMessage);
-		}
-
-		assertionErrorMessage = verifyCascadeTypeRemove();
-
-		if (!assertionErrorMessage.isEmpty()) {
-
-			deleteRemainingEntities();
-			throwAssertionError(assertionErrorMessage);
-		}
-
-		deleteRemainingEntities();
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
 	 * @param entityClass
-	 * @param entityIdentity
-	 * @return boolean
+	 * @param entities
 	 */
-	private static <ENTITY extends Object> String assertExists(final Class<ENTITY> entityClass,
-			final Object entityIdentity, final boolean exists, final String createOrDelete) {
+	public static <ENTITY> void assertExistsInDatabaseWithEntity(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object... entities) {
+		{
 
-		EntityManager entityManager = null;
-		String message = new String();
+			EntityManager entityManager = null;
 
-		try {
-			entityManager = JstEntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
+			try {
 
-			final JstQueryRM jstQueryRM = new JstQueryRM().withEntityManager(entityManager);
+				entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
 
-			final boolean verdict = jstQueryRM.existsEntityIdentities(entityClass, entityIdentity);
+				if (!EntityManagerUtilHelper.existsInDatabaseWithEntity(entityManager, entities)) {
 
-			if (exists) {
-
-				if (false == verdict) {
-
-					message = createAssertionErrorMessage(entityClass, "not", createOrDelete);
+					Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass));
 				}
-			} else {
-				if (true == verdict) {
 
-					message = createAssertionErrorMessage(entityClass, "incorrectly", createOrDelete);
-				}
+			} finally {
+				JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 			}
-
-		} finally {
-
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
-		return message;
+		return;
 	}
 
 	/**
@@ -148,23 +136,23 @@ public enum AssertionsJPA {
 	 * @param entityClass
 	 * @param identities
 	 */
-	public static <ENTITY> void assertExistsById(final String persistenceUnitName, final Class<ENTITY> entityClass,
-			final Object... identities) {
+	public static <ENTITY> void assertExistsInDatabaseWithIdentity(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object... identities) {
 
-		JstQueryRM jstQueryRM = null;
+		EntityManager entityManager = null;
 
 		try {
-			jstQueryRM = JstEntityManagerFactoryCacheHelper.createQueryRmToBeClosed(persistenceUnitName);
-			final boolean result = jstQueryRM.existsEntityIdentities(entityClass, identities);
-			if (!result) {
-				final String assertionErrorMessage = createAssertionExistsMessage(entityClass, persistenceUnitName);
-				throwAssertionError(assertionErrorMessage);
+
+			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			if (!EntityManagerUtilHelper.existsInDatabaseWithIdentity(entityManager, entityClass, identities)) {
+
+				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass));
 			}
 
 		} finally {
-			JstEntityManagerFactoryCacheHelper.closeQueryRM(jstQueryRM);
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
-
 		return;
 	}
 
@@ -173,210 +161,235 @@ public enum AssertionsJPA {
 	 * @param persistenceUnitName
 	 * @param entities
 	 */
-	public static <ENTITY> void assertExistsEntity(final String persistenceUnitName, final Object... entities) {
+	public static <ENTITY> void assertExistsInPersistenceContextWithEntity(final String persistenceUnitName,
+			final Object... entities) {
 
-		JstQueryRM jstQueryRM = null;
+		EntityManager entityManager = null;
 
 		try {
-			jstQueryRM = JstEntityManagerFactoryCacheHelper.createQueryRmToBeClosed(persistenceUnitName);
-			final boolean result = jstQueryRM.existsEntityInstances(entities);
-			if (!result) {
-				final String assertionErrorMessage = createAssertionExistsMessage(entities[0].getClass(),
-						persistenceUnitName);
-				throwAssertionError(assertionErrorMessage);
+
+			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			if (!EntityManagerUtilHelper.existsInPersistenceContextWithEntity(entityManager, entities)) {
+
+				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null));
 			}
 
 		} finally {
-			JstEntityManagerFactoryCacheHelper.closeQueryRM(jstQueryRM);
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 		return;
 	}
 
-	private static <ENTITY> String createAssertionErrorMessage(final Class<ENTITY> entityClass, final String outcome,
-			final String createOrDelete) {
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entities
+	 */
+	public static <ENTITY> void assertExistsInSharedCacheWithEntity(final String persistenceUnitName,
+			final Object... entities) {
 
-		final StringBuilder assertionErrorMessage = new StringBuilder();
+		EntityManager entityManager = null;
 
-		assertionErrorMessage.append("The instance [");
-		assertionErrorMessage.append(entityClass.getSimpleName());
-		assertionErrorMessage.append("] for cascade type [");
-		assertionErrorMessage.append(createOrDelete);
-		assertionErrorMessage.append("] is ");
-		assertionErrorMessage.append(outcome);
-		assertionErrorMessage.append(" available from the database [");
-		assertionErrorMessage.append(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
-		assertionErrorMessage.append("].");
+		try {
 
-		return assertionErrorMessage.toString();
+			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
 
+			if (!EntityManagerUtilHelper.existsInSharedCacheWithEntity(entityManager, entities)) {
+
+				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null));
+			}
+
+		} finally {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
+		return;
 	}
 
-	private static <ENTITY> String createAssertionExistsMessage(final Class<ENTITY> entityClass,
-			final String persistenceUnitName) {
+	/**
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param identities
+	 */
+	public static <ENTITY> void assertExistsInSharedCacheWithIdentity(final String persistenceUnitName,
+			final Object... identities) {
+
+		EntityManager entityManager = null;
+
+		try {
+
+			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+			if (!EntityManagerUtilHelper.existsInSharedCacheWithIdentity(entityManager, identities)) {
+
+				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null));
+			}
+
+		} finally {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
+		return;
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 * @param entities
+	 * @return {@link Object} representing entityIdentity.
+	 */
+	private static Object createEntity() {
+
+		Object entityIdentity = null;
+
+		try {
+			entityIdentity = EntityManagerUtilHelper.createOrUpdateEntity(AssertionsJPA.entityManager,
+					AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity());
+
+		} catch (@SuppressWarnings("unused") final Exception e) {
+
+			Assert.fail("The domain entity ["
+					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
+					+ "] could not be created by the assert method.");
+
+		}
+		return entityIdentity;
+	}
+
+	private static <ENTITY> String createEntityShouldExistsMessage(final String persistenceUnitName,
+			final Class<ENTITY> entityClassOrNull) {
 
 		final StringBuilder assertionErrorMessage = new StringBuilder();
 
-		assertionErrorMessage.append("An expected instance of [");
-		assertionErrorMessage.append(entityClass.getSimpleName());
-		assertionErrorMessage.append("] is unavailable from the database [");
+		assertionErrorMessage.append("An expected instance ");
+
+		if (null != entityClassOrNull) {
+			assertionErrorMessage.append("of [");
+			assertionErrorMessage.append(entityClassOrNull.getSimpleName());
+			assertionErrorMessage.append("] ");
+		}
+
+		assertionErrorMessage.append("is unavailable from the database [");
 		assertionErrorMessage.append(persistenceUnitName);
 		assertionErrorMessage.append("].");
 
 		return assertionErrorMessage.toString();
-
 	}
 
-	private static String deleteEntity() {
+	private static void deleteEntity(final Object entityIdentity) {
 
-		EntityManager entityManager = null;
-		final String assertionErrorMessage = new String();
-
-		try {
-
-			entityManager = JstEntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
-
-			final boolean exists = new JstQueryRM().withEntityManager(entityManager)
-					.existsEntityInstances(AssertionsJPA.assertionsJpaCascadePO.getDomainEntity());
-
-			if (!exists) {
-				createAssertionErrorMessage(AssertionsJPA.assertionsJpaCascadePO.getDomainEntity().getClass(),
-						"not available", "delete");
-			}
-
-			new JstTransactionRM().withEntityManager(entityManager)
-			.transactDelete(AssertionsJPA.assertionsJpaCascadePO.getDomainEntity());
-
-		} finally {
-
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-		}
-		return assertionErrorMessage;
-	}
-
-	private static void deleteRemainingEntities() {
-
-		EntityManager entityManager = null;
-
-		try {
-
-			for (final Map.Entry<String, Object> entry : AssertionsJPA.assertionsJpaCascadePO.getCascadeRemoveNotMap()
-					.entrySet()) {
-
-				entityManager = JstEntityManagerFactoryCacheHelper
-						.createEntityManagerToBeClosed(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
-
-				final Object entity = entityManager.find(Class.forName(entry.getKey()), entry.getValue());
-
-				new JstTransactionRM().withEntityManager(entityManager).transactDelete(entity);
-
-			}
-
-		} catch (final Exception e) {
-
-			throw new TestingRuntimeException(e);
-
-		} finally {
-
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-		}
+		EntityManagerUtilHelper.findAndRemoveEntity(AssertionsJPA.entityManager,
+				AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass(), entityIdentity);
 		return;
-
 	}
 
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entities
-	 * @return boolean
-	 */
-	@SuppressWarnings("unchecked")
-	private static <ENTITY> ENTITY retrieveMergedEntityFromCreate() {
+	private static void deleteRemainingEntities() throws ClassNotFoundException {
 
-		EntityManager entityManager = null;
-		ENTITY mergedEntity = null;
+		for (final Map.Entry<String, Object> entry : AssertionsJPA.assertionsJpaCascadePO.getCascadeRemoveNotMap()
+				.entrySet()) {
 
-		try {
-
-			entityManager = JstEntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
-
-			mergedEntity = (ENTITY) new JstTransactionRM().withEntityManager(entityManager)
-					.transactCreateOrUpdate(AssertionsJPA.assertionsJpaCascadePO.getDomainEntity());
-
-		} catch (@SuppressWarnings("unused") final Exception e) {
-
-			Assert.fail("The domain entities could not be created by the assert method.");
-
-		} finally {
-
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+			EntityManagerUtilHelper.findAndRemoveEntity(AssertionsJPA.entityManager,
+					Class.forName(entry.getKey()),
+					entry.getValue());
 		}
-		return mergedEntity;
+
+		return;
 	}
 
-	private static void throwAssertionError(final String assertionErrorMessage) throws AssertionError {
-
-		throw new AssertionError(assertionErrorMessage);
-	}
-
-	/**
-	 * @param persistenceUnitName
-	 * @param cascadeRemoveMap
-	 */
-	private static String verifyCascadeTypePersist() {
-
-		return verifyUsingMaps(AssertionsJPA.assertionsJpaCascadePO.getCascadePersistMap(),
-				AssertionsJPA.assertionsJpaCascadePO.getCascadePersistNotMap(), "Create");
-	}
-
-	/**
-	 * @param persistenceUnitName
-	 * @param cascadeRemoveMap
-	 * @return
-	 */
-	private static String verifyCascadeTypeRemove() {
-
-		return verifyUsingMaps(AssertionsJPA.assertionsJpaCascadePO.getCascadeRemoveNotMap(),
-				AssertionsJPA.assertionsJpaCascadePO.getCascadeRemoveMap(), "delete");
-
-	}
-
-	private static String verifyUsingMaps(final Map<String, Object> existsMap, final Map<String, Object> notExistsMap,
-			final String createOrDelete) {
-
-		String assertionErrorMessage = new String();
+	private static boolean isExists(final Map<String, Object> existsMap) throws ClassNotFoundException {
 
 		for (final Map.Entry<String, Object> entry : existsMap.entrySet()) {
 
-			try {
+			if (!EntityManagerUtilHelper.existsInDatabaseWithIdentity(AssertionsJPA.entityManager,
+					Class.forName(entry.getKey()), entry.getValue())) {
 
-				final String tempMessage = assertExists(Class.forName(entry.getKey()), entry.getValue(), true,
-						createOrDelete);
-				if (!tempMessage.isEmpty()) {
-					assertionErrorMessage += "[" + tempMessage + "] ";
-				}
-			} catch (final ClassNotFoundException e) {
-
-				throw new TestingRuntimeException(e);
+				return false;
 			}
 		}
+		return true;
+	}
+
+	private static boolean isNotExists(final Map<String, Object> notExistsMap) throws ClassNotFoundException {
 
 		for (final Map.Entry<String, Object> entry : notExistsMap.entrySet()) {
 
-			try {
+			if (EntityManagerUtilHelper.existsInDatabaseWithIdentity(AssertionsJPA.entityManager,
+					Class.forName(entry.getKey()), entry.getValue())) {
 
-				final String tempMessage = assertExists(Class.forName(entry.getKey()), entry.getValue(), false,
-						createOrDelete);
-				if (!tempMessage.isEmpty()) {
-					assertionErrorMessage += "[" + tempMessage + "] ";
-				}
-
-			} catch (final ClassNotFoundException e) {
-
-				throw new TestingRuntimeException(e);
+				return false;
 			}
+
 		}
-		return assertionErrorMessage;
+		return true;
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 * @param cascadeRemoveMap
+	 */
+	private static void verifyCascadeTypePersist() {
+
+		try {
+			isExists(AssertionsJPA.assertionsJpaCascadePO.getCascadePersistMap());
+
+		} catch (@SuppressWarnings("unused") final Exception e) {
+
+			Assert.fail("Cascade type persist domain entities ["
+					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
+					+ "] could not be created.");
+		}
+		return;
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 * @param cascadeRemoveMap
+	 */
+	private static void verifyCascadeTypeRemove() {
+
+		try {
+			isExists(AssertionsJPA.assertionsJpaCascadePO.getCascadeRemoveNotMap());
+
+		} catch (@SuppressWarnings("unused") final Exception e) {
+
+			Assert.fail("Cascade type remove domain entities ["
+					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
+					+ "] were not available for deletion.");
+		}
+		return;
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 * @param cascadeRemoveMap
+	 */
+	private static void verifyNoCascadeTypePersist() {
+
+		try {
+			isNotExists(AssertionsJPA.assertionsJpaCascadePO.getCascadePersistNotMap());
+
+		} catch (@SuppressWarnings("unused") final Exception e) {
+
+			Assert.fail("Non-cascading domain entities ["
+					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
+					+ "] were created.");
+		}
+		return;
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 * @param cascadeRemoveMap
+	 */
+	private static void verifyNoCascadeTypeRemove() {
+
+		try {
+			isNotExists(AssertionsJPA.assertionsJpaCascadePO.getCascadeRemoveMap());
+
+		} catch (@SuppressWarnings("unused") final Exception e) {
+
+			Assert.fail("Non-cascading domain entities ["
+					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
+					+ "] were available for deletion.");
+		}
+		return;
 	}
 }

@@ -28,18 +28,14 @@ package com.gtcgroup.justify.jpa.rm;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
 
-import javax.persistence.CacheRetrieveMode;
-import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
@@ -60,36 +56,11 @@ import com.gtcgroup.justify.jpa.helper.internal.QueryUtilHelper;
  */
 public class JstQueryRM extends JstBaseTestingRM {
 
-	/**
-	 * Optimization for reading from the database. Often used when there are
-	 * multiple servers and no cache coordination.
-	 */
-	public static final HashMap<String, Object> FIND_FORCING_DATABASE_TRIP_AND_CACHE_REFRESH = new HashMap<String, Object>();
-
-	/**
-	 * Optimization for reading from the database only. That is, cache is NOT
-	 * impacted.
-	 */
-	public static final HashMap<String, Object> FIND_FORCING_DATABASE_TRIP_WITH_NO_IMPACT_TO_CACHE = new HashMap<String, Object>();
-
 	/** Optimization for read-only. */
-	public static final ConcurrentMap<String, Object> FIND_READ_ONLY = new ConcurrentHashMap<String, Object>();
+	public static final Map<String, Object> FIND_READ_ONLY = new HashMap<String, Object>();
 
 	static {
 		JstQueryRM.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
-	}
-
-	static {
-		JstQueryRM.FIND_FORCING_DATABASE_TRIP_AND_CACHE_REFRESH.put(QueryHints.CACHE_RETRIEVE_MODE,
-				CacheRetrieveMode.BYPASS);
-
-		JstQueryRM.FIND_FORCING_DATABASE_TRIP_AND_CACHE_REFRESH.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
-
-		JstQueryRM.FIND_FORCING_DATABASE_TRIP_WITH_NO_IMPACT_TO_CACHE.put(QueryHints.CACHE_RETRIEVE_MODE,
-				CacheUsage.DoNotCheckCache);
-
-		JstQueryRM.FIND_FORCING_DATABASE_TRIP_WITH_NO_IMPACT_TO_CACHE.put(QueryHints.CACHE_STORE_MODE,
-				CacheStoreMode.BYPASS);
 	}
 
 	/**
@@ -281,72 +252,77 @@ public class JstQueryRM extends JstBaseTestingRM {
 		return query;
 	}
 
-	/**
-	 * @param <ENTITY>
-	 * @param entityClass
-	 * @param entityIdentities
-	 * @return boolean
-	 */
-	public <ENTITY> boolean existsEntityIdentities(final Class<ENTITY> entityClass, final Object... entityIdentities) {
+	// /**
+	// * @param <ENTITY>
+	// * @param entityClass
+	// * @param entityIdentities
+	// * @return boolean
+	// */
+	// public <ENTITY> boolean existsEntityIdentities(final Class<ENTITY>
+	// entityClass, final Object... entityIdentities) {
+	//
+	// for (final Object entityIdentity : entityIdentities) {
+	//
+	// if (false == existsEntityIdentity(entityClass, entityIdentity)) {
+	// return false;
+	// }
+	// }
+	// return true;
+	// }
 
-		for (final Object entityIdentity : entityIdentities) {
+	// /**
+	// * @param <ENTITY>
+	// * @param entityClass
+	// * @param entityIdentity
+	// * @return boolean
+	// */
+	// protected <ENTITY> boolean existsEntityIdentity(final Class<ENTITY>
+	// entityClass, final Object entityIdentity) {
+	//
+	// Object entity;
+	// try {
+	// entity = getEntityManager().find(entityClass, entityIdentity,
+	// JstQueryRM.FIND_READ_ONLY);
+	// } catch (final Exception e) {
+	//
+	// throw new TestingRuntimeException(e);
+	// }
+	//
+	// if (null == entity) {
+	// return false;
+	// }
+	// return true;
+	// }
 
-			if (false == existsEntityIdentity(entityClass, entityIdentity)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param entityClass
-	 * @param entityIdentity
-	 * @return boolean
-	 */
-	protected <ENTITY> boolean existsEntityIdentity(final Class<ENTITY> entityClass, final Object entityIdentity) {
-
-		Object entity;
-		try {
-			entity = getEntityManager().find(entityClass, entityIdentity, JstQueryRM.FIND_READ_ONLY);
-		} catch (final Exception e) {
-
-			throw new TestingRuntimeException(e);
-		}
-
-		if (null == entity) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param entitiesWithIdentity
-	 * @return boolean
-	 */
-	public <ENTITY> boolean existsEntityInstances(final Object... entitiesWithIdentity) {
-
-		boolean result = true;
-
-		for (final Object entity : entitiesWithIdentity) {
-
-			try {
-
-				final Object entityIdentity = getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
-						.getIdentifier(entity);
-
-				if (!existsEntityIdentity(entity.getClass(), entityIdentity)) {
-					result = false;
-				}
-
-			} catch (final Exception e) {
-
-				throw new TestingRuntimeException(e);
-			}
-		}
-		return result;
-	}
+	// /**
+	// * @param <ENTITY>
+	// * @param entitiesWithIdentity
+	// * @return boolean
+	// */
+	// public <ENTITY> boolean existsEntityInstances(final Object...
+	// entitiesWithIdentity) {
+	//
+	// boolean result = true;
+	//
+	// for (final Object entity : entitiesWithIdentity) {
+	//
+	// try {
+	//
+	// final Object entityIdentity =
+	// getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
+	// .getIdentifier(entity);
+	//
+	// if (!existsEntityIdentity(entity.getClass(), entityIdentity)) {
+	// result = false;
+	// }
+	//
+	// } catch (final Exception e) {
+	//
+	// throw new TestingRuntimeException(e);
+	// }
+	// }
+	// return result;
+	// }
 
 	/**
 	 * @param <ENTITY>
@@ -431,7 +407,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY queryModifiableSingleUsingJPQL(final String queryLanguageString) {
 
-		return querySingleResult(createCriteriaQueryModifiable(queryLanguageString));
+		return QueryUtilHelper.querySingleResult(createCriteriaQueryModifiable(queryLanguageString));
 	}
 
 	/**
@@ -454,7 +430,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY queryNamedModifiableSingle(final String queryName, final Object... parameterValuesInOrder) {
 
-		return querySingleResult(createNamedQueryModifiable(queryName), parameterValuesInOrder);
+		return QueryUtilHelper.querySingleResult(createNamedQueryModifiable(queryName), parameterValuesInOrder);
 	}
 
 	/**
@@ -478,7 +454,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	public <ENTITY> ENTITY queryNamedNativeModifiableSingle(final String queryName,
 			final Object... parameterValuesInOrder) {
 
-		return querySingleResult(createNamedQueryModifiable(queryName), parameterValuesInOrder);
+		return QueryUtilHelper.querySingleResult(createNamedQueryModifiable(queryName), parameterValuesInOrder);
 	}
 
 	/**
@@ -501,7 +477,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY queryNamedNativeReadOnlySingle(final String name, final Object... parameterValuesInOrder) {
 
-		return querySingleResult(createNamedQueryReadOnly(name), parameterValuesInOrder);
+		return QueryUtilHelper.querySingleResult(createNamedQueryReadOnly(name), parameterValuesInOrder);
 	}
 
 	/**
@@ -523,7 +499,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	public <ENTITY> ENTITY queryNamedReadOnlySingle(final JstJpaQueryPO queryPO) {
 
 		return QueryUtilHelper.querySingleResult(createNamedQueryReadOnly(queryPO.getQueryName()),
-				queryPO);
+				queryPO.getIntegerParameterMap(), queryPO.getKeyParameterMap());
 	}
 
 	/**
@@ -559,7 +535,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	public <ENTITY> ENTITY queryNativeModifiableSingle(final String sqlString, final Class<ENTITY> clazz,
 			final Object... parameterValuesInOrder) {
 
-		return querySingleResult(createNativeQueryModifiable(sqlString, clazz), parameterValuesInOrder);
+		return QueryUtilHelper.querySingleResult(createNativeQueryModifiable(sqlString, clazz), parameterValuesInOrder);
 	}
 
 	/**
@@ -585,7 +561,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	public <ENTITY> ENTITY queryNativeReadOnlySingle(final String sqlString, final Class<ENTITY> clazz,
 			final Object... parameterValuesInOrder) {
 
-		return querySingleResult(createNativeQueryReadOnly(sqlString, clazz), parameterValuesInOrder);
+		return QueryUtilHelper.querySingleResult(createNativeQueryReadOnly(sqlString, clazz), parameterValuesInOrder);
 	}
 
 	/**
@@ -615,7 +591,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY queryReadOnlySingleUsingJPQL(final String queryLanguageString) {
 
-		return querySingleResult(createCriteriaQueryReadOnly(queryLanguageString));
+		return QueryUtilHelper.querySingleResult(createCriteriaQueryReadOnly(queryLanguageString));
 	}
 
 	/**

@@ -25,13 +25,13 @@
  */
 package com.gtcgroup.justify.jpa.rm;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.base.JstBaseTestingRM;
+import com.gtcgroup.justify.jpa.helper.internal.EntityManagerUtilHelper;
 
 /**
  * This Resource Manager provides convenience methods for transactions.
@@ -51,18 +51,14 @@ public class JstTransactionRM extends JstBaseTestingRM {
 	/**
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
+	 * to be explicitly processed.
 	 *
 	 * @param <ENTITY>
 	 * @param entity
-	 * @return {@link List}
 	 */
-	public <ENTITY> ENTITY transactCreateOrUpdate(final ENTITY entity) {
+	public <ENTITY> void transactCreateOrUpdateEntity(final ENTITY entity) {
 
-		@SuppressWarnings("unchecked")
-		final List<ENTITY> entityList = Arrays.asList(entity);
-
-		return transactCreateOrUpdateFromList(entityList).get(0);
+		EntityManagerUtilHelper.createOrUpdateEntity(this.entityManager, entity);
 	}
 
 	/**
@@ -72,14 +68,13 @@ public class JstTransactionRM extends JstBaseTestingRM {
 	 *
 	 * @param <ENTITY>
 	 * @param entities
-	 * @return {@link List}
 	 */
-	public <ENTITY> List<ENTITY> transactCreateOrUpdateFromArray(final Object... entities) {
+	@SuppressWarnings("unchecked")
+	public <ENTITY> void transactCreateOrUpdateFromArray(final Object... entities) {
 
-		@SuppressWarnings("unchecked")
-		final List<ENTITY> entityList = (List<ENTITY>) Arrays.asList(entities);
 
-		return transactCreateOrUpdateFromList(entityList);
+		EntityManagerUtilHelper.createOrUpdateEntities(this.entityManager,
+				(List<ENTITY>) Arrays.asList(entities));
 	}
 
 	/**
@@ -89,20 +84,10 @@ public class JstTransactionRM extends JstBaseTestingRM {
 	 *
 	 * @param <ENTITY>
 	 * @param entityList
-	 * @return {@link List}
 	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> List<ENTITY> transactCreateOrUpdateFromList(final List<ENTITY> entityList) {
+	public <ENTITY> void transactCreateOrUpdateFromList(final List<ENTITY> entityList) {
 
-		final List<ENTITY> mergedList = new ArrayList<ENTITY>();
-		this.entityManager.getTransaction().begin();
-
-		for (final Object entity : entityList) {
-
-			mergedList.add((ENTITY) this.entityManager.merge(entity));
-		}
-		this.entityManager.getTransaction().commit();
-		return mergedList;
+		EntityManagerUtilHelper.createOrUpdateEntities(this.entityManager, entityList);
 	}
 
 	/**
@@ -111,16 +96,11 @@ public class JstTransactionRM extends JstBaseTestingRM {
 	 * to be explicitly included.
 	 *
 	 * @param <ENTITY>
-	 * @param domainEntity
+	 * @param entity
 	 */
-	public <ENTITY> void transactDelete(final ENTITY domainEntity) {
+	public <ENTITY> void transactDelete(final ENTITY entity) {
 
-		this.entityManager.getTransaction().begin();
-
-		final ENTITY mergedEntity = this.entityManager.merge(domainEntity);
-		this.entityManager.remove(mergedEntity);
-
-		this.entityManager.getTransaction().commit();
+		EntityManagerUtilHelper.removeEntity(this.entityManager, entity);
 	}
 
 	/**
