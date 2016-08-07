@@ -25,6 +25,7 @@
  */
 package com.gtcgroup.justify.jpa.helper.internal;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -50,17 +51,64 @@ public enum QueryUtilHelper {
 	INSTANCE;
 
 	/**
-	 * This method executes a query that returns a single untyped result.
+	 * his method executes a query that returns a result list. Parameters are
+	 * passed with an {@link Integer} and/or a {@link String} Map of parameter
+	 * values.
 	 *
 	 * @param <ENTITY>
 	 * @param query
 	 * @param integerParameterMap
-	 * @param keyParameterMap
+	 *            or null
+	 * @param stringParameterMap
+	 *            or null
+	 * @return {@link List}
+	 */
+	@SuppressWarnings({ "unchecked", "boxing" })
+	public static <ENTITY> List<ENTITY> queryResultList(final Query query,
+			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
+
+		List<ENTITY> entityList = null;
+
+		try {
+
+			if (null != integerParameterMap) {
+
+				for (final Entry<Integer, Object> entry1 : integerParameterMap.entrySet()) {
+
+					query.setParameter(entry1.getKey(), entry1.getValue());
+				}
+			}
+			if (null != stringParameterMap) {
+
+				for (final Entry<String, Object> entry2 : stringParameterMap.entrySet()) {
+
+					query.setParameter(entry2.getKey(), entry2.getValue());
+				}
+			}
+
+			entityList = query.getResultList();
+
+		} catch (final Exception e) {
+
+			throwException(e);
+		}
+		return entityList;
+	}
+
+	/**
+	 * This method executes a query that returns a single untyped result.
+	 * Parameters are passed with an {@link Integer} and/or a {@link String} Map
+	 * of parameter values.
+	 *
+	 * @param <ENTITY>
+	 * @param query
+	 * @param integerParameterMap
+	 * @param stringParameterMap
 	 * @return ENTITY
 	 */
 	@SuppressWarnings({ "boxing", "unchecked" })
 	public static <ENTITY> ENTITY querySingleResult(final Query query, final Map<Integer, Object> integerParameterMap,
-			final Map<String, Object> keyParameterMap) {
+			final Map<String, Object> stringParameterMap) {
 
 		ENTITY entity = null;
 
@@ -71,7 +119,7 @@ public enum QueryUtilHelper {
 				query.setParameter(entry1.getKey(), entry1.getValue());
 			}
 
-			for (final Entry<String, Object> entry2 : keyParameterMap.entrySet()) {
+			for (final Entry<String, Object> entry2 : stringParameterMap.entrySet()) {
 
 				query.setParameter(entry2.getKey(), entry2.getValue());
 			}

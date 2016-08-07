@@ -106,26 +106,23 @@ public enum AssertionsJPA {
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
 	 * @param entityClass
-	 * @param entities
+	 * @param entityIdentities
 	 */
-	public static <ENTITY> void assertExistsInDatabaseWithEntity(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final Object... entities) {
-		{
+	public static <ENTITY> void assertExistsInDatabaseWithEntityIdentities(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
-			EntityManager entityManager = null;
+		try {
 
-			try {
+			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
 
-				entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+			if (!EntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
+					entityIdentities)) {
 
-				if (!EntityManagerUtilHelper.existsInDatabaseWithEntity(entityManager, entities)) {
-
-					Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass));
-				}
-
-			} finally {
-				JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass));
 			}
+
+		} finally {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
 		}
 		return;
 	}
@@ -134,24 +131,24 @@ public enum AssertionsJPA {
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
 	 * @param entityClass
-	 * @param identities
+	 * @param populatedEntities
 	 */
-	public static <ENTITY> void assertExistsInDatabaseWithIdentity(final String persistenceUnitName,
-			final Class<ENTITY> entityClass, final Object... identities) {
+	public static <ENTITY> void assertExistsInDatabaseWithPopulatedEntities(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object... populatedEntities) {
+		{
 
-		EntityManager entityManager = null;
+			try {
 
-		try {
+				AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
 
-			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+				if (!EntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager, populatedEntities)) {
 
-			if (!EntityManagerUtilHelper.existsInDatabaseWithIdentity(entityManager, entityClass, identities)) {
+					Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass));
+				}
 
-				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass));
+			} finally {
+				JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
 			}
-
-		} finally {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 		return;
 	}
@@ -159,24 +156,22 @@ public enum AssertionsJPA {
 	/**
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
-	 * @param entities
+	 * @param persistedEntities
 	 */
-	public static <ENTITY> void assertExistsInPersistenceContextWithEntity(final String persistenceUnitName,
-			final Object... entities) {
-
-		EntityManager entityManager = null;
+	public static <ENTITY> void assertExistsInPersistenceContextWithPersistedEntities(final String persistenceUnitName,
+			final Object... persistedEntities) {
 
 		try {
 
-			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
 
-			if (!EntityManagerUtilHelper.existsInPersistenceContextWithEntity(entityManager, entities)) {
+			if (!EntityManagerUtilHelper.existsInPersistenceContextWithPersistedEntities(AssertionsJPA.entityManager, persistedEntities)) {
 
 				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null));
 			}
 
 		} finally {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
 		}
 		return;
 	}
@@ -184,24 +179,23 @@ public enum AssertionsJPA {
 	/**
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
-	 * @param entities
+	 * @param entityClass
+	 * @param entityIdentities
 	 */
-	public static <ENTITY> void assertExistsInSharedCacheWithEntity(final String persistenceUnitName,
-			final Object... entities) {
-
-		EntityManager entityManager = null;
+	public static <ENTITY> void assertExistsInSharedCacheWithEntityIdentities(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
 		try {
 
-			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
 
-			if (!EntityManagerUtilHelper.existsInSharedCacheWithEntity(entityManager, entities)) {
+			if (!EntityManagerUtilHelper.existsInSharedCacheWithEntityIdentities(AssertionsJPA.entityManager, entityClass, entityIdentities)) {
 
 				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null));
 			}
 
 		} finally {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
 		}
 		return;
 	}
@@ -209,24 +203,22 @@ public enum AssertionsJPA {
 	/**
 	 * @param <ENTITY>
 	 * @param persistenceUnitName
-	 * @param identities
+	 * @param persistedEntities
 	 */
-	public static <ENTITY> void assertExistsInSharedCacheWithIdentity(final String persistenceUnitName,
-			final Object... identities) {
-
-		EntityManager entityManager = null;
+	public static <ENTITY> void assertExistsInSharedCacheWithPersistedEntities(final String persistenceUnitName,
+			final Object... persistedEntities) {
 
 		try {
 
-			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
 
-			if (!EntityManagerUtilHelper.existsInSharedCacheWithIdentity(entityManager, identities)) {
+			if (!EntityManagerUtilHelper.existsInSharedCacheWithPersistedEntities(AssertionsJPA.entityManager, persistedEntities)) {
 
 				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null));
 			}
 
 		} finally {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
 		}
 		return;
 	}
@@ -294,11 +286,28 @@ public enum AssertionsJPA {
 		return;
 	}
 
+	/**
+	 * @return EntityManager
+	 */
+	public static EntityManager getEntityManager(final String persistenceUnitName) {
+
+		if (null == AssertionsJPA.entityManager) {
+
+			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper
+					.createEntityManagerToBeClosed(persistenceUnitName);
+
+			final Map<String, Object> prop = AssertionsJPA.entityManager.getEntityManagerFactory().getDProperties();
+
+			System.out.println(prop.toString());
+		}
+		return AssertionsJPA.entityManager;
+	}
+
 	private static boolean isExists(final Map<String, Object> existsMap) throws ClassNotFoundException {
 
 		for (final Map.Entry<String, Object> entry : existsMap.entrySet()) {
 
-			if (!EntityManagerUtilHelper.existsInDatabaseWithIdentity(AssertionsJPA.entityManager,
+			if (!EntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager,
 					Class.forName(entry.getKey()), entry.getValue())) {
 
 				return false;
@@ -311,7 +320,7 @@ public enum AssertionsJPA {
 
 		for (final Map.Entry<String, Object> entry : notExistsMap.entrySet()) {
 
-			if (EntityManagerUtilHelper.existsInDatabaseWithIdentity(AssertionsJPA.entityManager,
+			if (EntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager,
 					Class.forName(entry.getKey()), entry.getValue())) {
 
 				return false;

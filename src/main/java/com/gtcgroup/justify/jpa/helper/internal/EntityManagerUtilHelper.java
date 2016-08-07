@@ -218,7 +218,7 @@ public enum EntityManagerUtilHelper {
 	 *
 	 * @return boolean
 	 */
-	public static boolean existsInDatabaseWithEntity(final EntityManager entityManager,
+	public static boolean existsInDatabaseWithPopulatedEntities(final EntityManager entityManager,
 			final Object... populatedEntities) {
 
 		Object result;
@@ -253,7 +253,7 @@ public enum EntityManagerUtilHelper {
 	 *
 	 * @return boolean
 	 */
-	public static <ENTITY> boolean existsInDatabaseWithIdentity(final EntityManager entityManager,
+	public static <ENTITY> boolean existsInDatabaseWithEntityIdentities(final EntityManager entityManager,
 			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
 		Object result;
@@ -282,19 +282,19 @@ public enum EntityManagerUtilHelper {
 	 * to the current persistence context (L1 cache).
 	 *
 	 * @param entityManager
-	 * @param populatedEntities
+	 * @param persistedEntities
 	 * @return boolean
 	 */
-	public static boolean existsInPersistenceContextWithEntity(final EntityManager entityManager,
-			final Object... populatedEntities) {
+	public static boolean existsInPersistenceContextWithPersistedEntities(final EntityManager entityManager,
+			final Object... persistedEntities) {
 
 		boolean result = true;
 
 		try {
 
-			for (final Object entity : populatedEntities) {
+			for (final Object persistedEntity : persistedEntities) {
 
-				result = entityManager.contains(entity);
+				result = entityManager.contains(persistedEntity);
 
 				if (false == result) {
 					return false;
@@ -309,19 +309,26 @@ public enum EntityManagerUtilHelper {
 
 	/**
 	 * This method determines whether the shared (L2) cache contains the given
-	 * entities.
+	 * persisted entities.
+	 *
+	 * @param <ENTITY>
 	 *
 	 * @param entityManager
-	 * @param populatedEntities
+	 * @param persistedEntities
 	 * @return boolean
 	 */
-	public static boolean existsInSharedCacheWithEntity(final EntityManager entityManager, final Object... populatedEntities) {
+	public static <ENTITY> boolean existsInSharedCacheWithPersistedEntities(final EntityManager entityManager,
+			final Object... persistedEntities) {
 
 		boolean result = true;
 
 		try {
 
-			for (final Object entity : populatedEntities) {
+			for (final Object populatedEntity : persistedEntities) {
+
+				@SuppressWarnings("unchecked")
+				final ENTITY entity = (ENTITY) findReadOnlySingleOrNull(entityManager, populatedEntity.getClass(),
+						retrieveIdentity(entityManager, populatedEntity));
 
 				result = entityManager.getEntityManagerFactory().getCache().contains(entity.getClass(),
 						retrieveIdentity(entityManager, entity));
@@ -342,21 +349,24 @@ public enum EntityManagerUtilHelper {
 	 * This method determines whether the shared (L2) cache contains the given
 	 * entities.
 	 *
+	 * @param <ENTITY>
 	 * @param entityManager
+	 * @param entityClass
 	 * @param entityIdentities
 	 * @return boolean
 	 */
-	public static boolean existsInSharedCacheWithIdentity(final EntityManager entityManager,
+	public static <ENTITY> boolean existsInSharedCacheWithEntityIdentities(final EntityManager entityManager,
+			final Class<ENTITY> entityClass,
 			final Object... entityIdentities) {
 
 		boolean result = true;
 
 		try {
 
-			for (final Object entity : entityIdentities) {
+			for (final Object entityIdentity : entityIdentities) {
 
-				result = entityManager.getEntityManagerFactory().getCache().contains(entity.getClass(),
-						retrieveIdentity(entityManager, entity));
+				result = entityManager.getEntityManagerFactory().getCache().contains(entityClass,
+						entityIdentity);
 
 				if (false == result) {
 					return false;
@@ -490,6 +500,7 @@ public enum EntityManagerUtilHelper {
 	 * @return Object
 	 */
 	private static Object retrieveIdentity(final EntityManager entityManager, final Object populatedEntity) {
+
 		return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(populatedEntity);
 	}
 }
