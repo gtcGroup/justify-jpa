@@ -46,7 +46,17 @@ import com.gtcgroup.justify.jpa.helper.internal.EntityManagerUtilHelper;
  */
 public class JstTransactionRM extends JstBaseTestingRM {
 
-	private EntityManager entityManager;
+	private final EntityManager entityManager;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param entityManager
+	 */
+	public JstTransactionRM(final EntityManager entityManager) {
+		super();
+		this.entityManager = entityManager;
+	}
 
 	/**
 	 * This method is typically used for committing. If any of the related
@@ -96,11 +106,11 @@ public class JstTransactionRM extends JstBaseTestingRM {
 	 * to be explicitly included.
 	 *
 	 * @param <ENTITY>
-	 * @param entity
+	 * @param entityList
 	 */
-	public <ENTITY> void transactDelete(final ENTITY entity) {
+	public <ENTITY> void transactDeleteEntities(final List<ENTITY> entityList) {
 
-		EntityManagerUtilHelper.removeEntity(this.entityManager, entity);
+		EntityManagerUtilHelper.removeEntities(this.entityManager, entityList);
 	}
 
 	/**
@@ -109,29 +119,24 @@ public class JstTransactionRM extends JstBaseTestingRM {
 	 * to be explicitly included.
 	 *
 	 * @param <ENTITY>
-	 * @param entityList
+	 * @param entities
 	 */
-	public <ENTITY> void transactDeleteFromList(final List<ENTITY> entityList) {
+	@SuppressWarnings("unchecked")
+	public <ENTITY> void transactDeleteEntities(final Object... entities) {
 
-		this.entityManager.getTransaction().begin();
-
-		for (Object entity : entityList) {
-
-			entity = this.entityManager.merge(entity);
-			this.entityManager.remove(entity);
-		}
-		this.entityManager.getTransaction().commit();
+		EntityManagerUtilHelper.removeEntities(this.entityManager, (List<ENTITY>) Arrays.asList(entities));
 	}
 
 	/**
-	 * @param <RM>
-	 * @param entityManager
-	 * @return {@link JstQueryRM}
+	 * This method is typically used for committing. If any of the related
+	 * children in the object graph are not marked for cascading then they need
+	 * to be explicitly included.
+	 *
+	 * @param <ENTITY>
+	 * @param entity
 	 */
-	@SuppressWarnings("unchecked")
-	public <RM extends JstTransactionRM> RM withEntityManager(final EntityManager entityManager) {
+	public <ENTITY> void transactDeleteEntity(final ENTITY entity) {
 
-		this.entityManager = entityManager;
-		return (RM) this;
+		EntityManagerUtilHelper.removeEntity(this.entityManager, entity);
 	}
 }

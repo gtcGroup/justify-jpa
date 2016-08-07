@@ -53,6 +53,10 @@ public enum EntityManagerUtilHelper {
 	@SuppressWarnings("javadoc")
 	INSTANCE;
 
+	/** Optimization for read-only. */
+	public static final Map<String, Object> FIND_READ_ONLY = new HashMap<String, Object>();
+
+
 	/**
 	 * Optimization for reading from the database. Often used when there are
 	 * multiple servers and no cache coordination.
@@ -66,6 +70,8 @@ public enum EntityManagerUtilHelper {
 	public static final Map<String, Object> FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY = new HashMap<String, Object>();
 
 	static {
+
+		EntityManagerUtilHelper.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
 
 		EntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE,
 				CacheRetrieveMode.BYPASS);
@@ -95,14 +101,14 @@ public enum EntityManagerUtilHelper {
 	 *
 	 * @param <ENTITY>
 	 * @param entityManager
-	 * @param entityList
+	 * @param populatedEntityList
 	 */
 	public static <ENTITY> void createOrUpdateEntities(final EntityManager entityManager,
-			final List<ENTITY> entityList) {
+			final List<ENTITY> populatedEntityList) {
 
 		entityManager.getTransaction().begin();
 
-		for (final Object entity : entityList) {
+		for (final Object entity : populatedEntityList) {
 
 			entityManager.merge(entity);
 		}
@@ -117,13 +123,13 @@ public enum EntityManagerUtilHelper {
 	 *
 	 * @param <ENTITY>
 	 * @param entityManager
-	 * @param entity
+	 * @param populatedEntity
 	 * @return {@link Object} representing the identity.
 	 */
-	public static <ENTITY> Object createOrUpdateEntity(final EntityManager entityManager, final ENTITY entity) {
+	public static <ENTITY> Object createOrUpdateEntity(final EntityManager entityManager, final ENTITY populatedEntity) {
 
 		entityManager.getTransaction().begin();
-		final ENTITY entityWithIdentity = entityManager.merge(entity);
+		final ENTITY entityWithIdentity = entityManager.merge(populatedEntity);
 		entityManager.getTransaction().commit();
 
 		return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entityWithIdentity);
@@ -137,13 +143,13 @@ public enum EntityManagerUtilHelper {
 	 * detached entity will continue to reference it.
 	 *
 	 * @param entityManager
-	 * @param entityContainingIdentity
+	 * @param populatedEntity
 	 */
 	public static void detachEntityFromPersistenceContext(final EntityManager entityManager,
-			final Object entityContainingIdentity) {
+			final Object populatedEntity) {
 
 		try {
-			entityManager.detach(entityContainingIdentity);
+			entityManager.detach(populatedEntity);
 
 		} catch (final Exception e) {
 
@@ -208,18 +214,18 @@ public enum EntityManagerUtilHelper {
 	 * cache.
 	 *
 	 * @param entityManager
-	 * @param entitiesContainingIdentity
+	 * @param populatedEntities
 	 *
 	 * @return boolean
 	 */
 	public static boolean existsInDatabaseWithEntity(final EntityManager entityManager,
-			final Object... entitiesContainingIdentity) {
+			final Object... populatedEntities) {
 
 		Object result;
 
 		try {
 
-			for (final Object entity : entitiesContainingIdentity) {
+			for (final Object entity : populatedEntities) {
 
 				result = entityManager.find(entity.getClass(), retrieveIdentity(entityManager, entity),
 						EntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
@@ -243,18 +249,18 @@ public enum EntityManagerUtilHelper {
 	 * @param <ENTITY>
 	 * @param entityManager
 	 * @param entityClass
-	 * @param identities
+	 * @param entityIdentities
 	 *
 	 * @return boolean
 	 */
 	public static <ENTITY> boolean existsInDatabaseWithIdentity(final EntityManager entityManager,
-			final Class<ENTITY> entityClass, final Object... identities) {
+			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
 		Object result;
 
 		try {
 
-			for (final Object identity : identities) {
+			for (final Object identity : entityIdentities) {
 
 				result = entityManager.find(entityClass, identity,
 						EntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
@@ -276,17 +282,17 @@ public enum EntityManagerUtilHelper {
 	 * to the current persistence context (L1 cache).
 	 *
 	 * @param entityManager
-	 * @param entities
+	 * @param populatedEntities
 	 * @return boolean
 	 */
 	public static boolean existsInPersistenceContextWithEntity(final EntityManager entityManager,
-			final Object... entities) {
+			final Object... populatedEntities) {
 
 		boolean result = true;
 
 		try {
 
-			for (final Object entity : entities) {
+			for (final Object entity : populatedEntities) {
 
 				result = entityManager.contains(entity);
 
@@ -306,16 +312,16 @@ public enum EntityManagerUtilHelper {
 	 * entities.
 	 *
 	 * @param entityManager
-	 * @param entities
+	 * @param populatedEntities
 	 * @return boolean
 	 */
-	public static boolean existsInSharedCacheWithEntity(final EntityManager entityManager, final Object... entities) {
+	public static boolean existsInSharedCacheWithEntity(final EntityManager entityManager, final Object... populatedEntities) {
 
 		boolean result = true;
 
 		try {
 
-			for (final Object entity : entities) {
+			for (final Object entity : populatedEntities) {
 
 				result = entityManager.getEntityManagerFactory().getCache().contains(entity.getClass(),
 						retrieveIdentity(entityManager, entity));
@@ -337,17 +343,17 @@ public enum EntityManagerUtilHelper {
 	 * entities.
 	 *
 	 * @param entityManager
-	 * @param identities
+	 * @param entityIdentities
 	 * @return boolean
 	 */
 	public static boolean existsInSharedCacheWithIdentity(final EntityManager entityManager,
-			final Object... identities) {
+			final Object... entityIdentities) {
 
 		boolean result = true;
 
 		try {
 
-			for (final Object entity : identities) {
+			for (final Object entity : entityIdentities) {
 
 				result = entityManager.getEntityManagerFactory().getCache().contains(entity.getClass(),
 						retrieveIdentity(entityManager, entity));
@@ -388,6 +394,53 @@ public enum EntityManagerUtilHelper {
 	}
 
 	/**
+	 * @param <ENTITY>
+	 * @param entityManager
+	 * @param entityClass
+	 * @param entityIdentity
+	 * @return {@link Object}
+	 */
+	public static <ENTITY> ENTITY findModifiableSingleOrNull(final EntityManager entityManager, final Class<ENTITY> entityClass, final Object entityIdentity) {
+
+		return entityManager.find(entityClass, entityIdentity);
+	}
+
+
+
+	/**
+	 * @param <ENTITY>
+	 * @param entityManager
+	 * @param entityClass
+	 * @param entityIdentity
+	 * @return {@link Object}
+	 */
+	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager, final Class<ENTITY> entityClass, final Object entityIdentity) {
+
+		return entityManager.find(entityClass, entityIdentity, EntityManagerUtilHelper.FIND_READ_ONLY);
+	}
+
+	/**
+	 * This method is typically used for committing. If any of the related
+	 * children in the object graph are not marked for cascading then they need
+	 * to be explicitly included.
+	 *
+	 * @param <ENTITY>
+	 * @param entityManager
+	 * @param populatedEntityList
+	 */
+	public static <ENTITY> void removeEntities(final EntityManager entityManager, final List<ENTITY> populatedEntityList) {
+
+		entityManager.getTransaction().begin();
+
+		for (Object entity : populatedEntityList) {
+
+			entity = entityManager.merge(entity);
+			entityManager.remove(entity);
+		}
+		entityManager.getTransaction().commit();
+	}
+
+	/**
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
@@ -419,13 +472,13 @@ public enum EntityManagerUtilHelper {
 	 *
 	 * @param <ENTITY>
 	 * @param entityManager
-	 * @param entity
+	 * @param populatedEntity
 	 */
-	public static <ENTITY> void removeEntity(final EntityManager entityManager, final ENTITY entity) {
+	public static <ENTITY> void removeEntity(final EntityManager entityManager, final ENTITY populatedEntity) {
 
 		entityManager.getTransaction().begin();
 
-		final ENTITY mergedEntity = entityManager.merge(entity);
+		final ENTITY mergedEntity = entityManager.merge(populatedEntity);
 		entityManager.remove(mergedEntity);
 
 		entityManager.getTransaction().commit();
@@ -433,10 +486,10 @@ public enum EntityManagerUtilHelper {
 
 	/**
 	 * @param entityManager
-	 * @param entity
+	 * @param populatedEntity
 	 * @return Object
 	 */
-	private static Object retrieveIdentity(final EntityManager entityManager, final Object entity) {
-		return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
+	private static Object retrieveIdentity(final EntityManager entityManager, final Object populatedEntity) {
+		return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(populatedEntity);
 	}
 }

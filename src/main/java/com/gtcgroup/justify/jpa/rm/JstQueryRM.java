@@ -26,9 +26,7 @@
 
 package com.gtcgroup.justify.jpa.rm;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -41,6 +39,7 @@ import org.eclipse.persistence.config.QueryHints;
 
 import com.gtcgroup.justify.core.base.JstBaseTestingRM;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.jpa.helper.internal.EntityManagerUtilHelper;
 import com.gtcgroup.justify.jpa.helper.internal.QueryUtilHelper;
 
 /**
@@ -56,12 +55,6 @@ import com.gtcgroup.justify.jpa.helper.internal.QueryUtilHelper;
  */
 public class JstQueryRM extends JstBaseTestingRM {
 
-	/** Optimization for read-only. */
-	public static final Map<String, Object> FIND_READ_ONLY = new HashMap<String, Object>();
-
-	static {
-		JstQueryRM.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
-	}
 
 	/**
 	 * This method executes a SELECT query returning a result list.
@@ -99,7 +92,6 @@ public class JstQueryRM extends JstBaseTestingRM {
 		throw new TestingRuntimeException(e);
 	}
 
-
 	/**
 	 * @param entity
 	 * @param identity
@@ -116,7 +108,17 @@ public class JstQueryRM extends JstBaseTestingRM {
 		return entity;
 	}
 
-	private EntityManager entityManager;
+	private final EntityManager entityManager;
+
+	/**
+	 * Constructor
+	 *
+	 * @param entityManager
+	 */
+	public JstQueryRM(final EntityManager entityManager) {
+		super();
+		this.entityManager = entityManager;
+	}
 
 	/**
 	 * This method returns the number of records in the table or view. It may be
@@ -252,88 +254,18 @@ public class JstQueryRM extends JstBaseTestingRM {
 		return query;
 	}
 
-	// /**
-	// * @param <ENTITY>
-	// * @param entityClass
-	// * @param entityIdentities
-	// * @return boolean
-	// */
-	// public <ENTITY> boolean existsEntityIdentities(final Class<ENTITY>
-	// entityClass, final Object... entityIdentities) {
-	//
-	// for (final Object entityIdentity : entityIdentities) {
-	//
-	// if (false == existsEntityIdentity(entityClass, entityIdentity)) {
-	// return false;
-	// }
-	// }
-	// return true;
-	// }
-
-	// /**
-	// * @param <ENTITY>
-	// * @param entityClass
-	// * @param entityIdentity
-	// * @return boolean
-	// */
-	// protected <ENTITY> boolean existsEntityIdentity(final Class<ENTITY>
-	// entityClass, final Object entityIdentity) {
-	//
-	// Object entity;
-	// try {
-	// entity = getEntityManager().find(entityClass, entityIdentity,
-	// JstQueryRM.FIND_READ_ONLY);
-	// } catch (final Exception e) {
-	//
-	// throw new TestingRuntimeException(e);
-	// }
-	//
-	// if (null == entity) {
-	// return false;
-	// }
-	// return true;
-	// }
-
-	// /**
-	// * @param <ENTITY>
-	// * @param entitiesWithIdentity
-	// * @return boolean
-	// */
-	// public <ENTITY> boolean existsEntityInstances(final Object...
-	// entitiesWithIdentity) {
-	//
-	// boolean result = true;
-	//
-	// for (final Object entity : entitiesWithIdentity) {
-	//
-	// try {
-	//
-	// final Object entityIdentity =
-	// getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
-	// .getIdentifier(entity);
-	//
-	// if (!existsEntityIdentity(entity.getClass(), entityIdentity)) {
-	// result = false;
-	// }
-	//
-	// } catch (final Exception e) {
-	//
-	// throw new TestingRuntimeException(e);
-	// }
-	// }
-	// return result;
-	// }
-
 	/**
 	 * @param <ENTITY>
+	 * @param entityManager
 	 * @param entityClass
 	 * @param entityIdentity
 	 * @return {@link Object}
 	 */
-	public <ENTITY> ENTITY findModifiableSingleOrException(final Class<ENTITY> entityClass,
-			final Object entityIdentity) {
+	public <ENTITY> ENTITY findModifiableSingleOrException(final EntityManager entityManager,
+			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		final ENTITY entity = findModifiableSingleOrNull(entityClass, entityIdentity);
+		final ENTITY entity = EntityManagerUtilHelper.findModifiableSingleOrNull(this.entityManager, entityClass,
+				entityIdentity);
 
 		return throwExceptionForNull(entityClass, entity);
 	}
@@ -346,7 +278,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY findModifiableSingleOrNull(final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		return getEntityManager().find(entityClass, entityIdentity);
+		return EntityManagerUtilHelper.findModifiableSingleOrNull(this.entityManager, entityClass, entityIdentity);
 	}
 
 	/**
@@ -357,7 +289,8 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY findReadOnlySingleOrException(final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		final ENTITY entity = findReadOnlySingleOrNull(entityClass, entityIdentity);
+		final ENTITY entity = EntityManagerUtilHelper.findReadOnlySingleOrNull(this.entityManager, entityClass,
+				entityIdentity);
 
 		return throwExceptionForNull(entityClass, entity);
 	}
@@ -370,7 +303,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY findReadOnlySingleOrNull(final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		return getEntityManager().find(entityClass, entityIdentity, JstQueryRM.FIND_READ_ONLY);
+		return EntityManagerUtilHelper.findModifiableSingleOrNull(this.entityManager, entityClass, entityIdentity);
 	}
 
 	/**
@@ -592,17 +525,5 @@ public class JstQueryRM extends JstBaseTestingRM {
 	public <ENTITY> ENTITY queryReadOnlySingleUsingJPQL(final String queryLanguageString) {
 
 		return QueryUtilHelper.querySingleResult(createCriteriaQueryReadOnly(queryLanguageString));
-	}
-
-	/**
-	 * @param <RM>
-	 * @param entityManager
-	 * @return {@link JstQueryRM}
-	 */
-	@SuppressWarnings("unchecked")
-	public <RM extends JstQueryRM> RM withEntityManager(final EntityManager entityManager) {
-
-		this.entityManager = entityManager;
-		return (RM) this;
 	}
 }

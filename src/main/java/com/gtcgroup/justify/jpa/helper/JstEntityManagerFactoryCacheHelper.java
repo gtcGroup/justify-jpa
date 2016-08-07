@@ -181,8 +181,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 	 */
 	public static JstQueryRM createQueryRmToBeClosed(final String persistenceUnitName) {
 
-		return new JstQueryRM()
-				.withEntityManager(createEntityManagerFactory(persistenceUnitName, null).createEntityManager());
+		return new JstQueryRM(createEntityManagerFactory(persistenceUnitName, null).createEntityManager());
 
 	}
 

@@ -40,8 +40,8 @@ import com.gtcgroup.justify.core.base.JstBaseTestingRule;
 import com.gtcgroup.justify.core.exception.internal.TestingConstructorRuleException;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
-import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.rm.JstQueryRM;
 import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
 
@@ -236,9 +236,9 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 					this.persistencePropertyMap);
 
 			final List<Object> createList = dataPopulator
-					.populateCreateListTM(new JstQueryRM().withEntityManager(entityManager));
+					.populateCreateListTM(new JstQueryRM(entityManager));
 
-			new JstTransactionRM().withEntityManager(entityManager).transactCreateOrUpdateFromList(createList);
+			new JstTransactionRM(entityManager).transactCreateOrUpdateFromList(createList);
 
 		} catch (final Exception e) {
 
