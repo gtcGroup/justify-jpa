@@ -31,6 +31,9 @@ import java.util.Map;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
@@ -55,7 +58,6 @@ public enum EntityManagerUtilHelper {
 
 	/** Optimization for read-only. */
 	public static final Map<String, Object> FIND_READ_ONLY = new HashMap<String, Object>();
-
 
 	/**
 	 * Optimization for reading from the database. Often used when there are
@@ -95,6 +97,30 @@ public enum EntityManagerUtilHelper {
 	}
 
 	/**
+	 * This method returns the number of records in the table or view. It may be
+	 * used in support of query processing.
+	 *
+	 * @param <ENTITY>
+	 * @param entityManager
+	 * @param entityClass
+	 * @return long
+	 */
+	public static <ENTITY> long count(final EntityManager entityManager, final Class<ENTITY> entityClass) {
+
+		final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+		criteriaQuery.select(criteriaBuilder.count(criteriaQuery.from(entityClass)));
+
+		final Query query = entityManager.createQuery(criteriaQuery);
+
+		final Long countLong = (Long) query.getSingleResult();
+		final long count = countLong.longValue();
+
+		return count;
+	}
+
+	/**
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
@@ -126,7 +152,8 @@ public enum EntityManagerUtilHelper {
 	 * @param populatedEntity
 	 * @return {@link Object} representing the identity.
 	 */
-	public static <ENTITY> Object createOrUpdateEntity(final EntityManager entityManager, final ENTITY populatedEntity) {
+	public static <ENTITY> Object createOrUpdateEntity(final EntityManager entityManager,
+			final ENTITY populatedEntity) {
 
 		entityManager.getTransaction().begin();
 		final ENTITY entityWithIdentity = entityManager.merge(populatedEntity);
@@ -263,7 +290,8 @@ public enum EntityManagerUtilHelper {
 
 			for (final Object populatedEntity : populatedEntities) {
 
-				result = entityManager.find(populatedEntity.getClass(), retrieveIdentity(entityManager, populatedEntity),
+				result = entityManager.find(populatedEntity.getClass(),
+						retrieveIdentity(entityManager, populatedEntity),
 						EntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
 				if (null == result) {
@@ -319,8 +347,7 @@ public enum EntityManagerUtilHelper {
 	 * @return boolean
 	 */
 	public static <ENTITY> boolean existsInSharedCacheWithEntityIdentities(final EntityManager entityManager,
-			final Class<ENTITY> entityClass,
-			final Object... entityIdentities) {
+			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
 		boolean result = true;
 
@@ -328,8 +355,7 @@ public enum EntityManagerUtilHelper {
 
 			for (final Object entityIdentity : entityIdentities) {
 
-				result = entityManager.getEntityManagerFactory().getCache().contains(entityClass,
-						entityIdentity);
+				result = entityManager.getEntityManagerFactory().getCache().contains(entityClass, entityIdentity);
 
 				if (false == result) {
 					return false;
@@ -411,12 +437,11 @@ public enum EntityManagerUtilHelper {
 	 * @param entityIdentity
 	 * @return {@link Object}
 	 */
-	public static <ENTITY> ENTITY findModifiableSingleOrNull(final EntityManager entityManager, final Class<ENTITY> entityClass, final Object entityIdentity) {
+	public static <ENTITY> ENTITY findModifiableSingleOrNull(final EntityManager entityManager,
+			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
 		return entityManager.find(entityClass, entityIdentity);
 	}
-
-
 
 	/**
 	 * @param <ENTITY>
@@ -425,7 +450,8 @@ public enum EntityManagerUtilHelper {
 	 * @param entityIdentity
 	 * @return {@link Object}
 	 */
-	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager, final Class<ENTITY> entityClass, final Object entityIdentity) {
+	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager,
+			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
 		return entityManager.find(entityClass, entityIdentity, EntityManagerUtilHelper.FIND_READ_ONLY);
 	}
@@ -439,7 +465,8 @@ public enum EntityManagerUtilHelper {
 	 * @param entityManager
 	 * @param populatedEntityList
 	 */
-	public static <ENTITY> void removeEntities(final EntityManager entityManager, final List<ENTITY> populatedEntityList) {
+	public static <ENTITY> void removeEntities(final EntityManager entityManager,
+			final List<ENTITY> populatedEntityList) {
 
 		entityManager.getTransaction().begin();
 
@@ -461,7 +488,7 @@ public enum EntityManagerUtilHelper {
 	 * @param entityClass
 	 * @param entityIdentity
 	 */
-	public static <ENTITY> void removeEntity(final EntityManager entityManager,final Class<ENTITY> entityClass,
+	public static <ENTITY> void removeEntity(final EntityManager entityManager, final Class<ENTITY> entityClass,
 			final Object entityIdentity) {
 
 		final ENTITY entity = entityManager.find(entityClass, entityIdentity);

@@ -123,7 +123,7 @@ public enum AssertionsJPA {
 			if (!EntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
 					entityIdentities)) {
 
-				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass));
+				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass, "database"));
 			}
 
 		} finally {
@@ -148,7 +148,7 @@ public enum AssertionsJPA {
 
 				if (!EntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager, populatedEntities)) {
 
-					Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass));
+					Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass, "database"));
 				}
 
 			} finally {
@@ -172,7 +172,7 @@ public enum AssertionsJPA {
 
 			if (!EntityManagerUtilHelper.existsInPersistenceContextWithPersistedEntities(AssertionsJPA.entityManager, persistedEntities)) {
 
-				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null));
+				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null, "persistence context"));
 			}
 
 		} finally {
@@ -196,7 +196,7 @@ public enum AssertionsJPA {
 
 			if (!EntityManagerUtilHelper.existsInSharedCacheWithEntityIdentities(AssertionsJPA.entityManager, entityClass, entityIdentities)) {
 
-				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null));
+				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null, "shared cache"));
 			}
 
 		} finally {
@@ -210,7 +210,7 @@ public enum AssertionsJPA {
 	 * @param persistenceUnitName
 	 * @param persistedEntities
 	 */
-	public static <ENTITY> void assertExistsInSharedCacheWithPersistedEntities(final String persistenceUnitName,
+	public static <ENTITY> void assertExistsInSharedCacheWithPopulatedEntities(final String persistenceUnitName,
 			final Object... persistedEntities) {
 
 		try {
@@ -219,7 +219,7 @@ public enum AssertionsJPA {
 
 			if (!EntityManagerUtilHelper.existsInSharedCacheWithPersistedEntities(AssertionsJPA.entityManager, persistedEntities)) {
 
-				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null));
+				Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null, "shared cache"));
 			}
 
 		} finally {
@@ -261,7 +261,7 @@ public enum AssertionsJPA {
 	}
 
 	private static <ENTITY> String createEntityShouldExistsMessage(final String persistenceUnitName,
-			final Class<ENTITY> entityClassOrNull) {
+			final Class<ENTITY> entityClassOrNull, final String fromWhat) {
 
 		final StringBuilder assertionErrorMessage = new StringBuilder();
 
@@ -273,7 +273,8 @@ public enum AssertionsJPA {
 			assertionErrorMessage.append("] ");
 		}
 
-		assertionErrorMessage.append("is unavailable from the database [");
+		assertionErrorMessage.append("is unavailable from the ");
+		assertionErrorMessage.append(fromWhat + " [");
 		assertionErrorMessage.append(persistenceUnitName);
 		assertionErrorMessage.append("].");
 

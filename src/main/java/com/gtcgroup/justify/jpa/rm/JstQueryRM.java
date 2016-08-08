@@ -31,12 +31,8 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-
-import org.eclipse.persistence.config.HintValues;
-import org.eclipse.persistence.config.QueryHints;
 
 import com.gtcgroup.justify.core.base.JstBaseTestingRM;
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
@@ -57,20 +53,12 @@ import com.gtcgroup.justify.jpa.helper.internal.QueryUtilHelper;
 public class JstQueryRM extends JstBaseTestingRM {
 
 	/**
-	 * @param message
-	 */
-	private static void throwException(final Exception e) {
-
-		throw new TestingRuntimeException(e);
-	}
-
-	/**
 	 * @param entity
 	 * @param identity
 	 * @param <ENTITY>
 	 * @return
 	 */
-	private static <ENTITY> ENTITY throwExceptionForNull(final Class<ENTITY> entityClass, final ENTITY entity) {
+	protected static <ENTITY> ENTITY throwExceptionForNull(final Class<ENTITY> entityClass, final ENTITY entity) {
 
 		if (null == entity) {
 
@@ -105,22 +93,11 @@ public class JstQueryRM extends JstBaseTestingRM {
 		long count = 0;
 
 		try {
-
-			final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-			final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-
-			criteriaQuery.select(criteriaBuilder.count(criteriaQuery.from(entityClass)));
-
-			final Query query = getEntityManager().createQuery(criteriaQuery);
-
-			final Long countLong = (Long) query.getSingleResult();
-			count = countLong.longValue();
-
+			count = EntityManagerUtilHelper.count(getEntityManager(), entityClass);
 		} catch (final Exception e) {
 
-			throwException(e);
+			throw new TestingRuntimeException(e);
 		}
-
 		return count;
 	}
 
@@ -129,7 +106,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 * @param entityClass
 	 * @return {@link Query}
 	 */
-	protected <ENTITY> Query createCriteriaQueryModifiable(final Class<ENTITY> entityClass) {
+	protected <ENTITY> Query createCriteriaQuery(final Class<ENTITY> entityClass) {
 
 		final CriteriaQuery<ENTITY> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
 		final Root<ENTITY> rootEntry = criteriaQuery.from(entityClass);
@@ -142,41 +119,16 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 * @param queryLanguageString
 	 * @return {@link Query}
 	 */
-	protected Query createCriteriaQueryModifiable(final String queryLanguageString) {
+	protected Query createCriteriaQuery(final String queryLanguageString) {
 
 		return getEntityManager().createQuery(queryLanguageString);
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param entityClass
-	 * @return {@link Query}
-	 */
-	protected <ENTITY> Query createCriteriaQueryReadOnly(final Class<ENTITY> entityClass) {
-
-		final Query query = createCriteriaQueryModifiable(entityClass);
-		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-
-		return query;
-	}
-
-	/**
-	 * @param queryLanguageString
-	 * @return {@link Query}
-	 */
-	protected Query createCriteriaQueryReadOnly(final String queryLanguageString) {
-
-		final Query query = createCriteriaQueryModifiable(queryLanguageString);
-		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-
-		return query;
 	}
 
 	/**
 	 * @param queryName
 	 * @return {@link Query}
 	 */
-	protected Query createNamedQueryModifiable(final String queryName) {
+	protected Query createNamedQuery(final String queryName) {
 
 		Query query;
 		try {
@@ -190,51 +142,23 @@ public class JstQueryRM extends JstBaseTestingRM {
 	}
 
 	/**
-	 * @param name
-	 * @return {@link Query}
-	 */
-	protected Query createNamedQueryReadOnly(final String name) {
-
-		final Query query = createNamedQueryModifiable(name);
-		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-
-		return query;
-	}
-
-	/**
 	 * @param <ENTITY>
 	 * @param sqlString
 	 * @param clazz
 	 * @return {@link Query}
 	 */
-	protected <ENTITY> Query createNativeQueryModifiable(final String sqlString, final Class<ENTITY> clazz) {
+	protected <ENTITY> Query createNativeQuery(final String sqlString, final Class<ENTITY> clazz) {
 
 		return getEntityManager().createNativeQuery(sqlString, clazz);
 	}
 
 	/**
 	 * @param <ENTITY>
-	 * @param sqlString
-	 * @param clazz
-	 * @return {@link Query}
-	 */
-	protected <ENTITY> Query createNativeQueryReadOnly(final String sqlString, final Class<ENTITY> clazz) {
-
-		final Query query = createNativeQueryModifiable(sqlString, clazz);
-		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-
-		return query;
-	}
-
-	/**
-	 * @param <ENTITY>
-	 * @param entityManager
 	 * @param entityClass
 	 * @param entityIdentity
 	 * @return {@link Object}
 	 */
-	public <ENTITY> ENTITY findModifiableSingleOrException(final EntityManager entityManager,
-			final Class<ENTITY> entityClass, final Object entityIdentity) {
+	public <ENTITY> ENTITY findModifiableSingleOrException(final Class<ENTITY> entityClass, final Object entityIdentity) {
 
 		final ENTITY entity = EntityManagerUtilHelper.findModifiableSingleOrNull(this.entityManager, entityClass,
 				entityIdentity);
@@ -292,7 +216,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> List<ENTITY> queryClassModifiableList(final Class<ENTITY> entityClass) {
 
-		return QueryUtilHelper.queryResultList(createCriteriaQueryModifiable(entityClass), null, null);
+		return QueryUtilHelper.queryResultList(createCriteriaQuery(entityClass), null, null, false);
 	}
 
 	/**
@@ -302,7 +226,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> List<ENTITY> queryJpqlModifiableList(final String queryLanguageString) {
 
-		return QueryUtilHelper.queryResultList(createCriteriaQueryModifiable(queryLanguageString), null, null);
+		return QueryUtilHelper.queryResultList(createCriteriaQuery(queryLanguageString), null, null, false);
 	}
 
 	/**
@@ -312,7 +236,17 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY queryJpqlModifiableSingle(final String queryLanguageString) {
 
-		return QueryUtilHelper.querySingleResult(createCriteriaQueryModifiable(queryLanguageString), null, null);
+		return QueryUtilHelper.querySingleResult(createCriteriaQuery(queryLanguageString), null, null, false);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param queryName
+	 * @return {@link List}<ENTITY>
+	 */
+	public <ENTITY> List<ENTITY> queryNamedModifiableList(final String queryName) {
+
+		return QueryUtilHelper.queryResultList(createNamedQuery(queryName), null, null, false);
 	}
 
 	/**
@@ -325,8 +259,8 @@ public class JstQueryRM extends JstBaseTestingRM {
 	public <ENTITY> List<ENTITY> queryNamedModifiableList(final String queryName,
 			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
 
-		return QueryUtilHelper.queryResultList(createNamedQueryModifiable(queryName), integerParameterMap,
-				stringParameterMap);
+		return QueryUtilHelper.queryResultList(createNamedQuery(queryName), integerParameterMap, stringParameterMap,
+				false);
 	}
 
 	/**
@@ -336,7 +270,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY queryNamedModifiableSingle(final String queryName) {
 
-		return QueryUtilHelper.querySingleResult(createNamedQueryModifiable(queryName), null, null);
+		return QueryUtilHelper.querySingleResult(createNamedQuery(queryName), null, null, false);
 	}
 
 	/**
@@ -349,8 +283,18 @@ public class JstQueryRM extends JstBaseTestingRM {
 	public <ENTITY> ENTITY queryNamedModifiableSingle(final String queryName,
 			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
 
-		return QueryUtilHelper.querySingleResult(createNamedQueryModifiable(queryName), integerParameterMap,
-				stringParameterMap);
+		return QueryUtilHelper.querySingleResult(createNamedQuery(queryName), integerParameterMap, stringParameterMap,
+				false);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param queryName
+	 * @return {@link List}<ENTITY>
+	 */
+	public <ENTITY> List<ENTITY> queryNamedNativeModifiableList(final String queryName) {
+
+		return QueryUtilHelper.queryResultList(createNamedQuery(queryName), null, null, false);
 	}
 
 	/**
@@ -363,8 +307,8 @@ public class JstQueryRM extends JstBaseTestingRM {
 	public <ENTITY> List<ENTITY> queryNamedNativeModifiableList(final String queryName,
 			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
 
-		return QueryUtilHelper.queryResultList(createNamedQueryModifiable(queryName), integerParameterMap,
-				stringParameterMap);
+		return QueryUtilHelper.queryResultList(createNamedQuery(queryName), integerParameterMap, stringParameterMap,
+				false);
 	}
 
 	/**
@@ -374,8 +318,9 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY queryNamedNativeModifiableSingle(final String queryName) {
 
-		return QueryUtilHelper.querySingleResult(createNamedQueryModifiable(queryName), null, null);
+		return QueryUtilHelper.querySingleResult(createNamedQuery(queryName), null, null, false);
 	}
+
 	/**
 	 * @param <ENTITY>
 	 * @param queryName
@@ -386,53 +331,79 @@ public class JstQueryRM extends JstBaseTestingRM {
 	public <ENTITY> ENTITY queryNamedNativeModifiableSingle(final String queryName,
 			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
 
-		return QueryUtilHelper.querySingleResult(createNamedQueryModifiable(queryName), integerParameterMap,
-				stringParameterMap);
+		return QueryUtilHelper.querySingleResult(createNamedQuery(queryName), integerParameterMap, stringParameterMap,
+				false);
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param name
-	 * @param parameterValuesInOrder
+	 * @return ENTITY
+	 */
+	public <ENTITY> List<ENTITY> queryNamedNativeReadOnlyList(final String name) {
+
+		return QueryUtilHelper.queryResultList(createNamedQuery(name), null, null, true);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param name
+	 * @param integerParameterMap
+	 * @param stringParameterMap
 	 * @return ENTITY
 	 */
 	public <ENTITY> List<ENTITY> queryNamedNativeReadOnlyList(final String name,
-			final Object... parameterValuesInOrder) {
+			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
 
-		return queryResultList(createNamedQueryReadOnly(name), parameterValuesInOrder);
+		return QueryUtilHelper.queryResultList(createNamedQuery(name), integerParameterMap, stringParameterMap, true);
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param name
-	 * @param parameterValuesInOrder
 	 * @return ENTITY
 	 */
-	public <ENTITY> ENTITY queryNamedNativeReadOnlySingle(final String name, final Object... parameterValuesInOrder) {
+	public <ENTITY> ENTITY queryNamedNativeReadOnlySingle(final String name) {
 
-		return QueryUtilHelper.querySingleResult(createNamedQueryReadOnly(name), parameterValuesInOrder);
+		return QueryUtilHelper.querySingleResult(createNamedQuery(name), null, null, true);
 	}
 
 	/**
 	 * @param <ENTITY>
-	 * @param name
-	 * @param parameterValuesInOrder
+	 * @param queryName
+	 * @param integerParameterMap
+	 * @param stringParameterMap
 	 * @return ENTITY
 	 */
-	public <ENTITY> List<ENTITY> queryNamedReadOnlyList(final String name, final Object... parameterValuesInOrder) {
+	public <ENTITY> ENTITY queryNamedNativeReadOnlySingle(final String queryName,
+			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
 
-		return queryResultList(createNamedQueryReadOnly(name), parameterValuesInOrder);
+		return QueryUtilHelper.querySingleResult(createNamedQuery(queryName), integerParameterMap, stringParameterMap,
+				true);
 	}
 
 	/**
 	 * @param <ENTITY>
-	 * @param queryPO
+	 * @param queryName
 	 * @return ENTITY
 	 */
-	public <ENTITY> ENTITY queryNamedReadOnlySingle(final JstJpaQueryPO queryPO) {
+	public <ENTITY> List<ENTITY> queryNamedReadOnlyList(final String queryName) {
 
-		return QueryUtilHelper.querySingleResult(createNamedQueryReadOnly(queryPO.getQueryName()),
-				queryPO.getIntegerParameterMap(), queryPO.getKeyParameterMap());
+		return QueryUtilHelper.queryResultList(createNamedQuery(queryName), null, null, true);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param queryName
+	 * @param integerParameterMap
+	 * @param stringParameterMap
+	 * @return ENTITY
+	 */
+	public <ENTITY> List<ENTITY> queryNamedReadOnlyList(final String queryName,
+			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
+
+		return QueryUtilHelper.queryResultList(createNamedQuery(queryName), integerParameterMap, stringParameterMap,
+				true);
 	}
 
 	/**
@@ -442,7 +413,32 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY queryNamedReadOnlySingle(final String queryName) {
 
-		return QueryUtilHelper.querySingleResult(createNamedQueryReadOnly(queryName));
+		return QueryUtilHelper.querySingleResult(createNamedQuery(queryName), null, null, true);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param queryName
+	 * @param integerParameterMap
+	 * @param stringParameterMap
+	 * @return ENTITY
+	 */
+	public <ENTITY> ENTITY queryNamedReadOnlySingle(final String queryName,
+			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
+
+		return QueryUtilHelper.querySingleResult(createNamedQuery(queryName), integerParameterMap, stringParameterMap,
+				true);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param sqlString
+	 * @param clazz
+	 * @return {@link List}<ENTITY>
+	 */
+	public <ENTITY> List<ENTITY> queryNativeModifiableList(final String sqlString, final Class<ENTITY> clazz) {
+
+		return QueryUtilHelper.queryResultList(createNativeQuery(sqlString, clazz), null, null, false);
 	}
 
 	/**
@@ -456,8 +452,8 @@ public class JstQueryRM extends JstBaseTestingRM {
 	public <ENTITY> List<ENTITY> queryNativeModifiableList(final String sqlString, final Class<ENTITY> clazz,
 			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
 
-		return QueryUtilHelper.queryResultList(createNativeQueryModifiable(sqlString, clazz), integerParameterMap,
-				stringParameterMap);
+		return QueryUtilHelper.queryResultList(createNativeQuery(sqlString, clazz), integerParameterMap,
+				stringParameterMap, false);
 	}
 
 	/**
@@ -468,7 +464,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY queryNativeModifiableSingle(final String sqlString, final Class<ENTITY> clazz) {
 
-		return QueryUtilHelper.querySingleResult(createNativeQueryModifiable(sqlString, clazz), null, null);
+		return QueryUtilHelper.querySingleResult(createNativeQuery(sqlString, clazz), null, null, false);
 	}
 
 	/**
@@ -482,34 +478,45 @@ public class JstQueryRM extends JstBaseTestingRM {
 	public <ENTITY> ENTITY queryNativeModifiableSingle(final String sqlString, final Class<ENTITY> clazz,
 			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
 
-		return QueryUtilHelper.querySingleResult(createNativeQueryModifiable(sqlString, clazz), integerParameterMap,
-				stringParameterMap);
+		return QueryUtilHelper.querySingleResult(createNativeQuery(sqlString, clazz), integerParameterMap,
+				stringParameterMap, false);
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param sqlString
 	 * @param clazz
-	 * @param parameterValuesInOrder
+	 * @return {@link List}<ENTITY>
+	 */
+	public <ENTITY> List<ENTITY> queryNativeReadOnlyList(final String sqlString, final Class<ENTITY> clazz) {
+
+		return QueryUtilHelper.queryResultList(createNativeQuery(sqlString, clazz), null, null, true);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param sqlString
+	 * @param clazz
+	 * @param integerParameterMap
+	 * @param stringParameterMap
 	 * @return {@link List}<ENTITY>
 	 */
 	public <ENTITY> List<ENTITY> queryNativeReadOnlyList(final String sqlString, final Class<ENTITY> clazz,
-			final Object... parameterValuesInOrder) {
+			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
 
-		return queryResultList(createNativeQueryReadOnly(sqlString, clazz), parameterValuesInOrder);
+		return QueryUtilHelper.queryResultList(createNativeQuery(sqlString, clazz), integerParameterMap,
+				stringParameterMap, true);
 	}
 
 	/**
 	 * @param <ENTITY>
 	 * @param sqlString
 	 * @param clazz
-	 * @param parameterValuesInOrder
 	 * @return ENTITY
 	 */
-	public <ENTITY> ENTITY queryNativeReadOnlySingle(final String sqlString, final Class<ENTITY> clazz,
-			final Object... parameterValuesInOrder) {
+	public <ENTITY> ENTITY queryNativeReadOnlySingle(final String sqlString, final Class<ENTITY> clazz) {
 
-		return QueryUtilHelper.querySingleResult(createNativeQueryReadOnly(sqlString, clazz), parameterValuesInOrder);
+		return QueryUtilHelper.querySingleResult(createNativeQuery(sqlString, clazz), null, null, true);
 	}
 
 	/**
@@ -519,7 +526,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> List<ENTITY> queryReadOnlyListByClass(final Class<ENTITY> entityClass) {
 
-		return queryResultList(createCriteriaQueryReadOnly(entityClass));
+		return QueryUtilHelper.queryResultList(createCriteriaQuery(entityClass), null, null, true);
 	}
 
 	/**
@@ -529,7 +536,7 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> List<ENTITY> queryReadOnlyListUsingJPQL(final String queryLanguageString) {
 
-		return queryResultList(createCriteriaQueryReadOnly(queryLanguageString));
+		return QueryUtilHelper.queryResultList(createCriteriaQuery(queryLanguageString), null, null, true);
 	}
 
 	/**
@@ -539,6 +546,6 @@ public class JstQueryRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> ENTITY queryReadOnlySingleUsingJPQL(final String queryLanguageString) {
 
-		return QueryUtilHelper.querySingleResult(createCriteriaQueryReadOnly(queryLanguageString));
+		return QueryUtilHelper.querySingleResult(createCriteriaQuery(queryLanguageString), null, null, true);
 	}
 }

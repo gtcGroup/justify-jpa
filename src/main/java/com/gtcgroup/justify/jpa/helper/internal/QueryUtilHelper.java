@@ -32,6 +32,9 @@ import java.util.Map.Entry;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 
 /**
@@ -51,7 +54,37 @@ public enum QueryUtilHelper {
 	INSTANCE;
 
 	/**
-	 * his method executes a query that returns a result list. Parameters are
+	 * @param query
+	 * @param integerParameterMap
+	 * @param stringParameterMap
+	 * @param isReadOnly
+	 */
+	@SuppressWarnings("boxing")
+	private static void decorateQuery(final Query query, final Map<Integer, Object> integerParameterMap,
+			final Map<String, Object> stringParameterMap, final boolean isReadOnly) {
+		if (null != integerParameterMap) {
+
+			for (final Entry<Integer, Object> entry1 : integerParameterMap.entrySet()) {
+
+				query.setParameter(entry1.getKey(), entry1.getValue());
+			}
+		}
+		if (null != stringParameterMap) {
+
+			for (final Entry<String, Object> entry2 : stringParameterMap.entrySet()) {
+
+				query.setParameter(entry2.getKey(), entry2.getValue());
+			}
+		}
+
+		if (isReadOnly) {
+
+			query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+		}
+	}
+
+	/**
+	 * This method executes a query that returns a result list. Parameters are
 	 * passed with an {@link Integer} and/or a {@link String} Map of parameter
 	 * values.
 	 *
@@ -61,30 +94,19 @@ public enum QueryUtilHelper {
 	 *            or null
 	 * @param stringParameterMap
 	 *            or null
+	 * @param isReadOnly
 	 * @return {@link List}
 	 */
-	@SuppressWarnings({ "unchecked", "boxing" })
+	@SuppressWarnings("unchecked")
 	public static <ENTITY> List<ENTITY> queryResultList(final Query query,
-			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap) {
+			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap,
+			final boolean isReadOnly) {
 
 		List<ENTITY> entityList = null;
 
 		try {
 
-			if (null != integerParameterMap) {
-
-				for (final Entry<Integer, Object> entry1 : integerParameterMap.entrySet()) {
-
-					query.setParameter(entry1.getKey(), entry1.getValue());
-				}
-			}
-			if (null != stringParameterMap) {
-
-				for (final Entry<String, Object> entry2 : stringParameterMap.entrySet()) {
-
-					query.setParameter(entry2.getKey(), entry2.getValue());
-				}
-			}
+			decorateQuery(query, integerParameterMap, stringParameterMap, isReadOnly);
 
 			entityList = query.getResultList();
 
@@ -103,26 +125,21 @@ public enum QueryUtilHelper {
 	 * @param <ENTITY>
 	 * @param query
 	 * @param integerParameterMap
+	 *            or null
 	 * @param stringParameterMap
+	 *            or null
+	 * @param isReadOnly
 	 * @return ENTITY
 	 */
-	@SuppressWarnings({ "boxing", "unchecked" })
+	@SuppressWarnings("unchecked")
 	public static <ENTITY> ENTITY querySingleResult(final Query query, final Map<Integer, Object> integerParameterMap,
-			final Map<String, Object> stringParameterMap) {
+			final Map<String, Object> stringParameterMap, final boolean isReadOnly) {
 
 		ENTITY entity = null;
 
 		try {
 
-			for (final Entry<Integer, Object> entry1 : integerParameterMap.entrySet()) {
-
-				query.setParameter(entry1.getKey(), entry1.getValue());
-			}
-
-			for (final Entry<String, Object> entry2 : stringParameterMap.entrySet()) {
-
-				query.setParameter(entry2.getKey(), entry2.getValue());
-			}
+			decorateQuery(query, integerParameterMap, stringParameterMap, isReadOnly);
 
 			entity = (ENTITY) query.getSingleResult();
 
@@ -130,7 +147,6 @@ public enum QueryUtilHelper {
 
 			throwException(e);
 		}
-
 		return entity;
 	}
 
