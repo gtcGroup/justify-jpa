@@ -108,9 +108,9 @@ public enum EntityManagerUtilHelper {
 
 		entityManager.getTransaction().begin();
 
-		for (final Object entity : populatedEntityList) {
+		for (final Object populatedEntity : populatedEntityList) {
 
-			entityManager.merge(entity);
+			entityManager.merge(populatedEntity);
 		}
 		entityManager.getTransaction().commit();
 		return;
@@ -191,6 +191,7 @@ public enum EntityManagerUtilHelper {
 	 */
 	public static <ENTITY extends Object> void evictEntityInstancesFromSharedCache(final Class<ENTITY> entityClass,
 			final EntityManager entityManager) {
+
 		evictEntityInstancesFromSharedCache(entityManager, entityClass);
 	}
 
@@ -213,21 +214,23 @@ public enum EntityManagerUtilHelper {
 	 * This method forces a trip to the database without altering the state of
 	 * cache.
 	 *
+	 * @param <ENTITY>
 	 * @param entityManager
-	 * @param populatedEntities
+	 * @param entityClass
+	 * @param entityIdentities
 	 *
 	 * @return boolean
 	 */
-	public static boolean existsInDatabaseWithPopulatedEntities(final EntityManager entityManager,
-			final Object... populatedEntities) {
+	public static <ENTITY> boolean existsInDatabaseWithEntityIdentities(final EntityManager entityManager,
+			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
 		Object result;
 
 		try {
 
-			for (final Object entity : populatedEntities) {
+			for (final Object entityIdentity : entityIdentities) {
 
-				result = entityManager.find(entity.getClass(), retrieveIdentity(entityManager, entity),
+				result = entityManager.find(entityClass, entityIdentity,
 						EntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
 				if (null == result) {
@@ -246,23 +249,21 @@ public enum EntityManagerUtilHelper {
 	 * This method forces a trip to the database without altering the state of
 	 * cache.
 	 *
-	 * @param <ENTITY>
 	 * @param entityManager
-	 * @param entityClass
-	 * @param entityIdentities
+	 * @param populatedEntities
 	 *
 	 * @return boolean
 	 */
-	public static <ENTITY> boolean existsInDatabaseWithEntityIdentities(final EntityManager entityManager,
-			final Class<ENTITY> entityClass, final Object... entityIdentities) {
+	public static boolean existsInDatabaseWithPopulatedEntities(final EntityManager entityManager,
+			final Object... populatedEntities) {
 
 		Object result;
 
 		try {
 
-			for (final Object identity : entityIdentities) {
+			for (final Object populatedEntity : populatedEntities) {
 
-				result = entityManager.find(entityClass, identity,
+				result = entityManager.find(populatedEntity.getClass(), retrieveIdentity(entityManager, populatedEntity),
 						EntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
 				if (null == result) {
@@ -309,44 +310,6 @@ public enum EntityManagerUtilHelper {
 
 	/**
 	 * This method determines whether the shared (L2) cache contains the given
-	 * persisted entities.
-	 *
-	 * @param <ENTITY>
-	 *
-	 * @param entityManager
-	 * @param persistedEntities
-	 * @return boolean
-	 */
-	public static <ENTITY> boolean existsInSharedCacheWithPersistedEntities(final EntityManager entityManager,
-			final Object... persistedEntities) {
-
-		boolean result = true;
-
-		try {
-
-			for (final Object populatedEntity : persistedEntities) {
-
-				@SuppressWarnings("unchecked")
-				final ENTITY entity = (ENTITY) findReadOnlySingleOrNull(entityManager, populatedEntity.getClass(),
-						retrieveIdentity(entityManager, populatedEntity));
-
-				result = entityManager.getEntityManagerFactory().getCache().contains(entity.getClass(),
-						retrieveIdentity(entityManager, entity));
-
-				if (false == result) {
-					return false;
-				}
-			}
-
-		} catch (final Exception e) {
-
-			throw new TestingRuntimeException(e);
-		}
-		return result;
-	}
-
-	/**
-	 * This method determines whether the shared (L2) cache contains the given
 	 * entities.
 	 *
 	 * @param <ENTITY>
@@ -367,6 +330,44 @@ public enum EntityManagerUtilHelper {
 
 				result = entityManager.getEntityManagerFactory().getCache().contains(entityClass,
 						entityIdentity);
+
+				if (false == result) {
+					return false;
+				}
+			}
+
+		} catch (final Exception e) {
+
+			throw new TestingRuntimeException(e);
+		}
+		return result;
+	}
+
+	/**
+	 * This method determines whether the shared (L2) cache contains the given
+	 * persisted entities.
+	 *
+	 * @param <ENTITY>
+	 *
+	 * @param entityManager
+	 * @param persistedEntities
+	 * @return boolean
+	 */
+	public static <ENTITY> boolean existsInSharedCacheWithPersistedEntities(final EntityManager entityManager,
+			final Object... persistedEntities) {
+
+		boolean result = true;
+
+		try {
+
+			for (final Object persistedEntity : persistedEntities) {
+
+				@SuppressWarnings("unchecked")
+				final ENTITY entity = (ENTITY) findReadOnlySingleOrNull(entityManager, persistedEntity.getClass(),
+						retrieveIdentity(entityManager, persistedEntity));
+
+				result = entityManager.getEntityManagerFactory().getCache().contains(entity.getClass(),
+						retrieveIdentity(entityManager, entity));
 
 				if (false == result) {
 					return false;
@@ -442,10 +443,10 @@ public enum EntityManagerUtilHelper {
 
 		entityManager.getTransaction().begin();
 
-		for (Object entity : populatedEntityList) {
+		for (Object populatedEntity : populatedEntityList) {
 
-			entity = entityManager.merge(entity);
-			entityManager.remove(entity);
+			populatedEntity = entityManager.merge(populatedEntity);
+			entityManager.remove(populatedEntity);
 		}
 		entityManager.getTransaction().commit();
 	}

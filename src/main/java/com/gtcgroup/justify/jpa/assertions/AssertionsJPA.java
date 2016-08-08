@@ -54,6 +54,7 @@ public enum AssertionsJPA {
 
 	private static JstAssertionsJpaCascadePO assertionsJpaCascadePO;
 	private static EntityManager entityManager;
+	private static String persistenceUnitName = "";
 
 	/**
 	 * This method verifies cascade annotations.
@@ -68,8 +69,9 @@ public enum AssertionsJPA {
 		AssertionsJPA.assertionsJpaCascadePO = assertionsJpaCascadePO;
 		Object entityIdentity = null;
 
-		AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
+		AssertionsJPA.entityManager = getEntityManager(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
+
+		AssertionsJPA.persistenceUnitName = assertionsJpaCascadePO.getPersistenceUnitName();
 
 		try {
 
@@ -93,9 +95,12 @@ public enum AssertionsJPA {
 
 				deleteRemainingEntities();
 
+				closeEntityManager();
+
+
 			} catch (final Exception e) {
 
-				JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
+				closeEntityManager();
 
 				throw new TestingRuntimeException(e);
 			}
@@ -113,7 +118,7 @@ public enum AssertionsJPA {
 
 		try {
 
-			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+			AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
 			if (!EntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
 					entityIdentities)) {
@@ -122,7 +127,7 @@ public enum AssertionsJPA {
 			}
 
 		} finally {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
+			closeEntityManager();
 		}
 		return;
 	}
@@ -139,7 +144,7 @@ public enum AssertionsJPA {
 
 			try {
 
-				AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+				AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
 				if (!EntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager, populatedEntities)) {
 
@@ -147,7 +152,7 @@ public enum AssertionsJPA {
 				}
 
 			} finally {
-				JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
+				closeEntityManager();
 			}
 		}
 		return;
@@ -163,7 +168,7 @@ public enum AssertionsJPA {
 
 		try {
 
-			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+			AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
 			if (!EntityManagerUtilHelper.existsInPersistenceContextWithPersistedEntities(AssertionsJPA.entityManager, persistedEntities)) {
 
@@ -171,7 +176,7 @@ public enum AssertionsJPA {
 			}
 
 		} finally {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
+			closeEntityManager();
 		}
 		return;
 	}
@@ -187,7 +192,7 @@ public enum AssertionsJPA {
 
 		try {
 
-			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+			AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
 			if (!EntityManagerUtilHelper.existsInSharedCacheWithEntityIdentities(AssertionsJPA.entityManager, entityClass, entityIdentities)) {
 
@@ -195,7 +200,7 @@ public enum AssertionsJPA {
 			}
 
 		} finally {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
+			AssertionsJPA.closeEntityManager();
 		}
 		return;
 	}
@@ -210,7 +215,7 @@ public enum AssertionsJPA {
 
 		try {
 
-			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+			AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
 			if (!EntityManagerUtilHelper.existsInSharedCacheWithPersistedEntities(AssertionsJPA.entityManager, persistedEntities)) {
 
@@ -221,6 +226,15 @@ public enum AssertionsJPA {
 			JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
 		}
 		return;
+	}
+
+	/**
+	 * @param persistenceUnitName
+	 */
+	private static void closeEntityManager() {
+
+		AssertionsJPA.persistenceUnitName = "";
+		JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
 	}
 
 	/**
@@ -287,19 +301,19 @@ public enum AssertionsJPA {
 	}
 
 	/**
+	 * @param persistenceUnitName
 	 * @return EntityManager
 	 */
 	public static EntityManager getEntityManager(final String persistenceUnitName) {
 
-		if (null == AssertionsJPA.entityManager) {
+		if (AssertionsJPA.persistenceUnitName != persistenceUnitName) {
 
 			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper
 					.createEntityManagerToBeClosed(persistenceUnitName);
 
-			final Map<String, Object> prop = AssertionsJPA.entityManager.getEntityManagerFactory().getDProperties();
-
-			System.out.println(prop.toString());
+			AssertionsJPA.persistenceUnitName = persistenceUnitName;
 		}
+
 		return AssertionsJPA.entityManager;
 	}
 
