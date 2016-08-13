@@ -23,7 +23,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.helper.internal;
+package com.gtcgroup.justify.jpa.helper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +51,7 @@ import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum EntityManagerUtilHelper {
+public enum JstEntityManagerUtilHelper {
 
 	@SuppressWarnings("javadoc")
 	INSTANCE;
@@ -73,15 +73,15 @@ public enum EntityManagerUtilHelper {
 
 	static {
 
-		EntityManagerUtilHelper.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
+		JstEntityManagerUtilHelper.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
 
-		EntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE,
+		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE,
 				CacheRetrieveMode.BYPASS);
 
-		EntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.CACHE_RETRIEVE_MODE,
+		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.CACHE_RETRIEVE_MODE,
 				CacheRetrieveMode.BYPASS);
 
-		EntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
+		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
 	}
 
 	/**
@@ -198,28 +198,18 @@ public enum EntityManagerUtilHelper {
 	/**
 	 * This method clears the shared (L2) cache of a single instance.
 	 *
-	 * @param entity
-	 * @param entityIdentity
 	 * @param entityManager
+	 * @param populatedEntity
 	 */
-	public static void evictEntityInstanceFromSharedCache(final Object entity, final Object entityIdentity,
-			final EntityManager entityManager) {
+	public static void evictEntityInstanceFromSharedCache(final EntityManager entityManager,
+			final Object populatedEntity) {
 
-		entityManager.getEntityManagerFactory().getCache().evict(entity.getClass(), entityIdentity);
-	}
-
-	/**
-	 * This method clears the shared (L2) cache of all instances of a single
-	 * object type.
-	 *
-	 * @param <ENTITY>
-	 * @param entityClass
-	 * @param entityManager
-	 */
-	public static <ENTITY extends Object> void evictEntityInstancesFromSharedCache(final Class<ENTITY> entityClass,
-			final EntityManager entityManager) {
-
-		evictEntityInstancesFromSharedCache(entityManager, entityClass);
+		try {
+			entityManager.getEntityManagerFactory().getCache().evict(populatedEntity.getClass(),
+					retrieveIdentity(entityManager, populatedEntity));
+		} catch (final Exception e) {
+			throw new TestingRuntimeException(e);
+		}
 	}
 
 	/**
@@ -235,6 +225,32 @@ public enum EntityManagerUtilHelper {
 			final Class<ENTITY> entityClass) {
 
 		entityManager.getEntityManagerFactory().getCache().evict(entityClass);
+	}
+
+	/**
+	 * This method clears the shared (L2) cache of all instances of a single
+	 * object type.
+	 *
+	 * @param entityManager
+	 * @param entityClass
+	 * @param <ENTITY>
+	 * @param entityIdentities
+	 */
+	public static <ENTITY extends Object> void evictEntityInstancesFromSharedCache(final EntityManager entityManager,
+			final Class<ENTITY> entityClass, final Object... entityIdentities) {
+
+		Object result;
+
+		for (final Object entityIdentity : entityIdentities) {
+
+			result = entityManager.find(entityClass, entityIdentity,
+					JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+
+			if (null != result) {
+				evictEntityInstanceFromSharedCache(entityManager, result);
+			}
+		}
+
 	}
 
 	/**
@@ -258,7 +274,7 @@ public enum EntityManagerUtilHelper {
 			for (final Object entityIdentity : entityIdentities) {
 
 				result = entityManager.find(entityClass, entityIdentity,
-						EntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+						JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
 				if (null == result) {
 					return false;
@@ -292,7 +308,7 @@ public enum EntityManagerUtilHelper {
 
 				result = entityManager.find(populatedEntity.getClass(),
 						retrieveIdentity(entityManager, populatedEntity),
-						EntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+						JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
 				if (null == result) {
 					return false;
@@ -324,6 +340,49 @@ public enum EntityManagerUtilHelper {
 			for (final Object persistedEntity : persistedEntities) {
 
 				result = entityManager.contains(persistedEntity);
+
+				if (false == result) {
+					return false;
+				}
+			}
+		} catch (final Exception e) {
+
+			throw new TestingRuntimeException(e);
+		}
+		return result;
+	}
+
+	/**
+	 * This method checks if the instance is a managed entity instance belonging
+	 * to the current persistence context (L1 cache).
+	 *
+	 * @param <ENTITY>
+	 * @param entityManager
+	 * @param readOnly
+	 * @param populatedEntities
+	 * @return boolean
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ENTITY> boolean existsInPersistenceContextWithPopulatedEntities(final EntityManager entityManager,
+			final boolean readOnly, final Object... populatedEntities) {
+
+		boolean result = true;
+
+		try {
+
+			for (final Object populatedEntity : populatedEntities) {
+
+				ENTITY entity = null;
+
+				if (readOnly) {
+					entity = (ENTITY) findReadOnlySingleOrNull(entityManager, populatedEntity.getClass(),
+							retrieveIdentity(entityManager, populatedEntity));
+				} else {
+					entity = (ENTITY) findModifiableSingleOrNull(entityManager, populatedEntity.getClass(),
+							retrieveIdentity(entityManager, populatedEntity));
+				}
+
+				result = entityManager.contains(entity);
 
 				if (false == result) {
 					return false;
@@ -376,24 +435,20 @@ public enum EntityManagerUtilHelper {
 	 * @param <ENTITY>
 	 *
 	 * @param entityManager
-	 * @param persistedEntities
+	 * @param populatedEntities
 	 * @return boolean
 	 */
-	public static <ENTITY> boolean existsInSharedCacheWithPersistedEntities(final EntityManager entityManager,
-			final Object... persistedEntities) {
+	public static <ENTITY> boolean existsInSharedCacheWithPopulatedEntities(final EntityManager entityManager,
+			final Object... populatedEntities) {
 
 		boolean result = true;
 
 		try {
 
-			for (final Object persistedEntity : persistedEntities) {
+			for (final Object populatedEntity : populatedEntities) {
 
-				@SuppressWarnings("unchecked")
-				final ENTITY entity = (ENTITY) findReadOnlySingleOrNull(entityManager, persistedEntity.getClass(),
-						retrieveIdentity(entityManager, persistedEntity));
-
-				result = entityManager.getEntityManagerFactory().getCache().contains(entity.getClass(),
-						retrieveIdentity(entityManager, entity));
+				result = entityManager.getEntityManagerFactory().getCache().contains(populatedEntity.getClass(),
+						retrieveIdentity(entityManager, populatedEntity));
 
 				if (false == result) {
 					return false;
@@ -420,7 +475,7 @@ public enum EntityManagerUtilHelper {
 	public static <ENTITY> void findAndRemoveEntity(final EntityManager entityManager, final Class<ENTITY> entityClass,
 			final Object entityIdentity) {
 
-		final ENTITY entity = entityManager.find(entityClass, entityIdentity);
+		final ENTITY entity = findModifiableSingleOrNull(entityManager, entityClass, entityIdentity);
 
 		entityManager.getTransaction().begin();
 
@@ -453,7 +508,7 @@ public enum EntityManagerUtilHelper {
 	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager,
 			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		return entityManager.find(entityClass, entityIdentity, EntityManagerUtilHelper.FIND_READ_ONLY);
+		return entityManager.find(entityClass, entityIdentity, JstEntityManagerUtilHelper.FIND_READ_ONLY);
 	}
 
 	/**

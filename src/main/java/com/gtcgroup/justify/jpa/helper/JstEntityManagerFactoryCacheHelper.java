@@ -33,7 +33,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import com.gtcgroup.justify.jpa.rm.JstQueryRM;
+import com.gtcgroup.justify.jpa.rm.JstQueryJpaRM;
 
 /**
  * This Helper class caches {@link EntityManagerFactory}s.
@@ -100,11 +100,11 @@ public enum JstEntityManagerFactoryCacheHelper {
 	/**
 	 * This method closes the {@link EntityManager}.
 	 *
-	 * @param jstQueryRM
+	 * @param jstQueryJpaRM
 	 */
-	public static void closeQueryRM(final JstQueryRM jstQueryRM) {
+	public static void closeQueryRM(final JstQueryJpaRM jstQueryJpaRM) {
 
-		closeEntityManager(jstQueryRM.getEntityManager());
+		closeEntityManager(jstQueryJpaRM.getEntityManager());
 	}
 
 	/**
@@ -179,9 +179,9 @@ public enum JstEntityManagerFactoryCacheHelper {
 	 * @param persistenceUnitName
 	 * @return {@link EntityManager}
 	 */
-	public static JstQueryRM createQueryRmToBeClosed(final String persistenceUnitName) {
+	public static JstQueryJpaRM createQueryRmToBeClosed(final String persistenceUnitName) {
 
-		return new JstQueryRM(createEntityManagerFactory(persistenceUnitName, null).createEntityManager());
+		return new JstQueryJpaRM(createEntityManagerFactory(persistenceUnitName, null).createEntityManager());
 
 	}
 

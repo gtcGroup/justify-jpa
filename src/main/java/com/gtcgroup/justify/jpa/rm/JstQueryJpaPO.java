@@ -39,17 +39,17 @@ import java.util.Map;
  * @author
  * @since v.6.0
  */
-public class JstJpaQueryPO {
+public class JstQueryJpaPO {
 
 	/**
 	 * This method initializes the class.
 	 *
 	 * @param queryName
-	 * @return {@link JstJpaQueryPO}
+	 * @return {@link JstQueryJpaPO}
 	 */
-	public static JstJpaQueryPO withQueryName(final String queryName) {
+	public static JstQueryJpaPO withQueryName(final String queryName) {
 
-		return new JstJpaQueryPO(queryName);
+		return new JstQueryJpaPO(queryName);
 	}
 
 	private String queryName;
@@ -63,7 +63,7 @@ public class JstJpaQueryPO {
 	 *
 	 * @param queryName
 	 */
-	protected JstJpaQueryPO(final String queryName) {
+	protected JstQueryJpaPO(final String queryName) {
 
 		super();
 		this.queryName = queryName;
@@ -97,9 +97,9 @@ public class JstJpaQueryPO {
 	/**
 	 * @param parameterNumber
 	 * @param parameterValue
-	 * @return {@link JstJpaQueryPO}
+	 * @return {@link JstQueryJpaPO}
 	 */
-	public JstJpaQueryPO withIntegerParameter(final Integer parameterNumber, final Object parameterValue) {
+	public JstQueryJpaPO withIntegerParameter(final Integer parameterNumber, final Object parameterValue) {
 
 		this.integerParameterMap.put(parameterNumber, parameterValue);
 		return this;
@@ -108,9 +108,9 @@ public class JstJpaQueryPO {
 	/**
 	 * @param parameterKey
 	 * @param parameterValue
-	 * @return {@link JstJpaQueryPO}
+	 * @return {@link JstQueryJpaPO}
 	 */
-	public JstJpaQueryPO withKeyParameter(final String parameterKey, final Object parameterValue) {
+	public JstQueryJpaPO withKeyParameter(final String parameterKey, final Object parameterValue) {
 
 		this.keyParameterMap.put(parameterKey, parameterValue);
 		return this;

@@ -23,7 +23,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.helper.internal;
+package com.gtcgroup.justify.jpa.helper;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,7 @@ import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum QueryUtilHelper {
+public enum JstQueryUtilHelper {
 
 	@SuppressWarnings("javadoc")
 	INSTANCE;

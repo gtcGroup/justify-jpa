@@ -42,8 +42,8 @@ import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.rm.JstQueryRM;
-import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
+import com.gtcgroup.justify.jpa.rm.JstQueryJpaRM;
+import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
 
 /**
  * This {@link Rule} class initializes persistence.
@@ -236,9 +236,9 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 					this.persistencePropertyMap);
 
 			final List<Object> createList = dataPopulator
-					.populateCreateListTM(new JstQueryRM(entityManager));
+					.populateCreateListTM(new JstQueryJpaRM(entityManager));
 
-			new JstTransactionRM(entityManager).transactCreateOrUpdateFromList(createList);
+			new JstTransactionJpaRM(entityManager).transactCreateOrUpdateFromList(createList);
 
 		} catch (final Exception e) {
 
