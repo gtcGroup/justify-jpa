@@ -477,6 +477,11 @@ public enum JstEntityManagerUtilHelper {
 
 		final ENTITY entity = findModifiableSingleOrNull(entityManager, entityClass, entityIdentity);
 
+		if (null == entity) {
+			throw new TestingRuntimeException("The entity class [" + entityClass.getSimpleName()
+					+ "] could not be found for deletion (removal).");
+		}
+
 		entityManager.getTransaction().begin();
 
 		final ENTITY mergedEntity = entityManager.merge(entity);

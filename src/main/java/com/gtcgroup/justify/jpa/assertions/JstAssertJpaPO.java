@@ -58,13 +58,13 @@ public class JstAssertJpaPO {
 
 	private String persistenceUnitName;
 
-	private final Map<String, Object> cascadePersistMap = new HashMap<String, Object>();
+	private final Map<String, Object> persistedMap = new HashMap<String, Object>();
 
-	private final Map<String, Object> cascadeRemoveMap = new HashMap<String, Object>();
+	private final Map<String, Object> removedMap = new HashMap<String, Object>();
 
-	private final Map<String, Object> cascadePersistNotMap = new HashMap<String, Object>();
+	private final Map<String, Object> notPersistedMap = new HashMap<String, Object>();
 
-	private final Map<String, Object> cascadeRemoveNotMap = new HashMap<String, Object>();
+	private final Map<String, Object> notRemovedMap = new HashMap<String, Object>();
 
 	/**
 	 * Constructor
@@ -92,9 +92,9 @@ public class JstAssertJpaPO {
 			final boolean isTrue) {
 
 		if (isTrue) {
-			this.cascadePersistMap.put(className, entityIdentity);
+			this.persistedMap.put(className, entityIdentity);
 		} else {
-			this.cascadePersistNotMap.put(className, entityIdentity);
+			this.notPersistedMap.put(className, entityIdentity);
 		}
 
 		return this;
@@ -110,9 +110,9 @@ public class JstAssertJpaPO {
 			final boolean isTrue) {
 
 		if (isTrue) {
-			this.cascadeRemoveMap.put(className, entityIdentity);
+			this.removedMap.put(className, entityIdentity);
 		} else {
-			this.cascadeRemoveNotMap.put(className, entityIdentity);
+			this.notRemovedMap.put(className, entityIdentity);
 		}
 
 		return this;
@@ -122,46 +122,74 @@ public class JstAssertJpaPO {
 	 * @return Map<Object,Class<Object>>
 	 */
 	Map<String, Object> getCascadePersistMap() {
+		return getPersistedMap();
+	}
 
-		return this.cascadePersistMap;
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
+	Map<String, Object> getPersistedMap() {
+
+		return this.persistedMap;
 	}
 
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
 	Map<String, Object> getCascadePersistMapFalse() {
-		return getCascadePersistNotMap();
+		return getNotPersistedMap();
 	}
 
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
 	Map<String, Object> getCascadePersistNotMap() {
+		return getNotPersistedMap();
+	}
 
-		return this.cascadePersistNotMap;
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
+	Map<String, Object> getNotPersistedMap() {
+
+		return this.notPersistedMap;
 	}
 
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
 	Map<String, Object> getCascadeRemoveMap() {
+		return getRemovedMap();
+	}
 
-		return this.cascadeRemoveMap;
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
+	Map<String, Object> getRemovedMap() {
+
+		return this.removedMap;
 	}
 
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
 	Map<String, Object> getCascadeRemoveMapFalse() {
-		return getCascadeRemoveNotMap();
+		return getNotRemovedMap();
 	}
 
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
 	Map<String, Object> getCascadeRemoveNotMap() {
+		return getNotRemovedMap();
+	}
 
-		return this.cascadeRemoveNotMap;
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
+	Map<String, Object> getNotRemovedMap() {
+
+		return this.notRemovedMap;
 	}
 
 	/**
@@ -189,8 +217,8 @@ public class JstAssertJpaPO {
 
 		final String className = clazz.getName();
 
-		this.cascadePersistMap.put(className, entityIdentity);
-		this.cascadeRemoveMap.put(className, entityIdentity);
+		this.persistedMap.put(className, entityIdentity);
+		this.removedMap.put(className, entityIdentity);
 
 		return this;
 	}
@@ -204,8 +232,8 @@ public class JstAssertJpaPO {
 
 		final String className = clazz.getName();
 
-		this.cascadePersistMap.put(className, entityIdentity);
-		this.cascadeRemoveNotMap.put(className, entityIdentity);
+		this.persistedMap.put(className, entityIdentity);
+		this.notRemovedMap.put(className, entityIdentity);
 
 		return this;
 	}
@@ -217,8 +245,8 @@ public class JstAssertJpaPO {
 	 */
 	public JstAssertJpaPO withCascadeNone(final String className, final Object entityIdentity) {
 
-		this.cascadePersistNotMap.put(className, entityIdentity);
-		this.cascadeRemoveNotMap.put(className, entityIdentity);
+		this.notPersistedMap.put(className, entityIdentity);
+		this.notRemovedMap.put(className, entityIdentity);
 
 		return this;
 	}
