@@ -28,6 +28,8 @@ package com.gtcgroup.justify.jpa.assertions;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.gtcgroup.justify.core.base.JstBaseTestingPO;
+
 /**
  * This Parameter Object class supports testing of Domain Entity cascade types.
  *
@@ -39,7 +41,7 @@ import java.util.Map;
  * @author
  * @since v.6.0
  */
-public class JstAssertJpaPO {
+public class JstAssertJpaPO extends JstBaseTestingPO {
 
 	/**
 	 * This method initializes the class.
@@ -48,7 +50,7 @@ public class JstAssertJpaPO {
 	 * @param populatedEntity
 	 * @return {@link JstAssertJpaPO}
 	 */
-	public static JstAssertJpaPO withPopulatedEntityIncludingIdentities(final String persistenceUnitName,
+	public static JstAssertJpaPO withPopulatedEntity(final String persistenceUnitName,
 			final Object populatedEntity) {
 
 		return new JstAssertJpaPO(persistenceUnitName, populatedEntity);
@@ -83,54 +85,10 @@ public class JstAssertJpaPO {
 	}
 
 	/**
-	 * @param className
-	 * @param entityIdentity
-	 * @param isTrue
-	 * @return {@link JstAssertJpaPO}
-	 */
-	public JstAssertJpaPO withCascadePersist(final String className, final Object entityIdentity,
-			final boolean isTrue) {
-
-		if (isTrue) {
-			this.persistedMap.put(className, entityIdentity);
-		} else {
-			this.notPersistedMap.put(className, entityIdentity);
-		}
-
-		return this;
-	}
-
-	/**
-	 * @param className
-	 * @param entityIdentity
-	 * @param isTrue
-	 * @return {@link JstAssertJpaPO}
-	 */
-	public JstAssertJpaPO withCascadeRemove(final String className, final Object entityIdentity,
-			final boolean isTrue) {
-
-		if (isTrue) {
-			this.removedMap.put(className, entityIdentity);
-		} else {
-			this.notRemovedMap.put(className, entityIdentity);
-		}
-
-		return this;
-	}
-
-	/**
 	 * @return Map<Object,Class<Object>>
 	 */
 	Map<String, Object> getCascadePersistMap() {
 		return getPersistedMap();
-	}
-
-	/**
-	 * @return Map<Object,Class<Object>>
-	 */
-	Map<String, Object> getPersistedMap() {
-
-		return this.persistedMap;
 	}
 
 	/**
@@ -150,24 +108,8 @@ public class JstAssertJpaPO {
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
-	Map<String, Object> getNotPersistedMap() {
-
-		return this.notPersistedMap;
-	}
-
-	/**
-	 * @return Map<Object,Class<Object>>
-	 */
 	Map<String, Object> getCascadeRemoveMap() {
 		return getRemovedMap();
-	}
-
-	/**
-	 * @return Map<Object,Class<Object>>
-	 */
-	Map<String, Object> getRemovedMap() {
-
-		return this.removedMap;
 	}
 
 	/**
@@ -187,9 +129,25 @@ public class JstAssertJpaPO {
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
+	Map<String, Object> getNotPersistedMap() {
+
+		return this.notPersistedMap;
+	}
+
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
 	Map<String, Object> getNotRemovedMap() {
 
 		return this.notRemovedMap;
+	}
+
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
+	Map<String, Object> getPersistedMap() {
+
+		return this.persistedMap;
 	}
 
 	/**
@@ -206,6 +164,14 @@ public class JstAssertJpaPO {
 	Object getPopulatedEntity() {
 
 		return this.populatedEntity;
+	}
+
+	/**
+	 * @return Map<Object,Class<Object>>
+	 */
+	Map<String, Object> getRemovedMap() {
+
+		return this.removedMap;
 	}
 
 	/**
@@ -247,6 +213,42 @@ public class JstAssertJpaPO {
 
 		this.notPersistedMap.put(className, entityIdentity);
 		this.notRemovedMap.put(className, entityIdentity);
+
+		return this;
+	}
+
+	/**
+	 * @param className
+	 * @param entityIdentity
+	 * @param isTrue
+	 * @return {@link JstAssertJpaPO}
+	 */
+	public JstAssertJpaPO withCascadePersist(final String className, final Object entityIdentity,
+			final boolean isTrue) {
+
+		if (isTrue) {
+			this.persistedMap.put(className, entityIdentity);
+		} else {
+			this.notPersistedMap.put(className, entityIdentity);
+		}
+
+		return this;
+	}
+
+	/**
+	 * @param className
+	 * @param entityIdentity
+	 * @param isTrue
+	 * @return {@link JstAssertJpaPO}
+	 */
+	public JstAssertJpaPO withCascadeRemove(final String className, final Object entityIdentity,
+			final boolean isTrue) {
+
+		if (isTrue) {
+			this.removedMap.put(className, entityIdentity);
+		} else {
+			this.notRemovedMap.put(className, entityIdentity);
+		}
 
 		return this;
 	}

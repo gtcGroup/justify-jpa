@@ -327,22 +327,22 @@ public enum JstEntityManagerUtilHelper {
 	 * to the current persistence context (L1 cache).
 	 *
 	 * @param entityManager
-	 * @param persistedEntities
+	 * @param managedEntities
 	 * @return boolean
 	 */
-	public static boolean existsInPersistenceContextWithPersistedEntities(final EntityManager entityManager,
-			final Object... persistedEntities) {
+	public static boolean existsInPersistenceContextWithManagedEntities(final EntityManager entityManager,
+			final Object... managedEntities) {
 
 		boolean result = true;
 
 		try {
 
-			for (final Object persistedEntity : persistedEntities) {
+			for (final Object managedEntity : managedEntities) {
 
-				result = entityManager.contains(persistedEntity);
+				result = entityManager.contains(managedEntity);
 
 				if (false == result) {
-					return false;
+					return result;
 				}
 			}
 		} catch (final Exception e) {
@@ -385,7 +385,7 @@ public enum JstEntityManagerUtilHelper {
 				result = entityManager.contains(entity);
 
 				if (false == result) {
-					return false;
+					return result;
 				}
 			}
 		} catch (final Exception e) {
@@ -479,7 +479,7 @@ public enum JstEntityManagerUtilHelper {
 
 		if (null == entity) {
 			throw new TestingRuntimeException("The entity class [" + entityClass.getSimpleName()
-					+ "] could not be found for deletion (removal).");
+			+ "] could not be found for deletion (removal).");
 		}
 
 		entityManager.getTransaction().begin();
