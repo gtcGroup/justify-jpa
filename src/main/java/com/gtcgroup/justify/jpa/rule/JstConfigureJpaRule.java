@@ -170,18 +170,20 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 				final String key = JstEntityManagerFactoryCacheHelper.calculateKey(persistenceUnitName,
 						persistencePropertyMap) + " @ " + clazz.getName();
 
-				if (JstConfigureJpaRule.dataPopulatorProcessedList.contains(key)) {
-					break;
-				}
+				if (!JstConfigureJpaRule.dataPopulatorProcessedList.contains(key)) {
 
-				if (JstBaseDataPopulator.class.isAssignableFrom(clazz)) {
+					if (JstBaseDataPopulator.class.isAssignableFrom(clazz)) {
 
-					this.dataPopulatorToBeProcessedMap.put(key, (JstBaseDataPopulator) ReflectionUtilHelper
-							.instantiatePublicConstructorNoArgument(clazz));
-				} else {
+						this.dataPopulatorToBeProcessedMap.put(key, (JstBaseDataPopulator) ReflectionUtilHelper
+								.instantiatePublicConstructorNoArgument(clazz));
 
-					throw new TestingConstructorRuleException("\nThe class [" + clazz.getSimpleName()
-					+ "] does not appear to extend a base class for creating persistence test data.\n");
+						JstConfigureJpaRule.dataPopulatorProcessedList.add(key);
+
+					} else {
+
+						throw new TestingConstructorRuleException("\nThe class [" + clazz.getSimpleName()
+						+ "] does not appear to extend a base class for creating persistence test data.\n");
+					}
 				}
 			}
 		}
