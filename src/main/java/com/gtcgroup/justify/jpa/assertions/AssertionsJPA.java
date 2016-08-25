@@ -61,11 +61,10 @@ public enum AssertionsJPA {
 	/**
 	 * This method verifies cascade annotations.
 	 *
-	 * @param <ENTITY>
 	 * @param <PO>
 	 * @param assertionsJpaCascadePO
 	 */
-	public static <ENTITY, PO extends JstAssertJpaPO> void assertCascadeTypes(final PO assertionsJpaCascadePO) {
+	public static <PO extends JstAssertJpaPO> void assertCascadeTypes(final PO assertionsJpaCascadePO) {
 
 		AssertionsJPA.assertionsJpaCascadePO = assertionsJpaCascadePO;
 		Object entityIdentity = null;
@@ -108,11 +107,10 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param <ENTITY>
 	 * @param persistenceUnitName
 	 * @param populatedEntities
 	 */
-	public static <ENTITY> void assertExistsInDatabaseWithEntities(final String persistenceUnitName,
+	public static void assertExistsInDatabaseWithEntities(final String persistenceUnitName,
 			final Object... populatedEntities) {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
@@ -169,11 +167,10 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param <ENTITY>
 	 * @param persistenceUnitName
 	 * @param managedEntities
 	 */
-	public static <ENTITY> void assertExistsInPersistenceContextWithManagedEntities(final String persistenceUnitName,
+	public static void assertExistsInPersistenceContextWithManagedEntities(final String persistenceUnitName,
 			final Object... managedEntities) {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
@@ -187,11 +184,10 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param <ENTITY>
 	 * @param persistenceUnitName
 	 * @param managedEntities
 	 */
-	public static <ENTITY> void assertExistsInSharedCacheWithEntities(final String persistenceUnitName,
+	public static void assertExistsInSharedCacheWithEntities(final String persistenceUnitName,
 			final Object... managedEntities) {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
@@ -224,11 +220,10 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param <ENTITY>
 	 * @param persistenceUnitName
 	 * @param populatedEntities
 	 */
-	public static <ENTITY> void assertNotExistsInDatabaseWithEntities(final String persistenceUnitName,
+	public static void assertNotExistsInDatabaseWithEntities(final String persistenceUnitName,
 			final Object... populatedEntities) {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
@@ -261,11 +256,10 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param <ENTITY>
 	 * @param persistenceUnitName
 	 * @param managedEntities
 	 */
-	public static <ENTITY> void assertNotExistsInPersistenceContextWithManagedEntities(final String persistenceUnitName,
+	public static void assertNotExistsInPersistenceContextWithManagedEntities(final String persistenceUnitName,
 			final Object... managedEntities) {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
