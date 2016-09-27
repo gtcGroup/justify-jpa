@@ -508,7 +508,7 @@ public enum JstEntityManagerUtilHelper {
 	 * @param entityManager
 	 * @param entityClass
 	 * @param entityIdentity
-	 * @return {@link Object}
+	 * @return {@link Object} or null
 	 */
 	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager,
 			final Class<ENTITY> entityClass, final Object entityIdentity) {
@@ -580,6 +580,32 @@ public enum JstEntityManagerUtilHelper {
 		entityManager.remove(mergedEntity);
 
 		entityManager.getTransaction().commit();
+	}
+
+	/**
+	 * This method is typically used for committing. If any of the related
+	 * children in the object graph are not marked for cascading then they need
+	 * to be explicitly included.
+	 *
+	 * @param <ENTITY>
+	 * @param persistenceUnitName
+	 * @param entityClass
+	 * @param entityIdentity
+	 */
+	public static <ENTITY> void removeEntity(final String persistenceUnitName, final Class<ENTITY> entityClass,
+			final Object entityIdentity) {
+
+		EntityManager entityManager = null;
+
+		try {
+			entityManager = JstEntityManagerFactoryCacheHelper
+					.createEntityManagerToBeClosed(persistenceUnitName);
+
+			removeEntity(entityManager, entityClass, entityIdentity);
+
+		} finally {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
 	}
 
 	/**
