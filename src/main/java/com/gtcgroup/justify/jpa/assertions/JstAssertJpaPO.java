@@ -183,6 +183,20 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 
 	/**
 	 * @param clazz
+	 * @return {@link JstAssertJpaPO}
+	 */
+	public JstAssertJpaPO withCascadeAll(final Class<?> clazz) {
+
+		final String className = clazz.getName();
+
+		this.persistedMap.put(className, null);
+		this.removedMap.put(className, null);
+
+		return this;
+	}
+
+	/**
+	 * @param clazz
 	 * @param entityIdentity
 	 * @return {@link JstAssertJpaPO}
 	 */

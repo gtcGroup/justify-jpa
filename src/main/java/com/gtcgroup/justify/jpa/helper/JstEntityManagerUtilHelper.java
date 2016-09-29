@@ -159,7 +159,7 @@ public enum JstEntityManagerUtilHelper {
 		final ENTITY entityWithIdentity = entityManager.merge(populatedEntity);
 		entityManager.getTransaction().commit();
 
-		return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entityWithIdentity);
+		return entityWithIdentity;
 	}
 
 	/**
@@ -514,6 +514,19 @@ public enum JstEntityManagerUtilHelper {
 			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
 		return entityManager.find(entityClass, entityIdentity, JstEntityManagerUtilHelper.FIND_READ_ONLY);
+	}
+
+	/**
+	 * @param <ENTITY>
+	 * @param entityManager
+	 * @param populatedEntity
+	 * @return {@link Object} or null
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager, final Object populatedEntity) {
+
+		return (ENTITY) entityManager.find(populatedEntity.getClass(), retrieveIdentity(entityManager, populatedEntity),
+				JstEntityManagerUtilHelper.FIND_READ_ONLY);
 	}
 
 	/**
