@@ -34,7 +34,7 @@ import javax.persistence.EntityManager;
 import org.junit.Assert;
 
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
-import com.gtcgroup.justify.core.helper.internal.RuleChainCacheHelper;
+import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerUtilHelper;
 
@@ -57,6 +57,7 @@ public enum AssertionsJPA {
 	private static JstAssertJpaPO assertionsJpaCascadePO;
 	private static EntityManager entityManager;
 	private static String previousTestMethodName = "";
+	private static Object parentEntity;
 
 	/**
 	 * This method verifies cascade annotations.
@@ -70,42 +71,43 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
 
-		Object parentEntity = null;
-
 		try {
 
-			parentEntity = createEntity();
+			AssertionsJPA.parentEntity = createParentEntity();
 
-			verifyPersistedEntity(parentEntity);
+			verifyParentEntityPersisted();
 
-			verifyPersistedCascade();
+			verifyCascadeEntitiesPersisted();
 
-			verifyNotPersistedCascade();
+			verifyCascadeEntitiesNotPersisted();
 
-			deletePersistedEntity(parentEntity);
+			deleteParentEntity();
 
-			verifyRemovedEntity(parentEntity);
+			verifyParentEntityRemoved();
 
-			verifyRemovedCascade();
+			verifyCascadeEntitiesRemoved();
 
-			verifyNotRemoved();
+			verifyCascadeEntitiesNotRemoved();
 
 		} catch (final Exception e) {
 
-			closeEntityManager();
+			// Just in case we failed.
+			JstEntityManagerUtilHelper.removeEntity(AssertionsJPA.entityManager, AssertionsJPA.parentEntity);
 
 			throw new TestingRuntimeException(e);
 
 		} finally {
 
 			try {
-				// Just in case we failed.
-				JstEntityManagerUtilHelper.removeEntity(AssertionsJPA.entityManager, parentEntity);
 
-				deleteRemainingEntities();
+				cleanupRemainingEntities();
+
+				closeEntityManager();
+				AssertionsJPA.entityManager = null;
 
 			} catch (final Exception e) {
 
+				AssertionsJPA.entityManager = null;
 				throw new TestingRuntimeException(e);
 			}
 		}
@@ -288,35 +290,43 @@ public enum AssertionsJPA {
 		return;
 	}
 
+	private static void cleanupRemainingEntities() throws ClassNotFoundException {
+
+		for (final Map.Entry<String, String> entry1 : AssertionsJPA.assertionsJpaCascadePO.getCascadeDoNoRemovedMap()
+				.entrySet()) {
+
+			if (0 == AssertionsJPA.assertionsJpaCascadePO.getDoNotCleanupMap().size()) {
+
+				final Object entity = ReflectionUtilHelper
+						.retrieveFieldInstanceWithDirectAccess(AssertionsJPA.parentEntity, entry1.getValue(), false);
+
+				JstEntityManagerUtilHelper.findAndRemoveEntity(AssertionsJPA.entityManager,
+						entity);
+			} else {
+
+				for (final Map.Entry<String, String> entry2 : AssertionsJPA.assertionsJpaCascadePO.getDoNotCleanupMap()
+						.entrySet()) {
+
+					if (!entry1.getKey().equals(entry2.getKey())) {
+
+						JstEntityManagerUtilHelper.findAndRemoveEntity(AssertionsJPA.entityManager,
+								Class.forName(entry1.getKey()), entry1.getValue());
+					} else {
+						break;
+					}
+				}
+			}
+		}
+
+		return;
+	}
+
 	/**
 	 * @param persistenceUnitName
 	 */
 	private static void closeEntityManager() {
 
 		JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
-	}
-
-	/**
-	 * @param persistenceUnitName
-	 * @param entities
-	 * @return {@link Object} representing entityIdentity.
-	 */
-	private static Object createEntity() {
-
-		Object entityIdentity = null;
-
-		try {
-			entityIdentity = JstEntityManagerUtilHelper.createOrUpdateEntity(AssertionsJPA.entityManager,
-					AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity());
-
-		} catch (@SuppressWarnings("unused") final Exception e) {
-
-			Assert.fail("The domain entity ["
-					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
-					+ "] could not be created by the assert method.");
-
-		}
-		return entityIdentity;
 	}
 
 	private static <ENTITY> String createEntityShouldExistsMessage(final String persistenceUnitName,
@@ -340,38 +350,32 @@ public enum AssertionsJPA {
 		return assertionErrorMessage.toString();
 	}
 
-	private static void deletePersistedEntity(final Object entityIdentity) {
+	/**
+	 * @param persistenceUnitName
+	 * @param entities
+	 * @return {@link Object} representing entityIdentity.
+	 */
+	private static Object createParentEntity() {
 
-		JstEntityManagerUtilHelper.findAndRemoveEntity(AssertionsJPA.entityManager,
-				AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass(), entityIdentity);
-		return;
+		Object parentEntity = null;
+
+		try {
+			parentEntity = JstEntityManagerUtilHelper.createOrUpdateEntity(AssertionsJPA.entityManager,
+					AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity());
+
+		} catch (@SuppressWarnings("unused") final Exception e) {
+
+			Assert.fail("The domain entity ["
+					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
+					+ "] could not be created by the assert method.");
+
+		}
+		return parentEntity;
 	}
 
-	private static void deleteRemainingEntities() throws ClassNotFoundException {
+	private static void deleteParentEntity() {
 
-		for (final Map.Entry<String, Object> entry1 : AssertionsJPA.assertionsJpaCascadePO.getNoRemovedMap()
-				.entrySet()) {
-
-			if (0 == AssertionsJPA.assertionsJpaCascadePO.getNoCleanupMap().size()) {
-
-				JstEntityManagerUtilHelper.findAndRemoveEntity(AssertionsJPA.entityManager,
-						Class.forName(entry1.getKey()), entry1.getValue());
-			} else {
-
-				for (final Map.Entry<String, Object> entry2 : AssertionsJPA.assertionsJpaCascadePO.getNoCleanupMap()
-						.entrySet()) {
-
-					if (!entry1.getKey().equals(entry2.getKey())) {
-
-						JstEntityManagerUtilHelper.findAndRemoveEntity(AssertionsJPA.entityManager,
-								Class.forName(entry1.getKey()), entry1.getValue());
-					} else {
-						break;
-					}
-				}
-			}
-		}
-
+		JstEntityManagerUtilHelper.findAndRemoveEntity(AssertionsJPA.entityManager, AssertionsJPA.parentEntity);
 		return;
 	}
 
@@ -381,30 +385,38 @@ public enum AssertionsJPA {
 	 */
 	public static EntityManager getEntityManager(final String persistenceUnitName) {
 
-		final String currentMethodName = RuleChainCacheHelper.getRuleChainHelper().getDescription().getMethodName();
+		// final String currentMethodName =
+		// RuleChainCacheHelper.getRuleChainHelper().getDescription().getMethodName();
+		//
+		// if (!AssertionsJPA.previousTestMethodName.equals(currentMethodName))
+		// {
 
-		if (!AssertionsJPA.previousTestMethodName.equals(currentMethodName)) {
+		// if (null != AssertionsJPA.entityManager &&
+		// AssertionsJPA.entityManager.isOpen()) {
+		// closeEntityManager();
+		// }
 
-			if (null != AssertionsJPA.entityManager && AssertionsJPA.entityManager.isOpen()) {
-				closeEntityManager();
-			}
+		if (null == AssertionsJPA.entityManager) {
 
 			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper
 					.createEntityManagerToBeClosed(persistenceUnitName);
 
-			AssertionsJPA.previousTestMethodName = currentMethodName;
+			// AssertionsJPA.previousTestMethodName = currentMethodName;
 		}
 		return AssertionsJPA.entityManager;
 	}
 
-	private static Boolean isExists(final Map<String, Object> existsMap) throws ClassNotFoundException {
+	private static Boolean isExists(final Map<String, String> existsMap) {
 
 		Boolean result = null;
 
-		for (final Map.Entry<String, Object> entry : existsMap.entrySet()) {
+		for (final Map.Entry<String, String> entry : existsMap.entrySet()) {
 
-			if (!JstEntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager,
-					Class.forName(entry.getKey()), entry.getValue())) {
+			final Object entity = ReflectionUtilHelper.retrieveFieldInstanceWithDirectAccess(AssertionsJPA.parentEntity,
+					entry.getValue(), false);
+
+			if (!JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
+					entity)) {
 
 				return Boolean.FALSE;
 			}
@@ -413,14 +425,17 @@ public enum AssertionsJPA {
 		return result;
 	}
 
-	private static Boolean isNotExists(final Map<String, Object> existsMap) throws ClassNotFoundException {
+	private static Boolean isNotExists(final Map<String, String> existsMap) throws ClassNotFoundException {
 
 		Boolean result = null;
 
-		for (final Map.Entry<String, Object> entry : existsMap.entrySet()) {
+		for (final Map.Entry<String, String> entry : existsMap.entrySet()) {
 
-			if (JstEntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager,
-					Class.forName(entry.getKey()), entry.getValue())) {
+			final Object entity = ReflectionUtilHelper.retrieveFieldInstanceWithDirectAccess(AssertionsJPA.parentEntity,
+					entry.getValue(), false);
+
+			if (JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
+					entity)) {
 
 				return Boolean.FALSE;
 			}
@@ -434,9 +449,9 @@ public enum AssertionsJPA {
 	 * @param cascadeRemoveMap
 	 * @throws ClassNotFoundException
 	 */
-	private static void verifyNotPersistedCascade() throws ClassNotFoundException {
+	private static void verifyCascadeEntitiesNotPersisted() throws ClassNotFoundException {
 
-		final Boolean result = isExists(AssertionsJPA.assertionsJpaCascadePO.getNoPersistedMap());
+		final Boolean result = isExists(AssertionsJPA.assertionsJpaCascadePO.getCascadeDoNotPersistMap());
 
 		if (null != result && Boolean.TRUE == result) {
 
@@ -452,9 +467,9 @@ public enum AssertionsJPA {
 	 * @param cascadeRemoveMap
 	 * @throws ClassNotFoundException
 	 */
-	private static void verifyNotRemoved() throws ClassNotFoundException {
+	private static void verifyCascadeEntitiesNotRemoved() throws ClassNotFoundException {
 
-		final Boolean result = isExists(AssertionsJPA.assertionsJpaCascadePO.getNoRemovedMap());
+		final Boolean result = isExists(AssertionsJPA.assertionsJpaCascadePO.getCascadeDoNoRemovedMap());
 
 		if (null != result && Boolean.FALSE == result) {
 
@@ -468,9 +483,9 @@ public enum AssertionsJPA {
 	 * @param cascadeRemoveMap
 	 * @throws ClassNotFoundException
 	 */
-	private static void verifyPersistedCascade() throws ClassNotFoundException {
+	private static void verifyCascadeEntitiesPersisted() throws ClassNotFoundException {
 
-		final Boolean result = isExists(AssertionsJPA.assertionsJpaCascadePO.getPersistedMap());
+		final Boolean result = isExists(AssertionsJPA.assertionsJpaCascadePO.getCascadePersistMap());
 
 		if (null != result && Boolean.FALSE == result) {
 
@@ -483,12 +498,30 @@ public enum AssertionsJPA {
 	}
 
 	/**
+	 * @param persistenceUnitName
+	 * @param cascadeRemoveMap
+	 * @throws ClassNotFoundException
+	 */
+	private static void verifyCascadeEntitiesRemoved() throws ClassNotFoundException {
+
+		final Boolean result = isNotExists(AssertionsJPA.assertionsJpaCascadePO.getCascadeRemoveMap());
+
+		if (null != result && Boolean.FALSE == result) {
+
+			Assert.fail("Cascade type remove domain entities ["
+					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
+					+ "] were not available for deletion.");
+		}
+		return;
+	}
+
+	/**
 	 * @param entity
 	 */
-	private static void verifyPersistedEntity(final Object entity) {
+	private static void verifyParentEntityPersisted() {
 
 		if (!JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
-				entity)) {
+				AssertionsJPA.parentEntity)) {
 
 			Assert.fail("Cascade type persist domain entities ["
 					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
@@ -502,28 +535,10 @@ public enum AssertionsJPA {
 	 * @param cascadeRemoveMap
 	 * @throws ClassNotFoundException
 	 */
-	private static void verifyRemovedCascade() throws ClassNotFoundException {
-
-		final Boolean result = isNotExists(AssertionsJPA.assertionsJpaCascadePO.getRemovedMap());
-
-		if (null != result && Boolean.FALSE == result) {
-
-			Assert.fail("Cascade type remove domain entities ["
-					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
-					+ "] were not available for deletion.");
-		}
-		return;
-	}
-
-	/**
-	 * @param persistenceUnitName
-	 * @param cascadeRemoveMap
-	 * @throws ClassNotFoundException
-	 */
-	private static void verifyRemovedEntity(final Object entityIdentity) throws ClassNotFoundException {
+	private static void verifyParentEntityRemoved() throws ClassNotFoundException {
 
 		if (null != JstEntityManagerUtilHelper.findReadOnlySingleOrNull(AssertionsJPA.entityManager,
-				entityIdentity)) {
+				AssertionsJPA.parentEntity)) {
 
 			Assert.fail("Parent domain entity ["
 					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()

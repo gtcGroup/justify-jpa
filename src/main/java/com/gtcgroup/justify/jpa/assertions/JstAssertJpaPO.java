@@ -59,15 +59,15 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 
 	private String persistenceUnitName;
 
-	private final Map<String, Object> persistedMap = new HashMap<String, Object>();
+	private final Map<String, String> cascadePersistMap = new HashMap<String, String>();
 
-	private final Map<String, Object> removedMap = new HashMap<String, Object>();
+	private final Map<String, String> cascadeRemoveMap = new HashMap<String, String>();
 
-	private final Map<String, Object> noPersistedMap = new HashMap<String, Object>();
+	private final Map<String, String> cascadeDoNotPersistMap = new HashMap<String, String>();
 
-	private final Map<String, Object> noRemovedMap = new HashMap<String, Object>();
+	private final Map<String, String> cascadeDoNotRemoveMap = new HashMap<String, String>();
 
-	private final Map<String, Object> noCleanupMap = new HashMap<String, Object>();
+	private final Map<String, String> doNotCleanupMap = new HashMap<String, String>();
 
 	/**
 	 * Constructor
@@ -86,75 +86,47 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	}
 
 	/**
-	 * @return Map<Object,Class<Object>>
+	 * @return {@link Map}
 	 */
-	Map<String, Object> getCascadePersistMap() {
-		return getPersistedMap();
+	Map<String, String> getCascadeDoNoRemovedMap() {
+
+		return this.cascadeDoNotRemoveMap;
 	}
+
+
+
+	/**
+	 * @return {@link Map}
+	 */
+	Map<String, String> getCascadeDoNotPersistMap() {
+		return this.cascadeDoNotPersistMap;
+	}
+
+
+	/**
+	 * @return {@link Map}
+	 */
+	Map<String, String> getCascadePersistMap() {
+
+		return this.cascadePersistMap;
+	}
+
+
+
 
 	/**
 	 * @return Map<Object,Class<Object>>
 	 */
-	Map<String, Object> getCascadePersistMapFalse() {
-		return getNoPersistedMap();
+	Map<String, String> getCascadeRemoveMap() {
+
+		return this.cascadeRemoveMap;
 	}
 
 	/**
-	 * @return Map<Object,Class<Object>>
+	 * @return {@link Map}
 	 */
-	Map<String, Object> getCascadePersistNotMap() {
-		return getNoPersistedMap();
-	}
-
-	/**
-	 * @return Map<Object,Class<Object>>
-	 */
-	Map<String, Object> getCascadeRemoveMap() {
-		return getRemovedMap();
-	}
-
-	/**
-	 * @return Map<Object,Class<Object>>
-	 */
-	Map<String, Object> getCascadeRemoveMapFalse() {
-		return getNoRemovedMap();
-	}
-
-	/**
-	 * @return Map<Object,Class<Object>>
-	 */
-	Map<String, Object> getCascadeRemoveNotMap() {
-		return getNoRemovedMap();
-	}
-
-	/**
-	 * @return Map<String,Object>
-	 */
-	Map<String, Object> getNoCleanupMap() {
-		return this.noCleanupMap;
-	}
-
-	/**
-	 * @return Map<Object,Class<Object>>
-	 */
-	Map<String, Object> getNoPersistedMap() {
-		return this.noPersistedMap;
-	}
-
-	/**
-	 * @return Map<Object,Class<Object>>
-	 */
-	Map<String, Object> getNoRemovedMap() {
-
-		return this.noRemovedMap;
-	}
-
-	/**
-	 * @return Map<Object,Class<Object>>
-	 */
-	Map<String, Object> getPersistedMap() {
-
-		return this.persistedMap;
+	Map<String, String> getDoNotCleanupMap() {
+		return this.doNotCleanupMap;
 	}
 
 	/**
@@ -173,69 +145,49 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 		return this.populatedEntity;
 	}
 
-	/**
-	 * @return Map<Object,Class<Object>>
-	 */
-	Map<String, Object> getRemovedMap() {
 
-		return this.removedMap;
-	}
 
 	/**
 	 * @param clazz
+	 * @param fieldName
 	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeAll(final Class<?> clazz) {
+	public JstAssertJpaPO withCascadeAll(final Class<?> clazz, final String fieldName) {
 
 		final String className = clazz.getName();
 
-		this.persistedMap.put(className, null);
-		this.removedMap.put(className, null);
+		this.cascadePersistMap.put(className, fieldName);
+		this.cascadeRemoveMap.put(className, fieldName);
 
 		return this;
 	}
 
 	/**
 	 * @param clazz
-	 * @param entityIdentity
+	 * @param fieldName
 	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeAll(final Class<?> clazz, final Object entityIdentity) {
+	public JstAssertJpaPO withCascadeAllExceptRemove(final Class<?> clazz, final String fieldName) {
 
-		final String className = clazz.getName();
-
-		this.persistedMap.put(className, entityIdentity);
-		this.removedMap.put(className, entityIdentity);
-
-		return this;
+		return withCascadeAllExceptRemove(clazz, fieldName, true);
 	}
 
 	/**
 	 * @param clazz
-	 * @param entityIdentity
-	 * @return {@link JstAssertJpaPO}
-	 */
-	public JstAssertJpaPO withCascadeAllExceptRemove(final Class<?> clazz, final Object entityIdentity) {
-
-		return withCascadeAllExceptRemove(clazz, entityIdentity, true);
-	}
-
-	/**
-	 * @param clazz
-	 * @param entityIdentity
+	 * @param fieldName
 	 * @param cleanup
 	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeAllExceptRemove(final Class<?> clazz, final Object entityIdentity,
+	public JstAssertJpaPO withCascadeAllExceptRemove(final Class<?> clazz, final String fieldName,
 			final boolean cleanup) {
 
 		final String className = clazz.getName();
 
-		this.persistedMap.put(className, entityIdentity);
-		this.noRemovedMap.put(className, entityIdentity);
+		this.cascadePersistMap.put(className, fieldName);
+		this.cascadeDoNotRemoveMap.put(className, fieldName);
 
 		if (!cleanup) {
-			this.noCleanupMap.put(className, entityIdentity);
+			this.doNotCleanupMap.put(className, fieldName);
 		}
 
 		return this;
@@ -243,54 +195,52 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 
 	/**
 	 * @param clazz
-	 * @param entityIdentity
+	 * @param fieldName
 	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeNone(final Class<?> clazz, final Object entityIdentity) {
+	public JstAssertJpaPO withCascadeNone(final Class<?> clazz, final String fieldName) {
 
 		final String className = clazz.getName();
 
-		this.noPersistedMap.put(className, entityIdentity);
-		this.noRemovedMap.put(className, entityIdentity);
+		this.cascadeDoNotPersistMap.put(className, fieldName);
+		this.cascadeDoNotRemoveMap.put(className, fieldName);
 
 		return this;
 	}
 
 	/**
 	 * @param clazz
-	 * @param entityIdentity
-	 * @param isTrue
+	 * @param fieldName
+	 * @param cleanup
 	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstAssertJpaPO withCascadePersist(final Class<?> clazz, final Object entityIdentity, final boolean isTrue) {
+	public JstAssertJpaPO withCascadePersist(final Class<?> clazz, final String fieldName, final boolean cleanup) {
 
 		final String className = clazz.getName();
 
-		if (isTrue) {
-			this.persistedMap.put(className, entityIdentity);
-		} else {
-			this.noPersistedMap.put(className, entityIdentity);
-		}
+		this.cascadePersistMap.put(className, fieldName);
 
+		if (!cleanup) {
+			this.doNotCleanupMap.put(className, fieldName);
+		}
 		return this;
 	}
 
 	/**
 	 * @param clazz
-	 * @param entityIdentity
-	 * @param isTrue
+	 * @param fieldName
+	 * @param cleanup
 	 * @return {@link JstAssertJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeRemove(final Class<?> clazz, final Object entityIdentity, final boolean isTrue) {
+	public JstAssertJpaPO withCascadeRemove(final Class<?> clazz, final String fieldName, final boolean cleanup) {
 
 		final String className = clazz.getName();
 
-		if (isTrue) {
-			this.removedMap.put(className, entityIdentity);
-		} else {
-			this.noRemovedMap.put(className, entityIdentity);
-		}
+		this.cascadeRemoveMap.put(className, fieldName);
 
+		if (!cleanup) {
+			this.doNotCleanupMap.put(className, fieldName);
+		}
 		return this;
 	}
 }

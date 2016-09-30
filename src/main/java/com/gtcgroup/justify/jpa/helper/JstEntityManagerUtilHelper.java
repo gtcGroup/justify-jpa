@@ -25,6 +25,7 @@
  */
 package com.gtcgroup.justify.jpa.helper;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 
 /**
  * This Util Helper class provides persistence {@link EntityManager} support.
@@ -156,7 +158,13 @@ public enum JstEntityManagerUtilHelper {
 			final ENTITY populatedEntity) {
 
 		entityManager.getTransaction().begin();
-		final ENTITY entityWithIdentity = entityManager.merge(populatedEntity);
+		ENTITY entityWithIdentity;
+		try {
+			entityWithIdentity = entityManager.merge(populatedEntity);
+		} catch (final Exception e) {
+			entityManager.getTransaction().rollback();
+			throw new TestingRuntimeException(e);
+		}
 		entityManager.getTransaction().commit();
 
 		return entityWithIdentity;
@@ -491,6 +499,25 @@ public enum JstEntityManagerUtilHelper {
 	}
 
 	/**
+	 * This method is typically used for committing. If any of the related
+	 * children in the object graph are not marked for cascading then they need
+	 * to be explicitly included.
+	 *
+	 * @param <ENTITY>
+	 * @param entityManager
+	 * @param entity
+	 */
+	public static <ENTITY> void findAndRemoveEntity(final EntityManager entityManager, final ENTITY entity) {
+
+		entityManager.getTransaction().begin();
+
+		final ENTITY mergedEntity = entityManager.merge(entity);
+		entityManager.remove(mergedEntity);
+
+		entityManager.getTransaction().commit();
+	}
+
+	/**
 	 * @param <ENTITY>
 	 * @param entityManager
 	 * @param entityClass
@@ -589,8 +616,14 @@ public enum JstEntityManagerUtilHelper {
 
 		entityManager.getTransaction().begin();
 
-		final ENTITY mergedEntity = entityManager.merge(populatedEntity);
-		entityManager.remove(mergedEntity);
+		try {
+			final ENTITY mergedEntity = entityManager.merge(populatedEntity);
+			entityManager.remove(mergedEntity);
+		} catch (final Exception e) {
+
+			entityManager.getTransaction().rollback();
+			throw new TestingRuntimeException(e);
+		}
 
 		entityManager.getTransaction().commit();
 	}
@@ -626,8 +659,22 @@ public enum JstEntityManagerUtilHelper {
 	 * @param populatedEntity
 	 * @return Object
 	 */
-	private static Object retrieveIdentity(final EntityManager entityManager, final Object populatedEntity) {
+	public static Object retrieveIdentity(final EntityManager entityManager, final Object populatedEntity) {
 
 		return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(populatedEntity);
+	}
+
+	/**
+	 * @param entityManager
+	 * @param entity
+	 * @param fieldName
+	 * @return Object
+	 */
+	public static Object retrieveIdentity(final EntityManager entityManager, final Object entity,
+			final String fieldName) {
+
+		final Field field = ReflectionUtilHelper.retrieveFieldWithDirectAccess(entity, fieldName);
+
+		return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(field);
 	}
 }

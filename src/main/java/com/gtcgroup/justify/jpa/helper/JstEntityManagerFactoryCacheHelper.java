@@ -33,6 +33,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.jpa.rm.JstQueryJpaRM;
 
 /**
@@ -143,8 +144,13 @@ public enum JstEntityManagerFactoryCacheHelper {
 			return entityManagerFactory;
 		}
 
-		entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
-				persistencePropertyMap);
+		try {
+			entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
+					persistencePropertyMap);
+		} catch (final Exception e) {
+
+			throw new TestingRuntimeException(e);
+		}
 
 		// Ensures retrieval with either key.
 		JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(key, entityManagerFactory);
