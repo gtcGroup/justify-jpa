@@ -56,7 +56,6 @@ public enum AssertionsJPA {
 
 	private static JstAssertJpaPO assertionsJpaCascadePO;
 	private static EntityManager entityManager;
-	private static String previousTestMethodName = "";
 	private static Object parentEntity;
 
 	/**
@@ -385,24 +384,12 @@ public enum AssertionsJPA {
 	 */
 	public static EntityManager getEntityManager(final String persistenceUnitName) {
 
-		// final String currentMethodName =
-		// RuleChainCacheHelper.getRuleChainHelper().getDescription().getMethodName();
-		//
-		// if (!AssertionsJPA.previousTestMethodName.equals(currentMethodName))
-		// {
-
-		// if (null != AssertionsJPA.entityManager &&
-		// AssertionsJPA.entityManager.isOpen()) {
-		// closeEntityManager();
-		// }
-
 		if (null == AssertionsJPA.entityManager) {
 
 			AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper
 					.createEntityManagerToBeClosed(persistenceUnitName);
-
-			// AssertionsJPA.previousTestMethodName = currentMethodName;
 		}
+
 		return AssertionsJPA.entityManager;
 	}
 
@@ -425,7 +412,7 @@ public enum AssertionsJPA {
 		return result;
 	}
 
-	private static Boolean isNotExists(final Map<String, String> existsMap) throws ClassNotFoundException {
+	private static Boolean isNotExists(final Map<String, String> existsMap) {
 
 		Boolean result = null;
 
@@ -546,4 +533,18 @@ public enum AssertionsJPA {
 		}
 		return;
 	}
+
+	// /**
+	// * This method...
+	// *
+	// * @param packageNames
+	// */
+	// public static void verifyPOJO(final String... packageNames) {
+	//
+	// final Validator validator = ValidatorBuilder.create().with(new
+	// SetterMustExistRule(), new GetterMustExistRule())
+	// .with(new SetterTester(), new GetterTester()).build();
+	//
+	// validator.validate((PojoClass) Arrays.asList(packageNames));
+	// }
 }
