@@ -97,7 +97,6 @@ public enum JstQueryUtilHelper {
 	 * @param isReadOnly
 	 * @return {@link List}
 	 */
-	@SuppressWarnings("unchecked")
 	public static <ENTITY> List<ENTITY> queryResultList(final Query query,
 			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap,
 			final boolean isReadOnly) {

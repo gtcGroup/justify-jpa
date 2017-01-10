@@ -487,7 +487,7 @@ public enum JstEntityManagerUtilHelper {
 
 		if (null == entity) {
 			throw new TestingRuntimeException("The entity class [" + entityClass.getSimpleName()
-			+ "] could not be found for deletion (removal).");
+					+ "] could not be found for deletion (removal).");
 		}
 
 		entityManager.getTransaction().begin();
@@ -513,6 +513,34 @@ public enum JstEntityManagerUtilHelper {
 
 		final ENTITY mergedEntity = entityManager.merge(entity);
 		entityManager.remove(mergedEntity);
+
+		entityManager.getTransaction().commit();
+	}
+
+	/**
+	 * This method is typically used for committing. If any of the related
+	 * children in the object graph are not marked for cascading then they need
+	 * to be explicitly included.
+	 *
+	 * @param <ENTITY>
+	 * @param entityManager
+	 * @param populatedEntity
+	 * @param methodName
+	 */
+	public static <ENTITY> void findAndRemoveEntity(final EntityManager entityManager, final Object populatedEntity,
+			final String methodName) {
+
+		@SuppressWarnings("unchecked")
+		final ENTITY entity = (ENTITY) ReflectionUtilHelper.invokePublicMethod(methodName, populatedEntity);
+
+		if (null == entity) {
+			throw new TestingRuntimeException("The entity represented by the method [" + methodName
+					+ "] could not be found for deletion (removal).");
+		}
+
+		entityManager.getTransaction().begin();
+
+		entityManager.remove(entity);
 
 		entityManager.getTransaction().commit();
 	}
@@ -550,7 +578,8 @@ public enum JstEntityManagerUtilHelper {
 	 * @return {@link Object} or null
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager, final Object populatedEntity) {
+	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager,
+			final Object populatedEntity) {
 
 		return (ENTITY) entityManager.find(populatedEntity.getClass(), retrieveIdentity(entityManager, populatedEntity),
 				JstEntityManagerUtilHelper.FIND_READ_ONLY);
@@ -644,8 +673,7 @@ public enum JstEntityManagerUtilHelper {
 		EntityManager entityManager = null;
 
 		try {
-			entityManager = JstEntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(persistenceUnitName);
+			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
 
 			removeEntity(entityManager, entityClass, entityIdentity);
 
