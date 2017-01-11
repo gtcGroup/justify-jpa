@@ -74,10 +74,6 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 	}
 
 	/**
-	 * @param <RULE>
-	 * @param persistenceUnitName
-	 * @param persistencePropertyMap
-	 * @param dataPopulators
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
@@ -91,9 +87,6 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 	}
 
 	/**
-	 * @param <RULE>
-	 * @param persistenceUnitName
-	 * @param dataPopulators
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
@@ -104,10 +97,6 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 	}
 
 	/**
-	 * @param <RULE>
-	 * @param persistenceUnitName
-	 * @param persistencePropertyMap
-	 * @param dataPopulators
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
@@ -118,9 +107,6 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 	}
 
 	/**
-	 * @param <RULE>
-	 * @param persistenceUnitName
-	 * @param persistencePropertyMap
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
@@ -131,8 +117,6 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 	}
 
 	/**
-	 * @param <RULE>
-	 * @param persistenceUnitName
 	 * @return {@link TestRule}
 	 */
 	@SuppressWarnings("unchecked")
@@ -149,10 +133,6 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 
 	/**
 	 * Constructor - protected
-	 *
-	 * @param persistenceUnitName
-	 * @param persistencePropertyMap
-	 * @param dataPopulators
 	 */
 	protected JstConfigureJpaRule(final String persistenceUnitName, final Map<String, Object> persistencePropertyMap,
 			final Class<?>... dataPopulators) {
@@ -182,7 +162,7 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 					} else {
 
 						throw new TestingConstructorRuleException("\nThe class [" + clazz.getSimpleName()
-						+ "] does not appear to extend a base class for creating persistence test data.\n");
+								+ "] does not appear to extend a base class for creating persistence test data.\n");
 					}
 				}
 			}
@@ -216,8 +196,7 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 
 		if (0 != this.dataPopulatorToBeProcessedMap.size()) {
 
-			for (final Map.Entry<String, JstBaseDataPopulator> entry : this.dataPopulatorToBeProcessedMap
-					.entrySet()) {
+			for (final Map.Entry<String, JstBaseDataPopulator> entry : this.dataPopulatorToBeProcessedMap.entrySet()) {
 
 				processdataPopulator(entry.getValue());
 
@@ -226,9 +205,6 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 		}
 	}
 
-	/**
-	 * @param dataPopulator
-	 */
 	protected void processdataPopulator(final JstBaseDataPopulator dataPopulator) {
 
 		EntityManager entityManager = null;
@@ -237,8 +213,7 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName,
 					this.persistencePropertyMap);
 
-			final List<Object> createList = dataPopulator
-					.populateCreateListTM(new JstQueryJpaRM(entityManager));
+			final List<Object> createList = dataPopulator.populateCreateListTM(new JstQueryJpaRM(entityManager));
 
 			new JstTransactionJpaRM(entityManager).transactCreateOrUpdateFromList(createList);
 

@@ -58,30 +58,25 @@ public enum JstEntityManagerFactoryCacheHelper {
 	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new ConcurrentHashMap<String, EntityManagerFactory>();
 
 	/**
-	 * @param persistenceUnitName
-	 * @param persistencePropertyMap
 	 * @return {@link String}
 	 */
 	public static String calculateKey(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMap) {
+			final Map<String, Object> persistencePropertyMapOrNull) {
 
 		String key = persistenceUnitName;
 
-		if (null != persistencePropertyMap) {
+		if (null != persistencePropertyMapOrNull) {
 
-			key += "_" + persistencePropertyMap.toString();
+			key += "_" + persistencePropertyMapOrNull.toString();
 		} else {
 
 			key += JstEntityManagerFactoryCacheHelper.NO_PERSISTENCE_PROPERTY_MAP;
 		}
-
 		return key;
 	}
 
 	/**
 	 * This method closes the {@link EntityManager}.
-	 *
-	 * @param entityManager
 	 */
 	public static void closeEntityManager(final EntityManager entityManager) {
 
@@ -100,8 +95,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 
 	/**
 	 * This method closes the {@link EntityManager}.
-	 *
-	 * @param jstQueryJpaRM
 	 */
 	public static void closeQueryRM(final JstQueryJpaRM jstQueryJpaRM) {
 
@@ -109,33 +102,30 @@ public enum JstEntityManagerFactoryCacheHelper {
 	}
 
 	/**
-	 * @param persistenceUnitName
-	 * @param persistencePropertyMap
-	 *            or null
 	 * @return {@link EntityManagerFactory}
 	 */
 	public static EntityManagerFactory createEntityManagerFactory(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMap) {
+			final Map<String, Object> persistencePropertyMapOrNull) {
 
 		String key = persistenceUnitName;
 
-		key = calculateKey(persistenceUnitName, persistencePropertyMap);
+		key = calculateKey(persistenceUnitName, persistencePropertyMapOrNull);
 
 		EntityManagerFactory entityManagerFactory = null;
 
 		// RETURN
 		if (JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(key)) {
 
-			entityManagerFactory = JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
-					.get(key);
+			entityManagerFactory = JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(key);
 			// Ensure that both entries stay synchronized.
-			JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceUnitName, entityManagerFactory);
+			JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceUnitName,
+					entityManagerFactory);
 
 			return entityManagerFactory;
 		}
 
 		// RETURN
-		if (null == persistencePropertyMap
+		if (null == persistencePropertyMapOrNull
 				&& JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(persistenceUnitName)) {
 
 			entityManagerFactory = JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
@@ -146,7 +136,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 
 		try {
 			entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName,
-					persistencePropertyMap);
+					persistencePropertyMapOrNull);
 		} catch (final Exception e) {
 
 			throw new TestingRuntimeException(e);
@@ -160,7 +150,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 	}
 
 	/**
-	 * @param persistenceUnitName
 	 * @return {@link EntityManager}
 	 */
 	public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName) {
@@ -170,8 +159,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 	}
 
 	/**
-	 * @param persistenceUnitName
-	 * @param persistencePropertyMap
 	 * @return {@link EntityManager}
 	 */
 	public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName,
@@ -182,7 +169,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 	}
 
 	/**
-	 * @param persistenceUnitName
 	 * @return {@link EntityManager}
 	 */
 	public static JstQueryJpaRM createQueryRmToBeClosed(final String persistenceUnitName) {
@@ -192,7 +178,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 	}
 
 	/**
-	 * @param persistenceUnitName
 	 * @return {@link EntityManagerFactory}
 	 */
 	public static EntityManagerFactory getCurrentEntityManagerFactory(final String persistenceUnitName) {

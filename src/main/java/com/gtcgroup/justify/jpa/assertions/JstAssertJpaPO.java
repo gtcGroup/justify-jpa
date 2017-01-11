@@ -47,8 +47,6 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	/**
 	 * This method initializes the class.
 	 *
-	 * @param persistenceUnitName
-	 * @param populatedEntity
 	 * @return {@link JstAssertJpaPO}
 	 */
 	public static JstAssertJpaPO withPopulatedEntity(final String persistenceUnitName, final Object populatedEntity) {
@@ -72,9 +70,6 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 
 	/**
 	 * Constructor
-	 *
-	 * @param persistenceUnitName
-	 * @param populatedEntity
 	 */
 	protected JstAssertJpaPO(final String persistenceUnitName, final Object populatedEntity) {
 
@@ -141,7 +136,6 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	}
 
 	/**
-	 * @param methodName
 	 * @return {@link JstAssertJpaPO}
 	 */
 	public JstAssertJpaPO withCascadeAll(final String methodName) {
@@ -153,7 +147,6 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	}
 
 	/**
-	 * @param methodName
 	 * @return {@link JstAssertJpaPO}
 	 */
 	public JstAssertJpaPO withCascadeAllExceptRemove(final String methodName) {
@@ -162,8 +155,6 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	}
 
 	/**
-	 * @param methodName
-	 * @param cleanup
 	 * @return {@link JstAssertJpaPO}
 	 */
 	public JstAssertJpaPO withCascadeAllExceptRemove(final String methodName, final boolean cleanup) {
@@ -179,7 +170,6 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	}
 
 	/**
-	 * @param methodName
 	 * @return {@link JstAssertJpaPO}
 	 */
 	public JstAssertJpaPO withCascadeNone(final String methodName) {
@@ -191,8 +181,6 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	}
 
 	/**
-	 * @param methodName
-	 * @param cleanup
 	 * @return {@link JstAssertJpaPO}
 	 */
 	public JstAssertJpaPO withCascadePersist(final String methodName, final boolean cleanup) {
@@ -206,8 +194,6 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	}
 
 	/**
-	 * @param methodName
-	 * @param cleanup
 	 * @return {@link JstAssertJpaPO}
 	 */
 	public JstAssertJpaPO withCascadeRemove(final String methodName, final boolean cleanup) {

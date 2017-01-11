@@ -90,8 +90,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method clears the persistence context (final L1 cache), causing all
 	 * managed entities to become detached. Changes made to entities that have
 	 * not been flushed to the database will not be persisted.
-	 *
-	 * @param entityManager
 	 */
 	public static void clearAllInstancesFromPersistenceContext(final EntityManager entityManager) {
 
@@ -102,9 +100,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method returns the number of records in the table or view. It may be
 	 * used in support of query processing.
 	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param entityClass
 	 * @return long
 	 */
 	public static <ENTITY> long count(final EntityManager entityManager, final Class<ENTITY> entityClass) {
@@ -126,10 +121,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param populatedEntityList
 	 */
 	public static <ENTITY> void createOrUpdateEntities(final EntityManager entityManager,
 			final List<ENTITY> populatedEntityList) {
@@ -149,9 +140,6 @@ public enum JstEntityManagerUtilHelper {
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
 	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param populatedEntity
 	 * @return {@link Object} representing the identity.
 	 */
 	public static <ENTITY> Object createOrUpdateEntity(final EntityManager entityManager,
@@ -176,9 +164,6 @@ public enum JstEntityManagerUtilHelper {
 	 * the entity if any (final including removal of the entity), will not be
 	 * synchronized to the database. Entities which previously referenced the
 	 * detached entity will continue to reference it.
-	 *
-	 * @param entityManager
-	 * @param populatedEntity
 	 */
 	public static void detachEntityFromPersistenceContext(final EntityManager entityManager,
 			final Object populatedEntity) {
@@ -195,8 +180,6 @@ public enum JstEntityManagerUtilHelper {
 
 	/**
 	 * This method clears the shared (L2) cache of all instances.
-	 *
-	 * @param entityManager
 	 */
 	public static void evictAllEntitiesFromSharedCache(final EntityManager entityManager) {
 
@@ -205,9 +188,6 @@ public enum JstEntityManagerUtilHelper {
 
 	/**
 	 * This method clears the shared (L2) cache of a single instance.
-	 *
-	 * @param entityManager
-	 * @param populatedEntity
 	 */
 	public static void evictEntityInstanceFromSharedCache(final EntityManager entityManager,
 			final Object populatedEntity) {
@@ -223,11 +203,6 @@ public enum JstEntityManagerUtilHelper {
 	/**
 	 * This method clears the shared (L2) cache of all instances of a single
 	 * object type.
-	 *
-	 * @param entityManager
-	 * @param entityClass
-	 *
-	 * @param <ENTITY>
 	 */
 	public static <ENTITY extends Object> void evictEntityInstancesFromSharedCache(final EntityManager entityManager,
 			final Class<ENTITY> entityClass) {
@@ -238,11 +213,6 @@ public enum JstEntityManagerUtilHelper {
 	/**
 	 * This method clears the shared (L2) cache of all instances of a single
 	 * object type.
-	 *
-	 * @param entityManager
-	 * @param entityClass
-	 * @param <ENTITY>
-	 * @param entityIdentities
 	 */
 	public static <ENTITY extends Object> void evictEntityInstancesFromSharedCache(final EntityManager entityManager,
 			final Class<ENTITY> entityClass, final Object... entityIdentities) {
@@ -264,11 +234,6 @@ public enum JstEntityManagerUtilHelper {
 	/**
 	 * This method forces a trip to the database without altering the state of
 	 * cache.
-	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param entityClass
-	 * @param entityIdentities
 	 *
 	 * @return boolean
 	 */
@@ -299,9 +264,6 @@ public enum JstEntityManagerUtilHelper {
 	/**
 	 * This method forces a trip to the database without altering the state of
 	 * cache.
-	 *
-	 * @param entityManager
-	 * @param populatedEntities
 	 *
 	 * @return boolean
 	 */
@@ -334,8 +296,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method checks if the instance is a managed entity instance belonging
 	 * to the current persistence context (L1 cache).
 	 *
-	 * @param entityManager
-	 * @param managedEntities
 	 * @return boolean
 	 */
 	public static boolean existsInPersistenceContextWithManagedEntities(final EntityManager entityManager,
@@ -364,10 +324,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method checks if the instance is a managed entity instance belonging
 	 * to the current persistence context (L1 cache).
 	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param readOnly
-	 * @param populatedEntities
 	 * @return boolean
 	 */
 	@SuppressWarnings("unchecked")
@@ -407,10 +363,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method determines whether the shared (L2) cache contains the given
 	 * entities.
 	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param entityClass
-	 * @param entityIdentities
 	 * @return boolean
 	 */
 	public static <ENTITY> boolean existsInSharedCacheWithEntityIdentities(final EntityManager entityManager,
@@ -440,13 +392,9 @@ public enum JstEntityManagerUtilHelper {
 	 * This method determines whether the shared (L2) cache contains the given
 	 * persisted entities.
 	 *
-	 * @param <ENTITY>
-	 *
-	 * @param entityManager
-	 * @param populatedEntities
 	 * @return boolean
 	 */
-	public static <ENTITY> boolean existsInSharedCacheWithPopulatedEntities(final EntityManager entityManager,
+	public static boolean existsInSharedCacheWithPopulatedEntities(final EntityManager entityManager,
 			final Object... populatedEntities) {
 
 		boolean result = true;
@@ -474,38 +422,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param entityClass
-	 * @param entityIdentity
-	 */
-	public static <ENTITY> void findAndRemoveEntity(final EntityManager entityManager, final Class<ENTITY> entityClass,
-			final Object entityIdentity) {
-
-		final ENTITY entity = findModifiableSingleOrNull(entityManager, entityClass, entityIdentity);
-
-		if (null == entity) {
-			throw new TestingRuntimeException("The entity class [" + entityClass.getSimpleName()
-					+ "] could not be found for deletion (removal).");
-		}
-
-		entityManager.getTransaction().begin();
-
-		final ENTITY mergedEntity = entityManager.merge(entity);
-		entityManager.remove(mergedEntity);
-
-		entityManager.getTransaction().commit();
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param entity
 	 */
 	public static <ENTITY> void findAndRemoveEntity(final EntityManager entityManager, final ENTITY entity) {
 
@@ -521,11 +437,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param populatedEntity
-	 * @param methodName
 	 */
 	public static <ENTITY> void findAndRemoveEntity(final EntityManager entityManager, final Object populatedEntity,
 			final String methodName) {
@@ -546,10 +457,6 @@ public enum JstEntityManagerUtilHelper {
 	}
 
 	/**
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param entityClass
-	 * @param entityIdentity
 	 * @return {@link Object}
 	 */
 	public static <ENTITY> ENTITY findModifiableSingleOrNull(final EntityManager entityManager,
@@ -559,10 +466,6 @@ public enum JstEntityManagerUtilHelper {
 	}
 
 	/**
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param entityClass
-	 * @param entityIdentity
 	 * @return {@link Object} or null
 	 */
 	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager,
@@ -572,9 +475,6 @@ public enum JstEntityManagerUtilHelper {
 	}
 
 	/**
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param populatedEntity
 	 * @return {@link Object} or null
 	 */
 	@SuppressWarnings("unchecked")
@@ -589,10 +489,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param populatedEntityList
 	 */
 	public static <ENTITY> void removeEntities(final EntityManager entityManager,
 			final List<ENTITY> populatedEntityList) {
@@ -611,11 +507,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param entityClass
-	 * @param entityIdentity
 	 */
 	public static <ENTITY> void removeEntity(final EntityManager entityManager, final Class<ENTITY> entityClass,
 			final Object entityIdentity) {
@@ -636,10 +527,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entityManager
-	 * @param populatedEntity
 	 */
 	public static <ENTITY> void removeEntity(final EntityManager entityManager, final ENTITY populatedEntity) {
 
@@ -661,11 +548,6 @@ public enum JstEntityManagerUtilHelper {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentity
 	 */
 	public static <ENTITY> void removeEntity(final String persistenceUnitName, final Class<ENTITY> entityClass,
 			final Object entityIdentity) {
@@ -683,8 +565,6 @@ public enum JstEntityManagerUtilHelper {
 	}
 
 	/**
-	 * @param entityManager
-	 * @param populatedEntity
 	 * @return Object
 	 */
 	public static Object retrieveIdentity(final EntityManager entityManager, final Object populatedEntity) {
@@ -693,9 +573,6 @@ public enum JstEntityManagerUtilHelper {
 	}
 
 	/**
-	 * @param entityManager
-	 * @param entity
-	 * @param fieldName
 	 * @return Object
 	 */
 	public static Object retrieveIdentity(final EntityManager entityManager, final Object entity,

@@ -44,7 +44,6 @@ public class JstQueryJpaPO {
 	/**
 	 * This method initializes the class.
 	 *
-	 * @param queryName
 	 * @return {@link JstQueryJpaPO}
 	 */
 	public static JstQueryJpaPO withQueryName(final String queryName) {
@@ -60,8 +59,6 @@ public class JstQueryJpaPO {
 
 	/**
 	 * Constructor
-	 *
-	 * @param queryName
 	 */
 	protected JstQueryJpaPO(final String queryName) {
 
@@ -87,7 +84,7 @@ public class JstQueryJpaPO {
 	}
 
 	/**
-	 * @return String
+	 * @return {@link String}
 	 */
 	public String getQueryName() {
 
@@ -95,8 +92,6 @@ public class JstQueryJpaPO {
 	}
 
 	/**
-	 * @param parameterNumber
-	 * @param parameterValue
 	 * @return {@link JstQueryJpaPO}
 	 */
 	public JstQueryJpaPO withIntegerParameter(final Integer parameterNumber, final Object parameterValue) {
@@ -106,8 +101,6 @@ public class JstQueryJpaPO {
 	}
 
 	/**
-	 * @param parameterKey
-	 * @param parameterValue
 	 * @return {@link JstQueryJpaPO}
 	 */
 	public JstQueryJpaPO withKeyParameter(final String parameterKey, final Object parameterValue) {

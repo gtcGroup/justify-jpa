@@ -50,8 +50,6 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 
 	/**
 	 * Constructor
-	 * 
-	 * @param entityManager
 	 */
 	public JstTransactionJpaRM(final EntityManager entityManager) {
 		super();
@@ -62,9 +60,6 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly processed.
-	 *
-	 * @param <ENTITY>
-	 * @param entity
 	 */
 	public <ENTITY> void transactCreateOrUpdateEntity(final ENTITY entity) {
 
@@ -75,25 +70,17 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entities
 	 */
 	@SuppressWarnings("unchecked")
 	public <ENTITY> void transactCreateOrUpdateFromArray(final Object... entities) {
 
-
-		JstEntityManagerUtilHelper.createOrUpdateEntities(this.entityManager,
-				(List<ENTITY>) Arrays.asList(entities));
+		JstEntityManagerUtilHelper.createOrUpdateEntities(this.entityManager, (List<ENTITY>) Arrays.asList(entities));
 	}
 
 	/**
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entityList
 	 */
 	public <ENTITY> void transactCreateOrUpdateFromList(final List<ENTITY> entityList) {
 
@@ -104,9 +91,6 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entityList
 	 */
 	public <ENTITY> void transactDeleteEntities(final List<ENTITY> entityList) {
 
@@ -117,9 +101,6 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entities
 	 */
 	@SuppressWarnings("unchecked")
 	public <ENTITY> void transactDeleteEntities(final Object... entities) {
@@ -131,9 +112,6 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly included.
-	 *
-	 * @param <ENTITY>
-	 * @param entity
 	 */
 	public <ENTITY> void transactDeleteEntity(final ENTITY entity) {
 

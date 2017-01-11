@@ -53,12 +53,6 @@ public enum JstQueryUtilHelper {
 	@SuppressWarnings("javadoc")
 	INSTANCE;
 
-	/**
-	 * @param query
-	 * @param integerParameterMap
-	 * @param stringParameterMap
-	 * @param isReadOnly
-	 */
 	@SuppressWarnings("boxing")
 	private static void decorateQuery(final Query query, final Map<Integer, Object> integerParameterMap,
 			final Map<String, Object> stringParameterMap, final boolean isReadOnly) {
@@ -88,13 +82,6 @@ public enum JstQueryUtilHelper {
 	 * passed with an {@link Integer} and/or a {@link String} Map of parameter
 	 * values.
 	 *
-	 * @param <ENTITY>
-	 * @param query
-	 * @param integerParameterMap
-	 *            or null
-	 * @param stringParameterMap
-	 *            or null
-	 * @param isReadOnly
 	 * @return {@link List}
 	 */
 	public static <ENTITY> List<ENTITY> queryResultList(final Query query,
@@ -121,13 +108,6 @@ public enum JstQueryUtilHelper {
 	 * Parameters are passed with an {@link Integer} and/or a {@link String} Map
 	 * of parameter values.
 	 *
-	 * @param <ENTITY>
-	 * @param query
-	 * @param integerParameterMap
-	 *            or null
-	 * @param stringParameterMap
-	 *            or null
-	 * @param isReadOnly
 	 * @return ENTITY
 	 */
 	@SuppressWarnings("unchecked")
@@ -149,9 +129,6 @@ public enum JstQueryUtilHelper {
 		return entity;
 	}
 
-	/**
-	 * @param message
-	 */
 	private static void throwException(final Exception e) {
 
 		throw new TestingRuntimeException(e);

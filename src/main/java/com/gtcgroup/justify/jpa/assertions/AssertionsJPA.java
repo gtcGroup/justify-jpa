@@ -48,9 +48,9 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerUtilHelper;
  * @author Marvin Toll
  * @since v3.0
  */
+@SuppressWarnings("javadoc")
 public enum AssertionsJPA {
 
-	@SuppressWarnings("javadoc")
 	INSTANCE;
 
 	private static JstAssertJpaPO assertionsJpaCascadePO;
@@ -59,9 +59,6 @@ public enum AssertionsJPA {
 
 	/**
 	 * This method verifies cascade annotations.
-	 *
-	 * @param <PO>
-	 * @param assertionsJpaCascadePO
 	 */
 	public static <PO extends JstAssertJpaPO> void assertCascadeTypes(final PO assertionsJpaCascadePO) {
 
@@ -115,10 +112,6 @@ public enum AssertionsJPA {
 		}
 	}
 
-	/**
-	 * @param persistenceUnitName
-	 * @param populatedEntities
-	 */
 	public static void assertExistsInDatabaseWithEntities(final String persistenceUnitName,
 			final Object... populatedEntities) {
 
@@ -132,12 +125,6 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentities
-	 */
 	public static <ENTITY> void assertExistsInDatabaseWithEntityIdentities(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
@@ -151,10 +138,6 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	/**
-	 * @param persistenceUnitName
-	 * @param populatedEntityList
-	 */
 	public static void assertExistsInDatabaseWithEntityList(final String persistenceUnitName,
 			final List<Object> populatedEntityList) {
 
@@ -162,12 +145,6 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityList
-	 * @param entityIdentity
-	 */
 	public static <ENTITY> void assertExistsInDatabaseWithListElement(final String persistenceUnitName,
 			final List<ENTITY> entityList, final Object entityIdentity) {
 
@@ -186,10 +163,6 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	/**
-	 * @param persistenceUnitName
-	 * @param managedEntities
-	 */
 	public static void assertExistsInPersistenceContextWithManagedEntities(final String persistenceUnitName,
 			final Object... managedEntities) {
 
@@ -203,10 +176,6 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	/**
-	 * @param persistenceUnitName
-	 * @param managedEntities
-	 */
 	public static void assertExistsInSharedCacheWithEntities(final String persistenceUnitName,
 			final Object... managedEntities) {
 
@@ -220,12 +189,6 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentities
-	 */
 	public static <ENTITY> void assertExistsInSharedCacheWithEntityIdentities(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
@@ -239,10 +202,6 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	/**
-	 * @param persistenceUnitName
-	 * @param populatedEntities
-	 */
 	public static void assertNotExistsInDatabaseWithEntities(final String persistenceUnitName,
 			final Object... populatedEntities) {
 
@@ -256,12 +215,6 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	/**
-	 * @param <ENTITY>
-	 * @param persistenceUnitName
-	 * @param entityClass
-	 * @param entityIdentities
-	 */
 	public static <ENTITY> void assertNotExistsInDatabaseWithEntityIdentities(final String persistenceUnitName,
 			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
@@ -275,10 +228,6 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	/**
-	 * @param persistenceUnitName
-	 * @param managedEntities
-	 */
 	public static void assertNotExistsInPersistenceContextWithManagedEntities(final String persistenceUnitName,
 			final Object... managedEntities) {
 
@@ -301,9 +250,6 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	/**
-	 * @param persistenceUnitName
-	 */
 	private static void closeEntityManager() {
 
 		JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
@@ -331,8 +277,6 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param persistenceUnitName
-	 * @param entities
 	 * @return {@link Object} representing entityIdentity.
 	 */
 	private static Object createParentEntity() {
@@ -379,7 +323,6 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param persistenceUnitName
 	 * @return EntityManager
 	 */
 	public static EntityManager getEntityManager(final String persistenceUnitName) {
@@ -429,8 +372,6 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param persistenceUnitName
-	 * @param cascadeRemoveMap
 	 * @throws ClassNotFoundException
 	 */
 	private static void verifyCascadeEntitiesNotPersisted() throws ClassNotFoundException {
@@ -447,8 +388,6 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param persistenceUnitName
-	 * @param cascadeRemoveMap
 	 * @throws ClassNotFoundException
 	 */
 	private static void verifyCascadeEntitiesNotRemoved() throws ClassNotFoundException {
@@ -463,8 +402,6 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param persistenceUnitName
-	 * @param cascadeRemoveMap
 	 * @throws ClassNotFoundException
 	 */
 	private static void verifyCascadeEntitiesPersisted() throws ClassNotFoundException {
@@ -481,8 +418,6 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param persistenceUnitName
-	 * @param cascadeRemoveMap
 	 * @throws ClassNotFoundException
 	 */
 	private static void verifyCascadeEntitiesRemoved() throws ClassNotFoundException {
@@ -498,9 +433,6 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	/**
-	 * @param entity
-	 */
 	private static void verifyParentEntityPersisted() {
 
 		if (!JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
@@ -514,8 +446,6 @@ public enum AssertionsJPA {
 	}
 
 	/**
-	 * @param persistenceUnitName
-	 * @param cascadeRemoveMap
 	 * @throws ClassNotFoundException
 	 */
 	private static void verifyParentEntityRemoved() throws ClassNotFoundException {
@@ -529,18 +459,4 @@ public enum AssertionsJPA {
 		}
 		return;
 	}
-
-	// /**
-	// * This method...
-	// *
-	// * @param packageNames
-	// */
-	// public static void verifyPOJO(final String... packageNames) {
-	//
-	// final Validator validator = ValidatorBuilder.create().with(new
-	// SetterMustExistRule(), new GetterMustExistRule())
-	// .with(new SetterTester(), new GetterTester()).build();
-	//
-	// validator.validate((PojoClass) Arrays.asList(packageNames));
-	// }
 }

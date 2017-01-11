@@ -56,7 +56,6 @@ public abstract class JstBaseDataPopulator extends JstBaseTestingClass {
 	/**
 	 * This method requires implementation of a Template Method.
 	 *
-	 * @param jstQueryJpaRM
 	 * @return {@link List}
 	 */
 	public abstract List<Object> populateCreateListTM(JstQueryJpaRM jstQueryJpaRM);
