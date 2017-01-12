@@ -243,6 +243,16 @@ public class JstQueryJpaRM extends JstBaseTestingRM {
 	/**
 	 * @return ENTITY
 	 */
+	public <ENTITY> List<ENTITY> queryNamedModifiableList(final String queryName,
+			final Object... orderedIntegerParameterObjects) {
+
+		return JstQueryUtilHelper.queryResultList(createNamedQuery(queryName),
+				instantiateIntegerParameterMap(orderedIntegerParameterObjects), null, true);
+	}
+
+	/**
+	 * @return ENTITY
+	 */
 	public <ENTITY> ENTITY queryNamedModifiableSingle(final String queryName) {
 
 		return JstQueryUtilHelper.querySingleResult(createNamedQuery(queryName), null, null, false);
@@ -256,6 +266,16 @@ public class JstQueryJpaRM extends JstBaseTestingRM {
 
 		return JstQueryUtilHelper.querySingleResult(createNamedQuery(queryName), integerParameterMap,
 				stringParameterMap, false);
+	}
+
+	/**
+	 * @return ENTITY
+	 */
+	public <ENTITY> ENTITY queryNamedModifiableSingle(final String queryName,
+			final Object... orderedIntegerParameterObjects) {
+
+		return JstQueryUtilHelper.querySingleResult(createNamedQuery(queryName),
+				instantiateIntegerParameterMap(orderedIntegerParameterObjects), null, true);
 	}
 
 	/**

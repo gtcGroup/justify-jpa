@@ -56,6 +56,7 @@ public enum JstQueryUtilHelper {
 	@SuppressWarnings("boxing")
 	private static void decorateQuery(final Query query, final Map<Integer, Object> integerParameterMap,
 			final Map<String, Object> stringParameterMap, final boolean isReadOnly) {
+
 		if (null != integerParameterMap) {
 
 			for (final Entry<Integer, Object> entry1 : integerParameterMap.entrySet()) {

@@ -62,6 +62,21 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 
 	protected static List<String> dataPopulatorProcessedList = new ArrayList<String>();
 
+	/**
+	 * This method is available for extension.
+	 *
+	 * @return {@link TestRule}
+	 */
+	@SuppressWarnings("unchecked")
+	protected static <RULE extends TestRule> RULE createRule(final String persistenceUnitName,
+			final Map<String, Object> persistencePropertyMap,
+			final Map<String, EntityManagerFactory> entityManagerFactoryMap, final Class<?>... dataPopulators) {
+
+		JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP = entityManagerFactoryMap;
+
+		return (RULE) new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap, dataPopulators);
+	}
+
 	private static void initializeJPA(final String persistenceUnitName,
 			final Map<String, Object> persistencePropertyMap) {
 
@@ -71,19 +86,6 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 		JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 
 		return;
-	}
-
-	/**
-	 * @return {@link TestRule}
-	 */
-	@SuppressWarnings("unchecked")
-	protected static <RULE extends TestRule> RULE processRule(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMap,
-			final Map<String, EntityManagerFactory> entityManagerFactoryMap, final Class<?>... dataPopulators) {
-
-		JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP = entityManagerFactoryMap;
-
-		return (RULE) new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap, dataPopulators);
 	}
 
 	/**
