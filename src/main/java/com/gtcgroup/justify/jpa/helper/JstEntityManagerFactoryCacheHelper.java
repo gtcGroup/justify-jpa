@@ -34,7 +34,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
-import com.gtcgroup.justify.jpa.rm.JstQueryJpaRM;
 
 /**
  * This Helper class caches {@link EntityManagerFactory}s.
@@ -91,14 +90,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 		}
 
 		return;
-	}
-
-	/**
-	 * This method closes the {@link EntityManager}.
-	 */
-	public static void closeQueryRM(final JstQueryJpaRM jstQueryJpaRM) {
-
-		closeEntityManager(jstQueryJpaRM.getEntityManager());
 	}
 
 	/**
@@ -165,15 +156,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 			final Map<String, Object> persistencePropertyMap) {
 
 		return createEntityManagerFactory(persistenceUnitName, persistencePropertyMap).createEntityManager();
-
-	}
-
-	/**
-	 * @return {@link EntityManager}
-	 */
-	public static JstQueryJpaRM createQueryRmToBeClosed(final String persistenceUnitName) {
-
-		return new JstQueryJpaRM(createEntityManagerFactory(persistenceUnitName, null).createEntityManager());
 
 	}
 

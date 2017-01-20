@@ -31,7 +31,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.base.JstBaseTestingRM;
-import com.gtcgroup.justify.jpa.helper.JstEntityManagerUtilHelper;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
 
 /**
  * This Resource Manager provides convenience methods for transactions.
@@ -63,7 +63,7 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> void transactCreateOrUpdateEntity(final ENTITY entity) {
 
-		JstEntityManagerUtilHelper.createOrUpdateEntity(this.entityManager, entity);
+		JstEntityManagerCacheHelper.createOrUpdateEntity(this.entityManager, entity);
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 	@SuppressWarnings("unchecked")
 	public <ENTITY> void transactCreateOrUpdateFromArray(final Object... entities) {
 
-		JstEntityManagerUtilHelper.createOrUpdateEntities(this.entityManager, (List<ENTITY>) Arrays.asList(entities));
+		JstEntityManagerCacheHelper.createOrUpdateEntities(this.entityManager, (List<ENTITY>) Arrays.asList(entities));
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> void transactCreateOrUpdateFromList(final List<ENTITY> entityList) {
 
-		JstEntityManagerUtilHelper.createOrUpdateEntities(this.entityManager, entityList);
+		JstEntityManagerCacheHelper.createOrUpdateEntities(this.entityManager, entityList);
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> void transactDeleteEntities(final List<ENTITY> entityList) {
 
-		JstEntityManagerUtilHelper.removeEntities(this.entityManager, entityList);
+		JstEntityManagerCacheHelper.removeEntities(this.entityManager, entityList);
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 	@SuppressWarnings("unchecked")
 	public <ENTITY> void transactDeleteEntities(final Object... entities) {
 
-		JstEntityManagerUtilHelper.removeEntities(this.entityManager, (List<ENTITY>) Arrays.asList(entities));
+		JstEntityManagerCacheHelper.removeEntities(this.entityManager, (List<ENTITY>) Arrays.asList(entities));
 	}
 
 	/**
@@ -115,6 +115,6 @@ public class JstTransactionJpaRM extends JstBaseTestingRM {
 	 */
 	public <ENTITY> void transactDeleteEntity(final ENTITY entity) {
 
-		JstEntityManagerUtilHelper.removeEntity(this.entityManager, entity);
+		JstEntityManagerCacheHelper.removeEntity(this.entityManager, entity);
 	}
 }

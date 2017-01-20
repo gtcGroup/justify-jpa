@@ -32,9 +32,6 @@ import java.util.Map;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
@@ -53,7 +50,7 @@ import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstEntityManagerUtilHelper {
+public enum JstEntityManagerCacheHelper {
 
 	@SuppressWarnings("javadoc")
 	INSTANCE;
@@ -75,15 +72,15 @@ public enum JstEntityManagerUtilHelper {
 
 	static {
 
-		JstEntityManagerUtilHelper.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
+		JstEntityManagerCacheHelper.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
 
-		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE,
+		JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE,
 				CacheRetrieveMode.BYPASS);
 
-		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.CACHE_RETRIEVE_MODE,
+		JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.CACHE_RETRIEVE_MODE,
 				CacheRetrieveMode.BYPASS);
 
-		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
+		JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
 	}
 
 	/**
@@ -94,27 +91,6 @@ public enum JstEntityManagerUtilHelper {
 	public static void clearAllInstancesFromPersistenceContext(final EntityManager entityManager) {
 
 		entityManager.clear();
-	}
-
-	/**
-	 * This method returns the number of records in the table or view. It may be
-	 * used in support of query processing.
-	 *
-	 * @return long
-	 */
-	public static <ENTITY> long count(final EntityManager entityManager, final Class<ENTITY> entityClass) {
-
-		final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-		final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-
-		criteriaQuery.select(criteriaBuilder.count(criteriaQuery.from(entityClass)));
-
-		final Query query = entityManager.createQuery(criteriaQuery);
-
-		final Long countLong = (Long) query.getSingleResult();
-		final long count = countLong.longValue();
-
-		return count;
 	}
 
 	/**
@@ -222,7 +198,7 @@ public enum JstEntityManagerUtilHelper {
 		for (final Object entityIdentity : entityIdentities) {
 
 			result = entityManager.find(entityClass, entityIdentity,
-					JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+					JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
 			if (null != result) {
 				evictEntityInstanceFromSharedCache(entityManager, result);
@@ -247,7 +223,7 @@ public enum JstEntityManagerUtilHelper {
 			for (final Object entityIdentity : entityIdentities) {
 
 				result = entityManager.find(entityClass, entityIdentity,
-						JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+						JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
 				if (null == result) {
 					return false;
@@ -278,7 +254,7 @@ public enum JstEntityManagerUtilHelper {
 
 				result = entityManager.find(populatedEntity.getClass(),
 						retrieveIdentity(entityManager, populatedEntity),
-						JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+						JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
 				if (null == result) {
 					return false;
@@ -468,10 +444,25 @@ public enum JstEntityManagerUtilHelper {
 	/**
 	 * @return {@link Object} or null
 	 */
+	@SuppressWarnings("unchecked")
+	public static <ENTITY> ENTITY findModifiableSingleOrNull(final EntityManager entityManager,
+			final Object populatedEntity) {
+
+		return (ENTITY) entityManager.find(populatedEntity.getClass(),
+				retrieveIdentity(entityManager, populatedEntity));
+	}
+
+	/**
+	 * @return {@link Object} or null
+	 */
 	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager,
 			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		return entityManager.find(entityClass, entityIdentity, JstEntityManagerUtilHelper.FIND_READ_ONLY);
+		try {
+			return entityManager.find(entityClass, entityIdentity, JstEntityManagerCacheHelper.FIND_READ_ONLY);
+		} catch (final Exception e) {
+			throw new TestingRuntimeException(e);
+		}
 	}
 
 	/**
@@ -482,7 +473,7 @@ public enum JstEntityManagerUtilHelper {
 			final Object populatedEntity) {
 
 		return (ENTITY) entityManager.find(populatedEntity.getClass(), retrieveIdentity(entityManager, populatedEntity),
-				JstEntityManagerUtilHelper.FIND_READ_ONLY);
+				JstEntityManagerCacheHelper.FIND_READ_ONLY);
 	}
 
 	/**

@@ -23,15 +23,12 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package com.gtcgroup.justify.jpa.po.internal;
 
-package com.gtcgroup.justify.jpa.helper;
-
-import java.util.List;
-
-import com.gtcgroup.justify.core.base.JstBaseTestingClass;
+import javax.persistence.Query;
 
 /**
- * This Helper class provides support for creating test data.
+ * This Parameter Object base class supports query execution.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
@@ -39,24 +36,56 @@ import com.gtcgroup.justify.core.base.JstBaseTestingClass;
  * </p>
  *
  * @author Marvin Toll
- * @since v3.0
+ * @since v.6.2
  */
-public abstract class JstBaseDataPopulator extends JstBaseTestingClass {
+public abstract class BaseQueryJpaPO extends BaseJpaPO {
+
+	protected Query query;
+
+	protected int firstResult;
+
+	protected int maxResults;
 
 	/**
-	 * @see JstBaseTestingClass#assignPatternSuffixTM()
+	 * Constructor
 	 */
-	@Override
-	protected String assignPatternSuffixTM() {
+	protected BaseQueryJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
 
-		return "DataPopulator";
+		super(readOnly, suppressExceptionForNull);
 	}
 
 	/**
-	 * This method requires implementation of a Template Method.
-	 *
-	 * @return {@link List}
+	 * @return int
 	 */
-	public abstract List<Object> populateCreateListTM(String persistenceUnitName);
+	public int getFirstResult() {
+		return this.firstResult;
+	}
 
+	/**
+	 * @return int}
+	 */
+	public int getMaxResults() {
+		return this.maxResults;
+	}
+
+	/**
+	 * @return {@link Query}
+	 */
+	public Query getQuery() {
+		return this.query;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public boolean isFirstResult() {
+		return 0 != this.firstResult;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public boolean isMaxResults() {
+		return 0 != this.maxResults;
+	}
 }

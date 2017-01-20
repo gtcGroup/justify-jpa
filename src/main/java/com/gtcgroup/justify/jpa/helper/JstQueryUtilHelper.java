@@ -25,20 +25,25 @@
  */
 package com.gtcgroup.justify.jpa.helper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.exceptions.DatabaseException;
 
 import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.jpa.po.JstCriteriaQueryJpaPO;
+import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
- * This Util Helper class provides persistence {@link EntityManager} support.
+ * This Util Helper class provides persistence {@link Query} support.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
@@ -53,86 +58,164 @@ public enum JstQueryUtilHelper {
 	@SuppressWarnings("javadoc")
 	INSTANCE;
 
+	/**
+	 * This method returns the number of records in the table or view.
+	 *
+	 * @return long
+	 */
+	public static long count(final JstCriteriaQueryJpaPO queryPO) {
+
+		final CriteriaBuilder criteriaBuilder = queryPO.getEntityManager().getCriteriaBuilder();
+		final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+		criteriaQuery.select(criteriaBuilder.count(criteriaQuery.from(queryPO.getResultClass())));
+
+		final Query query = queryPO.getEntityManager().createQuery(criteriaQuery);
+
+		final Long countLong = (Long) query.getSingleResult();
+		final long count = countLong.longValue();
+
+		return count;
+	}
+
 	@SuppressWarnings("boxing")
-	private static void decorateQuery(final Query query, final Map<Integer, Object> integerParameterMap,
-			final Map<String, Object> stringParameterMap, final boolean isReadOnly) {
+	static Query decorateQuery(final BaseQueryJpaPO queryPO, final Map<String, Object> stringParameterMap,
+			final Object... orderedParameters) {
 
-		if (null != integerParameterMap) {
+		final Query query = queryPO.getQuery();
 
-			for (final Entry<Integer, Object> entry1 : integerParameterMap.entrySet()) {
+		if (0 != orderedParameters.length) {
 
-				query.setParameter(entry1.getKey(), entry1.getValue());
+			for (final Entry<Integer, Object> integerEntry : instantiateIntegerParameterMap(orderedParameters)
+					.entrySet()) {
+
+				query.setParameter(integerEntry.getKey(), integerEntry.getValue());
 			}
 		}
 		if (null != stringParameterMap) {
 
-			for (final Entry<String, Object> entry2 : stringParameterMap.entrySet()) {
+			for (final Entry<String, Object> stringEntry : stringParameterMap.entrySet()) {
 
-				query.setParameter(entry2.getKey(), entry2.getValue());
+				query.setParameter(stringEntry.getKey(), stringEntry.getValue());
 			}
 		}
-
-		if (isReadOnly) {
+		if (queryPO.isReadOnly()) {
 
 			query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
 		}
+		if (queryPO.isFirstResult()) {
+
+			query.setFirstResult(queryPO.getFirstResult());
+		}
+		if (queryPO.isMaxResults()) {
+
+			query.setMaxResults(queryPO.getMaxResults());
+		}
+		return query;
 	}
 
 	/**
-	 * This method executes a query that returns a result list. Parameters are
-	 * passed with an {@link Integer} and/or a {@link String} Map of parameter
-	 * values.
+	 * @return {@link Map}
+	 */
+	static Map<Integer, Object> instantiateIntegerParameterMap(final Object... orderedParameters) {
+		final Map<Integer, Object> integerParameterMap = new HashMap<Integer, Object>();
+
+		for (int i = 0; i < orderedParameters.length; i++) {
+
+			integerParameterMap.put(new Integer(i + 1), orderedParameters[i]);
+		}
+		return integerParameterMap;
+	}
+
+	/**
+	 * This method executes a query with parameters.
 	 *
 	 * @return {@link List}
 	 */
-	public static <ENTITY> List<ENTITY> queryResultList(final Query query,
-			final Map<Integer, Object> integerParameterMap, final Map<String, Object> stringParameterMap,
-			final boolean isReadOnly) {
+	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
+			final Map<String, Object> stringParameterMap) {
 
 		List<ENTITY> entityList = null;
 
 		try {
 
-			decorateQuery(query, integerParameterMap, stringParameterMap, isReadOnly);
+			final Query query = decorateQuery(queryPO, stringParameterMap);
 
 			entityList = query.getResultList();
 
-		} catch (final Exception e) {
-
-			throwException(e);
+		} finally {
+			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
 		}
 		return entityList;
 	}
 
 	/**
-	 * This method executes a query that returns a single untyped result.
-	 * Parameters are passed with an {@link Integer} and/or a {@link String} Map
-	 * of parameter values.
+	 * This method executes a query with parameters.
+	 *
+	 * @return {@link List}
+	 */
+	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
+			final Object... orderedParameters) {
+
+		List<ENTITY> entityList = null;
+
+		try {
+
+			final Query query = decorateQuery(queryPO, null, orderedParameters);
+
+			entityList = query.getResultList();
+		} catch (final DatabaseException sqlException) {
+
+			throw new TestingRuntimeException(sqlException);
+
+		} finally {
+			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+		}
+		return entityList;
+	}
+
+	/**
+	 * This method executes a query with parameters.
 	 *
 	 * @return ENTITY
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ENTITY> ENTITY querySingleResult(final Query query, final Map<Integer, Object> integerParameterMap,
-			final Map<String, Object> stringParameterMap, final boolean isReadOnly) {
+	public static <ENTITY> ENTITY querySingleResult(final BaseQueryJpaPO queryPO,
+			final Map<String, Object> stringParameterMap) {
 
 		ENTITY entity = null;
 
 		try {
 
-			decorateQuery(query, integerParameterMap, stringParameterMap, isReadOnly);
+			final Query query = decorateQuery(queryPO, stringParameterMap);
 
 			entity = (ENTITY) query.getSingleResult();
 
-		} catch (final Exception e) {
-
-			throwException(e);
+		} finally {
+			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
 		}
 		return entity;
 	}
 
-	private static void throwException(final Exception e) {
+	/**
+	 * This method executes a query with parameters.
+	 *
+	 * @return ENTITY
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ENTITY> ENTITY querySingleResult(final BaseQueryJpaPO queryPO, final Object... orderedParameters) {
 
-		throw new TestingRuntimeException(e);
+		ENTITY entity = null;
+
+		try {
+
+			final Query query = decorateQuery(queryPO, null, orderedParameters);
+
+			entity = (ENTITY) query.getSingleResult();
+
+		} finally {
+			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+		}
+		return entity;
 	}
-
 }

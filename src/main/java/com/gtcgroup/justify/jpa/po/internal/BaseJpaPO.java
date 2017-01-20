@@ -23,89 +23,83 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.rm;
+package com.gtcgroup.justify.jpa.po.internal;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.persistence.EntityManager;
+
+import com.gtcgroup.justify.core.base.JstBaseTestingPO;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 
 /**
- * This Parameter Object class supports testing of Domain Entity cascade types.
+ * This Parameter Object base class supports query execution.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
- * @author
- * @since v.6.0
+ * @author Marvin Toll
+ * @since v.6.2
  */
-public class JstQueryJpaPO {
+public abstract class BaseJpaPO extends JstBaseTestingPO {
 
-	/**
-	 * This method initializes the class.
-	 *
-	 * @return {@link JstQueryJpaPO}
-	 */
-	public static JstQueryJpaPO withQueryName(final String queryName) {
+	protected boolean readOnly = true;
 
-		return new JstQueryJpaPO(queryName);
-	}
+	protected boolean suppressExceptionForNull = false;
 
-	private String queryName;
+	protected EntityManager entityManager;
 
-	private final Map<Integer, Object> integerParameterMap = new HashMap<Integer, Object>();
-
-	private final Map<String, Object> keyParameterMap = new HashMap<String, Object>();
+	protected String persistenceUnitName;
 
 	/**
 	 * Constructor
 	 */
-	protected JstQueryJpaPO(final String queryName) {
+	protected BaseJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
 
 		super();
-		this.queryName = queryName;
+		this.readOnly = readOnly;
+		this.suppressExceptionForNull = suppressExceptionForNull;
 		return;
 	}
 
 	/**
-	 * @return Map<Object,Class<Object>>
+	 * This method closes the {@link EntityManager} if the creation is
+	 * encapsulated within this PO.
 	 */
-	Map<Integer, Object> getIntegerParameterMap() {
+	public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
 
-		return this.integerParameterMap;
+		if (null != this.persistenceUnitName) {
+			if (null != this.entityManager) {
+				JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
+			}
+		}
 	}
 
 	/**
-	 * @return Map<Object,Class<Object>>
+	 * @return {@link EntityManager}
 	 */
-	Map<String, Object> getKeyParameterMap() {
-
-		return this.keyParameterMap;
+	public EntityManager getEntityManager() {
+		return this.entityManager;
 	}
 
 	/**
-	 * @return {@link String}
+	 * @return boolean
 	 */
-	public String getQueryName() {
-
-		return this.queryName;
+	public boolean isEntityManager() {
+		return null != this.entityManager;
 	}
 
 	/**
-	 * @return {@link JstQueryJpaPO}
+	 * @return boolean
 	 */
-	public JstQueryJpaPO withIntegerParameter(final Integer parameterNumber, final Object parameterValue) {
-
-		this.integerParameterMap.put(parameterNumber, parameterValue);
-		return this;
+	public boolean isReadOnly() {
+		return this.readOnly;
 	}
 
 	/**
-	 * @return {@link JstQueryJpaPO}
+	 * @return boolean
 	 */
-	public JstQueryJpaPO withKeyParameter(final String parameterKey, final Object parameterValue) {
-
-		this.keyParameterMap.put(parameterKey, parameterValue);
-		return this;
+	public boolean isSuppressExceptionForNull() {
+		return this.suppressExceptionForNull;
 	}
 }

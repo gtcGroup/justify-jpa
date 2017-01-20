@@ -42,7 +42,6 @@ import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.rm.JstQueryJpaRM;
 import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
 
 /**
@@ -200,22 +199,23 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 
 			for (final Map.Entry<String, JstBaseDataPopulator> entry : this.dataPopulatorToBeProcessedMap.entrySet()) {
 
-				processdataPopulator(entry.getValue());
+				processDataPopulator(entry.getValue());
 
 				JstConfigureJpaRule.dataPopulatorProcessedList.add(entry.getKey());
 			}
 		}
 	}
 
-	protected void processdataPopulator(final JstBaseDataPopulator dataPopulator) {
+	protected void processDataPopulator(final JstBaseDataPopulator dataPopulator) {
 
 		EntityManager entityManager = null;
 
 		try {
+
+			final List<Object> createList = dataPopulator.populateCreateListTM(this.persistenceUnitName);
+
 			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName,
 					this.persistencePropertyMap);
-
-			final List<Object> createList = dataPopulator.populateCreateListTM(new JstQueryJpaRM(entityManager));
 
 			new JstTransactionJpaRM(entityManager).transactCreateOrUpdateFromList(createList);
 

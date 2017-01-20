@@ -23,7 +23,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.assertions;
+package com.gtcgroup.justify.jpa.po;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,19 +39,19 @@ import com.gtcgroup.justify.core.base.JstBaseTestingPO;
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
- * @author
- * @since v.6.0
+ * @author Marvin Toll
+ * @since v6.2
  */
-public class JstAssertJpaPO extends JstBaseTestingPO {
+public class JstAssertCascadeJpaPO extends JstBaseTestingPO {
 
 	/**
 	 * This method initializes the class.
 	 *
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertCascadeJpaPO}
 	 */
-	public static JstAssertJpaPO withPopulatedEntity(final String persistenceUnitName, final Object populatedEntity) {
+	public static JstAssertCascadeJpaPO withPopulatedEntity(final String persistenceUnitName, final Object populatedEntity) {
 
-		return new JstAssertJpaPO(persistenceUnitName, populatedEntity);
+		return new JstAssertCascadeJpaPO(persistenceUnitName, populatedEntity);
 	}
 
 	private Object populatedEntity;
@@ -71,7 +71,7 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	/**
 	 * Constructor
 	 */
-	protected JstAssertJpaPO(final String persistenceUnitName, final Object populatedEntity) {
+	protected JstAssertCascadeJpaPO(final String persistenceUnitName, final Object populatedEntity) {
 
 		super();
 
@@ -84,7 +84,7 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	/**
 	 * @return {@link List}
 	 */
-	List<String> getCascadeDoNoRemovedList() {
+	public List<String> getCascadeDoNoRemovedList() {
 
 		return this.cascadeDoNotRemoveList;
 	}
@@ -92,14 +92,14 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	/**
 	 * @return {@link Map}
 	 */
-	List<String> getCascadeDoNotPersistList() {
+	public List<String> getCascadeDoNotPersistList() {
 		return this.cascadeDoNotPersistList;
 	}
 
 	/**
 	 * @return {@link List}
 	 */
-	List<String> getCascadePersistList() {
+	public List<String> getCascadePersistList() {
 
 		return this.cascadePersistList;
 	}
@@ -107,7 +107,7 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	/**
 	 * @return {@link List}
 	 */
-	List<String> getCascadeRemoveList() {
+	public List<String> getCascadeRemoveList() {
 
 		return this.cascadeRemoveList;
 	}
@@ -115,14 +115,14 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	/**
 	 * @return {@link List}
 	 */
-	List<String> getDoNotCleanupList() {
+	public List<String> getDoNotCleanupList() {
 		return this.doNotCleanupList;
 	}
 
 	/**
 	 * @return String
 	 */
-	String getPersistenceUnitName() {
+	public String getPersistenceUnitName() {
 
 		return this.persistenceUnitName;
 	}
@@ -130,15 +130,15 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	/**
 	 * @return Object
 	 */
-	Object getPopulatedEntity() {
+	public Object getPopulatedEntity() {
 
 		return this.populatedEntity;
 	}
 
 	/**
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertCascadeJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeAll(final String methodName) {
+	public JstAssertCascadeJpaPO withCascadeAll(final String methodName) {
 
 		this.cascadePersistList.add(methodName);
 		this.cascadeRemoveList.add(methodName);
@@ -147,17 +147,17 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	}
 
 	/**
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertCascadeJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeAllExceptRemove(final String methodName) {
+	public JstAssertCascadeJpaPO withCascadeAllExceptRemove(final String methodName) {
 
 		return withCascadeAllExceptRemove(methodName, true);
 	}
 
 	/**
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertCascadeJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeAllExceptRemove(final String methodName, final boolean cleanup) {
+	public JstAssertCascadeJpaPO withCascadeAllExceptRemove(final String methodName, final boolean cleanup) {
 
 		this.cascadePersistList.add(methodName);
 		this.cascadeDoNotRemoveList.add(methodName);
@@ -170,9 +170,9 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	}
 
 	/**
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertCascadeJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeNone(final String methodName) {
+	public JstAssertCascadeJpaPO withCascadeNone(final String methodName) {
 
 		this.cascadeDoNotPersistList.add(methodName);
 		this.cascadeDoNotRemoveList.add(methodName);
@@ -181,9 +181,9 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	}
 
 	/**
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertCascadeJpaPO}
 	 */
-	public JstAssertJpaPO withCascadePersist(final String methodName, final boolean cleanup) {
+	public JstAssertCascadeJpaPO withCascadePersist(final String methodName, final boolean cleanup) {
 
 		this.cascadePersistList.add(methodName);
 
@@ -194,9 +194,9 @@ public class JstAssertJpaPO extends JstBaseTestingPO {
 	}
 
 	/**
-	 * @return {@link JstAssertJpaPO}
+	 * @return {@link JstAssertCascadeJpaPO}
 	 */
-	public JstAssertJpaPO withCascadeRemove(final String methodName, final boolean cleanup) {
+	public JstAssertCascadeJpaPO withCascadeRemove(final String methodName, final boolean cleanup) {
 
 		this.cascadeRemoveList.add(methodName);
 
