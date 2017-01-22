@@ -149,6 +149,24 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstNamedQueryJpaPO}
 	 */
+	public JstNamedQueryJpaPO withFirstResult(final int firstResult) {
+
+		this.firstResult = firstResult;
+		return this;
+	}
+
+	/**
+	 * @return {@link JstNamedQueryJpaPO}
+	 */
+	public JstNamedQueryJpaPO withMaxResults(final int maxResults) {
+
+		this.maxResults = maxResults;
+		return this;
+	}
+
+	/**
+	 * @return {@link JstNamedQueryJpaPO}
+	 */
 	public JstNamedQueryJpaPO withOrderedParameters(final Object... orderedParameters) {
 
 		this.orderedParameters = orderedParameters;

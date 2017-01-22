@@ -140,9 +140,9 @@ public enum AssertionsJPA {
 	}
 
 	public static void assertExistsInDatabaseWithEntityList(final String persistenceUnitName,
-			final List<Object> populatedEntityList) {
+			final List<Object> entityListContainingIdentities) {
 
-		assertExistsInDatabaseWithEntities(persistenceUnitName, populatedEntityList.toArray());
+		assertExistsInDatabaseWithEntities(persistenceUnitName, entityListContainingIdentities.toArray());
 		return;
 	}
 
