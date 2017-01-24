@@ -32,11 +32,14 @@ import javax.persistence.EntityManager;
 
 import org.junit.Assert;
 
-import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
+import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstAssertCascadeJpaPO;
+import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
+import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
 
 /**
  * This Assertions class provides convenience methods for assertion processing.
@@ -61,15 +64,16 @@ public enum AssertionsJPA {
 	/**
 	 * This method verifies cascade annotations.
 	 */
-	public static <PO extends JstAssertCascadeJpaPO> void assertCascadeTypes(final PO assertionsJpaCascadePO) {
+	@SuppressWarnings("unchecked")
+	public static <ENTITY, PO extends JstAssertCascadeJpaPO> ENTITY assertCascadeTypes(final PO assertionsCascadePO) {
 
-		AssertionsJPA.assertionsJpaCascadePO = assertionsJpaCascadePO;
+		AssertionsJPA.assertionsJpaCascadePO = assertionsCascadePO;
 
 		AssertionsJPA.entityManager = getEntityManager(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
 
 		try {
 
-			AssertionsJPA.parentEntity = createParentEntity();
+			createParentEntity();
 
 			verifyParentEntityPersisted();
 
@@ -88,13 +92,14 @@ public enum AssertionsJPA {
 		} catch (final Exception e) {
 
 			// Just in case we failed.
-			JstEntityManagerCacheHelper.removeEntity(AssertionsJPA.entityManager, AssertionsJPA.parentEntity);
+			JstTransactionUtilHelper.transactEntities(JstTransactionJpaPO.withException()
+					.withEntityManager(AssertionsJPA.entityManager).withDeleteEntities(AssertionsJPA.parentEntity));
 
 			if (e instanceof RuntimeException) {
 
 				throw (RuntimeException) e;
 			}
-			throw new TestingRuntimeException(e);
+			throw new JustifyRuntimeException(e);
 
 		} finally {
 
@@ -108,9 +113,10 @@ public enum AssertionsJPA {
 			} catch (final Exception e) {
 
 				AssertionsJPA.entityManager = null;
-				throw new TestingRuntimeException(e);
+				throw new JustifyRuntimeException(e);
 			}
 		}
+		return (ENTITY) AssertionsJPA.parentEntity;
 	}
 
 	public static void assertExistsInDatabaseWithEntities(final String persistenceUnitName,
@@ -280,27 +286,30 @@ public enum AssertionsJPA {
 	/**
 	 * @return {@link Object} representing entityIdentity.
 	 */
-	private static Object createParentEntity() {
+	private static void createParentEntity() {
 
 		Object parentEntity = null;
 
 		try {
-			parentEntity = JstEntityManagerCacheHelper.createOrUpdateEntity(AssertionsJPA.entityManager,
-					AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity());
 
-		} catch (@SuppressWarnings("unused") final Exception e) {
+			final JstTransactionJpaPO transactPO = JstTransactionJpaPO.withException()
+					.withEntityManager(AssertionsJPA.entityManager)
+					.withCreateAndUpdateEntities(AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity());
 
-			Assert.fail("The domain entity ["
-					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
-					+ "] could not be created by the assert method.");
+			parentEntity = JstTransactionJpaRM.transactEntities(transactPO).get(0);
+
+		} catch (final Exception e) {
+
+			throw new JustifyRuntimeException(e);
 
 		}
-		return parentEntity;
+		AssertionsJPA.parentEntity = parentEntity;
+		AssertionsJPA.assertionsJpaCascadePO.replacePopulatedEntity(parentEntity);
 	}
 
 	private static void deleteParentEntity() {
 
-		JstEntityManagerCacheHelper.findAndRemoveEntity(AssertionsJPA.entityManager, AssertionsJPA.parentEntity);
+		JstTransactionUtilHelper.findAndDeleteEntity(AssertionsJPA.entityManager, AssertionsJPA.parentEntity);
 		return;
 	}
 
@@ -315,7 +324,7 @@ public enum AssertionsJPA {
 		}
 
 		try {
-			JstEntityManagerCacheHelper.findAndRemoveEntity(AssertionsJPA.entityManager, AssertionsJPA.parentEntity,
+			JstTransactionUtilHelper.findAndDeleteRelatedEntity(AssertionsJPA.entityManager, AssertionsJPA.parentEntity,
 					methodNameDoNotRemove);
 		} catch (@SuppressWarnings("unused") final Exception e) {
 			// Ignore

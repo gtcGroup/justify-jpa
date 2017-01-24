@@ -28,7 +28,7 @@ package com.gtcgroup.justify.jpa.helper;
 
 import java.util.List;
 
-import com.gtcgroup.justify.core.base.JstBaseTestingClass;
+import com.gtcgroup.justify.core.base.JstBaseSuffix;
 
 /**
  * This Helper class provides support for creating test data.
@@ -41,10 +41,10 @@ import com.gtcgroup.justify.core.base.JstBaseTestingClass;
  * @author Marvin Toll
  * @since v3.0
  */
-public abstract class JstBaseDataPopulator extends JstBaseTestingClass {
+public abstract class JstBaseDataPopulator extends JstBaseSuffix {
 
 	/**
-	 * @see JstBaseTestingClass#assignPatternSuffixTM()
+	 * @see JstBaseSuffix#assignPatternSuffixTM()
 	 */
 	@Override
 	protected String assignPatternSuffixTM() {

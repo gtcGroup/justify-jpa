@@ -38,7 +38,7 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.DatabaseException;
 
-import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.po.JstCriteriaQueryJpaPO;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
@@ -166,7 +166,7 @@ public enum JstQueryUtilHelper {
 			entityList = query.getResultList();
 		} catch (final DatabaseException sqlException) {
 
-			throw new TestingRuntimeException(sqlException);
+			throw new JustifyRuntimeException(sqlException);
 
 		} finally {
 			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();

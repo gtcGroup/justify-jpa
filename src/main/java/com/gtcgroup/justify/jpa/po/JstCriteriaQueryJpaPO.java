@@ -31,7 +31,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
@@ -117,12 +117,12 @@ public class JstCriteriaQueryJpaPO extends BaseQueryJpaPO {
 				} else if (isResultClass()) {
 					this.query = createCriteriaQuery(getResultClass());
 				} else {
-					throw new TestingRuntimeException(
+					throw new JustifyRuntimeException(
 							"Verify that a coherent set of parameters were defined in the PO ["
 									+ this.getClass().getName() + "].");
 				}
 			} catch (final Exception e) {
-				throw new TestingRuntimeException(e);
+				throw new JustifyRuntimeException(e);
 			}
 		}
 		return this.query;

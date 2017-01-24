@@ -26,7 +26,7 @@
 
 package com.gtcgroup.justify.jpa.rm;
 
-import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
 
@@ -111,7 +111,7 @@ public enum JstFindJpaRM {
 				entity = findModifiable(findPO);
 			}
 		} catch (final Exception e) {
-			throw new TestingRuntimeException(e);
+			throw new JustifyRuntimeException(e);
 
 		} finally {
 
@@ -130,12 +130,12 @@ public enum JstFindJpaRM {
 
 			if (findPO.isEntityManager()) {
 
-				if (!findPO.isSuppressExceptionForNull()) {
-					throw new TestingRuntimeException(
+				if (!findPO.isSuppressException()) {
+					throw new JustifyRuntimeException(
 							"Unable to find an instance for class [" + findPO.getEntityClass().getSimpleName() + "].");
 				}
 			} else {
-				throw new TestingRuntimeException(
+				throw new JustifyRuntimeException(
 						"Unable to find an instance without an EntityManager being specified.");
 			}
 		}

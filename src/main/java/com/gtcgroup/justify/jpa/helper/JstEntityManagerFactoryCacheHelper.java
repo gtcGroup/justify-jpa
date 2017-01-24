@@ -35,7 +35,7 @@ import javax.persistence.Persistence;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
-import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 
 /**
  * This Helper class caches {@link EntityManagerFactory}s.
@@ -105,7 +105,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 
 			} catch (final Exception e) {
 
-				throw new TestingRuntimeException(e);
+				throw new JustifyRuntimeException(e);
 			}
 		}
 		return entityManagerFactoryKey;
@@ -190,7 +190,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 					.get(entityManagerFactoryKey);
 		} else {
 
-			throw new TestingRuntimeException(
+			throw new JustifyRuntimeException(
 					"The entity manager factory key [" + entityManagerFactoryKey + "] could not be resolved.");
 		}
 		return entityManagerFactory;

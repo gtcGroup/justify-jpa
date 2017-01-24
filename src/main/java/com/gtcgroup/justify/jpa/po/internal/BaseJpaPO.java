@@ -27,7 +27,7 @@ package com.gtcgroup.justify.jpa.po.internal;
 
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.core.base.JstBaseTestingPO;
+import com.gtcgroup.justify.core.base.JstBasePO;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 
 /**
@@ -41,7 +41,7 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
  * @author Marvin Toll
  * @since v.6.2
  */
-public abstract class BaseJpaPO extends JstBaseTestingPO {
+public abstract class BaseJpaPO extends JstBasePO {
 
 	protected boolean readOnly = true;
 
@@ -50,6 +50,17 @@ public abstract class BaseJpaPO extends JstBaseTestingPO {
 	protected EntityManager entityManager;
 
 	protected String persistenceUnitName;
+
+	/**
+	 * Constructor
+	 */
+	protected BaseJpaPO(final boolean suppressExceptionForNull) {
+
+		super();
+		this.readOnly = true;
+		this.suppressExceptionForNull = suppressExceptionForNull;
+		return;
+	}
 
 	/**
 	 * Constructor
@@ -99,7 +110,7 @@ public abstract class BaseJpaPO extends JstBaseTestingPO {
 	/**
 	 * @return boolean
 	 */
-	public boolean isSuppressExceptionForNull() {
+	public boolean isSuppressException() {
 		return this.suppressExceptionForNull;
 	}
 }

@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.gtcgroup.justify.core.base.JstBaseTestingPO;
+import com.gtcgroup.justify.core.base.JstBasePO;
 
 /**
  * This Parameter Object class supports testing of Domain Entity cascade types.
@@ -42,14 +42,15 @@ import com.gtcgroup.justify.core.base.JstBaseTestingPO;
  * @author Marvin Toll
  * @since v6.2
  */
-public class JstAssertCascadeJpaPO extends JstBaseTestingPO {
+public class JstAssertCascadeJpaPO extends JstBasePO {
 
 	/**
 	 * This method initializes the class.
 	 *
 	 * @return {@link JstAssertCascadeJpaPO}
 	 */
-	public static JstAssertCascadeJpaPO withPopulatedEntity(final String persistenceUnitName, final Object populatedEntity) {
+	public static JstAssertCascadeJpaPO withPopulatedEntity(final String persistenceUnitName,
+			final Object populatedEntity) {
 
 		return new JstAssertCascadeJpaPO(persistenceUnitName, populatedEntity);
 	}
@@ -133,6 +134,13 @@ public class JstAssertCascadeJpaPO extends JstBaseTestingPO {
 	public Object getPopulatedEntity() {
 
 		return this.populatedEntity;
+	}
+
+	/**
+	 * This method is used to replace merged version of the populated entity.
+	 */
+	public void replacePopulatedEntity(final Object populatedEntity) {
+		this.populatedEntity = populatedEntity;
 	}
 
 	/**

@@ -25,13 +25,10 @@
  */
 package com.gtcgroup.justify.jpa.rm;
 
-import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
-import com.gtcgroup.justify.core.base.JstBaseTestingRM;
-import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
+import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
+import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 
 /**
  * This Resource Manager provides convenience methods for transactions.
@@ -44,77 +41,20 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
  * @author Marvin Toll
  * @since v3.0
  */
-public class JstTransactionJpaRM extends JstBaseTestingRM {
+public enum JstTransactionJpaRM {
 
-	private final EntityManager entityManager;
-
-	/**
-	 * Constructor
-	 */
-	public JstTransactionJpaRM(final EntityManager entityManager) {
-		super();
-		this.entityManager = entityManager;
-	}
+	@SuppressWarnings("javadoc")
+	INTERNAL;
 
 	/**
 	 * This method is typically used for committing. If any of the related
 	 * children in the object graph are not marked for cascading then they need
 	 * to be explicitly processed.
+	 *
+	 * @return {@link List}
 	 */
-	public <ENTITY> void transactCreateOrUpdateEntity(final ENTITY entity) {
+	public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> transactEntities(final PO transactionPO) {
 
-		JstEntityManagerCacheHelper.createOrUpdateEntity(this.entityManager, entity);
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> void transactCreateOrUpdateFromArray(final Object... entities) {
-
-		JstEntityManagerCacheHelper.createOrUpdateEntities(this.entityManager, (List<ENTITY>) Arrays.asList(entities));
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	public <ENTITY> void transactCreateOrUpdateFromList(final List<ENTITY> entityList) {
-
-		JstEntityManagerCacheHelper.createOrUpdateEntities(this.entityManager, entityList);
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	public <ENTITY> void transactDeleteEntities(final List<ENTITY> entityList) {
-
-		JstEntityManagerCacheHelper.removeEntities(this.entityManager, entityList);
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> void transactDeleteEntities(final Object... entities) {
-
-		JstEntityManagerCacheHelper.removeEntities(this.entityManager, (List<ENTITY>) Arrays.asList(entities));
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	public <ENTITY> void transactDeleteEntity(final ENTITY entity) {
-
-		JstEntityManagerCacheHelper.removeEntity(this.entityManager, entity);
+		return JstTransactionUtilHelper.transactEntities(transactionPO);
 	}
 }

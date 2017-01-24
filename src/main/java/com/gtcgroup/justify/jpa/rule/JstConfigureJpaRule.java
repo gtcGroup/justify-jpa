@@ -37,12 +37,13 @@ import javax.persistence.EntityManagerFactory;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
-import com.gtcgroup.justify.core.base.JstBaseTestingRule;
+import com.gtcgroup.justify.core.base.JstBaseRule;
+import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.core.exception.internal.TestingConstructorRuleException;
-import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
+import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
 
 /**
@@ -56,7 +57,7 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
  * @author Marvin Toll
  * @since v3.0
  */
-public class JstConfigureJpaRule extends JstBaseTestingRule {
+public class JstConfigureJpaRule extends JstBaseRule {
 
 	protected static List<Class<?>> DATA_POPULATOR_ALREADY_PROCESSED_LIST = new ArrayList<Class<?>>();
 
@@ -155,7 +156,7 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 	}
 
 	/**
-	 * @see JstBaseTestingRule#afterTM()
+	 * @see JstBaseRule#afterTM()
 	 */
 	@Override
 	public void afterTM() throws Throwable {
@@ -164,7 +165,7 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 	}
 
 	/**
-	 * @see JstBaseTestingRule#beforeTM()
+	 * @see JstBaseRule#beforeTM()
 	 */
 	@Override
 	public void beforeTM() {
@@ -197,11 +198,12 @@ public class JstConfigureJpaRule extends JstBaseTestingRule {
 			entityManager = JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP.get(populatorClass.getName())
 					.createEntityManager();
 
-			new JstTransactionJpaRM(entityManager).transactCreateOrUpdateFromList(createList);
+			JstTransactionJpaRM.transactEntities(JstTransactionJpaPO.withException().withEntityManager(entityManager)
+					.withCreateAndUpdateList(createList));
 
 		} catch (final Exception e) {
 
-			throw new TestingRuntimeException(e);
+			throw new JustifyRuntimeException(e);
 		} finally {
 
 			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);

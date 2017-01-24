@@ -30,7 +30,7 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
-import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstCriteriaQueryJpaPO;
 
@@ -64,7 +64,7 @@ public enum JstCriteriaQueryJpaRM {
 			count = JstQueryUtilHelper.count(queryPO);
 		} catch (final Exception e) {
 
-			throw new TestingRuntimeException(e);
+			throw new JustifyRuntimeException(e);
 		}
 		return count;
 	}
@@ -99,8 +99,8 @@ public enum JstCriteriaQueryJpaRM {
 	 */
 	protected static void throwExceptionForNull(final JstCriteriaQueryJpaPO queryPO) {
 
-		if (!queryPO.isSuppressExceptionForNull()) {
-			throw new TestingRuntimeException("Unable to retrieve results for the criteria query.");
+		if (!queryPO.isSuppressException()) {
+			throw new JustifyRuntimeException("Unable to retrieve results for the criteria query.");
 		}
 	}
 

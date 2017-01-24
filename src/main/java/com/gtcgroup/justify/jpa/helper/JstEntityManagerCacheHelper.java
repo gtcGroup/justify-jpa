@@ -27,7 +27,6 @@ package com.gtcgroup.justify.jpa.helper;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.CacheRetrieveMode;
@@ -36,7 +35,7 @@ import javax.persistence.EntityManager;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
-import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 
 /**
@@ -94,47 +93,6 @@ public enum JstEntityManagerCacheHelper {
 	}
 
 	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	public static <ENTITY> void createOrUpdateEntities(final EntityManager entityManager,
-			final List<ENTITY> populatedEntityList) {
-
-		entityManager.getTransaction().begin();
-
-		for (final Object populatedEntity : populatedEntityList) {
-
-			entityManager.merge(populatedEntity);
-		}
-		entityManager.getTransaction().commit();
-		return;
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 *
-	 * @return {@link Object} representing the identity.
-	 */
-	public static <ENTITY> Object createOrUpdateEntity(final EntityManager entityManager,
-			final ENTITY populatedEntity) {
-
-		entityManager.getTransaction().begin();
-		ENTITY entityWithIdentity;
-		try {
-			entityWithIdentity = entityManager.merge(populatedEntity);
-		} catch (final Exception e) {
-			entityManager.getTransaction().rollback();
-			throw new TestingRuntimeException(e);
-		}
-		entityManager.getTransaction().commit();
-
-		return entityWithIdentity;
-	}
-
-	/**
 	 * This method removes the given entity from the persistence context,
 	 * causing a managed entity to become detached. Unflushed changes made to
 	 * the entity if any (final including removal of the entity), will not be
@@ -149,7 +107,7 @@ public enum JstEntityManagerCacheHelper {
 
 		} catch (final Exception e) {
 
-			throw new TestingRuntimeException(e);
+			throw new JustifyRuntimeException(e);
 		}
 		return;
 	}
@@ -172,7 +130,7 @@ public enum JstEntityManagerCacheHelper {
 			entityManager.getEntityManagerFactory().getCache().evict(populatedEntity.getClass(),
 					retrieveIdentity(entityManager, populatedEntity));
 		} catch (final Exception e) {
-			throw new TestingRuntimeException(e);
+			throw new JustifyRuntimeException(e);
 		}
 	}
 
@@ -291,7 +249,7 @@ public enum JstEntityManagerCacheHelper {
 			}
 		} catch (final Exception e) {
 
-			throw new TestingRuntimeException(e);
+			throw new JustifyRuntimeException(e);
 		}
 		return result;
 	}
@@ -330,7 +288,7 @@ public enum JstEntityManagerCacheHelper {
 			}
 		} catch (final Exception e) {
 
-			throw new TestingRuntimeException(e);
+			throw new JustifyRuntimeException(e);
 		}
 		return result;
 	}
@@ -359,7 +317,7 @@ public enum JstEntityManagerCacheHelper {
 
 		} catch (final Exception e) {
 
-			throw new TestingRuntimeException(e);
+			throw new JustifyRuntimeException(e);
 		}
 		return result;
 	}
@@ -389,47 +347,9 @@ public enum JstEntityManagerCacheHelper {
 
 		} catch (final Exception e) {
 
-			throw new TestingRuntimeException(e);
+			throw new JustifyRuntimeException(e);
 		}
 		return result;
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	public static <ENTITY> void findAndRemoveEntity(final EntityManager entityManager, final ENTITY entity) {
-
-		entityManager.getTransaction().begin();
-
-		final ENTITY mergedEntity = entityManager.merge(entity);
-		entityManager.remove(mergedEntity);
-
-		entityManager.getTransaction().commit();
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	public static <ENTITY> void findAndRemoveEntity(final EntityManager entityManager, final Object populatedEntity,
-			final String methodName) {
-
-		@SuppressWarnings("unchecked")
-		final ENTITY entity = (ENTITY) ReflectionUtilHelper.invokePublicMethod(methodName, populatedEntity);
-
-		if (null == entity) {
-			throw new TestingRuntimeException("The entity represented by the method [" + methodName
-					+ "] could not be found for deletion (removal).");
-		}
-
-		entityManager.getTransaction().begin();
-
-		entityManager.remove(entity);
-
-		entityManager.getTransaction().commit();
 	}
 
 	/**
@@ -461,7 +381,7 @@ public enum JstEntityManagerCacheHelper {
 		try {
 			return entityManager.find(entityClass, entityIdentity, JstEntityManagerCacheHelper.FIND_READ_ONLY);
 		} catch (final Exception e) {
-			throw new TestingRuntimeException(e);
+			throw new JustifyRuntimeException(e);
 		}
 	}
 
@@ -474,85 +394,6 @@ public enum JstEntityManagerCacheHelper {
 
 		return (ENTITY) entityManager.find(populatedEntity.getClass(), retrieveIdentity(entityManager, populatedEntity),
 				JstEntityManagerCacheHelper.FIND_READ_ONLY);
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	public static <ENTITY> void removeEntities(final EntityManager entityManager,
-			final List<ENTITY> populatedEntityList) {
-
-		entityManager.getTransaction().begin();
-
-		for (Object populatedEntity : populatedEntityList) {
-
-			populatedEntity = entityManager.merge(populatedEntity);
-			entityManager.remove(populatedEntity);
-		}
-		entityManager.getTransaction().commit();
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	public static <ENTITY> void removeEntity(final EntityManager entityManager, final Class<ENTITY> entityClass,
-			final Object entityIdentity) {
-
-		final ENTITY entity = entityManager.find(entityClass, entityIdentity);
-
-		if (null != entity) {
-			entityManager.getTransaction().begin();
-
-			final ENTITY mergedEntity = entityManager.merge(entity);
-			entityManager.remove(mergedEntity);
-
-			entityManager.getTransaction().commit();
-		}
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	public static <ENTITY> void removeEntity(final EntityManager entityManager, final ENTITY populatedEntity) {
-
-		entityManager.getTransaction().begin();
-
-		try {
-			final ENTITY mergedEntity = entityManager.merge(populatedEntity);
-			entityManager.remove(mergedEntity);
-		} catch (final Exception e) {
-
-			entityManager.getTransaction().rollback();
-			throw new TestingRuntimeException(e);
-		}
-
-		entityManager.getTransaction().commit();
-	}
-
-	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly included.
-	 */
-	public static <ENTITY> void removeEntity(final String persistenceUnitName, final Class<ENTITY> entityClass,
-			final Object entityIdentity) {
-
-		EntityManager entityManager = null;
-
-		try {
-			entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-
-			removeEntity(entityManager, entityClass, entityIdentity);
-
-		} finally {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-		}
 	}
 
 	/**

@@ -30,7 +30,7 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
-import com.gtcgroup.justify.core.exception.internal.TestingRuntimeException;
+import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstNamedQueryJpaPO;
 
@@ -101,8 +101,8 @@ public enum JstNamedQueryJpaRM {
 	 */
 	protected static void throwExceptionForNull(final JstNamedQueryJpaPO queryPO) {
 
-		if (!queryPO.isSuppressExceptionForNull()) {
-			throw new TestingRuntimeException(
+		if (!queryPO.isSuppressException()) {
+			throw new JustifyRuntimeException(
 					"Unable to retrieve results for the query [" + queryPO.getQueryName() + "].");
 		}
 	}
