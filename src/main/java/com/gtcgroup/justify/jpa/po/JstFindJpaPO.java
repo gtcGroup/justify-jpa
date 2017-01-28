@@ -135,6 +135,7 @@ public class JstFindJpaPO extends BaseJpaPO {
 
 		this.persistenceUnitName = persistenceUnitName;
 		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+		this.entityManagerFactoryKey = JstEntityManagerFactoryCacheHelper.formatKey(persistenceUnitName, null);
 
 		return this;
 	}

@@ -132,7 +132,8 @@ public enum JstFindJpaRM {
 
 				if (!findPO.isSuppressException()) {
 					throw new JustifyRuntimeException(
-							"Unable to find an instance for class [" + findPO.getEntityClass().getSimpleName() + "].");
+							"Unable to find an instance for class [" + findPO.getEntityClass().getSimpleName()
+									+ "] using the persistence key [" + findPO.getEntityManagerFactoryKey() + "].");
 				}
 			} else {
 				throw new JustifyRuntimeException(

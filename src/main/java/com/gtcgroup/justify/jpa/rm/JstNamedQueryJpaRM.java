@@ -102,8 +102,8 @@ public enum JstNamedQueryJpaRM {
 	protected static void throwExceptionForNull(final JstNamedQueryJpaPO queryPO) {
 
 		if (!queryPO.isSuppressException()) {
-			throw new JustifyRuntimeException(
-					"Unable to retrieve results for the query [" + queryPO.getQueryName() + "].");
+			throw new JustifyRuntimeException("Unable to retrieve results for the query [" + queryPO.getQueryName()
+					+ "] using the persistence key [" + queryPO.getEntityManagerFactoryKey() + "].");
 		}
 	}
 }

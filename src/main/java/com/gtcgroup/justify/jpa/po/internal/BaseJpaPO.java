@@ -51,6 +51,8 @@ public abstract class BaseJpaPO extends JstBasePO {
 
 	protected String persistenceUnitName;
 
+	protected String entityManagerFactoryKey;
+
 	/**
 	 * Constructor
 	 */
@@ -91,6 +93,13 @@ public abstract class BaseJpaPO extends JstBasePO {
 	 */
 	public EntityManager getEntityManager() {
 		return this.entityManager;
+	}
+
+	/**
+	 * @return {@link String}
+	 */
+	public String getEntityManagerFactoryKey() {
+		return this.entityManagerFactoryKey;
 	}
 
 	/**

@@ -100,7 +100,10 @@ public enum JstCriteriaQueryJpaRM {
 	protected static void throwExceptionForNull(final JstCriteriaQueryJpaPO queryPO) {
 
 		if (!queryPO.isSuppressException()) {
-			throw new JustifyRuntimeException("Unable to retrieve results for the criteria query.");
+			throw new JustifyRuntimeException(
+					"Unable to retrieve results for the criteria query using the persistence key ["
+							+ queryPO.getEntityManagerFactoryKey() + "].");
+
 		}
 	}
 

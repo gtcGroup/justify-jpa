@@ -38,7 +38,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 
 /**
- * This Helper class caches {@link EntityManagerFactory}s.
+ * This Helper class caches {@link EntityManagerFactory}.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
@@ -52,12 +52,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 
 	/** Instance */
 	INSTANCE;
-
-	/** Indicates that the URL is coming from the persistence.xml document. */
-	public static final String DEFAULT_JDBC_URL = "_defaultJdbcURL";
-
-	/** Key suffix for cached {@link EntityManagerFactory}. */
-	public static final String NO_PERSISTENCE_PROPERTY_MAP = "_noPersistencePropertyMap";
 
 	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new ConcurrentHashMap<String, EntityManagerFactory>();
 
@@ -86,15 +80,15 @@ public enum JstEntityManagerFactoryCacheHelper {
 	 * @return {@link String}
 	 */
 	public static String createEntityManagerFactory(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMapOrNull) {
+			final Map<String, Object> persistencePropertyMap) {
 
-		final String entityManagerFactoryKey = formatKey(persistenceUnitName, persistencePropertyMapOrNull);
+		final String entityManagerFactoryKey = formatKey(persistenceUnitName, persistencePropertyMap);
 
 		if (!JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(entityManagerFactoryKey)) {
 
 			try {
 				final EntityManagerFactory entityManagerFactory = Persistence
-						.createEntityManagerFactory(persistenceUnitName, persistencePropertyMapOrNull);
+						.createEntityManagerFactory(persistenceUnitName, persistencePropertyMap);
 
 				final EntityManager entityManager = entityManagerFactory.createEntityManager();
 				entityManager.setProperty(null, "toForceCompletingConfiguration");
@@ -116,8 +110,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 	 */
 	public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName) {
 
-		return retrieveEntityManagerFactory(persistenceUnitName + JstEntityManagerFactoryCacheHelper.DEFAULT_JDBC_URL)
-				.createEntityManager();
+		return createEntityManagerToBeClosed(persistenceUnitName, null);
 
 	}
 
@@ -125,9 +118,10 @@ public enum JstEntityManagerFactoryCacheHelper {
 	 * @return {@link EntityManager}
 	 */
 	public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMap) {
+			final Map<String, Object> persistencePropertyMapOrNull) {
 
-		return createEntityManagerToBeClosed(formatKey(persistenceUnitName, persistencePropertyMap));
+		return retrieveEntityManagerFactory(formatKey(persistenceUnitName, persistencePropertyMapOrNull))
+				.createEntityManager();
 
 	}
 
@@ -144,30 +138,22 @@ public enum JstEntityManagerFactoryCacheHelper {
 	/**
 	 * @return {@link String}
 	 */
-	private static String formatKey(final String persistenceUnitName,
+	public static String formatKey(final String persistenceUnitName,
 			final Map<String, Object> persistencePropertyMapOrNull) {
 
-		String key = persistenceUnitName;
+		String entityManagerFactoryKey = persistenceUnitName + ConstantstJPA.KEY_DELIMITER;
 
 		if (null == persistencePropertyMapOrNull
 				|| !persistencePropertyMapOrNull.containsKey(PersistenceUnitProperties.JDBC_URL)) {
 
-			key += JstEntityManagerFactoryCacheHelper.DEFAULT_JDBC_URL;
+			entityManagerFactoryKey += JstPersistenceDotXmlCacheHelper.retrievePersistenceDotXmlJdbcUrl();
 
 		} else {
 
-			key += "_" + persistencePropertyMapOrNull.get(PersistenceUnitProperties.JDBC_URL);
+			entityManagerFactoryKey += persistencePropertyMapOrNull.get(PersistenceUnitProperties.JDBC_URL);
 		}
 
-		return key;
-	}
-
-	/**
-	 * @return {@link EntityManagerFactory}
-	 */
-	public static EntityManagerFactory getCurrentEntityManagerFactory(final String persistenceUnitName) {
-
-		return JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(persistenceUnitName);
+		return entityManagerFactoryKey;
 	}
 
 	/**
@@ -178,21 +164,24 @@ public enum JstEntityManagerFactoryCacheHelper {
 	}
 
 	/**
+	 * @return {@link String}
+	 */
+	private static String parseKeyForPersistenceUnit(final String entityManagerFactoryKey) {
+
+		final String[] persistenceUnitName = entityManagerFactoryKey.split(ConstantstJPA.KEY_DELIMITER);
+
+		return persistenceUnitName[1];
+	}
+
+	/**
 	 * @return {@link EntityManagerFactory}
 	 */
 	public static EntityManagerFactory retrieveEntityManagerFactory(final String entityManagerFactoryKey) {
 
-		EntityManagerFactory entityManagerFactory = null;
+		if (!JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(entityManagerFactoryKey)) {
 
-		if (JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(entityManagerFactoryKey)) {
-
-			entityManagerFactory = JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP
-					.get(entityManagerFactoryKey);
-		} else {
-
-			throw new JustifyRuntimeException(
-					"The entity manager factory key [" + entityManagerFactoryKey + "] could not be resolved.");
+			createEntityManagerFactory(parseKeyForPersistenceUnit(entityManagerFactoryKey), null);
 		}
-		return entityManagerFactory;
+		return JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(entityManagerFactoryKey);
 	}
 }
