@@ -91,31 +91,11 @@ public enum AssertionsJPA {
 
 		} catch (final Exception e) {
 
-			// Just in case we failed.
-			JstTransactionUtilHelper.transactEntities(JstTransactionJpaPO.withException()
-					.withEntityManager(AssertionsJPA.entityManager).withDeleteEntities(AssertionsJPA.parentEntity));
-
-			if (e instanceof RuntimeException) {
-
-				throw (RuntimeException) e;
-			}
-			throw new JustifyRuntimeException(e);
+			catchBlock(e);
 
 		} finally {
 
-			try {
-
-				cleanupRemainingEntities();
-
-			} catch (final Exception e) {
-
-				throw new JustifyRuntimeException(e);
-
-			} finally {
-
-				closeEntityManager();
-				AssertionsJPA.entityManager = null;
-			}
+			finallyBlock();
 		}
 		return (ENTITY) AssertionsJPA.parentEntity;
 	}
@@ -249,13 +229,33 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	private static void cleanupRemainingEntities() {
+	private static void cascadeError() {
 
-		for (final String methodNameDoNotRemove : AssertionsJPA.assertionsJpaCascadePO.getCascadeDoNoRemovedList()) {
+		Assert.fail("A cascade error has occured for the domain entity ["
+				+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName() + "].\n\t\t"
+				+ "Check both the domain entity and the test Parameter Object to determine the source of the error.");
+	}
 
-			deleteRemainingEntities(methodNameDoNotRemove);
+	private static void catchBlock(final Exception e) {
+
+		try {
+			// Just in case we failed.
+			JstTransactionUtilHelper.transactEntities(JstTransactionJpaPO.withException()
+					.withEntityManager(AssertionsJPA.entityManager).withDeleteEntities(AssertionsJPA.parentEntity));
+		} catch (@SuppressWarnings("unused") final Exception ignore) {
+
+			if (e instanceof JustifyRuntimeException) {
+
+				throw (JustifyRuntimeException) e;
+			}
+			throw new JustifyRuntimeException(e);
 		}
-		return;
+
+		if (e instanceof JustifyRuntimeException) {
+
+			throw (JustifyRuntimeException) e;
+		}
+		throw new JustifyRuntimeException(e);
 	}
 
 	private static void closeEntityManager() {
@@ -307,23 +307,38 @@ public enum AssertionsJPA {
 		return;
 	}
 
-	private static void deleteRemainingEntities(final String methodNameDoNotRemove) {
+	private static void deleteRemainingEntities() {
 
-		for (final String methodNameDoNotCleanup : AssertionsJPA.assertionsJpaCascadePO.getDoNotCleanupList()) {
+		for (final String method : AssertionsJPA.assertionsJpaCascadePO.getAfterTheTestCleanupList()) {
 
-			if (methodNameDoNotRemove.equals(methodNameDoNotCleanup)) {
-
-				return;
+			try {
+				JstTransactionUtilHelper.findAndDeleteRelatedEntity(AssertionsJPA.entityManager,
+						AssertionsJPA.parentEntity, method);
+			} catch (@SuppressWarnings("unused") final Exception e) {
+				// Ignore
 			}
 		}
+	}
+
+	private static void finallyBlock() {
 
 		try {
-			JstTransactionUtilHelper.findAndDeleteRelatedEntity(AssertionsJPA.entityManager, AssertionsJPA.parentEntity,
-					methodNameDoNotRemove);
-		} catch (@SuppressWarnings("unused") final Exception e) {
-			// Ignore
-		}
 
+			deleteRemainingEntities();
+
+		} catch (final Exception e) {
+
+			if (e instanceof JustifyRuntimeException) {
+
+				throw (JustifyRuntimeException) e;
+			}
+			throw new JustifyRuntimeException(e);
+
+		} finally {
+
+			closeEntityManager();
+			AssertionsJPA.entityManager = null;
+		}
 	}
 
 	/**
@@ -380,7 +395,7 @@ public enum AssertionsJPA {
 	 */
 	private static void verifyCascadeEntitiesNotPersisted() throws ClassNotFoundException {
 
-		final Boolean result = isExists(AssertionsJPA.assertionsJpaCascadePO.getCascadeDoNotPersistList());
+		final Boolean result = isExists(AssertionsJPA.assertionsJpaCascadePO.getCascadeNoPersistList());
 
 		if (null != result && Boolean.TRUE == result) {
 
@@ -396,7 +411,7 @@ public enum AssertionsJPA {
 	 */
 	private static void verifyCascadeEntitiesNotRemoved() throws ClassNotFoundException {
 
-		final Boolean result = isExists(AssertionsJPA.assertionsJpaCascadePO.getCascadeDoNoRemovedList());
+		final Boolean result = isExists(AssertionsJPA.assertionsJpaCascadePO.getCascadeNoRemoveList());
 
 		if (null != result && Boolean.FALSE == result) {
 
@@ -414,9 +429,7 @@ public enum AssertionsJPA {
 
 		if (null != result && Boolean.FALSE == result) {
 
-			Assert.fail("Cascade type for domain entity ["
-					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
-					+ "] could not be created.");
+			cascadeError();
 		}
 		return;
 	}
@@ -430,9 +443,7 @@ public enum AssertionsJPA {
 
 		if (null != result && Boolean.FALSE == result) {
 
-			Assert.fail("Cascade type remove domain entities ["
-					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
-					+ "] were not available for deletion.");
+			cascadeError();
 		}
 		return;
 	}
@@ -442,9 +453,7 @@ public enum AssertionsJPA {
 		if (!JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
 				AssertionsJPA.parentEntity)) {
 
-			Assert.fail("Cascade type persist domain entities ["
-					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
-					+ "] could not be created.");
+			cascadeError();
 		}
 		return;
 	}
@@ -457,9 +466,7 @@ public enum AssertionsJPA {
 		if (null != JstEntityManagerUtilHelper.findReadOnlySingleOrNull(AssertionsJPA.entityManager,
 				AssertionsJPA.parentEntity)) {
 
-			Assert.fail("Parent domain entity ["
-					+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName()
-					+ "] was not deleted.");
+			cascadeError();
 		}
 		return;
 	}

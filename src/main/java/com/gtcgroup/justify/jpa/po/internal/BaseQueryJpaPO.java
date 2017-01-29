@@ -71,9 +71,7 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 	/**
 	 * @return {@link Query}
 	 */
-	public Query getQuery() {
-		return this.query;
-	}
+	public abstract Query getQuery();
 
 	/**
 	 * @return boolean

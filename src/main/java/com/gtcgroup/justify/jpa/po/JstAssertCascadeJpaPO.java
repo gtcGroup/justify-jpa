@@ -63,11 +63,11 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 
 	private final List<String> cascadeRemoveList = new ArrayList<String>();
 
-	private final List<String> cascadeDoNotPersistList = new ArrayList<String>();
+	private final List<String> cascadeNoPersistList = new ArrayList<String>();
 
-	private final List<String> cascadeDoNotRemoveList = new ArrayList<String>();
+	private final List<String> cascadeNoRemoveList = new ArrayList<String>();
 
-	private final List<String> doNotCleanupList = new ArrayList<String>();
+	private final List<String> afterTheTestCleanupList = new ArrayList<String>();
 
 	/**
 	 * Constructor
@@ -85,16 +85,23 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	/**
 	 * @return {@link List}
 	 */
-	public List<String> getCascadeDoNoRemovedList() {
+	public List<String> getAfterTheTestCleanupList() {
+		return this.afterTheTestCleanupList;
+	}
 
-		return this.cascadeDoNotRemoveList;
+	/**
+	 * @return {@link List}
+	 */
+	public List<String> getCascadeNoRemoveList() {
+
+		return this.cascadeNoRemoveList;
 	}
 
 	/**
 	 * @return {@link Map}
 	 */
-	public List<String> getCascadeDoNotPersistList() {
-		return this.cascadeDoNotPersistList;
+	public List<String> getCascadeNoPersistList() {
+		return this.cascadeNoPersistList;
 	}
 
 	/**
@@ -111,13 +118,6 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	public List<String> getCascadeRemoveList() {
 
 		return this.cascadeRemoveList;
-	}
-
-	/**
-	 * @return {@link List}
-	 */
-	public List<String> getDoNotCleanupList() {
-		return this.doNotCleanupList;
 	}
 
 	/**
@@ -148,20 +148,8 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	 */
 	public JstAssertCascadeJpaPO withCascadeAll(final String methodName) {
 
-		return withCascadeAll(methodName, true);
-	}
-
-	/**
-	 * @return {@link JstAssertCascadeJpaPO}
-	 */
-	public JstAssertCascadeJpaPO withCascadeAll(final String methodName, final boolean cleanup) {
-
 		this.cascadePersistList.add(methodName);
 		this.cascadeRemoveList.add(methodName);
-
-		if (!cleanup) {
-			this.doNotCleanupList.add(methodName);
-		}
 
 		return this;
 	}
@@ -171,20 +159,8 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	 */
 	public JstAssertCascadeJpaPO withCascadeAllExceptRemove(final String methodName) {
 
-		return withCascadeAllExceptRemove(methodName, true);
-	}
-
-	/**
-	 * @return {@link JstAssertCascadeJpaPO}
-	 */
-	public JstAssertCascadeJpaPO withCascadeAllExceptRemove(final String methodName, final boolean cleanup) {
-
 		this.cascadePersistList.add(methodName);
-		this.cascadeDoNotRemoveList.add(methodName);
-
-		if (!cleanup) {
-			this.doNotCleanupList.add(methodName);
-		}
+		this.cascadeNoRemoveList.add(methodName);
 
 		return this;
 	}
@@ -194,8 +170,8 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	 */
 	public JstAssertCascadeJpaPO withCascadeNone(final String methodName) {
 
-		this.cascadeDoNotPersistList.add(methodName);
-		this.cascadeDoNotRemoveList.add(methodName);
+		this.cascadeNoPersistList.add(methodName);
+		this.cascadeNoRemoveList.add(methodName);
 
 		return this;
 	}
@@ -214,19 +190,19 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	 */
 	public JstAssertCascadeJpaPO withCascadeRemove(final String methodName) {
 
-		return withCascadeRemove(methodName, true);
+		this.cascadeRemoveList.add(methodName);
+		return this;
 	}
 
 	/**
 	 * @return {@link JstAssertCascadeJpaPO}
 	 */
-	public JstAssertCascadeJpaPO withCascadeRemove(final String methodName, final boolean cleanup) {
+	public JstAssertCascadeJpaPO withCleanupAfterTheTest(final String... methodNames) {
 
-		this.cascadeRemoveList.add(methodName);
-
-		if (!cleanup) {
-			this.doNotCleanupList.add(methodName);
+		for (final String methodName : methodNames) {
+			this.afterTheTestCleanupList.add(methodName);
 		}
+
 		return this;
 	}
 }
