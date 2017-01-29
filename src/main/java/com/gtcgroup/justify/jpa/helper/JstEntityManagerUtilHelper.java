@@ -1,7 +1,7 @@
 /*
  * [Licensed per the Open Source "MIT License".]
  *
- * Copyright (c) 2006 - 2016 by
+ * Copyright (c) 2006 - 2017 by
  * Global Technology Consulting Group, Inc. at
  * http://gtcGroup.com
  *
@@ -25,7 +25,6 @@
  */
 package com.gtcgroup.justify.jpa.helper;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,20 +35,19 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 
 /**
  * This Util Helper class provides persistence {@link EntityManager} support.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
+ * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstEntityManagerCacheHelper {
+public enum JstEntityManagerUtilHelper {
 
 	@SuppressWarnings("javadoc")
 	INSTANCE;
@@ -71,15 +69,15 @@ public enum JstEntityManagerCacheHelper {
 
 	static {
 
-		JstEntityManagerCacheHelper.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
+		JstEntityManagerUtilHelper.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
 
-		JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE,
+		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE,
 				CacheRetrieveMode.BYPASS);
 
-		JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.CACHE_RETRIEVE_MODE,
+		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.CACHE_RETRIEVE_MODE,
 				CacheRetrieveMode.BYPASS);
 
-		JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
+		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
 	}
 
 	/**
@@ -156,7 +154,7 @@ public enum JstEntityManagerCacheHelper {
 		for (final Object entityIdentity : entityIdentities) {
 
 			result = entityManager.find(entityClass, entityIdentity,
-					JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+					JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
 			if (null != result) {
 				evictEntityInstanceFromSharedCache(entityManager, result);
@@ -181,7 +179,7 @@ public enum JstEntityManagerCacheHelper {
 			for (final Object entityIdentity : entityIdentities) {
 
 				result = entityManager.find(entityClass, entityIdentity,
-						JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+						JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
 				if (null == result) {
 					return false;
@@ -212,7 +210,7 @@ public enum JstEntityManagerCacheHelper {
 
 				result = entityManager.find(populatedEntity.getClass(),
 						retrieveIdentity(entityManager, populatedEntity),
-						JstEntityManagerCacheHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+						JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
 				if (null == result) {
 					return false;
@@ -379,7 +377,7 @@ public enum JstEntityManagerCacheHelper {
 			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
 		try {
-			return entityManager.find(entityClass, entityIdentity, JstEntityManagerCacheHelper.FIND_READ_ONLY);
+			return entityManager.find(entityClass, entityIdentity, JstEntityManagerUtilHelper.FIND_READ_ONLY);
 		} catch (final Exception e) {
 			throw new JustifyRuntimeException(e);
 		}
@@ -393,7 +391,7 @@ public enum JstEntityManagerCacheHelper {
 			final Object populatedEntity) {
 
 		return (ENTITY) entityManager.find(populatedEntity.getClass(), retrieveIdentity(entityManager, populatedEntity),
-				JstEntityManagerCacheHelper.FIND_READ_ONLY);
+				JstEntityManagerUtilHelper.FIND_READ_ONLY);
 	}
 
 	/**
@@ -402,16 +400,5 @@ public enum JstEntityManagerCacheHelper {
 	public static Object retrieveIdentity(final EntityManager entityManager, final Object populatedEntity) {
 
 		return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(populatedEntity);
-	}
-
-	/**
-	 * @return Object
-	 */
-	public static Object retrieveIdentity(final EntityManager entityManager, final Object entity,
-			final String fieldName) {
-
-		final Field field = ReflectionUtilHelper.retrieveFieldWithDirectAccess(entity, fieldName);
-
-		return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(field);
 	}
 }

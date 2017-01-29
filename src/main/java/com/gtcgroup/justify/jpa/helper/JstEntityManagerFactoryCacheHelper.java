@@ -1,7 +1,7 @@
 /*
  * [Licensed per the Open Source "MIT License".]
  *
- * Copyright (c) 2006 - 2016 by
+ * Copyright (c) 2006 - 2017 by
  * Global Technology Consulting Group, Inc. at
  * http://gtcGroup.com
  *
@@ -41,7 +41,7 @@ import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
  * This Helper class caches {@link EntityManagerFactory}.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
+ * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
@@ -59,10 +59,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 	 * This method closes the {@link EntityManager}.
 	 */
 	public static void closeEntityManager(final EntityManager entityManager) {
-
-		if (null == entityManager) {
-			return;
-		}
 
 		if (entityManager.isOpen()) {
 
@@ -170,7 +166,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 
 		final String[] persistenceUnitName = entityManagerFactoryKey.split(ConstantstJPA.KEY_DELIMITER);
 
-		return persistenceUnitName[1];
+		return persistenceUnitName[0];
 	}
 
 	/**

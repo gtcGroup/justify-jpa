@@ -1,7 +1,7 @@
 /*
  * [Licensed per the Open Source "MIT License".]
  *
- * Copyright (c) 2006 - 2016 by
+ * Copyright (c) 2006 - 2017 by
  * Global Technology Consulting Group, Inc. at
  * http://gtcGroup.com
  *
@@ -34,8 +34,8 @@ import org.junit.Assert;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
-import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstAssertCascadeJpaPO;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
@@ -45,7 +45,7 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
  * This Assertions class provides convenience methods for assertion processing.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
+ * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
@@ -107,13 +107,14 @@ public enum AssertionsJPA {
 
 				cleanupRemainingEntities();
 
-				closeEntityManager();
-				AssertionsJPA.entityManager = null;
-
 			} catch (final Exception e) {
 
-				AssertionsJPA.entityManager = null;
 				throw new JustifyRuntimeException(e);
+
+			} finally {
+
+				closeEntityManager();
+				AssertionsJPA.entityManager = null;
 			}
 		}
 		return (ENTITY) AssertionsJPA.parentEntity;
@@ -124,7 +125,7 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (!JstEntityManagerCacheHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
+		if (!JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
 				populatedEntities)) {
 
 			Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null, "database"));
@@ -137,7 +138,7 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (!JstEntityManagerCacheHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
+		if (!JstEntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
 				entityIdentities)) {
 
 			Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass, "database"));
@@ -159,7 +160,7 @@ public enum AssertionsJPA {
 
 		for (final ENTITY entity : entityList) {
 
-			if (JstEntityManagerCacheHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager,
+			if (JstEntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager,
 					entity.getClass(), entityIdentity)) {
 
 				// Found our target!
@@ -175,7 +176,7 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (!JstEntityManagerCacheHelper.existsInPersistenceContextWithManagedEntities(AssertionsJPA.entityManager,
+		if (!JstEntityManagerUtilHelper.existsInPersistenceContextWithManagedEntities(AssertionsJPA.entityManager,
 				managedEntities)) {
 
 			Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null, "persistence context"));
@@ -188,7 +189,7 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (!JstEntityManagerCacheHelper.existsInSharedCacheWithPopulatedEntities(AssertionsJPA.entityManager,
+		if (!JstEntityManagerUtilHelper.existsInSharedCacheWithPopulatedEntities(AssertionsJPA.entityManager,
 				managedEntities)) {
 
 			Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null, "shared cache"));
@@ -201,7 +202,7 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (!JstEntityManagerCacheHelper.existsInSharedCacheWithEntityIdentities(AssertionsJPA.entityManager,
+		if (!JstEntityManagerUtilHelper.existsInSharedCacheWithEntityIdentities(AssertionsJPA.entityManager,
 				entityClass, entityIdentities)) {
 
 			Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null, "shared cache"));
@@ -214,7 +215,7 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (JstEntityManagerCacheHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
+		if (JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
 				populatedEntities)) {
 
 			Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null, "database"));
@@ -227,7 +228,7 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (JstEntityManagerCacheHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
+		if (JstEntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
 				entityIdentities)) {
 
 			Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, entityClass, "database"));
@@ -240,7 +241,7 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (JstEntityManagerCacheHelper.existsInPersistenceContextWithManagedEntities(AssertionsJPA.entityManager,
+		if (JstEntityManagerUtilHelper.existsInPersistenceContextWithManagedEntities(AssertionsJPA.entityManager,
 				managedEntities)) {
 
 			Assert.fail(createEntityShouldExistsMessage(persistenceUnitName, null, "persistence context"));
@@ -290,19 +291,12 @@ public enum AssertionsJPA {
 
 		Object parentEntity = null;
 
-		try {
+		final JstTransactionJpaPO transactPO = JstTransactionJpaPO.withException()
+				.withEntityManager(AssertionsJPA.entityManager)
+				.withCreateAndUpdateEntities(AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity());
 
-			final JstTransactionJpaPO transactPO = JstTransactionJpaPO.withException()
-					.withEntityManager(AssertionsJPA.entityManager)
-					.withCreateAndUpdateEntities(AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity());
+		parentEntity = JstTransactionJpaRM.transactEntities(transactPO).get(0);
 
-			parentEntity = JstTransactionJpaRM.transactEntities(transactPO).get(0);
-
-		} catch (final Exception e) {
-
-			throw new JustifyRuntimeException(e);
-
-		}
 		AssertionsJPA.parentEntity = parentEntity;
 		AssertionsJPA.assertionsJpaCascadePO.replacePopulatedEntity(parentEntity);
 	}
@@ -354,7 +348,7 @@ public enum AssertionsJPA {
 
 			final Object entity = ReflectionUtilHelper.invokePublicMethod(methodName, AssertionsJPA.parentEntity);
 
-			if (!JstEntityManagerCacheHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
+			if (!JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
 					entity)) {
 
 				return Boolean.FALSE;
@@ -372,8 +366,7 @@ public enum AssertionsJPA {
 
 			final Object entity = ReflectionUtilHelper.invokePublicMethod(methodName, AssertionsJPA.parentEntity);
 
-			if (JstEntityManagerCacheHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
-					entity)) {
+			if (JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager, entity)) {
 
 				return Boolean.FALSE;
 			}
@@ -446,7 +439,7 @@ public enum AssertionsJPA {
 
 	private static void verifyParentEntityPersisted() {
 
-		if (!JstEntityManagerCacheHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
+		if (!JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
 				AssertionsJPA.parentEntity)) {
 
 			Assert.fail("Cascade type persist domain entities ["
@@ -461,7 +454,7 @@ public enum AssertionsJPA {
 	 */
 	private static void verifyParentEntityRemoved() throws ClassNotFoundException {
 
-		if (null != JstEntityManagerCacheHelper.findReadOnlySingleOrNull(AssertionsJPA.entityManager,
+		if (null != JstEntityManagerUtilHelper.findReadOnlySingleOrNull(AssertionsJPA.entityManager,
 				AssertionsJPA.parentEntity)) {
 
 			Assert.fail("Parent domain entity ["

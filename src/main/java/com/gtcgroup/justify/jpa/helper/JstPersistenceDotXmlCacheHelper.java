@@ -1,7 +1,7 @@
 /*
  * [Licensed per the Open Source "MIT License".]
  *
- * Copyright (c) 2006 - 2016 by
+ * Copyright (c) 2006 - 2017 by
  * Global Technology Consulting Group, Inc. at
  * http://gtcGroup.com
  *
@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.w3c.dom.Document;
@@ -44,7 +45,7 @@ import com.gtcgroup.justify.core.po.internal.StreamPO;
  * This Helper class caches the persistence.xml file.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
+ * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
@@ -56,20 +57,19 @@ public enum JstPersistenceDotXmlCacheHelper {
 	@SuppressWarnings("javadoc")
 	INTERNAL;
 
-	@SuppressWarnings("javadoc")
-	public static final String PERSISTENCE_DOT_XML = "META-INF/persistence.xml";
-
 	private static String JDBC_URL = null;
 
 	/**
 	 * This method loads the properties into cache.
 	 */
-	public static void loadPersistenceProperties() {
+	public static void loadPersistenceProperties(final String resourceName) {
 
-		final StreamPO streamPO = ReflectionUtilHelper
-				.getResourceAsStream(JstPersistenceDotXmlCacheHelper.PERSISTENCE_DOT_XML, false);
+		JstPersistenceDotXmlCacheHelper.JDBC_URL = null;
+		StreamPO streamPO = null;
 
 		try {
+
+			streamPO = ReflectionUtilHelper.getResourceAsStream(resourceName, false);
 
 			final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			final DocumentBuilder builder = factory.newDocumentBuilder();
@@ -78,25 +78,33 @@ public enum JstPersistenceDotXmlCacheHelper {
 
 			final NodeList nodeList = document.getElementsByTagName("property");
 
-			for (int i = 0; i < nodeList.getLength(); i++) {
-
-				final Node node = nodeList.item(i);
-
-				if (PersistenceUnitProperties.JDBC_URL
-						.equals(node.getAttributes().getNamedItem("name").getNodeValue())) {
-
-					JstPersistenceDotXmlCacheHelper.JDBC_URL = node.getAttributes().getNamedItem("value")
-							.getNodeValue();
-					break;
-				}
-
-			}
+			processNodeList(nodeList);
 
 		} catch (final Exception e) {
 
 			throw new JustifyRuntimeException(e);
 		} finally {
-			streamPO.closeInputStream();
+			if (null != streamPO) {
+				streamPO.closeInputStream();
+			}
+		}
+	}
+
+	private static void processNodeList(final NodeList nodeList) throws ParserConfigurationException {
+
+		if (0 == nodeList.getLength()) {
+			throw new ParserConfigurationException("There are no persistence properties found in this file.");
+		}
+
+		for (int i = 0; i < nodeList.getLength(); i++) {
+
+			final Node node = nodeList.item(i);
+
+			if (PersistenceUnitProperties.JDBC_URL.equals(node.getAttributes().getNamedItem("name").getNodeValue())) {
+
+				JstPersistenceDotXmlCacheHelper.JDBC_URL = node.getAttributes().getNamedItem("value").getNodeValue();
+				break;
+			}
 		}
 	}
 

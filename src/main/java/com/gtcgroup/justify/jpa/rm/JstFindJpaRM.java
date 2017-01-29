@@ -1,7 +1,7 @@
 /*
  * [Licensed per the Open Source "MIT License".]
  *
- * Copyright (c) 2006 - 2016 by
+ * Copyright (c) 2006 - 2017 by
  * Global Technology Consulting Group, Inc. at
  * http://gtcGroup.com
  *
@@ -27,14 +27,14 @@
 package com.gtcgroup.justify.jpa.rm;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
 
 /**
  * This Resource Manager provides convenience methods for find operations.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
+ * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
@@ -69,12 +69,12 @@ public enum JstFindJpaRM {
 		ENTITY entity;
 		if (findPO.isPopulatedEntityContainingIdentity()) {
 
-			entity = (ENTITY) JstEntityManagerCacheHelper.findModifiableSingleOrNull(findPO.getEntityManager(),
+			entity = (ENTITY) JstEntityManagerUtilHelper.findModifiableSingleOrNull(findPO.getEntityManager(),
 					findPO.getPopulatedEntityContainingIdentity());
 
 		} else {
 
-			entity = (ENTITY) JstEntityManagerCacheHelper.findModifiableSingleOrNull(findPO.getEntityManager(),
+			entity = (ENTITY) JstEntityManagerUtilHelper.findModifiableSingleOrNull(findPO.getEntityManager(),
 					findPO.getEntityClass(), findPO.getEntityIdentity());
 		}
 		return entity;
@@ -86,12 +86,12 @@ public enum JstFindJpaRM {
 		ENTITY entity;
 		if (findPO.isPopulatedEntityContainingIdentity()) {
 
-			entity = (ENTITY) JstEntityManagerCacheHelper.findReadOnlySingleOrNull(findPO.getEntityManager(),
+			entity = (ENTITY) JstEntityManagerUtilHelper.findReadOnlySingleOrNull(findPO.getEntityManager(),
 					findPO.getPopulatedEntityContainingIdentity());
 
 		} else {
 
-			entity = (ENTITY) JstEntityManagerCacheHelper.findReadOnlySingleOrNull(findPO.getEntityManager(),
+			entity = (ENTITY) JstEntityManagerUtilHelper.findReadOnlySingleOrNull(findPO.getEntityManager(),
 					findPO.getEntityClass(), findPO.getEntityIdentity());
 		}
 		return entity;

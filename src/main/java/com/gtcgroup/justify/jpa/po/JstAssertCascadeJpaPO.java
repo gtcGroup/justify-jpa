@@ -1,7 +1,7 @@
 /*
  * [Licensed per the Open Source "MIT License".]
  *
- * Copyright (c) 2006 - 2016 by
+ * Copyright (c) 2006 - 2017 by
  * Global Technology Consulting Group, Inc. at
  * http://gtcGroup.com
  *
@@ -35,7 +35,7 @@ import com.gtcgroup.justify.core.base.JstBasePO;
  * This Parameter Object class supports testing of Domain Entity cascade types.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2016 by Global Technology Consulting Group, Inc. at
+ * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
@@ -148,8 +148,20 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	 */
 	public JstAssertCascadeJpaPO withCascadeAll(final String methodName) {
 
+		return withCascadeAll(methodName, true);
+	}
+
+	/**
+	 * @return {@link JstAssertCascadeJpaPO}
+	 */
+	public JstAssertCascadeJpaPO withCascadeAll(final String methodName, final boolean cleanup) {
+
 		this.cascadePersistList.add(methodName);
 		this.cascadeRemoveList.add(methodName);
+
+		if (!cleanup) {
+			this.doNotCleanupList.add(methodName);
+		}
 
 		return this;
 	}
@@ -191,14 +203,18 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	/**
 	 * @return {@link JstAssertCascadeJpaPO}
 	 */
-	public JstAssertCascadeJpaPO withCascadePersist(final String methodName, final boolean cleanup) {
+	public JstAssertCascadeJpaPO withCascadePersist(final String methodName) {
 
 		this.cascadePersistList.add(methodName);
-
-		if (!cleanup) {
-			this.doNotCleanupList.add(methodName);
-		}
 		return this;
+	}
+
+	/**
+	 * @return {@link JstAssertCascadeJpaPO}
+	 */
+	public JstAssertCascadeJpaPO withCascadeRemove(final String methodName) {
+
+		return withCascadeRemove(methodName, true);
 	}
 
 	/**
