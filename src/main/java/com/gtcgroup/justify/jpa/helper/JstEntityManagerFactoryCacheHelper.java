@@ -60,12 +60,14 @@ public enum JstEntityManagerFactoryCacheHelper {
 	 */
 	public static void closeEntityManager(final EntityManager entityManager) {
 
-		if (entityManager.isOpen()) {
+		if (null != entityManager) {
 
-			entityManager.clear();
-			entityManager.close();
+			if (entityManager.isOpen()) {
+
+				entityManager.clear();
+				entityManager.close();
+			}
 		}
-
 		return;
 	}
 
@@ -122,16 +124,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 	}
 
 	/**
-	 * @return {@link EntityManager}
-	 */
-	public static EntityManager createEntityManagerToBeClosedWithEntityManagerFactoryKey(
-			final String entityManagerFactoryKey) {
-
-		return retrieveEntityManagerFactory(entityManagerFactoryKey).createEntityManager();
-
-	}
-
-	/**
 	 * @return {@link String}
 	 */
 	public static String formatKey(final String persistenceUnitName,
@@ -150,13 +142,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 		}
 
 		return entityManagerFactoryKey;
-	}
-
-	/**
-	 * @return {@link Map}<String,EntityManagerFactory>
-	 */
-	public static Map<String, EntityManagerFactory> getEntityManagerFactoryMap() {
-		return JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP;
 	}
 
 	/**

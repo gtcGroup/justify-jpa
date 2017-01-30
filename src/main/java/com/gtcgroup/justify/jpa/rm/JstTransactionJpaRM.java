@@ -27,6 +27,8 @@ package com.gtcgroup.justify.jpa.rm;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
+
 import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 
@@ -47,9 +49,10 @@ public enum JstTransactionJpaRM {
 	INTERNAL;
 
 	/**
-	 * This method is typically used for committing. If any of the related
-	 * children in the object graph are not marked for cascading then they need
-	 * to be explicitly processed.
+	 * This method is used for committing a single transaction. If any of the
+	 * related child objects are not marked for an applicable
+	 * {@link CascadeType} then they need to be explicitly in the
+	 * {@link JstTransactionJpaPO}.d.
 	 *
 	 * @return {@link List}
 	 */
@@ -57,4 +60,18 @@ public enum JstTransactionJpaRM {
 
 		return JstTransactionUtilHelper.transactEntities(transactionPO);
 	}
+
+	/**
+	 * This method is used for committing a single transaction. If any of the
+	 * related child objects are not marked for an applicable
+	 * {@link CascadeType} then they need to be explicitly in the
+	 * {@link JstTransactionJpaPO}.
+	 *
+	 * @return {@link Object}
+	 */
+	public static <ENTITY, PO extends JstTransactionJpaPO> ENTITY transactEntity(final PO transactionPO) {
+
+		return JstTransactionUtilHelper.transactEntity(transactionPO);
+	}
+
 }

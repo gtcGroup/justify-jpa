@@ -174,21 +174,14 @@ public enum JstEntityManagerUtilHelper {
 
 		Object result;
 
-		try {
+		for (final Object entityIdentity : entityIdentities) {
 
-			for (final Object entityIdentity : entityIdentities) {
+			result = entityManager.find(entityClass, entityIdentity,
+					JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
 
-				result = entityManager.find(entityClass, entityIdentity,
-						JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
-
-				if (null == result) {
-					return false;
-				}
+			if (null == result) {
+				return false;
 			}
-
-		} catch (@SuppressWarnings("unused") final Exception e) {
-
-			return false;
 		}
 		return true;
 	}

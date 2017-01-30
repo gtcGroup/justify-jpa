@@ -59,11 +59,15 @@ public enum JstTransactionUtilHelper {
 	public static <ENTITY> void findAndDeleteEntity(final EntityManager entityManager,
 			final ENTITY entityWithIdentity) {
 
+		ENTITY entity = JstEntityManagerUtilHelper.findReadOnlySingleOrNull(entityManager, entityWithIdentity);
+
+		if (null == entity) {
+			return;
+		}
+
 		entityManager.getTransaction().begin();
-
-		final ENTITY mergedEntity = entityManager.merge(entityWithIdentity);
-		entityManager.remove(mergedEntity);
-
+		entity = entityManager.merge(entity);
+		entityManager.remove(entity);
 		entityManager.getTransaction().commit();
 	}
 
@@ -94,18 +98,14 @@ public enum JstTransactionUtilHelper {
 					+ "] could not be found for deletion (removal).");
 		}
 
-		entityManager.getTransaction().begin();
-
-		entityManager.remove(entity);
-
-		entityManager.getTransaction().commit();
+		findAndDeleteEntity(entityManager, entity);
 	}
 
 	/**
 	 * @return {@link List}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> mergeEntities(final PO transactionPO) {
+	private static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> mergeEntities(final PO transactionPO) {
 
 		final List<ENTITY> entityMergeList = new ArrayList<ENTITY>();
 
@@ -122,7 +122,7 @@ public enum JstTransactionUtilHelper {
 	/**
 	 * This method deletes entities.
 	 */
-	public static <PO extends JstTransactionJpaPO> void removeEntities(final PO transactionPO) {
+	private static <PO extends JstTransactionJpaPO> void removeEntities(final PO transactionPO) {
 
 		if (transactionPO.isEntityDelete()) {
 
@@ -140,6 +140,8 @@ public enum JstTransactionUtilHelper {
 	 * related child objects are not marked for an applicable
 	 * {@link CascadeType} then they need to be explicitly in the
 	 * {@link JstTransactionJpaPO}.
+	 *
+	 * @return {@link List}
 	 */
 	public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> transactEntities(final PO transactionPO) {
 
@@ -164,6 +166,20 @@ public enum JstTransactionUtilHelper {
 			transactionPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
 		}
 		return entityMergeList;
+	}
+
+	/**
+	 * This method is used for committing a single transaction. If any of the
+	 * related child objects are not marked for an applicable
+	 * {@link CascadeType} then they need to be explicitly in the
+	 * {@link JstTransactionJpaPO}.
+	 *
+	 * @return {@link Object}
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ENTITY, PO extends JstTransactionJpaPO> ENTITY transactEntity(final PO transactionPO) {
+
+		return (ENTITY) transactEntities(transactionPO).get(0);
 	}
 
 }

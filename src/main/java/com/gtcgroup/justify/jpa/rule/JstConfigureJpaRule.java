@@ -41,7 +41,6 @@ import com.gtcgroup.justify.core.base.JstBaseRule;
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.core.exception.internal.TestingConstructorRuleException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
-import com.gtcgroup.justify.core.rule.JstConfigureUserIdRule;
 import com.gtcgroup.justify.jpa.helper.ConstantstJPA;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
@@ -67,16 +66,6 @@ public class JstConfigureJpaRule extends JstBaseRule {
 	private static Map<String, Class<?>> DATA_POPULATOR_TO_BE_PROCESSED_MAP = new LinkedHashMap<String, Class<?>>();
 
 	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new LinkedHashMap<String, EntityManagerFactory>();
-
-	/**
-	 * @return {@link TestRule}
-	 */
-	@SuppressWarnings("unchecked")
-	protected static <RULE extends TestRule, SUBCLASS extends JstConfigureUserIdRule> RULE decorateSubClassInstance(
-			final SUBCLASS subClassInstance) {
-
-		return (RULE) subClassInstance;
-	}
 
 	private static String formatCacheKey(final String entityManagerFactoryKey, final String dataPopulatorName) {
 
@@ -146,10 +135,17 @@ public class JstConfigureJpaRule extends JstBaseRule {
 
 		EntityManager entityManager = null;
 
-		try {
+		JstBaseDataPopulator dataPopulator;
 
-			final JstBaseDataPopulator dataPopulator = (JstBaseDataPopulator) ReflectionUtilHelper
+		try {
+			dataPopulator = (JstBaseDataPopulator) ReflectionUtilHelper
 					.instantiatePublicConstructorNoArgument(populatorClass);
+		} catch (final Exception e) {
+			JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_MAP.remove(cacheKey);
+			throw (JustifyRuntimeException) e;
+		}
+
+		try {
 
 			final List<Object> createList = dataPopulator.populateCreateListTM(this.persistenceUnitName);
 
@@ -158,9 +154,6 @@ public class JstConfigureJpaRule extends JstBaseRule {
 			JstTransactionJpaRM.transactEntities(JstTransactionJpaPO.withException().withEntityManager(entityManager)
 					.withCreateAndUpdateList(createList));
 
-		} catch (final Exception e) {
-
-			throw new JustifyRuntimeException(e);
 		} finally {
 
 			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
@@ -175,30 +168,25 @@ public class JstConfigureJpaRule extends JstBaseRule {
 
 		this.dataPopulatorSubmitted = true;
 
-		if (0 != dataPopulators.length) {
+		for (final Class<?> dataPopulator : dataPopulators) {
 
-			for (final Class<?> dataPopulator : dataPopulators) {
+			final String entityManagerFactoryKey = JstEntityManagerFactoryCacheHelper
+					.createEntityManagerFactory(this.persistenceUnitName, this.persistencePropertyMapOrNull);
 
-				final String entityManagerFactoryKey = JstEntityManagerFactoryCacheHelper
-						.createEntityManagerFactory(this.persistenceUnitName, this.persistencePropertyMapOrNull);
+			if (!JstConfigureJpaRule.DATA_POPULATOR_ALREADY_PROCESSED_LIST.contains(dataPopulator)) {
 
-				if (!JstConfigureJpaRule.DATA_POPULATOR_ALREADY_PROCESSED_LIST.contains(dataPopulator)) {
+				if (JstBaseDataPopulator.class.isAssignableFrom(dataPopulator)) {
 
-					if (JstBaseDataPopulator.class.isAssignableFrom(dataPopulator)) {
+					JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP.put(
+							formatCacheKey(entityManagerFactoryKey, dataPopulator.getName()),
+							JstEntityManagerFactoryCacheHelper.retrieveEntityManagerFactory(entityManagerFactoryKey));
+				} else {
 
-						JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP.put(
-								formatCacheKey(entityManagerFactoryKey, dataPopulator.getName()),
-								JstEntityManagerFactoryCacheHelper
-										.retrieveEntityManagerFactory(entityManagerFactoryKey));
-					} else {
-
-						throw new TestingConstructorRuleException("\nThe class [" + dataPopulator.getSimpleName()
-								+ "] does not appear to extend a base class for populating persistence test data.\n");
-					}
-					JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_MAP.put(
-							entityManagerFactoryKey + ConstantstJPA.KEY_DELIMITER + dataPopulator.getName(),
-							dataPopulator);
+					throw new TestingConstructorRuleException("\nThe class [" + dataPopulator.getSimpleName()
+							+ "] does not appear to extend a base class for populating persistence test data.\n");
 				}
+				JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_MAP.put(
+						entityManagerFactoryKey + ConstantstJPA.KEY_DELIMITER + dataPopulator.getName(), dataPopulator);
 			}
 		}
 		return (RULE) this;
