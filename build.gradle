@@ -1,0 +1,113 @@
+/*
+ * [Licensed per the Open Source "MIT License".]
+ *
+ * Copyright (c) 2006 - 2017 by
+ * Global Technology Consulting Group, Inc. at
+ * http://gtcGroup.com
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+ * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+def javaVersion = JavaVersion.VERSION_1_6;
+sourceCompatibility = javaVersion;
+targetCompatibility = javaVersion;
+
+repositories {
+
+    jcenter()
+}
+
+dependencies {
+
+    compile project(':justify-core')
+    compile 'org.assertj:assertj-core:1.7.1'
+    compile 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.4.2'
+}
+
+//task javadocJar(type: Jar) {
+//    classifier = 'javadoc'
+//    from javadoc
+//}
+//
+//task sourcesJar(type: Jar) {
+//    classifier = 'sources'
+//    from sourceSets.main.allSource
+//}
+//
+//signing {
+//    sign configurations.archives
+//}
+//
+//group = "com.gtcgroup"
+//archivesBaseName = "justify-core"
+//version = "6.2.0"
+//
+//artifacts {
+//    archives javadocJar, sourcesJar
+//}
+//
+//uploadArchives {
+//  repositories {
+//    mavenDeployer {
+//      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+//
+//      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+//        authentication(userName: ossrhUsername, password: ossrhPassword)
+//      }
+//
+//      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+//        authentication(userName: ossrhUsername, password: ossrhPassword)
+//      }
+//
+//      pom.project {
+//        name 'Justify Core'
+//        packaging 'jar'
+//
+//        description 'CORE MODULE: Justify supports JUnit testing with "real" (functionally equivalent) services, relegating mocks to the role of servicing reluctant collaborators.'
+//        url 'http://pedCentral.com/justify'
+//
+//        scm {
+//          connection 'scm:git:https://github.com/gtcGroup/justify-core'
+//          developerConnection 'scm:git:git@github.com:gtcGroup/justify-core.git'
+//          url 'git@github.com:gtcGroup/justify-core.git'
+//        }
+//
+//        licenses {
+//          license {
+//            name 'The MIT License'
+//            url 'http://pedcentral.com/justify/justify-license/'
+//          }
+//        }
+//
+//        developers {
+//          developer {
+//            id 'MarvinToll'
+//            name 'Marvin Toll'
+//            email 'MarvinToll@gtcGroup.com'
+//          }
+//        }
+//      }
+//    }
+//  }
+//}
