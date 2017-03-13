@@ -43,103 +43,92 @@ import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
  */
 public enum JstFindJpaRM {
 
-	@SuppressWarnings("javadoc")
-	INTERNAL;
+    @SuppressWarnings("javadoc")
+    INTERNAL;
 
-	/**
-	 * @return {@link Object}
-	 */
-	@SuppressWarnings("unchecked")
-	public static <ENTITY> ENTITY find(final JstFindJpaPO findPO) {
+    /**
+     * @return {@link Object}
+     */
+    @SuppressWarnings("unchecked")
+    public static <ENTITY> ENTITY find(final JstFindJpaPO findPO) {
 
-		Object entity = null;
+        final Object entity = findWithEntityManager(findPO);
 
-		if (findPO.isEntityManager()) {
+        return (ENTITY)throwExceptionIfNull(findPO, entity);
+    }
 
-			entity = findWithEntityManager(findPO);
+    @SuppressWarnings("unchecked")
+    protected static <ENTITY> ENTITY findModifiable(final JstFindJpaPO findPO) {
 
-		}
+        ENTITY entity;
+        if (findPO.isPopulatedEntityContainingIdentity()) {
 
-		return (ENTITY) throwExceptionForNull(findPO, entity);
-	}
+            entity = (ENTITY)JstEntityManagerUtilHelper.findModifiableSingleOrNull(findPO.getEntityManager(),
+                findPO.getPopulatedEntityContainingIdentity());
 
-	@SuppressWarnings("unchecked")
-	protected static <ENTITY> ENTITY findModifiable(final JstFindJpaPO findPO) {
+        } else {
 
-		ENTITY entity;
-		if (findPO.isPopulatedEntityContainingIdentity()) {
+            entity = (ENTITY)JstEntityManagerUtilHelper.findModifiableSingleOrNull(findPO.getEntityManager(),
+                findPO.getEntityClass(), findPO.getEntityIdentity());
+        }
+        return entity;
+    }
 
-			entity = (ENTITY) JstEntityManagerUtilHelper.findModifiableSingleOrNull(findPO.getEntityManager(),
-					findPO.getPopulatedEntityContainingIdentity());
+    @SuppressWarnings("unchecked")
+    protected static <ENTITY> ENTITY findReadOnly(final JstFindJpaPO findPO) {
 
-		} else {
+        ENTITY entity;
+        if (findPO.isPopulatedEntityContainingIdentity()) {
 
-			entity = (ENTITY) JstEntityManagerUtilHelper.findModifiableSingleOrNull(findPO.getEntityManager(),
-					findPO.getEntityClass(), findPO.getEntityIdentity());
-		}
-		return entity;
-	}
+            entity = (ENTITY)JstEntityManagerUtilHelper.findReadOnlySingleOrNull(findPO.getEntityManager(),
+                findPO.getPopulatedEntityContainingIdentity());
 
-	@SuppressWarnings("unchecked")
-	protected static <ENTITY> ENTITY findReadOnly(final JstFindJpaPO findPO) {
+        } else {
 
-		ENTITY entity;
-		if (findPO.isPopulatedEntityContainingIdentity()) {
+            entity = (ENTITY)JstEntityManagerUtilHelper.findReadOnlySingleOrNull(findPO.getEntityManager(),
+                findPO.getEntityClass(), findPO.getEntityIdentity());
+        }
+        return entity;
+    }
 
-			entity = (ENTITY) JstEntityManagerUtilHelper.findReadOnlySingleOrNull(findPO.getEntityManager(),
-					findPO.getPopulatedEntityContainingIdentity());
+    protected static <ENTITY> ENTITY findWithEntityManager(final JstFindJpaPO findPO) {
 
-		} else {
+        ENTITY entity = null;
 
-			entity = (ENTITY) JstEntityManagerUtilHelper.findReadOnlySingleOrNull(findPO.getEntityManager(),
-					findPO.getEntityClass(), findPO.getEntityIdentity());
-		}
-		return entity;
-	}
+        try {
+            if (findPO.isReadOnly()) {
 
-	protected static <ENTITY> ENTITY findWithEntityManager(final JstFindJpaPO findPO) {
+                entity = findReadOnly(findPO);
 
-		ENTITY entity = null;
+            } else {
 
-		try {
-			if (findPO.isReadOnly()) {
+                entity = findModifiable(findPO);
+            }
+        } catch (final Exception e) {
+            throw new JustifyRuntimeException(e);
 
-				entity = findReadOnly(findPO);
+        } finally {
 
-			} else {
+            findPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+        }
 
-				entity = findModifiable(findPO);
-			}
-		} catch (final Exception e) {
-			throw new JustifyRuntimeException(e);
+        return entity;
+    }
 
-		} finally {
+    /**
+     * @return ENTITY
+     */
+    protected static <ENTITY> ENTITY throwExceptionIfNull(final JstFindJpaPO findPO, final ENTITY entity) {
 
-			findPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-		}
+        if (!findPO.isSuppressException()) {
 
-		return entity;
-	}
+            if (null == entity) {
 
-	/**
-	 * @return ENTITY
-	 */
-	protected static <ENTITY> ENTITY throwExceptionForNull(final JstFindJpaPO findPO, final ENTITY entity) {
+                throw new JustifyRuntimeException(
+                    "Unable to find the instance pecified.");
 
-		if (null == entity) {
-
-			if (findPO.isEntityManager()) {
-
-				if (!findPO.isSuppressException()) {
-					throw new JustifyRuntimeException(
-							"Unable to find an instance for class [" + findPO.getEntityClass().getSimpleName()
-									+ "] using the persistence key [" + findPO.getEntityManagerFactoryKey() + "].");
-				}
-			} else {
-				throw new JustifyRuntimeException(
-						"Unable to find an instance without an EntityManager being specified.");
-			}
-		}
-		return entity;
-	}
+            }
+        }
+        return entity;
+    }
 }

@@ -25,9 +25,10 @@
  */
 package com.gtcgroup.justify.jpa.po;
 
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 
 /**
@@ -58,6 +59,8 @@ public class JstFindJpaPO extends BaseJpaPO {
 	private Object entityIdentity;
 
 	private Object populatedEntityContainingIdentity;
+
+
 
 	/**
 	 * Constructor
@@ -100,6 +103,7 @@ public class JstFindJpaPO extends BaseJpaPO {
 		return null != this.populatedEntityContainingIdentity;
 	}
 
+
 	/**
 	 * @return {@link JstFindJpaPO}
 	 */
@@ -120,25 +124,31 @@ public class JstFindJpaPO extends BaseJpaPO {
 	}
 
 	/**
-	 * @return {@link BaseJpaPO}
-	 */
+     * @return {@link JstFindJpaPO}
+     */
 	public JstFindJpaPO withEntityManager(final EntityManager entityManager) {
 
-		this.entityManager = entityManager;
+        super.entityManager = entityManager;
 		return this;
 	}
 
 	/**
-	 * @return {@link BaseJpaPO}
-	 */
+     * @return {@link JstFindJpaPO}
+     */
 	public JstFindJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		this.persistenceUnitName = persistenceUnitName;
-		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-		this.entityManagerFactoryKey = JstEntityManagerFactoryCacheHelper.formatKey(persistenceUnitName, null);
-
+        super.persistenceUnitName = persistenceUnitName;
 		return this;
 	}
+
+    /**
+     * @return {@link JstFindJpaPO}
+     */
+    public JstFindJpaPO withPersistencePropertyMap(final Map<String, Object> persistencePropertyMap) {
+
+        super.persistencePropertyMapOrNull = persistencePropertyMap;
+        return this;
+    }
 
 	/**
 	 * @return {@link JstFindJpaPO}

@@ -25,10 +25,13 @@
  */
 package com.gtcgroup.justify.jpa.po.internal;
 
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.base.JstBasePO;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
+import com.gtcgroup.justify.jpa.helper.internal.PersistenceKeyCacheHelper;
 
 /**
  * This Parameter Object base class supports query execution.
@@ -43,83 +46,110 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
  */
 public abstract class BaseJpaPO extends JstBasePO {
 
-	protected boolean readOnly = true;
+    protected boolean readOnly = true;
 
-	protected boolean suppressExceptionForNull = false;
+    protected boolean suppressExceptionForNull = false;
 
-	protected EntityManager entityManager;
+    protected EntityManager entityManager;
 
-	protected String persistenceUnitName;
+    protected boolean entityManagerNeedsToBeClosed = false;
 
-	protected String entityManagerFactoryKey;
+    protected String persistenceUnitName;
 
-	/**
-	 * Constructor
-	 */
-	protected BaseJpaPO(final boolean suppressExceptionForNull) {
+    protected String persistenceKey;
 
-		super();
-		this.readOnly = true;
-		this.suppressExceptionForNull = suppressExceptionForNull;
-		return;
-	}
+    protected Map<String, Object> persistencePropertyMapOrNull;
 
-	/**
-	 * Constructor
-	 */
-	protected BaseJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
+    /**
+     * Constructor
+     */
+    protected BaseJpaPO(final boolean suppressExceptionForNull) {
 
-		super();
-		this.readOnly = readOnly;
-		this.suppressExceptionForNull = suppressExceptionForNull;
-		return;
-	}
+        super();
+        this.readOnly = true;
+        this.suppressExceptionForNull = suppressExceptionForNull;
+        return;
+    }
 
-	/**
-	 * This method closes the {@link EntityManager} if the creation is
-	 * encapsulated within this PO.
-	 */
-	public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
+    /**
+     * Constructor
+     */
+    protected BaseJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
 
-		if (null != this.persistenceUnitName) {
-			if (null != this.entityManager) {
-				JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
-			}
-		}
-	}
+        super();
+        this.readOnly = readOnly;
+        this.suppressExceptionForNull = suppressExceptionForNull;
+        return;
+    }
 
-	/**
-	 * @return {@link EntityManager}
-	 */
-	public EntityManager getEntityManager() {
-		return this.entityManager;
-	}
+    /**
+     * This method closes the {@link EntityManager} if the creation is
+     * encapsulated within this PO.
+     */
+    public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
 
-	/**
-	 * @return {@link String}
-	 */
-	public String getEntityManagerFactoryKey() {
-		return this.entityManagerFactoryKey;
-	}
+        if (this.entityManagerNeedsToBeClosed) {
+            JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
+        }
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isEntityManager() {
-		return null != this.entityManager;
-	}
+    /**
+     * @return boolean
+     */
+    public boolean isPersistenceUnitName() {
+        return null != this.persistenceUnitName;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isReadOnly() {
-		return this.readOnly;
-	}
+    /**
+     * @return {@link EntityManager}
+     */
+    public EntityManager getEntityManager() {
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isSuppressException() {
-		return this.suppressExceptionForNull;
-	}
+        if (!isEntityManager()) {
+
+            this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName);
+            this.entityManagerNeedsToBeClosed = true;
+        }
+
+        return this.entityManager;
+    }
+
+    /**
+     * @return {@link String}
+     */
+    public String getPersistenceKey() {
+
+        if ((!isPersistenceKey()) && (isPersistenceUnitName())) {
+            this.persistenceKey = PersistenceKeyCacheHelper.retrievePersistenceKey(this.persistenceUnitName);
+        }
+        return this.persistenceKey;
+    }
+
+    /**
+     * @return boolean
+     */
+    public boolean isPersistenceKey() {
+        return null != this.persistenceKey;
+    }
+
+    /**
+     * @return boolean
+     */
+    protected boolean isEntityManager() {
+        return null != this.entityManager;
+    }
+
+    /**
+     * @return boolean
+     */
+    public boolean isReadOnly() {
+        return this.readOnly;
+    }
+
+    /**
+     * @return boolean
+     */
+    public boolean isSuppressException() {
+        return this.suppressExceptionForNull;
+    }
 }

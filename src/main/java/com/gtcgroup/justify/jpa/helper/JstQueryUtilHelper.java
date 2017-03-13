@@ -132,7 +132,8 @@ public enum JstQueryUtilHelper {
 	 *
 	 * @return {@link List}
 	 */
-	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
+    @SuppressWarnings("unchecked")
+    public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
 			final Map<String, Object> stringParameterMap) {
 
 		List<ENTITY> entityList = null;
@@ -154,7 +155,8 @@ public enum JstQueryUtilHelper {
 	 *
 	 * @return {@link List}
 	 */
-	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
+    @SuppressWarnings("unchecked")
+    public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
 			final Object... orderedParameters) {
 
 		List<ENTITY> entityList = null;

@@ -26,10 +26,8 @@
 package com.gtcgroup.justify.jpa.rule;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -39,12 +37,13 @@ import org.junit.rules.TestRule;
 
 import com.gtcgroup.justify.core.base.JstBaseRule;
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.core.exception.internal.TestingConstructorRuleException;
+import com.gtcgroup.justify.core.exception.internal.RuleException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.jpa.helper.ConstantstJPA;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.helper.JstPersistenceDotXmlCacheHelper;
+import com.gtcgroup.justify.jpa.helper.internal.JdbcUrlCacheHelper;
+import com.gtcgroup.justify.jpa.helper.internal.PersistenceKeyCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
 
@@ -61,151 +60,180 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
  */
 public class JstConfigureJpaRule extends JstBaseRule {
 
-	protected static List<Class<?>> DATA_POPULATOR_ALREADY_PROCESSED_LIST = new ArrayList<Class<?>>();
+    private static List<String> DATA_POPULATOR_ALREADY_PROCESSED_LIST = new ArrayList<String>();
 
-	private static Map<String, Class<?>> DATA_POPULATOR_TO_BE_PROCESSED_MAP = new LinkedHashMap<String, Class<?>>();
+    private static List<String> DATA_POPULATOR_TO_BE_PROCESSED_LIST = new ArrayList<String>();
 
-	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new LinkedHashMap<String, EntityManagerFactory>();
+    /**
+     * @return {@link TestRule}
+     */
+    @SuppressWarnings("unchecked")
+    public static <RULE extends JstConfigureJpaRule> RULE withPersistence(final String persistenceUnitName) {
 
-	private static String formatCacheKey(final String entityManagerFactoryKey, final String dataPopulatorName) {
+        return (RULE)new JstConfigureJpaRule(persistenceUnitName);
+    }
 
-		return entityManagerFactoryKey + ConstantstJPA.KEY_DELIMITER + dataPopulatorName;
+    /**
+     * @return {@link TestRule}
+     */
+    @SuppressWarnings("unchecked")
+    public static <RULE extends JstConfigureJpaRule> RULE withPersistence(final String persistenceUnitName,
+        final Map<String, Object> persistencePropertyMap) {
 
-	}
+        return (RULE)new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap);
+    }
 
-	/**
-	 * @return {@link TestRule}
-	 */
-	@SuppressWarnings("unchecked")
-	public static <RULE extends JstConfigureJpaRule> RULE withPersistenceUnitName(final String persistenceUnitName) {
+    protected String persistenceUnitName;
 
-		return (RULE) new JstConfigureJpaRule(persistenceUnitName);
-	}
+    protected Map<String, Object> persistencePropertyMapOrNull = null;
 
-	protected final String persistenceUnitName;
+    protected EntityManagerFactory entityManagerFactory;
 
-	protected Map<String, Object> persistencePropertyMapOrNull = null;
+    protected boolean dataPopulatorSubmitted = false;
 
-	protected EntityManagerFactory entityManagerFactory;
+    protected String persistenceKey;
 
-	protected boolean dataPopulatorSubmitted = false;
+    /**
+     * Constructor - protected
+     */
+    protected JstConfigureJpaRule(final String persistenceUnitName) {
 
-	/**
-	 * Constructor - protected
-	 */
-	protected JstConfigureJpaRule(final String persistenceUnitName) {
+        this(persistenceUnitName, null);
+    }
 
-		super();
+    /**
+     * Constructor - protected
+     */
+    protected JstConfigureJpaRule(final String persistenceUnitName, final Map<String, Object> persistencePropertyMap) {
 
-		this.persistenceUnitName = persistenceUnitName;
-		JstPersistenceDotXmlCacheHelper.loadPersistenceProperties(ConstantstJPA.PERSISTENCE_DOT_XML);
-	}
+        super();
 
-	/**
-	 * @see JstBaseRule#afterTM()
-	 */
-	@Override
-	public void afterTM() throws Throwable {
+        final String jdbcURL =
+            JdbcUrlCacheHelper.retrieveJdbcUrlOrNull(persistenceUnitName, persistencePropertyMap);
+        if (null == jdbcURL) {
+            throw new JustifyRuntimeException(
+                "A jdbc url using the persistence unit name [" + this.persistenceUnitName + "] could not be found.");
+        }
 
-		return;
-	}
+        JstEntityManagerFactoryCacheHelper.createEntityManagerFactory(persistenceUnitName, persistencePropertyMap);
 
-	/**
-	 * @see JstBaseRule#beforeTM()
-	 */
-	@Override
-	public void beforeTM() {
+        this.persistenceKey = PersistenceKeyCacheHelper.formatPersistenceKey(persistenceUnitName, jdbcURL);
+        this.persistenceUnitName = persistenceUnitName;
+    }
 
-		if (0 != JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_MAP.size()) {
+    /**
+     * @see JstBaseRule#afterTM()
+     */
+    @Override
+    public void afterTM() throws Throwable {
 
-			for (final Entry<String, Class<?>> entry : JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_MAP
-					.entrySet()) {
+        return;
+    }
 
-				final Class<?> populatorClass = entry.getValue();
+    /**
+     * @see JstBaseRule#beforeTM()
+     */
+    @Override
+    public void beforeTM() {
 
-				processDataPopulator(populatorClass, entry.getKey());
+        if (0 != JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_LIST.size()) {
 
-				JstConfigureJpaRule.DATA_POPULATOR_ALREADY_PROCESSED_LIST.add(populatorClass);
-			}
-		}
-		JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_MAP.clear();
-	}
+            for (final String listKey : JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_LIST) {
 
-	protected void processDataPopulator(final Class<?> populatorClass, final String cacheKey) {
+                final Class<?> dataPopulator = retrieveClassname(listKey);
 
-		EntityManager entityManager = null;
+                processDataPopulator(dataPopulator, listKey);
 
-		JstBaseDataPopulator dataPopulator;
+                JstConfigureJpaRule.DATA_POPULATOR_ALREADY_PROCESSED_LIST
+                    .add(listKey);
+            }
+        }
+        JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_LIST.clear();
+    }
 
-		try {
-			dataPopulator = (JstBaseDataPopulator) ReflectionUtilHelper
-					.instantiatePublicConstructorNoArgument(populatorClass);
-		} catch (final Exception e) {
-			JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_MAP.remove(cacheKey);
-			throw (JustifyRuntimeException) e;
-		}
+    protected void processDataPopulator(final Class<?> populatorClass, final String listKey) {
 
-		try {
+        EntityManager entityManager = null;
 
-			final List<Object> createList = dataPopulator.populateCreateListTM(this.persistenceUnitName);
+        JstBaseDataPopulator dataPopulator;
 
-			entityManager = JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP.get(cacheKey).createEntityManager();
+        try {
+            dataPopulator = (JstBaseDataPopulator)ReflectionUtilHelper
+                .instantiatePublicConstructorNoArgument(populatorClass);
+        } catch (final Exception e) {
+            JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_LIST.remove(formatListKey(populatorClass));
+            throw (JustifyRuntimeException)e;
+        }
 
-			JstTransactionJpaRM.transactEntities(JstTransactionJpaPO.withException().withEntityManager(entityManager)
-					.withCreateAndUpdateList(createList));
+        final List<Object> createList = dataPopulator.populateCreateListTM(retrievePersistenceUnitName(listKey));
 
-		} finally {
+        entityManager =
+            JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosedWithKey(retrievePersistenceKey(listKey));
 
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-		}
-	}
+        JstTransactionJpaRM.transactEntities(JstTransactionJpaPO.withException()
+            .withEntityManager(entityManager)
+            .withCreateAndUpdateList(createList));
 
-	/**
-	 * @return {@link TestRule}
-	 */
-	@SuppressWarnings("unchecked")
-	public <RULE extends JstConfigureJpaRule> RULE withDataPopulators(final Class<?>... dataPopulators) {
+        JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+    }
 
-		this.dataPopulatorSubmitted = true;
+    /**
+     * @return {@link TestRule}
+     */
+    @SuppressWarnings("unchecked")
+    public <RULE extends JstConfigureJpaRule> RULE withDataPopulators(final Class<?>... dataPopulators) {
 
-		for (final Class<?> dataPopulator : dataPopulators) {
+        this.dataPopulatorSubmitted = true;
 
-			final String entityManagerFactoryKey = JstEntityManagerFactoryCacheHelper
-					.createEntityManagerFactory(this.persistenceUnitName, this.persistencePropertyMapOrNull);
+        for (final Class<?> dataPopulator : dataPopulators) {
 
-			if (!JstConfigureJpaRule.DATA_POPULATOR_ALREADY_PROCESSED_LIST.contains(dataPopulator)) {
+            final String listKey = formatListKey(dataPopulator);
 
-				if (JstBaseDataPopulator.class.isAssignableFrom(dataPopulator)) {
+            if ((!JstConfigureJpaRule.DATA_POPULATOR_ALREADY_PROCESSED_LIST
+                .contains(listKey)) && (!DATA_POPULATOR_TO_BE_PROCESSED_LIST.contains(listKey))) {
 
-					JstConfigureJpaRule.ENTITY_MANAGER_FACTORY_MAP.put(
-							formatCacheKey(entityManagerFactoryKey, dataPopulator.getName()),
-							JstEntityManagerFactoryCacheHelper.retrieveEntityManagerFactory(entityManagerFactoryKey));
-				} else {
+                if (!JstBaseDataPopulator.class.isAssignableFrom(dataPopulator)) {
 
-					throw new TestingConstructorRuleException("\nThe class [" + dataPopulator.getSimpleName()
-							+ "] does not appear to extend a base class for populating persistence test data.\n");
-				}
-				JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_MAP.put(
-						entityManagerFactoryKey + ConstantstJPA.KEY_DELIMITER + dataPopulator.getName(), dataPopulator);
-			}
-		}
-		return (RULE) this;
-	}
+                    throw new RuleException("\nThe class [" + dataPopulator.getSimpleName()
+                        + "] does not appear to extend a base class for populating persistence test data.\n");
+                }
+                JstConfigureJpaRule.DATA_POPULATOR_TO_BE_PROCESSED_LIST.add(listKey);
+            }
+        }
+        return (RULE)this;
+    }
 
-	/**
-	 * @return {@link TestRule}
-	 */
-	@SuppressWarnings("unchecked")
-	public <RULE extends JstConfigureJpaRule> RULE withPersistencePropertyMap(
-			final Map<String, Object> persistencePropertyMap) {
+    protected String formatListKey(final Class<?> dataPopulator) {
 
-		if (this.dataPopulatorSubmitted) {
+        return this.persistenceKey + ConstantstJPA.KEY_DELIMITER + dataPopulator.getName();
+    }
 
-			throw new JustifyRuntimeException(
-					"A persistence property map, if used, must be defined PRIOR to populator processing.");
-		}
+    protected static Class<?> retrieveClassname(final String listKey) {
 
-		this.persistencePropertyMapOrNull = persistencePropertyMap;
-		return (RULE) this;
-	}
+        Class<?> dataPopulator;
+
+        final String[] stringArray = listKey.split(ConstantstJPA.KEY_DELIMITER);
+
+        try {
+            dataPopulator = Class.forName(stringArray[2]);
+        } catch (@SuppressWarnings("unused") final Exception e) {
+            throw new RuleException("Unable to retrieve classname from list key [" + listKey + "].");
+        }
+
+        return dataPopulator;
+    }
+
+    protected static String retrievePersistenceUnitName(final String listKey) {
+
+        final String[] stringArray = listKey.split(ConstantstJPA.KEY_DELIMITER);
+
+        return stringArray[0];
+    }
+
+    protected static String retrievePersistenceKey(final String listKey) {
+
+        final String[] stringArray = listKey.split(ConstantstJPA.KEY_DELIMITER);
+
+        return stringArray[0] + ConstantstJPA.KEY_DELIMITER + stringArray[1];
+    }
 }

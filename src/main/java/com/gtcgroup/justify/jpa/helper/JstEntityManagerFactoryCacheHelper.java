@@ -33,9 +33,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
+import com.gtcgroup.justify.jpa.helper.internal.JdbcUrlCacheHelper;
+import com.gtcgroup.justify.jpa.helper.internal.PersistenceKeyCacheHelper;
 
 /**
  * This Helper class caches {@link EntityManagerFactory}.
@@ -50,119 +50,109 @@ import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
  */
 public enum JstEntityManagerFactoryCacheHelper {
 
-	/** Instance */
-	INSTANCE;
+    /** Instance */
+    INSTANCE;
 
-	private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new ConcurrentHashMap<String, EntityManagerFactory>();
+    private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP =
+        new ConcurrentHashMap<String, EntityManagerFactory>();
 
-	/**
-	 * This method closes the {@link EntityManager}.
-	 */
-	public static void closeEntityManager(final EntityManager entityManager) {
+    /**
+     * This method closes the {@link EntityManager}.
+     */
+    public static void closeEntityManager(final EntityManager entityManager) {
 
-		if (null != entityManager) {
+        if (null != entityManager) {
 
-			if (entityManager.isOpen()) {
+            if (entityManager.isOpen()) {
 
-				entityManager.clear();
-				entityManager.close();
-			}
-		}
-		return;
-	}
+                entityManager.clear();
+                entityManager.close();
+            }
+        }
+        return;
+    }
 
-	/**
-	 * This method returns the entity manager factory key for use in subsequent
-	 * retrieval invocations.
-	 *
-	 * @return {@link String}
-	 */
-	public static String createEntityManagerFactory(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMap) {
+    /**
+     * This method returns the entity manager factory key for use in subsequent
+     * retrieval invocations.
+     *
+     * @return {@link String} Persistence key used to cache {@link EntityManagerFactory}.
+     */
+    public static String createEntityManagerFactory(final String persistenceUnitName,
+        final Map<String, Object> persistencePropertyMapOrNull) {
 
-		final String entityManagerFactoryKey = formatKey(persistenceUnitName, persistencePropertyMap);
+        String persistenceKey = null;
+        final String jdbcURL =
+            JdbcUrlCacheHelper.retrieveJdbcUrlOrNull(persistenceUnitName, persistencePropertyMapOrNull);
 
-		if (!JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(entityManagerFactoryKey)) {
+        if (null == jdbcURL) {
 
-			try {
-				final EntityManagerFactory entityManagerFactory = Persistence
-						.createEntityManagerFactory(persistenceUnitName, persistencePropertyMap);
+            throw new JustifyRuntimeException(
+                "A jdbc url was not found for persistence unit name [" + persistenceUnitName + "].");
+        }
 
-				final EntityManager entityManager = entityManagerFactory.createEntityManager();
-				entityManager.setProperty(null, "toForceCompletingConfiguration");
-				JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+        persistenceKey = PersistenceKeyCacheHelper.formatPersistenceKey(persistenceUnitName, jdbcURL);
 
-				JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(entityManagerFactoryKey,
-						entityManagerFactory);
+        createEntityManagerFactory(persistenceUnitName, persistencePropertyMapOrNull, persistenceKey);
 
-			} catch (final Exception e) {
+        return persistenceKey;
+    }
 
-				throw new JustifyRuntimeException(e);
-			}
-		}
-		return entityManagerFactoryKey;
-	}
+    private static String createEntityManagerFactory(final String persistenceUnitName,
+        final Map<String, Object> persistencePropertyMapOrNull, final String persistenceKey) {
 
-	/**
-	 * @return {@link EntityManager}
-	 */
-	public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName) {
+        if (ENTITY_MANAGER_FACTORY_MAP.containsKey(persistenceKey)) {
+            return persistenceKey;
+        }
 
-		return createEntityManagerToBeClosed(persistenceUnitName, null);
+        try {
+            final EntityManagerFactory entityManagerFactory = Persistence
+                .createEntityManagerFactory(persistenceUnitName, persistencePropertyMapOrNull);
 
-	}
+            final EntityManager entityManager = entityManagerFactory.createEntityManager();
+            entityManager.setProperty(null, "toForceCompletingConfiguration");
+            JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 
-	/**
-	 * @return {@link EntityManager}
-	 */
-	public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMapOrNull) {
+            JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceKey,
+                entityManagerFactory);
 
-		return retrieveEntityManagerFactory(formatKey(persistenceUnitName, persistencePropertyMapOrNull))
-				.createEntityManager();
+        } catch (final Exception e) {
 
-	}
+            throw new JustifyRuntimeException(e);
+        }
+        return persistenceKey;
+    }
 
-	/**
-	 * @return {@link String}
-	 */
-	public static String formatKey(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMapOrNull) {
+    /**
+     * @return {@link EntityManager}
+     */
+    public static EntityManager createEntityManagerToBeClosedWithKey(final String persistenceKey) {
 
-		String entityManagerFactoryKey = persistenceUnitName + ConstantstJPA.KEY_DELIMITER;
+        if (ENTITY_MANAGER_FACTORY_MAP.containsKey(persistenceKey)) {
+            return ENTITY_MANAGER_FACTORY_MAP.get(persistenceKey).createEntityManager();
+        }
+        throw new JustifyRuntimeException(
+            "An entity manager was not found for the persistence key [" + persistenceKey + "].");
+    }
 
-		if (null == persistencePropertyMapOrNull
-				|| !persistencePropertyMapOrNull.containsKey(PersistenceUnitProperties.JDBC_URL)) {
+    /**
+     * @return {@link EntityManager}
+     */
+    public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName) {
 
-			entityManagerFactoryKey += JstPersistenceDotXmlCacheHelper.retrievePersistenceDotXmlJdbcUrl();
+        return createEntityManagerToBeClosed(persistenceUnitName, null);
 
-		} else {
+    }
 
-			entityManagerFactoryKey += persistencePropertyMapOrNull.get(PersistenceUnitProperties.JDBC_URL);
-		}
+    /**
+     * @return {@link EntityManager}
+     */
+    public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName,
+        final Map<String, Object> persistencePropertyMapOrNull) {
 
-		return entityManagerFactoryKey;
-	}
+        final String persistenceKey = createEntityManagerFactory(persistenceUnitName, persistencePropertyMapOrNull);
 
-	/**
-	 * @return {@link String}
-	 */
-	private static String parseKeyForPersistenceUnit(final String entityManagerFactoryKey) {
+        return ENTITY_MANAGER_FACTORY_MAP.get(persistenceKey).createEntityManager();
 
-		final String[] persistenceUnitName = entityManagerFactoryKey.split(ConstantstJPA.KEY_DELIMITER);
-
-		return persistenceUnitName[0];
-	}
-
-	/**
-	 * @return {@link EntityManagerFactory}
-	 */
-	public static EntityManagerFactory retrieveEntityManagerFactory(final String entityManagerFactoryKey) {
-
-		if (!JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(entityManagerFactoryKey)) {
-
-			createEntityManagerFactory(parseKeyForPersistenceUnit(entityManagerFactoryKey), null);
-		}
-		return JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(entityManagerFactoryKey);
-	}
+    }
 }

@@ -103,7 +103,7 @@ public enum JstNamedQueryJpaRM {
 
 		if (!queryPO.isSuppressException()) {
 			throw new JustifyRuntimeException("Unable to retrieve results for the query [" + queryPO.getQueryName()
-					+ "] using the persistence key [" + queryPO.getEntityManagerFactoryKey() + "].");
+					+ "] using the persistence key [" + queryPO.getPersistenceKey() + "].");
 		}
 	}
 }
