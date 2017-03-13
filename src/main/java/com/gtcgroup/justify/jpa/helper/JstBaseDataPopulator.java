@@ -53,10 +53,11 @@ public abstract class JstBaseDataPopulator extends JstBaseSuffix {
 	}
 
 	/**
-	 * This method requires implementation of a Template Method.
-	 *
-	 * @return {@link List}
-	 */
+     * This template method enables the formation of a list of populated entities for
+     * subsequent database inserts by the Configure JPA Rule.
+     *
+     * @return {@link List}
+     */
 	public abstract List<Object> populateCreateListTM(String persistenceUnitName);
 
 }
