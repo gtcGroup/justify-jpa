@@ -32,7 +32,7 @@ import javax.persistence.NoResultException;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryLanguageJpaPO;
 
 /**
  * This Resource Manager provides convenience methods for named queries.
@@ -45,34 +45,15 @@ import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstCriteriaQueryJpaRM {
+public enum JstQueryLanguageQueryJpaRM {
 
 	@SuppressWarnings("javadoc")
 	INTERNAL;
 
 	/**
-	 * This method returns the number of records in the table or view. It may be
-	 * used in support of query processing.
-	 *
-	 * @return long
-	 */
-	public static long count(final JstFindAllJpaPO queryPO) {
-
-		long count = 0;
-
-		try {
-			count = JstQueryUtilHelper.count(queryPO);
-		} catch (final Exception e) {
-
-			throw new JustifyRuntimeException(e);
-		}
-		return count;
-	}
-
-	/**
 	 * @return {@link Object} or null or {@link Exception}
 	 */
-	public static <ENTITY> List<ENTITY> queryList(final JstFindAllJpaPO queryPO) {
+	public static <ENTITY> List<ENTITY> queryList(final JstQueryLanguageJpaPO queryPO) {
 
 		return JstQueryUtilHelper.queryResultList(queryPO);
 	}
@@ -80,7 +61,7 @@ public enum JstCriteriaQueryJpaRM {
 	/**
 	 * @return {@link Object} or null or {@link Exception}
 	 */
-	public static <ENTITY> ENTITY querySingle(final JstFindAllJpaPO queryPO) {
+	public static <ENTITY> ENTITY querySingle(final JstQueryLanguageJpaPO queryPO) {
 
 		ENTITY entity = null;
 
@@ -97,7 +78,7 @@ public enum JstCriteriaQueryJpaRM {
 	/**
 	 * This method handles exception suppression.
 	 */
-	protected static void throwExceptionForNull(final JstFindAllJpaPO queryPO) {
+	protected static void throwExceptionForNull(final JstQueryLanguageJpaPO queryPO) {
 
 		if (!queryPO.isSuppressException()) {
 			throw new JustifyRuntimeException(

@@ -39,7 +39,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.DatabaseException;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.jpa.po.JstCriteriaQueryJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -63,7 +63,7 @@ public enum JstQueryUtilHelper {
 	 *
 	 * @return long
 	 */
-	public static long count(final JstCriteriaQueryJpaPO queryPO) {
+	public static long count(final JstFindAllJpaPO queryPO) {
 
 		final CriteriaBuilder criteriaBuilder = queryPO.getEntityManager().getCriteriaBuilder();
 		final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -132,8 +132,7 @@ public enum JstQueryUtilHelper {
 	 *
 	 * @return {@link List}
 	 */
-    @SuppressWarnings("unchecked")
-    public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
+	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
 			final Map<String, Object> stringParameterMap) {
 
 		List<ENTITY> entityList = null;
@@ -155,8 +154,7 @@ public enum JstQueryUtilHelper {
 	 *
 	 * @return {@link List}
 	 */
-    @SuppressWarnings("unchecked")
-    public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
+	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
 			final Object... orderedParameters) {
 
 		List<ENTITY> entityList = null;

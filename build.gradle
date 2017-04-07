@@ -40,75 +40,75 @@ repositories {
 
 dependencies {
 
-    compile project(':justify-core')
-    //compile 'com.gtcgroup:justify-core:6.3.0' 
+    //compile project(':justify-core')
+    compile 'com.gtcgroup:justify-core:6.3.0' 
     compile 'org.assertj:assertj-core:1.7.1'
     compile 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.4.2'
 }
 
-//task javadocJar(type: Jar) {
-//    classifier = 'javadoc'
-//    from javadoc
-//}
-//
-//task sourcesJar(type: Jar) {
-//    classifier = 'sources'
-//    from sourceSets.main.allSource
-//}
-//
-//signing {
-//    sign configurations.archives
-//}
-//
-//group = "com.gtcgroup"
-//archivesBaseName = "justify-jpa"
-//version = "6.3.0"
-//
-//artifacts {
-//    archives javadocJar, sourcesJar
-//}
-//
-//uploadArchives {
-//  repositories {
-//    mavenDeployer {
-//      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-//
-//      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-//        authentication(userName: ossrhUsername, password: ossrhPassword)
-//      }
-//
-//      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-//        authentication(userName: ossrhUsername, password: ossrhPassword)
-//      }
-//
-//      pom.project {
-//        name 'Justify JPA'
-//        packaging 'jar'
-//
-//        description 'JPA MODULE: Justify supports JUnit testing with "real" (functionally equivalent) services, relegating mocks to the role of servicing reluctant collaborators.'
-//        url 'http://pedCentral.com/justify'
-//
-//        scm {
-//          connection 'scm:git:https://github.com/gtcGroup/justify-jpa'
-//          developerConnection 'scm:git:git@github.com:gtcGroup/justify-jpa.git'
-//          url 'git@github.com:gtcGroup/justify-jpa.git'
-//        }
-//
-//        licenses {
-//          license {
-//            name 'The MIT License'
-//            url 'http://pedcentral.com/justify/justify-license/'
-//          }
-//        }
-//
-//        developers {
-//          developer {
-//            id 'MarvinToll'
-//            name 'Marvin Toll'
-//            email 'MarvinToll@gtcGroup.com'
-//          }
-//        }
-//      }
-//    }
-//  }
-//}
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+signing {
+    sign configurations.archives
+}
+
+group = "com.gtcgroup"
+archivesBaseName = "justify-jpa"
+version = "6.3.0"
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      pom.project {
+        name 'Justify JPA'
+        packaging 'jar'
+
+        description 'JPA MODULE: Justify supports JUnit testing with "real" (functionally equivalent) services, relegating mocks to the role of servicing reluctant collaborators.'
+        url 'http://pedCentral.com/justify'
+
+        scm {
+          connection 'scm:git:https://github.com/gtcGroup/justify-jpa'
+          developerConnection 'scm:git:git@github.com:gtcGroup/justify-jpa.git'
+          url 'git@github.com:gtcGroup/justify-jpa.git'
+        }
+
+        licenses {
+          license {
+            name 'The MIT License'
+            url 'http://pedcentral.com/justify/justify-license/'
+          }
+        }
+
+        developers {
+          developer {
+            id 'MarvinToll'
+            name 'Marvin Toll'
+            email 'MarvinToll@gtcGroup.com'
+          }
+        }
+      }
+    }
+  }
+}

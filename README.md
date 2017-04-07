@@ -13,7 +13,7 @@ JPA MODULE: Justify supports JUnit testing with "real" (functionally equivalent)
 *   06 [Handling of multiple databases with multiple property overrides.](https://github.com/gtcGroup/justify-jpa/issues/6)
 *   05 [JstBaseDataPopulator enhance Javadoc](https://github.com/gtcGroup/justify-jpa/issues/5)
 
-#### Version 1.2.0 <span class="date">2017-02-07</span>
+#### Version 6.2.0 <span class="date">2017-02-07</span>
 
 *   04 [Enhance JPA Assertions](https://github.com/gtcGroup/justify-jpa/issues/4)
 *   03 [Prepare for v6.2.0 Launch](https://github.com/gtcGroup/justify-jpa/issues/3)

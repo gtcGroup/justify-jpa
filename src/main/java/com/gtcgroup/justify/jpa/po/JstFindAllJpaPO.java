@@ -36,7 +36,7 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
- * This Parameter Object class supports named query operations.
+ * This Parameter Object class supports find all operations.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -46,26 +46,24 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstCriteriaQueryJpaPO extends BaseQueryJpaPO {
+public class JstFindAllJpaPO extends BaseQueryJpaPO {
 
 	/**
 	 * This method initializes the class.
 	 *
-	 * @return {@link JstCriteriaQueryJpaPO}
+	 * @return {@link JstFindAllJpaPO}
 	 */
-	public static JstCriteriaQueryJpaPO withQuery(final boolean readOnly, final boolean suppressExceptionForNull) {
+	public static JstFindAllJpaPO withQuery(final boolean readOnly, final boolean suppressExceptionForNull) {
 
-		return new JstCriteriaQueryJpaPO(readOnly, suppressExceptionForNull);
+		return new JstFindAllJpaPO(readOnly, suppressExceptionForNull);
 	}
-
-	protected String queryLanguageString;
 
 	protected Class<?> resultClass;
 
 	/**
 	 * Constructor
 	 */
-	protected JstCriteriaQueryJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
+	protected JstFindAllJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
 
 		super(readOnly, suppressExceptionForNull);
 		this.readOnly = readOnly;
@@ -87,53 +85,23 @@ public class JstCriteriaQueryJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link Query}
 	 */
-	protected Query createCriteriaQuery(final String queryLanguageString) {
-
-		return getEntityManager().createQuery(queryLanguageString);
-	}
-
-	/**
-	 * @return {@link TypedQuery}
-	 */
-	protected <ENTITY> TypedQuery<ENTITY> createCriteriaQuery(final String queryLanguageString,
-			final Class<ENTITY> resultClass) {
-
-		return getEntityManager().createQuery(queryLanguageString, resultClass);
-	}
-
-	/**
-	 * @return {@link Query}
-	 */
 	@Override
 	public Query getQuery() {
 
 		if (null == this.query) {
 
 			try {
-				if (isResultClass() && isQueryLanaguageString()) {
-					this.query = createCriteriaQuery(getQueryLanguageString(), getResultClass());
-				} else if (isQueryLanaguageString()) {
-					this.query = createCriteriaQuery(getQueryLanguageString());
-				} else if (isResultClass()) {
+				if (isResultClass()) {
 					this.query = createCriteriaQuery(getResultClass());
 				} else {
 					throw new JustifyRuntimeException(
-							"Verify that a coherent set of parameters were defined in the PO ["
-									+ this.getClass().getName() + "].");
+							"Verify that a result class is defined in the PO [" + this.getClass().getName() + "].");
 				}
 			} catch (final Exception e) {
 				throw new JustifyRuntimeException(e);
 			}
 		}
 		return this.query;
-	}
-
-	/**
-	 * @return {@link String}
-	 */
-	public String getQueryLanguageString() {
-
-		return this.queryLanguageString;
 	}
 
 	/**
@@ -148,32 +116,24 @@ public class JstCriteriaQueryJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return boolean
 	 */
-	public boolean isQueryLanaguageString() {
-
-		return null != this.queryLanguageString;
-	}
-
-	/**
-	 * @return boolean
-	 */
 	public boolean isResultClass() {
 
 		return null != this.resultClass;
 	}
 
 	/**
-	 * @return {@link JstCriteriaQueryJpaPO}
+	 * @return {@link JstFindAllJpaPO}
 	 */
-	public JstCriteriaQueryJpaPO withEntityManager(final EntityManager entityManager) {
+	public JstFindAllJpaPO withEntityManager(final EntityManager entityManager) {
 
 		this.entityManager = entityManager;
 		return this;
 	}
 
 	/**
-	 * @return {@link JstCriteriaQueryJpaPO}
+	 * @return {@link JstFindAllJpaPO}
 	 */
-	public JstCriteriaQueryJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+	public JstFindAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
 		this.persistenceUnitName = persistenceUnitName;
 		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
@@ -182,18 +142,9 @@ public class JstCriteriaQueryJpaPO extends BaseQueryJpaPO {
 	}
 
 	/**
-	 * @return {@link JstCriteriaQueryJpaPO}
+	 * @return {@link JstFindAllJpaPO}
 	 */
-	public JstCriteriaQueryJpaPO withQueryLanguageString(final String queryLanguageString) {
-
-		this.queryLanguageString = queryLanguageString;
-		return this;
-	}
-
-	/**
-	 * @return {@link JstCriteriaQueryJpaPO}
-	 */
-	public <ENTITY> JstCriteriaQueryJpaPO withResultClass(final Class<ENTITY> resultClass) {
+	public <ENTITY> JstFindAllJpaPO withResultClass(final Class<ENTITY> resultClass) {
 
 		this.resultClass = resultClass;
 		return this;

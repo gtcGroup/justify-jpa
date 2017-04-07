@@ -44,35 +44,37 @@ import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
  */
 public enum PersistenceKeyCacheHelper {
 
-    @SuppressWarnings("javadoc")
-    INTERNAL;
+	@SuppressWarnings("javadoc")
+	INTERNAL;
 
-    // Contains persistence unit name and jdbc URL.
-    private static Map<String, String> persistenceKeyMap = new ConcurrentHashMap<String, String>();
+	// Contains persistence unit name and jdbc URL.
+	private static Map<String, String> persistenceKeyMap = new ConcurrentHashMap<String, String>();
 
-    public static String formatPersistenceKey(final String persistenceUnitName, final String jdbcURL) {
-        return persistenceUnitName + "_~_" + jdbcURL;
-    }
+	/**
+	 * @return boolean
+	 */
+	public static boolean containsJdbcURL(final String persistenceUnitName) {
 
-    /**
-     * @return {@link String}
-     */
-    public static String retrievePersistenceKey(final String persistenceUnitName) {
+		return PersistenceKeyCacheHelper.persistenceKeyMap.containsKey(persistenceUnitName);
+	}
 
-        if (!persistenceKeyMap.containsKey(persistenceUnitName)) {
+	/**
+	 * @return {@link String}
+	 */
+	public static String formatPersistenceKey(final String persistenceUnitName, final String jdbcURL) {
+		return persistenceUnitName + "_~_" + jdbcURL;
+	}
 
-            throw new JustifyRuntimeException("The persistence unit name [" + persistenceUnitName + "] is not valid.");
-        }
+	/**
+	 * @return {@link String}
+	 */
+	public static String retrievePersistenceKey(final String persistenceUnitName) {
 
+		if (!PersistenceKeyCacheHelper.persistenceKeyMap.containsKey(persistenceUnitName)) {
 
-        return persistenceKeyMap.get(persistenceUnitName);
-    }
+			throw new JustifyRuntimeException("The persistence unit name [" + persistenceUnitName + "] is not valid.");
+		}
 
-    /**
-     * @return boolean
-     */
-    public static boolean containsJdbcURL(final String persistenceUnitName) {
-
-        return persistenceKeyMap.containsKey(persistenceUnitName);
-    }
+		return PersistenceKeyCacheHelper.persistenceKeyMap.get(persistenceUnitName);
+	}
 }
