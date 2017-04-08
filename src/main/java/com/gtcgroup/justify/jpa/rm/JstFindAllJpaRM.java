@@ -28,14 +28,13 @@ package com.gtcgroup.justify.jpa.rm;
 
 import java.util.List;
 
-import javax.persistence.NoResultException;
-
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
 
 /**
- * This Resource Manager provides convenience methods for named queries.
+ * This Resource Manager provides convenience methods for criteria queries that
+ * perform find/count operations.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -45,7 +44,7 @@ import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstCriteriaQueryJpaRM {
+public enum JstFindAllJpaRM {
 
 	@SuppressWarnings("javadoc")
 	INTERNAL;
@@ -76,35 +75,4 @@ public enum JstCriteriaQueryJpaRM {
 
 		return JstQueryUtilHelper.queryResultList(queryPO);
 	}
-
-	/**
-	 * @return {@link Object} or null or {@link Exception}
-	 */
-	public static <ENTITY> ENTITY querySingle(final JstFindAllJpaPO queryPO) {
-
-		ENTITY entity = null;
-
-		try {
-
-			entity = JstQueryUtilHelper.querySingleResult(queryPO);
-
-		} catch (@SuppressWarnings("unused") final NoResultException e) {
-			throwExceptionForNull(queryPO);
-		}
-		return entity;
-	}
-
-	/**
-	 * This method handles exception suppression.
-	 */
-	protected static void throwExceptionForNull(final JstFindAllJpaPO queryPO) {
-
-		if (!queryPO.isSuppressException()) {
-			throw new JustifyRuntimeException(
-					"Unable to retrieve results for the criteria query using the persistence key ["
-							+ queryPO.getPersistenceKey() + "].");
-
-		}
-	}
-
 }

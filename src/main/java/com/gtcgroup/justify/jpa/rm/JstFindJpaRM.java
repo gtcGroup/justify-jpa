@@ -28,6 +28,7 @@ package com.gtcgroup.justify.jpa.rm;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerUtilHelper;
+import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
 
 /**
@@ -53,8 +54,9 @@ public enum JstFindJpaRM {
 	public static <ENTITY> ENTITY find(final JstFindJpaPO findPO) {
 
 		final Object entity = findWithEntityManager(findPO);
+		JstQueryUtilHelper.throwExceptionForNull(findPO, entity);
 
-		return (ENTITY) throwExceptionIfNull(findPO, entity);
+		return (ENTITY) entity;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -112,22 +114,6 @@ public enum JstFindJpaRM {
 			findPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
 		}
 
-		return entity;
-	}
-
-	/**
-	 * @return ENTITY
-	 */
-	protected static <ENTITY> ENTITY throwExceptionIfNull(final JstFindJpaPO findPO, final ENTITY entity) {
-
-		if (!findPO.isSuppressException()) {
-
-			if (null == entity) {
-
-				throw new JustifyRuntimeException("Unable to find the instance specified.");
-
-			}
-		}
 		return entity;
 	}
 }

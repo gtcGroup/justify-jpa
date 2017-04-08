@@ -30,16 +30,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.exceptions.DatabaseException;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
+import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -143,6 +144,10 @@ public enum JstQueryUtilHelper {
 
 			entityList = query.getResultList();
 
+		} catch (final Exception e) {
+
+			throw new JustifyRuntimeException(e);
+
 		} finally {
 			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
 		}
@@ -164,9 +169,9 @@ public enum JstQueryUtilHelper {
 			final Query query = decorateQuery(queryPO, null, orderedParameters);
 
 			entityList = query.getResultList();
-		} catch (final DatabaseException sqlException) {
+		} catch (final Exception e) {
 
-			throw new JustifyRuntimeException(sqlException);
+			throw new JustifyRuntimeException(e);
 
 		} finally {
 			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
@@ -181,15 +186,20 @@ public enum JstQueryUtilHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ENTITY> ENTITY querySingleResult(final BaseQueryJpaPO queryPO,
-			final Map<String, Object> stringParameterMap) {
+			final Map<String, Object> parameterMap) {
 
 		ENTITY entity = null;
 
 		try {
 
-			final Query query = decorateQuery(queryPO, stringParameterMap);
+			final Query query = decorateQuery(queryPO, parameterMap);
 
 			entity = (ENTITY) query.getSingleResult();
+			JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
+
+		} catch (final Exception e) {
+
+			throw new JustifyRuntimeException(e);
 
 		} finally {
 			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
@@ -212,10 +222,32 @@ public enum JstQueryUtilHelper {
 			final Query query = decorateQuery(queryPO, null, orderedParameters);
 
 			entity = (ENTITY) query.getSingleResult();
+			JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
+
+		} catch (@SuppressWarnings("unused") final NoResultException e) {
+
+			JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
+
+		} catch (final Exception e) {
+
+			throw new JustifyRuntimeException(e);
 
 		} finally {
 			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
 		}
 		return entity;
+	}
+
+	/**
+	 * This method handles exception suppression.
+	 */
+	public static void throwExceptionForNull(final BaseJpaPO queryPO, final Object entity) {
+
+		if (null == entity) {
+			if (!queryPO.isSuppressException()) {
+				throw new JustifyRuntimeException("Unable to retrieve a result for the query.");
+
+			}
+		}
 	}
 }
