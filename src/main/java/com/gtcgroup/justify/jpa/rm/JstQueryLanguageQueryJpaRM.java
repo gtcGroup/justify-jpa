@@ -28,9 +28,6 @@ package com.gtcgroup.justify.jpa.rm;
 
 import java.util.List;
 
-import javax.persistence.NoResultException;
-
-import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstQueryLanguageJpaPO;
 
@@ -63,29 +60,6 @@ public enum JstQueryLanguageQueryJpaRM {
 	 */
 	public static <ENTITY> ENTITY querySingle(final JstQueryLanguageJpaPO queryPO) {
 
-		ENTITY entity = null;
-
-		try {
-
-			entity = JstQueryUtilHelper.querySingleResult(queryPO);
-
-		} catch (@SuppressWarnings("unused") final NoResultException e) {
-			throwExceptionForNull(queryPO);
-		}
-		return entity;
+		return JstQueryUtilHelper.querySingleResult(queryPO);
 	}
-
-	/**
-	 * This method handles exception suppression.
-	 */
-	protected static void throwExceptionForNull(final JstQueryLanguageJpaPO queryPO) {
-
-		if (!queryPO.isSuppressException()) {
-			throw new JustifyRuntimeException(
-					"Unable to retrieve results for the criteria query using the persistence key ["
-							+ queryPO.getPersistenceKey() + "].");
-
-		}
-	}
-
 }

@@ -28,9 +28,6 @@ package com.gtcgroup.justify.jpa.rm;
 
 import java.util.List;
 
-import javax.persistence.NoResultException;
-
-import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstNamedQueryJpaPO;
 
@@ -61,9 +58,9 @@ public enum JstNamedQueryJpaRM {
 
 			entityList = JstQueryUtilHelper.queryResultList(queryPO, queryPO.getOrderedParameters());
 
-		} else if (queryPO.isStringParameterMap()) {
+		} else if (queryPO.isParameterMap()) {
 
-			entityList = JstQueryUtilHelper.queryResultList(queryPO, queryPO.getStringParameterMap());
+			entityList = JstQueryUtilHelper.queryResultList(queryPO, queryPO.getParameterMap());
 		} else {
 
 			entityList = JstQueryUtilHelper.queryResultList(queryPO);
@@ -78,32 +75,18 @@ public enum JstNamedQueryJpaRM {
 
 		ENTITY entity = null;
 
-		try {
-			if (queryPO.isOrderedParameters()) {
+		if (queryPO.isOrderedParameters()) {
 
-				entity = JstQueryUtilHelper.querySingleResult(queryPO, queryPO.getOrderedParameters());
+			entity = JstQueryUtilHelper.querySingleResult(queryPO, queryPO.getOrderedParameters());
 
-			} else if (queryPO.isStringParameterMap()) {
+		} else if (queryPO.isParameterMap()) {
 
-				entity = JstQueryUtilHelper.querySingleResult(queryPO, queryPO.getStringParameterMap());
-			} else {
+			entity = JstQueryUtilHelper.querySingleResult(queryPO, queryPO.getParameterMap());
+		} else {
 
-				entity = JstQueryUtilHelper.querySingleResult(queryPO);
-			}
-		} catch (@SuppressWarnings("unused") final NoResultException e) {
-			throwExceptionForNull(queryPO);
+			entity = JstQueryUtilHelper.querySingleResult(queryPO);
 		}
+
 		return entity;
-	}
-
-	/**
-	 * This method handles exception suppression.
-	 */
-	protected static void throwExceptionForNull(final JstNamedQueryJpaPO queryPO) {
-
-		if (!queryPO.isSuppressException()) {
-			throw new JustifyRuntimeException("Unable to retrieve results for the query [" + queryPO.getQueryName()
-					+ "] using the persistence key [" + queryPO.getPersistenceKey() + "].");
-		}
 	}
 }

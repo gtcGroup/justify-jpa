@@ -59,7 +59,7 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 
 	protected String queryName;
 
-	protected Map<String, Object> stringParameterMap;
+	protected Map<String, Object> parameterMap;
 
 	protected Object[] orderedParameters;
 
@@ -116,9 +116,9 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link Map}
 	 */
-	public Map<String, Object> getStringParameterMap() {
+	public Map<String, Object> getParameterMap() {
 
-		return this.stringParameterMap;
+		return this.parameterMap;
 	}
 
 	/**
@@ -132,9 +132,9 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return boolean
 	 */
-	public boolean isStringParameterMap() {
+	public boolean isParameterMap() {
 
-		return null != this.stringParameterMap;
+		return null != this.parameterMap;
 	}
 
 	/**
@@ -196,9 +196,9 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstNamedQueryJpaPO}
 	 */
-	public JstNamedQueryJpaPO withStringParameterMap(final Map<String, Object> stringParameterMap) {
+	public JstNamedQueryJpaPO withParameterMap(final Map<String, Object> parameterMap) {
 
-		this.stringParameterMap = stringParameterMap;
+		this.parameterMap = parameterMap;
 		return this;
 	}
 }
