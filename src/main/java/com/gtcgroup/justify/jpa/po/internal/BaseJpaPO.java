@@ -31,7 +31,6 @@ import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.base.JstBasePO;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.helper.internal.PersistenceKeyCacheHelper;
 
 /**
  * This Parameter Object base class supports query execution.
@@ -46,110 +45,84 @@ import com.gtcgroup.justify.jpa.helper.internal.PersistenceKeyCacheHelper;
  */
 public abstract class BaseJpaPO extends JstBasePO {
 
-    protected boolean readOnly = true;
+	protected boolean readOnly = true;
 
-    protected boolean suppressExceptionForNull = false;
+	protected boolean suppressExceptionForNull = false;
 
-    protected EntityManager entityManager;
+	protected EntityManager entityManager;
 
-    protected boolean entityManagerNeedsToBeClosed = false;
+	protected boolean entityManagerNeedsToBeClosed = false;
 
-    protected String persistenceUnitName;
+	protected String persistenceUnitName;
 
-    protected String persistenceKey;
+	protected Map<String, Object> persistencePropertyMapOrNull;
 
-    protected Map<String, Object> persistencePropertyMapOrNull;
+	/**
+	 * Constructor
+	 */
+	protected BaseJpaPO(final boolean suppressExceptionForNull) {
 
-    /**
-     * Constructor
-     */
-    protected BaseJpaPO(final boolean suppressExceptionForNull) {
+		super();
+		this.readOnly = true;
+		this.suppressExceptionForNull = suppressExceptionForNull;
+		return;
+	}
 
-        super();
-        this.readOnly = true;
-        this.suppressExceptionForNull = suppressExceptionForNull;
-        return;
-    }
+	/**
+	 * Constructor
+	 */
+	protected BaseJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
 
-    /**
-     * Constructor
-     */
-    protected BaseJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
+		super();
+		this.readOnly = readOnly;
+		this.suppressExceptionForNull = suppressExceptionForNull;
+		return;
+	}
 
-        super();
-        this.readOnly = readOnly;
-        this.suppressExceptionForNull = suppressExceptionForNull;
-        return;
-    }
+	/**
+	 * This method closes the {@link EntityManager} if the creation is
+	 * encapsulated within this PO.
+	 */
+	public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
 
-    /**
-     * This method closes the {@link EntityManager} if the creation is
-     * encapsulated within this PO.
-     */
-    public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
+		if (this.entityManagerNeedsToBeClosed) {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
+		}
+	}
 
-        if (this.entityManagerNeedsToBeClosed) {
-            JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
-        }
-    }
+	/**
+	 * @return {@link EntityManager}
+	 */
+	public EntityManager getEntityManager() {
 
-    /**
-     * @return boolean
-     */
-    public boolean isPersistenceUnitName() {
-        return null != this.persistenceUnitName;
-    }
+		if (!isEntityManager()) {
 
-    /**
-     * @return {@link EntityManager}
-     */
-    public EntityManager getEntityManager() {
+			this.entityManager = JstEntityManagerFactoryCacheHelper
+					.createEntityManagerToBeClosed(this.persistenceUnitName);
+			this.entityManagerNeedsToBeClosed = true;
+		}
 
-        if (!isEntityManager()) {
+		return this.entityManager;
+	}
 
-            this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName);
-            this.entityManagerNeedsToBeClosed = true;
-        }
+	/**
+	 * @return boolean
+	 */
+	protected boolean isEntityManager() {
+		return null != this.entityManager;
+	}
 
-        return this.entityManager;
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isReadOnly() {
+		return this.readOnly;
+	}
 
-    /**
-     * @return {@link String}
-     */
-    public String getPersistenceKey() {
-
-        if ((!isPersistenceKey()) && (isPersistenceUnitName())) {
-            this.persistenceKey = PersistenceKeyCacheHelper.retrievePersistenceKey(this.persistenceUnitName);
-        }
-        return this.persistenceKey;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isPersistenceKey() {
-        return null != this.persistenceKey;
-    }
-
-    /**
-     * @return boolean
-     */
-    protected boolean isEntityManager() {
-        return null != this.entityManager;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isReadOnly() {
-        return this.readOnly;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isSuppressException() {
-        return this.suppressExceptionForNull;
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isSuppressException() {
+		return this.suppressExceptionForNull;
+	}
 }

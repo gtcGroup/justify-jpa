@@ -90,16 +90,17 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 
 		if (null == this.query) {
 
-			try {
-				if (isResultClass()) {
+			if (isResultClass()) {
+				try {
 					this.query = createCriteriaQuery(getResultClass());
-				} else {
-					throw new JustifyRuntimeException(
-							"Verify that a result class is defined in the PO [" + this.getClass().getName() + "].");
+				} catch (final Exception e) {
+					throw new JustifyRuntimeException(e);
 				}
-			} catch (final Exception e) {
-				throw new JustifyRuntimeException(e);
+			} else {
+				throw new JustifyRuntimeException(
+						"Verify that a result class is defined in the PO [" + this.getClass().getName() + "].");
 			}
+
 		}
 		return this.query;
 	}

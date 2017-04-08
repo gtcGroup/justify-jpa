@@ -28,8 +28,6 @@ package com.gtcgroup.justify.jpa.po;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
@@ -73,21 +71,9 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 	}
 
 	/**
-	 * @return {@link TypedQuery}
-	 */
-	protected <ENTITY> TypedQuery<ENTITY> createCriteriaQuery(final Class<ENTITY> resultClass) {
-
-		final CriteriaQuery<ENTITY> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(resultClass);
-		final Root<ENTITY> rootEntry = criteriaQuery.from(resultClass);
-		final CriteriaQuery<ENTITY> criteria = criteriaQuery.select(rootEntry);
-
-		return getEntityManager().createQuery(criteria);
-	}
-
-	/**
 	 * @return {@link Query}
 	 */
-	protected Query createCriteriaQuery(final String queryLanguageString) {
+	protected Query createQueryLanguageQuery(final String queryLanguageString) {
 
 		return getEntityManager().createQuery(queryLanguageString);
 	}
@@ -95,7 +81,7 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link TypedQuery}
 	 */
-	protected <ENTITY> TypedQuery<ENTITY> createCriteriaQuery(final String queryLanguageString,
+	protected <ENTITY> TypedQuery<ENTITY> createQueryLanguageQuery(final String queryLanguageString,
 			final Class<ENTITY> resultClass) {
 
 		return getEntityManager().createQuery(queryLanguageString, resultClass);
@@ -111,11 +97,9 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 
 			try {
 				if (isResultClass() && isQueryLanaguageString()) {
-					this.query = createCriteriaQuery(getQueryLanguageString(), getResultClass());
+					this.query = createQueryLanguageQuery(getQueryLanguageString(), getResultClass());
 				} else if (isQueryLanaguageString()) {
-					this.query = createCriteriaQuery(getQueryLanguageString());
-				} else if (isResultClass()) {
-					this.query = createCriteriaQuery(getResultClass());
+					this.query = createQueryLanguageQuery(getQueryLanguageString());
 				} else {
 					throw new JustifyRuntimeException(
 							"Verify that a coherent set of parameters were defined in the PO ["

@@ -91,26 +91,6 @@ public enum JstEntityManagerUtilHelper {
 	}
 
 	/**
-	 * This method removes the given entity from the persistence context,
-	 * causing a managed entity to become detached. Unflushed changes made to
-	 * the entity if any (final including removal of the entity), will not be
-	 * synchronized to the database. Entities which previously referenced the
-	 * detached entity will continue to reference it.
-	 */
-	public static void detachEntityFromPersistenceContext(final EntityManager entityManager,
-			final Object populatedEntity) {
-
-		try {
-			entityManager.detach(populatedEntity);
-
-		} catch (final Exception e) {
-
-			throw new JustifyRuntimeException(e);
-		}
-		return;
-	}
-
-	/**
 	 * This method clears the shared (L2) cache of all instances.
 	 */
 	public static void evictAllEntitiesFromSharedCache(final EntityManager entityManager) {
@@ -215,34 +195,6 @@ public enum JstEntityManagerUtilHelper {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * This method checks if the instance is a managed entity instance belonging
-	 * to the current persistence context (L1 cache).
-	 *
-	 * @return boolean
-	 */
-	public static boolean existsInPersistenceContextWithManagedEntities(final EntityManager entityManager,
-			final Object... managedEntities) {
-
-		boolean result = true;
-
-		try {
-
-			for (final Object managedEntity : managedEntities) {
-
-				result = entityManager.contains(managedEntity);
-
-				if (false == result) {
-					return result;
-				}
-			}
-		} catch (final Exception e) {
-
-			throw new JustifyRuntimeException(e);
-		}
-		return result;
 	}
 
 	/**

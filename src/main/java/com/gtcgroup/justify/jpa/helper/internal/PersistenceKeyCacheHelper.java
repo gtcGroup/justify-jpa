@@ -29,8 +29,6 @@ package com.gtcgroup.justify.jpa.helper.internal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-
 /**
  * This Helper class caches the latest persistence key.
  *
@@ -63,18 +61,5 @@ public enum PersistenceKeyCacheHelper {
 	 */
 	public static String formatPersistenceKey(final String persistenceUnitName, final String jdbcURL) {
 		return persistenceUnitName + "_~_" + jdbcURL;
-	}
-
-	/**
-	 * @return {@link String}
-	 */
-	public static String retrievePersistenceKey(final String persistenceUnitName) {
-
-		if (!PersistenceKeyCacheHelper.persistenceKeyMap.containsKey(persistenceUnitName)) {
-
-			throw new JustifyRuntimeException("The persistence unit name [" + persistenceUnitName + "] is not valid.");
-		}
-
-		return PersistenceKeyCacheHelper.persistenceKeyMap.get(persistenceUnitName);
 	}
 }
