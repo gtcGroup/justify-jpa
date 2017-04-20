@@ -23,16 +23,14 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package com.gtcgroup.justify.jpa.po;
 
-package com.gtcgroup.justify.jpa.rm;
+import javax.persistence.EntityManager;
 
-import java.util.List;
-
-import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstNamedQueryJpaPO;
+import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 
 /**
- * This Resource Manager provides convenience methods for named queries.
+ * This Parameter Object class supports counting all entities.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -40,45 +38,63 @@ import com.gtcgroup.justify.jpa.po.JstNamedQueryJpaPO;
  * </p>
  *
  * @author Marvin Toll
- * @since v3.0
+ * @since v.6.2
  */
-public enum JstNamedQueryJpaRM {
-
-	@SuppressWarnings("javadoc")
-	INTERNAL;
+public class JstCountAllJpaPO extends BaseJpaPO {
 
 	/**
-	 * @return {@link Object} or null or {@link Exception}
+	 * This method initializes the class.
+	 *
+	 * @return {@link JstCountAllJpaPO}
 	 */
-	public static <ENTITY> List<ENTITY> queryList(final JstNamedQueryJpaPO queryPO) {
+	public static JstCountAllJpaPO withQuery(final boolean suppressExceptionForNull) {
 
-		List<ENTITY> entityList = null;
+		return new JstCountAllJpaPO(suppressExceptionForNull);
+	}
 
-		if (queryPO.isParameterMap()) {
+	protected Class<?> resultClass;
 
-			entityList = JstQueryUtilHelper.queryResultList(queryPO, queryPO.getParameterMap());
-		} else {
+	/**
+	 * Constructor
+	 */
+	protected JstCountAllJpaPO(final boolean suppressExceptionForNull) {
 
-			entityList = JstQueryUtilHelper.queryResultList(queryPO);
-		}
-		return entityList;
+		super(suppressExceptionForNull);
+		return;
 	}
 
 	/**
-	 * @return {@link Object} or null or {@link Exception}
+	 * @return {@link Class}
 	 */
-	public static <ENTITY> ENTITY querySingle(final JstNamedQueryJpaPO queryPO) {
+	@SuppressWarnings("unchecked")
+	public <ENTITY> Class<ENTITY> getResultClass() {
 
-		ENTITY entity = null;
+		return (Class<ENTITY>) this.resultClass;
+	}
 
-		if (queryPO.isParameterMap()) {
+	/**
+	 * @return {@link JstCountAllJpaPO}
+	 */
+	public JstCountAllJpaPO withEntityManager(final EntityManager entityManager) {
 
-			entity = JstQueryUtilHelper.querySingleResult(queryPO, queryPO.getParameterMap());
-		} else {
+		this.entityManager = entityManager;
+		return this;
+	}
 
-			entity = JstQueryUtilHelper.querySingleResult(queryPO);
-		}
+	/**
+	 * @return {@link JstCountAllJpaPO}
+	 */
+	public JstCountAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		return entity;
+		return (JstCountAllJpaPO) super.withPersistenceUnitName(persistenceUnitName);
+	}
+
+	/**
+	 * @return {@link JstCountAllJpaPO}
+	 */
+	public <ENTITY> JstCountAllJpaPO withResultClass(final Class<ENTITY> resultClass) {
+
+		this.resultClass = resultClass;
+		return this;
 	}
 }

@@ -104,7 +104,7 @@ public enum AssertionsJPA {
 		if (!JstEntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
 				entityIdentities)) {
 
-			assertFailWithMessage(persistenceUnitName, entityClass, "database");
+			assertFailWithMessage(persistenceUnitName, entityClass, "database", "unavailable");
 		}
 		return;
 	}
@@ -123,7 +123,7 @@ public enum AssertionsJPA {
 				return;
 			}
 		}
-		assertFailWithMessage(persistenceUnitName, null, "database");
+		assertFailWithMessage(persistenceUnitName, null, "database", "unavailable");
 	}
 
 	public static void assertExistsInDatabase(final String persistenceUnitName,
@@ -140,7 +140,7 @@ public enum AssertionsJPA {
 		if (!JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
 				populatedEntities)) {
 
-			assertFailWithMessage(persistenceUnitName, null, "database");
+			assertFailWithMessage(persistenceUnitName, null, "database", "unavailable");
 		}
 		return;
 	}
@@ -153,7 +153,7 @@ public enum AssertionsJPA {
 		if (!JstEntityManagerUtilHelper.existsInSharedCacheWithEntityIdentities(AssertionsJPA.entityManager,
 				entityClass, entityIdentities)) {
 
-			assertFailWithMessage(persistenceUnitName, null, "shared cache");
+			assertFailWithMessage(persistenceUnitName, null, "shared cache", "unavailable");
 		}
 	}
 
@@ -164,12 +164,12 @@ public enum AssertionsJPA {
 		if (!JstEntityManagerUtilHelper.existsInSharedCacheWithPopulatedEntities(AssertionsJPA.entityManager,
 				managedEntities)) {
 
-			assertFailWithMessage(persistenceUnitName, null, "shared cache");
+			assertFailWithMessage(persistenceUnitName, null, "shared cache", "unavailable");
 		}
 	}
 
 	private static <ENTITY> void assertFailWithMessage(final String persistenceUnitName,
-			final Class<ENTITY> entityClassOrNull, final String fromWhere) {
+			final Class<ENTITY> entityClassOrNull, final String fromWhere, String availableOrUnavailable) {
 
 		final StringBuilder assertionErrorMessage = new StringBuilder();
 
@@ -181,7 +181,9 @@ public enum AssertionsJPA {
 			assertionErrorMessage.append("] ");
 		}
 
-		assertionErrorMessage.append("is unavailable from the ");
+		assertionErrorMessage.append("is ");
+		assertionErrorMessage.append(availableOrUnavailable);
+		assertionErrorMessage.append(" from the ");
 		assertionErrorMessage.append(fromWhere + " [");
 		assertionErrorMessage.append(persistenceUnitName);
 		assertionErrorMessage.append("].");
@@ -197,7 +199,7 @@ public enum AssertionsJPA {
 		if (JstEntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
 				entityIdentities)) {
 
-			assertFailWithMessage(persistenceUnitName, entityClass, "database");
+			assertFailWithMessage(persistenceUnitName, entityClass, "database", "unexpectedly available");
 		}
 		return;
 	}
@@ -210,7 +212,7 @@ public enum AssertionsJPA {
 		if (JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
 				populatedEntities)) {
 
-			assertFailWithMessage(persistenceUnitName, null, "database");
+			assertFailWithMessage(persistenceUnitName, null, "database", "unexpectedly available");
 		}
 	}
 
@@ -222,7 +224,7 @@ public enum AssertionsJPA {
 		if (JstEntityManagerUtilHelper.existsInSharedCacheWithPopulatedEntities(AssertionsJPA.entityManager,
 				populatedEntities)) {
 
-			assertFailWithMessage(persistenceUnitName, null, "shared cache");
+			assertFailWithMessage(persistenceUnitName, null, "shared cache", "unexpectedly available");
 		}
 	}
 
@@ -239,7 +241,7 @@ public enum AssertionsJPA {
 			// Cleanup the parent if needed.
 			JstTransactionUtilHelper.transactEntities(JstTransactionJpaPO.withException()
 					.withEntityManager(AssertionsJPA.entityManager).withDeleteEntities(AssertionsJPA.parentEntity));
-		} catch (@SuppressWarnings("unused") final Exception ignore) {
+		} catch (final Exception ignore) {
 
 			throw (JustifyRuntimeException) e;
 		}
@@ -280,7 +282,7 @@ public enum AssertionsJPA {
 			try {
 				JstTransactionUtilHelper.findAndDeleteRelatedEntity(AssertionsJPA.entityManager,
 						AssertionsJPA.parentEntity, method);
-			} catch (@SuppressWarnings("unused") final Exception e) {
+			} catch (final Exception e) {
 				// Ignore
 			}
 		}

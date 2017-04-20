@@ -28,13 +28,12 @@ package com.gtcgroup.justify.jpa.rm;
 
 import java.util.List;
 
-import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
 
 /**
  * This Resource Manager provides convenience methods for criteria queries that
- * perform find/count operations.
+ * perform find all operations.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -48,25 +47,6 @@ public enum JstFindAllJpaRM {
 
 	@SuppressWarnings("javadoc")
 	INTERNAL;
-
-	/**
-	 * This method returns the number of records in the table or view. It may be
-	 * used in support of query processing.
-	 *
-	 * @return long
-	 */
-	public static long count(final JstFindAllJpaPO queryPO) {
-
-		long count = 0;
-
-		try {
-			count = JstQueryUtilHelper.count(queryPO);
-		} catch (final Exception e) {
-
-			throw new JustifyRuntimeException(e);
-		}
-		return count;
-	}
 
 	/**
 	 * @return {@link Object} or null or {@link Exception}

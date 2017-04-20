@@ -111,9 +111,10 @@ public enum JstTransactionUtilHelper {
 
 		if (transactionPO.isEntityMerge()) {
 
-			for (final Object entity : transactionPO.getEntityMergeList()) {
+			for (Object entity : transactionPO.getEntityMergeList()) {
 
-				entityMergeList.add((ENTITY) transactionPO.getEntityManager().merge(entity));
+				entity = transactionPO.getEntityManager().merge(entity);
+				entityMergeList.add((ENTITY) entity);
 			}
 		}
 		return entityMergeList;

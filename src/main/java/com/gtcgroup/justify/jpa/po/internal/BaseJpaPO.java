@@ -31,6 +31,7 @@ import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.base.JstBasePO;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
+import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
 
 /**
  * This Parameter Object base class supports query execution.
@@ -44,8 +45,6 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
  * @since v.6.2
  */
 public abstract class BaseJpaPO extends JstBasePO {
-
-	protected boolean readOnly = true;
 
 	protected boolean suppressExceptionForNull = false;
 
@@ -63,18 +62,6 @@ public abstract class BaseJpaPO extends JstBasePO {
 	protected BaseJpaPO(final boolean suppressExceptionForNull) {
 
 		super();
-		this.readOnly = true;
-		this.suppressExceptionForNull = suppressExceptionForNull;
-		return;
-	}
-
-	/**
-	 * Constructor
-	 */
-	protected BaseJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
-
-		super();
-		this.readOnly = readOnly;
 		this.suppressExceptionForNull = suppressExceptionForNull;
 		return;
 	}
@@ -115,14 +102,18 @@ public abstract class BaseJpaPO extends JstBasePO {
 	/**
 	 * @return boolean
 	 */
-	public boolean isReadOnly() {
-		return this.readOnly;
-	}
-
-	/**
-	 * @return boolean
-	 */
 	public boolean isSuppressException() {
 		return this.suppressExceptionForNull;
+	}
+	
+	/**
+	 * @return {@link JstCountAllJpaPO}
+	 */
+	public BaseJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+
+		this.persistenceUnitName = persistenceUnitName;
+		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+		return this;
 	}
 }

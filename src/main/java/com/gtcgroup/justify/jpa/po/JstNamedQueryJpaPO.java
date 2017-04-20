@@ -52,24 +52,21 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	 *
 	 * @return {@link JstNamedQueryJpaPO}
 	 */
-	public static JstNamedQueryJpaPO withQuery(final boolean readOnly, final boolean suppressExceptionForNull) {
+	public static JstNamedQueryJpaPO withQuery(final boolean suppressExceptionForNull) {
 
-		return new JstNamedQueryJpaPO(readOnly, suppressExceptionForNull);
+		return new JstNamedQueryJpaPO(suppressExceptionForNull);
 	}
 
 	protected String queryName;
 
 	protected Map<String, Object> parameterMap;
 
-	protected Object[] orderedParameters;
-
 	/**
 	 * Constructor
 	 */
-	protected JstNamedQueryJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
+	protected JstNamedQueryJpaPO(final boolean suppressExceptionForNull) {
 
-		super(readOnly, suppressExceptionForNull);
-		this.readOnly = readOnly;
+		super(suppressExceptionForNull);
 		return;
 	}
 
@@ -79,14 +76,6 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	protected void createNamedQuery() {
 
 		this.query = this.entityManager.createNamedQuery(getQueryName());
-	}
-
-	/**
-	 * @return {@link Object}
-	 */
-	public Object[] getOrderedParameters() {
-
-		return this.orderedParameters;
 	}
 
 	/**
@@ -124,14 +113,6 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return boolean
 	 */
-	public boolean isOrderedParameters() {
-
-		return !(null == this.orderedParameters || 0 == this.orderedParameters.length);
-	}
-
-	/**
-	 * @return boolean
-	 */
 	public boolean isParameterMap() {
 
 		return null != this.parameterMap;
@@ -161,15 +142,6 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	public JstNamedQueryJpaPO withMaxResults(final int maxResults) {
 
 		this.maxResults = maxResults;
-		return this;
-	}
-
-	/**
-	 * @return {@link JstNamedQueryJpaPO}
-	 */
-	public JstNamedQueryJpaPO withOrderedParameters(final Object... orderedParameters) {
-
-		this.orderedParameters = orderedParameters;
 		return this;
 	}
 

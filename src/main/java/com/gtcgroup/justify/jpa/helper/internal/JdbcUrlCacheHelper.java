@@ -41,7 +41,6 @@ import org.w3c.dom.NodeList;
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.core.po.internal.StreamPO;
-import com.gtcgroup.justify.jpa.helper.ConstantstJPA;
 
 /**
  * This Helper class searches the persistence.xml file for the
@@ -59,6 +58,8 @@ public enum JdbcUrlCacheHelper {
 
     @SuppressWarnings("javadoc")
     INTERNAL;
+    
+	public static final String PERSISTENCE_DOT_XML = "META-INF/persistence.xml";
 
     private static final String NOT_AVAILABLE = "n@tAvailable";
 
@@ -104,7 +105,7 @@ public enum JdbcUrlCacheHelper {
 
         try {
 
-            streamPO = ReflectionUtilHelper.getResourceAsStream(ConstantstJPA.PERSISTENCE_DOT_XML, false);
+            streamPO = ReflectionUtilHelper.getResourceAsStream(PERSISTENCE_DOT_XML, false);
 
             final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             final DocumentBuilder builder = factory.newDocumentBuilder();

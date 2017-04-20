@@ -23,9 +23,17 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.helper;
+
+package com.gtcgroup.justify.jpa.rm;
+
+import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
+import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
+import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
 
 /**
+ * This Resource Manager provides convenience methods for criteria queries that
+ * perform find/count operations.
+ *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
@@ -34,13 +42,27 @@ package com.gtcgroup.justify.jpa.helper;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings("javadoc")
-public enum ConstantstJPA {
+public enum JstCountAllJpaRM {
 
-	INSTANCE;
+	@SuppressWarnings("javadoc")
+	INTERNAL;
 
-	public final static String KEY_DELIMITER = "_~_";
+	/**
+	 * This method returns the number of records in the table or view. It may be
+	 * used in support of query processing.
+	 *
+	 * @return long
+	 */
+	public static long count(final JstCountAllJpaPO queryPO) {
 
-	public static final String PERSISTENCE_DOT_XML = "META-INF/persistence.xml";
+		long count = 0;
 
+		try {
+			count = JstQueryUtilHelper.count(queryPO);
+		} catch (final Exception e) {
+
+			throw new JustifyRuntimeException(e);
+		}
+		return count;
+	}
 }

@@ -49,9 +49,9 @@ public class JstFindJpaPO extends BaseJpaPO {
 	 *
 	 * @return {@link JstFindJpaPO}
 	 */
-	public static JstFindJpaPO withFind(final boolean readOnly, final boolean suppressExceptionForNull) {
+	public static JstFindJpaPO withFind(final boolean suppressExceptionForNull) {
 
-		return new JstFindJpaPO(readOnly, suppressExceptionForNull);
+		return new JstFindJpaPO(suppressExceptionForNull);
 	}
 
 	private Class<Object> entityClass;
@@ -60,15 +60,12 @@ public class JstFindJpaPO extends BaseJpaPO {
 
 	private Object populatedEntityContainingIdentity;
 
-
-
 	/**
 	 * Constructor
 	 */
-	protected JstFindJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
+	protected JstFindJpaPO(final boolean suppressExceptionForNull) {
 
-		super(readOnly, suppressExceptionForNull);
-		this.readOnly = readOnly;
+		super(suppressExceptionForNull);
 		return;
 	}
 
@@ -103,7 +100,6 @@ public class JstFindJpaPO extends BaseJpaPO {
 		return null != this.populatedEntityContainingIdentity;
 	}
 
-
 	/**
 	 * @return {@link JstFindJpaPO}
 	 */
@@ -124,31 +120,31 @@ public class JstFindJpaPO extends BaseJpaPO {
 	}
 
 	/**
-     * @return {@link JstFindJpaPO}
-     */
+	 * @return {@link JstFindJpaPO}
+	 */
 	public JstFindJpaPO withEntityManager(final EntityManager entityManager) {
 
-        super.entityManager = entityManager;
+		super.entityManager = entityManager;
 		return this;
 	}
 
 	/**
-     * @return {@link JstFindJpaPO}
-     */
+	 * @return {@link JstFindJpaPO}
+	 */
 	public JstFindJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-        super.persistenceUnitName = persistenceUnitName;
+		super.persistenceUnitName = persistenceUnitName;
 		return this;
 	}
 
-    /**
-     * @return {@link JstFindJpaPO}
-     */
-    public JstFindJpaPO withPersistencePropertyMap(final Map<String, Object> persistencePropertyMap) {
+	/**
+	 * @return {@link JstFindJpaPO}
+	 */
+	public JstFindJpaPO withPersistencePropertyMap(final Map<String, Object> persistencePropertyMap) {
 
-        super.persistencePropertyMapOrNull = persistencePropertyMap;
-        return this;
-    }
+		super.persistencePropertyMapOrNull = persistencePropertyMap;
+		return this;
+	}
 
 	/**
 	 * @return {@link JstFindJpaPO}

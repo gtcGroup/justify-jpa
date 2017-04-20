@@ -60,23 +60,6 @@ public enum JstFindJpaRM {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected static <ENTITY> ENTITY findModifiable(final JstFindJpaPO findPO) {
-
-		ENTITY entity;
-		if (findPO.isPopulatedEntityContainingIdentity()) {
-
-			entity = (ENTITY) JstEntityManagerUtilHelper.findModifiableSingleOrNull(findPO.getEntityManager(),
-					findPO.getPopulatedEntityContainingIdentity());
-
-		} else {
-
-			entity = (ENTITY) JstEntityManagerUtilHelper.findModifiableSingleOrNull(findPO.getEntityManager(),
-					findPO.getEntityClass(), findPO.getEntityIdentity());
-		}
-		return entity;
-	}
-
-	@SuppressWarnings("unchecked")
 	protected static <ENTITY> ENTITY findReadOnly(final JstFindJpaPO findPO) {
 
 		ENTITY entity;
@@ -98,14 +81,9 @@ public enum JstFindJpaRM {
 		ENTITY entity = null;
 
 		try {
-			if (findPO.isReadOnly()) {
 
-				entity = findReadOnly(findPO);
+			entity = findReadOnly(findPO);
 
-			} else {
-
-				entity = findModifiable(findPO);
-			}
 		} catch (final Exception e) {
 			throw new JustifyRuntimeException(e);
 

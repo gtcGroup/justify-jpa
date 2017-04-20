@@ -190,50 +190,11 @@ public enum JstEntityManagerUtilHelper {
 				}
 			}
 
-		} catch (@SuppressWarnings("unused") final Exception e) {
+		} catch (final Exception e) {
 
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * This method checks if the instance is a managed entity instance belonging
-	 * to the current persistence context (L1 cache).
-	 *
-	 * @return boolean
-	 */
-	@SuppressWarnings("unchecked")
-	public static <ENTITY> boolean existsInPersistenceContextWithPopulatedEntities(final EntityManager entityManager,
-			final boolean readOnly, final Object... populatedEntities) {
-
-		boolean result = true;
-
-		try {
-
-			for (final Object populatedEntity : populatedEntities) {
-
-				ENTITY entity = null;
-
-				if (readOnly) {
-					entity = (ENTITY) findReadOnlySingleOrNull(entityManager, populatedEntity.getClass(),
-							retrieveIdentity(entityManager, populatedEntity));
-				} else {
-					entity = (ENTITY) findModifiableSingleOrNull(entityManager, populatedEntity.getClass(),
-							retrieveIdentity(entityManager, populatedEntity));
-				}
-
-				result = entityManager.contains(entity);
-
-				if (false == result) {
-					return result;
-				}
-			}
-		} catch (final Exception e) {
-
-			throw new JustifyRuntimeException(e);
-		}
-		return result;
 	}
 
 	/**
@@ -293,26 +254,6 @@ public enum JstEntityManagerUtilHelper {
 			throw new JustifyRuntimeException(e);
 		}
 		return result;
-	}
-
-	/**
-	 * @return {@link Object}
-	 */
-	public static <ENTITY> ENTITY findModifiableSingleOrNull(final EntityManager entityManager,
-			final Class<ENTITY> entityClass, final Object entityIdentity) {
-
-		return entityManager.find(entityClass, entityIdentity);
-	}
-
-	/**
-	 * @return {@link Object} or null
-	 */
-	@SuppressWarnings("unchecked")
-	public static <ENTITY> ENTITY findModifiableSingleOrNull(final EntityManager entityManager,
-			final Object populatedEntity) {
-
-		return (ENTITY) entityManager.find(populatedEntity.getClass(),
-				retrieveIdentity(entityManager, populatedEntity));
 	}
 
 	/**

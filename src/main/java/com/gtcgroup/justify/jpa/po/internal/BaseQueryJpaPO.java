@@ -49,9 +49,9 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 	/**
 	 * Constructor
 	 */
-	protected BaseQueryJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
+	protected BaseQueryJpaPO(final boolean suppressExceptionForNull) {
 
-		super(readOnly, suppressExceptionForNull);
+		super(suppressExceptionForNull);
 	}
 
 	/**

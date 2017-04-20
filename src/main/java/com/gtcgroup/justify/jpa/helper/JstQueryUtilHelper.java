@@ -25,7 +25,6 @@
  */
 package com.gtcgroup.justify.jpa.helper;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,7 +38,7 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
+import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
 import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
@@ -64,7 +63,7 @@ public enum JstQueryUtilHelper {
 	 *
 	 * @return long
 	 */
-	public static long count(final JstFindAllJpaPO queryPO) {
+	public static long count(final JstCountAllJpaPO queryPO) {
 
 		final CriteriaBuilder criteriaBuilder = queryPO.getEntityManager().getCriteriaBuilder();
 		final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -80,19 +79,10 @@ public enum JstQueryUtilHelper {
 	}
 
 	@SuppressWarnings("boxing")
-	static Query decorateQuery(final BaseQueryJpaPO queryPO, final Map<String, Object> stringParameterMap,
-			final Object... orderedParameters) {
+	static Query decorateQuery(final BaseQueryJpaPO queryPO, final Map<String, Object> stringParameterMap) {
 
 		final Query query = queryPO.getQuery();
 
-		if (0 != orderedParameters.length) {
-
-			for (final Entry<Integer, Object> integerEntry : instantiateIntegerParameterMap(orderedParameters)
-					.entrySet()) {
-
-				query.setParameter(integerEntry.getKey(), integerEntry.getValue());
-			}
-		}
 		if (null != stringParameterMap) {
 
 			for (final Entry<String, Object> stringEntry : stringParameterMap.entrySet()) {
@@ -100,10 +90,9 @@ public enum JstQueryUtilHelper {
 				query.setParameter(stringEntry.getKey(), stringEntry.getValue());
 			}
 		}
-		if (queryPO.isReadOnly()) {
 
-			query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-		}
+		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+
 		if (queryPO.isFirstResult()) {
 
 			query.setFirstResult(queryPO.getFirstResult());
@@ -116,23 +105,11 @@ public enum JstQueryUtilHelper {
 	}
 
 	/**
-	 * @return {@link Map}
-	 */
-	static Map<Integer, Object> instantiateIntegerParameterMap(final Object... orderedParameters) {
-		final Map<Integer, Object> integerParameterMap = new HashMap<Integer, Object>();
-
-		for (int i = 0; i < orderedParameters.length; i++) {
-
-			integerParameterMap.put(new Integer(i + 1), orderedParameters[i]);
-		}
-		return integerParameterMap;
-	}
-
-	/**
 	 * This method executes a query with parameters.
 	 *
 	 * @return {@link List}
 	 */
+	@SuppressWarnings("unchecked")
 	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
 			final Map<String, Object> stringParameterMap) {
 
@@ -159,14 +136,14 @@ public enum JstQueryUtilHelper {
 	 *
 	 * @return {@link List}
 	 */
-	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
-			final Object... orderedParameters) {
+	@SuppressWarnings("unchecked")
+	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO) {
 
 		List<ENTITY> entityList = null;
 
 		try {
 
-			final Query query = decorateQuery(queryPO, null, orderedParameters);
+			final Query query = decorateQuery(queryPO, null);
 
 			entityList = query.getResultList();
 		} catch (final Exception e) {
@@ -213,18 +190,18 @@ public enum JstQueryUtilHelper {
 	 * @return ENTITY
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ENTITY> ENTITY querySingleResult(final BaseQueryJpaPO queryPO, final Object... orderedParameters) {
+	public static <ENTITY> ENTITY querySingleResult(final BaseQueryJpaPO queryPO) {
 
 		ENTITY entity = null;
 
 		try {
 
-			final Query query = decorateQuery(queryPO, null, orderedParameters);
+			final Query query = decorateQuery(queryPO, null);
 
 			entity = (ENTITY) query.getSingleResult();
 			JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
 
-		} catch (@SuppressWarnings("unused") final NoResultException e) {
+		} catch (final NoResultException e) {
 
 			JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
 

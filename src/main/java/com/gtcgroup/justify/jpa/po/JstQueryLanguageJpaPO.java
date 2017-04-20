@@ -34,7 +34,7 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
- * This Parameter Object class supports named query operations.
+ * This Parameter Object class supports native and query language queries.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -51,9 +51,9 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 	 *
 	 * @return {@link JstQueryLanguageJpaPO}
 	 */
-	public static JstQueryLanguageJpaPO withQuery(final boolean readOnly, final boolean suppressExceptionForNull) {
+	public static JstQueryLanguageJpaPO withQuery(final boolean suppressExceptionForNull) {
 
-		return new JstQueryLanguageJpaPO(readOnly, suppressExceptionForNull);
+		return new JstQueryLanguageJpaPO(suppressExceptionForNull);
 	}
 
 	protected String queryLanguageString;
@@ -63,10 +63,9 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 	/**
 	 * Constructor
 	 */
-	protected JstQueryLanguageJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
+	protected JstQueryLanguageJpaPO(final boolean suppressExceptionForNull) {
 
-		super(readOnly, suppressExceptionForNull);
-		this.readOnly = readOnly;
+		super(suppressExceptionForNull);
 		return;
 	}
 

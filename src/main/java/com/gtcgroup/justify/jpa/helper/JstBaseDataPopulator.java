@@ -31,7 +31,7 @@ import java.util.List;
 import com.gtcgroup.justify.core.base.JstBaseSuffix;
 
 /**
- * This Helper class provides support for creating test data.
+ * This Data Populator class provides support for creating test data.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at

@@ -124,7 +124,7 @@ public class JstTransactionJpaPO extends BaseJpaPO {
 	/**
 	 * @return {@link JstTransactionJpaPO}
 	 */
-	public <ENTITY> JstTransactionJpaPO withCreateAndUpdateEntities(final ENTITY... entity) {
+	public <ENTITY> JstTransactionJpaPO withCreateAndUpdateEntities(@SuppressWarnings("unchecked") final ENTITY... entity) {
 
 		this.entityMergeList.addAll(Arrays.asList(entity));
 		return this;
@@ -142,7 +142,7 @@ public class JstTransactionJpaPO extends BaseJpaPO {
 	/**
 	 * @return {@link JstTransactionJpaPO}
 	 */
-	public <ENTITY> JstTransactionJpaPO withDeleteEntities(final ENTITY... entity) {
+	public <ENTITY> JstTransactionJpaPO withDeleteEntities(@SuppressWarnings("unchecked") final ENTITY... entity) {
 
 		this.entityDeleteList.addAll(Arrays.asList(entity));
 		return this;

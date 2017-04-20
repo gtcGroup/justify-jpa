@@ -53,9 +53,9 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 	 *
 	 * @return {@link JstFindAllJpaPO}
 	 */
-	public static JstFindAllJpaPO withQuery(final boolean readOnly, final boolean suppressExceptionForNull) {
+	public static JstFindAllJpaPO withQuery(final boolean suppressExceptionForNull) {
 
-		return new JstFindAllJpaPO(readOnly, suppressExceptionForNull);
+		return new JstFindAllJpaPO(suppressExceptionForNull);
 	}
 
 	protected Class<?> resultClass;
@@ -63,10 +63,9 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 	/**
 	 * Constructor
 	 */
-	protected JstFindAllJpaPO(final boolean readOnly, final boolean suppressExceptionForNull) {
+	protected JstFindAllJpaPO(final boolean suppressExceptionForNull) {
 
-		super(readOnly, suppressExceptionForNull);
-		this.readOnly = readOnly;
+		super(suppressExceptionForNull);
 		return;
 	}
 
