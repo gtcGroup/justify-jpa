@@ -34,7 +34,8 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
 
 /**
- * This Parameter Object base class supports query execution.
+ * This Parameter Object base class supports queries and transactions using a
+ * Resource Manager.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -105,7 +106,7 @@ public abstract class BaseJpaPO extends JstBasePO {
 	public boolean isSuppressException() {
 		return this.suppressExceptionForNull;
 	}
-	
+
 	/**
 	 * @return {@link JstCountAllJpaPO}
 	 */

@@ -28,7 +28,7 @@ package com.gtcgroup.justify.jpa.po.internal;
 import javax.persistence.Query;
 
 /**
- * This Parameter Object base class supports query execution.
+ * This Parameter Object base class supports queries using a Resource Manager.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at

@@ -31,7 +31,8 @@ import java.util.List;
 import com.gtcgroup.justify.core.base.JstBaseSuffix;
 
 /**
- * This Data Populator class provides support for creating test data.
+ * This Data Populator base class provides support for populating test data with
+ * a Template Method.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -53,11 +54,11 @@ public abstract class JstBaseDataPopulator extends JstBaseSuffix {
 	}
 
 	/**
-     * This template method enables the formation of a list of populated entities for
-     * subsequent database inserts by the Configure JPA Rule.
-     *
-     * @return {@link List}
-     */
+	 * This template method enables the formation of a list of populated
+	 * entities for subsequent database inserts by the Configure JPA Rule.
+	 *
+	 * @return {@link List}
+	 */
 	public abstract List<Object> populateCreateListTM(String persistenceUnitName);
 
 }

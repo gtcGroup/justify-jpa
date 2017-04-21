@@ -43,7 +43,7 @@ import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
- * This Util Helper class provides persistence {@link Query} support.
+ * This Helper class provides persistence {@link Query} support.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at

@@ -7,6 +7,10 @@ JPA MODULE: Justify supports JUnit testing with "real" (functionally equivalent)
 
 ### <a name="changes"></a>Release Notes
 
+#### Version 8.3.0 <span class="date">2017-04-21</span>
+
+*   11 [Prepare for v8.3.0](https://github.com/gtcGroup/justify-jpa/issues/11)
+
 #### Version 6.3.1 <span class="date">2017-04-08</span>
 
 *   10 [Implement assertCached() / assertNotCached() methods.](https://github.com/gtcGroup/justify-jpa/issues/10)

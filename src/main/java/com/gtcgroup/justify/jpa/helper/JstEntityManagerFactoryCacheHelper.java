@@ -34,11 +34,11 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.jpa.helper.internal.JdbcUrlCacheHelper;
+import com.gtcgroup.justify.jpa.helper.internal.JdbcUrlUtilHelper;
 import com.gtcgroup.justify.jpa.helper.internal.PersistenceKeyCacheHelper;
 
 /**
- * This Helper class caches {@link EntityManagerFactory}.
+ * This Helper class caches {@link EntityManagerFactory}(s).
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -83,7 +83,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 
         String persistenceKey = null;
         final String jdbcURL =
-            JdbcUrlCacheHelper.retrieveJdbcUrlOrNull(persistenceUnitName, persistencePropertyMapOrNull);
+            JdbcUrlUtilHelper.retrieveJdbcUrlOrNull(persistenceUnitName, persistencePropertyMapOrNull);
 
         if (null == jdbcURL) {
 

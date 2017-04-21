@@ -32,7 +32,7 @@ import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstQueryLanguageJpaPO;
 
 /**
- * This Resource Manager provides convenience methods for named queries.
+ * This Resource Manager class supports native and query language queries.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at

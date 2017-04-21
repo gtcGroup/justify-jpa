@@ -62,7 +62,7 @@ public enum AssertionsJPA {
 	private static Object parentEntity;
 
 	/**
-	 * This method verifies cascade annotations.
+	 * This method verifies cascade annotations. If properly executed, it will remove any persisted instances used for verification.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ENTITY, PO extends JstAssertCascadeJpaPO> ENTITY assertCascadeTypes(final PO assertionsCascadePO) {

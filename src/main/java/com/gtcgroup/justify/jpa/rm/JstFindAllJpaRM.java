@@ -32,8 +32,7 @@ import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
 
 /**
- * This Resource Manager provides convenience methods for criteria queries that
- * perform find all operations.
+ * This Resource Manager class supports finding all entities.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at

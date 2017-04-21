@@ -30,14 +30,13 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 
 /**
- * This Util Helper class provides persistence {@link Query} support.
+ * This Helper class provides persistence transaction support.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -120,9 +119,6 @@ public enum JstTransactionUtilHelper {
 		return entityMergeList;
 	}
 
-	/**
-	 * This method deletes entities.
-	 */
 	private static <PO extends JstTransactionJpaPO> void removeEntities(final PO transactionPO) {
 
 		if (transactionPO.isEntityDelete()) {
@@ -137,7 +133,7 @@ public enum JstTransactionUtilHelper {
 	}
 
 	/**
-	 * This method is used for committing a single transaction. If any of the
+	 * This method is used for committing multiple entities. If any of the
 	 * related child objects are not marked for an applicable
 	 * {@link CascadeType} then they need to be explicitly in the
 	 * {@link JstTransactionJpaPO}.
@@ -170,10 +166,9 @@ public enum JstTransactionUtilHelper {
 	}
 
 	/**
-	 * This method is used for committing a single transaction. If any of the
-	 * related child objects are not marked for an applicable
-	 * {@link CascadeType} then they need to be explicitly in the
-	 * {@link JstTransactionJpaPO}.
+	 * This method is used for committing a single entity. If any of the related
+	 * child objects are not marked for an applicable {@link CascadeType} then
+	 * they need to be explicitly in the {@link JstTransactionJpaPO}.
 	 *
 	 * @return {@link Object}
 	 */
@@ -182,5 +177,4 @@ public enum JstTransactionUtilHelper {
 
 		return (ENTITY) transactEntities(transactionPO).get(0);
 	}
-
 }

@@ -35,7 +35,7 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 
 /**
- * This Parameter Object class supports find operations.
+ * This Parameter Object class supports transactions.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at

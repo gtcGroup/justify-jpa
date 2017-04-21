@@ -37,7 +37,7 @@ import org.eclipse.persistence.config.QueryHints;
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 
 /**
- * This Util Helper class provides persistence {@link EntityManager} support.
+ * This Helper class provides persistence {@link EntityManager} support.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at

@@ -32,7 +32,7 @@ import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
 
 /**
- * This Resource Manager provides convenience methods for find operations.
+ * This Resource Manager class supports find operations.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
