@@ -29,11 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.persistence.CacheRetrieveMode;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
@@ -91,7 +94,12 @@ public enum JstQueryUtilHelper {
 			}
 		}
 
-		query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+		//TODO: Verify
+		//query.setHint(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+		//query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+		//query.setHint(QueryHints.REFRESH, HintValues.TRUE);
+		//query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+		//query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
 
 		if (queryPO.isFirstResult()) {
 

@@ -31,6 +31,8 @@ import java.util.Map;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
@@ -55,6 +57,9 @@ public enum JstEntityManagerUtilHelper {
 	/** Optimization for read-only. */
 	public static final Map<String, Object> FIND_READ_ONLY = new HashMap<String, Object>();
 
+	/** Optimization for read-only. */
+	public static final Map<String, Object> CHECK_CACHE_ONLY = new HashMap<String, Object>();
+
 	/**
 	 * Optimization for reading from the database. Often used when there are
 	 * multiple servers and no cache coordination.
@@ -69,10 +74,20 @@ public enum JstEntityManagerUtilHelper {
 
 	static {
 
+		JstEntityManagerUtilHelper.CHECK_CACHE_ONLY.put(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
+
 		JstEntityManagerUtilHelper.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
 
-		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE,
-				CacheRetrieveMode.BYPASS);
+		// JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE,
+		// CacheRetrieveMode.BYPASS);
+
+		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+
+		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.REFRESH_CASCADE,
+				CascadePolicy.CascadeByMapping);
+
+		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_USAGE,
+				CacheUsage.ConformResultsInUnitOfWork);
 
 		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.CACHE_RETRIEVE_MODE,
 				CacheRetrieveMode.BYPASS);
@@ -257,13 +272,47 @@ public enum JstEntityManagerUtilHelper {
 	}
 
 	/**
+	 * This method determines whether the shared (L2) cache contains the given
+	 * persisted entities.
+	 *
+	 * @return boolean
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ENTITY> boolean existsInSharedCacheWithInstance(final EntityManager entityManager,
+			final Object... entities) {
+
+		ENTITY cachedEntity;
+
+		try {
+
+			for (final Object entity : entities) {
+
+				// TODO: Cache only.
+
+				cachedEntity = (ENTITY) entityManager.find(entity.getClass(), retrieveIdentity(entityManager, entity), CHECK_CACHE_ONLY);
+
+				// TODO: Compare the identities.
+				if (null == cachedEntity || cachedEntity.equals(entity)) {
+					return false;
+				}
+			}
+
+		} catch (final Exception e) {
+
+			throw new JustifyRuntimeException(e);
+		}
+		return true;
+	}
+
+	/**
 	 * @return {@link Object} or null
 	 */
 	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager,
 			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
 		try {
-			return entityManager.find(entityClass, entityIdentity, JstEntityManagerUtilHelper.FIND_READ_ONLY);
+			return entityManager.find(entityClass, entityIdentity,
+					JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP);
 		} catch (final Exception e) {
 			throw new JustifyRuntimeException(e);
 		}
@@ -276,8 +325,9 @@ public enum JstEntityManagerUtilHelper {
 	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager,
 			final Object populatedEntity) {
 
+		// TODO: Check this out.
 		return (ENTITY) entityManager.find(populatedEntity.getClass(), retrieveIdentity(entityManager, populatedEntity),
-				JstEntityManagerUtilHelper.FIND_READ_ONLY);
+				JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP);
 	}
 
 	/**

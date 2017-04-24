@@ -53,6 +53,16 @@ public class JstFindJpaPO extends BaseJpaPO {
 
 		return new JstFindJpaPO(suppressExceptionForNull);
 	}
+	
+	/**
+	 * This method initializes the class.
+	 *
+	 * @return {@link JstFindJpaPO}
+	 */
+	public static JstFindJpaPO withFind() {
+
+		return new JstFindJpaPO(false);
+	}
 
 	private Class<Object> entityClass;
 

@@ -112,6 +112,14 @@ public enum JstTransactionUtilHelper {
 
 			for (Object entity : transactionPO.getEntityMergeList()) {
 
+				// TODO: Verify not cached instance.
+				if (JstEntityManagerUtilHelper.existsInSharedCacheWithInstance(transactionPO.getEntityManager(),
+						entity)) {
+
+					throw new JustifyRuntimeException(
+							"An attempt was made to modify an instance that exists in shared cache.");
+				}
+
 				entity = transactionPO.getEntityManager().merge(entity);
 				entityMergeList.add((ENTITY) entity);
 			}

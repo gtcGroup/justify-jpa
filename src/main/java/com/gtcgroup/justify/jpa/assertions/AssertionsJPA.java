@@ -62,7 +62,8 @@ public enum AssertionsJPA {
 	private static Object parentEntity;
 
 	/**
-	 * This method verifies cascade annotations. If properly executed, it will remove any persisted instances used for verification.
+	 * This method verifies cascade annotations. If properly executed, it will
+	 * remove any persisted instances used for verification.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ENTITY, PO extends JstAssertCascadeJpaPO> ENTITY assertCascadeTypes(final PO assertionsCascadePO) {
@@ -104,7 +105,7 @@ public enum AssertionsJPA {
 		if (!JstEntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
 				entityIdentities)) {
 
-			assertFailWithMessage(persistenceUnitName, entityClass, "database", "unavailable");
+			assertFailWithMessage(persistenceUnitName, entityClass, "database", "instance unavailable");
 		}
 		return;
 	}
@@ -123,7 +124,7 @@ public enum AssertionsJPA {
 				return;
 			}
 		}
-		assertFailWithMessage(persistenceUnitName, null, "database", "unavailable");
+		assertFailWithMessage(persistenceUnitName, null, "database", "instance unavailable");
 	}
 
 	public static void assertExistsInDatabase(final String persistenceUnitName,
@@ -140,7 +141,7 @@ public enum AssertionsJPA {
 		if (!JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
 				populatedEntities)) {
 
-			assertFailWithMessage(persistenceUnitName, null, "database", "unavailable");
+			assertFailWithMessage(persistenceUnitName, null, "database", "instance unavailable");
 		}
 		return;
 	}
@@ -153,7 +154,7 @@ public enum AssertionsJPA {
 		if (!JstEntityManagerUtilHelper.existsInSharedCacheWithEntityIdentities(AssertionsJPA.entityManager,
 				entityClass, entityIdentities)) {
 
-			assertFailWithMessage(persistenceUnitName, null, "shared cache", "unavailable");
+			assertFailWithMessage(persistenceUnitName, null, "shared cache", "class unavailable");
 		}
 	}
 
@@ -164,7 +165,7 @@ public enum AssertionsJPA {
 		if (!JstEntityManagerUtilHelper.existsInSharedCacheWithPopulatedEntities(AssertionsJPA.entityManager,
 				managedEntities)) {
 
-			assertFailWithMessage(persistenceUnitName, null, "shared cache", "unavailable");
+			assertFailWithMessage(persistenceUnitName, null, "shared cache", "class unavailable");
 		}
 	}
 
@@ -173,7 +174,7 @@ public enum AssertionsJPA {
 
 		final StringBuilder assertionErrorMessage = new StringBuilder();
 
-		assertionErrorMessage.append("An expected instance ");
+		assertionErrorMessage.append("An expected ");
 
 		if (null != entityClassOrNull) {
 			assertionErrorMessage.append("of [");
@@ -181,7 +182,6 @@ public enum AssertionsJPA {
 			assertionErrorMessage.append("] ");
 		}
 
-		assertionErrorMessage.append("is ");
 		assertionErrorMessage.append(availableOrUnavailable);
 		assertionErrorMessage.append(" from the ");
 		assertionErrorMessage.append(fromWhere + " [");
@@ -199,7 +199,7 @@ public enum AssertionsJPA {
 		if (JstEntityManagerUtilHelper.existsInDatabaseWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
 				entityIdentities)) {
 
-			assertFailWithMessage(persistenceUnitName, entityClass, "database", "unexpectedly available");
+			assertFailWithMessage(persistenceUnitName, entityClass, "database", "instance unexpectedly available");
 		}
 		return;
 	}
@@ -212,7 +212,7 @@ public enum AssertionsJPA {
 		if (JstEntityManagerUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
 				populatedEntities)) {
 
-			assertFailWithMessage(persistenceUnitName, null, "database", "unexpectedly available");
+			assertFailWithMessage(persistenceUnitName, null, "database", "instance unexpectedly available");
 		}
 	}
 
@@ -224,7 +224,31 @@ public enum AssertionsJPA {
 		if (JstEntityManagerUtilHelper.existsInSharedCacheWithPopulatedEntities(AssertionsJPA.entityManager,
 				populatedEntities)) {
 
-			assertFailWithMessage(persistenceUnitName, null, "shared cache", "unexpectedly available");
+			assertFailWithMessage(persistenceUnitName, null, "shared cache", "class unexpectedly available");
+		}
+	}
+	
+	public static void assertInstanceExistsInSharedCache(final String persistenceUnitName,
+			final Object... populatedEntities) {
+
+		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
+
+		if (!JstEntityManagerUtilHelper.existsInSharedCacheWithInstance(AssertionsJPA.entityManager,
+				populatedEntities)) {
+
+			assertFailWithMessage(persistenceUnitName, null, "shared cache", "instance not found");
+		}
+	}
+	
+	public static void assertInstanceNotExistsInSharedCache(final String persistenceUnitName,
+			final Object... populatedEntities) {
+
+		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
+
+		if (JstEntityManagerUtilHelper.existsInSharedCacheWithInstance(AssertionsJPA.entityManager,
+				populatedEntities)) {
+
+			assertFailWithMessage(persistenceUnitName, null, "shared cache", "same instance found");
 		}
 	}
 

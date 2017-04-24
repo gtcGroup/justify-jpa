@@ -46,6 +46,17 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  * @since v.6.2
  */
 public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
+	
+	/**
+	 * This method initializes the class.
+	 *
+	 * @return {@link JstNamedQueryJpaPO}
+	 */
+	public static JstNamedQueryJpaPO withQuery() {
+
+		return new JstNamedQueryJpaPO(false);
+	}
+
 
 	/**
 	 * This method initializes the class.
