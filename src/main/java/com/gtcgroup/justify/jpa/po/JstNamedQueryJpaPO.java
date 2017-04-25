@@ -31,7 +31,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -46,7 +45,7 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  * @since v.6.2
  */
 public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
-	
+
 	/**
 	 * This method initializes the class.
 	 *
@@ -56,7 +55,6 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 
 		return new JstNamedQueryJpaPO(false);
 	}
-
 
 	/**
 	 * This method initializes the class.
@@ -161,10 +159,7 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstNamedQueryJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		this.persistenceUnitName = persistenceUnitName;
-		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-
-		return this;
+		return (JstNamedQueryJpaPO) super.withPersistenceUnitName(persistenceUnitName);
 	}
 
 	/**
@@ -173,6 +168,24 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	public JstNamedQueryJpaPO withQueryName(final String queryName) {
 
 		this.queryName = queryName;
+		return this;
+	}
+
+	/**
+	 * @return {@link JstNamedQueryJpaPO}
+	 */
+	public JstNamedQueryJpaPO withSuppressReadOnly(final boolean suppress) {
+
+		this.suppressReadOnly = suppress;
+		return this;
+	}
+
+	/**
+	 * @return {@link JstNamedQueryJpaPO}
+	 */
+	public JstNamedQueryJpaPO withSuppressForcedTripToDatabase(final boolean suppress) {
+
+		this.suppressForcedTripToDatabase = suppress;
 		return this;
 	}
 

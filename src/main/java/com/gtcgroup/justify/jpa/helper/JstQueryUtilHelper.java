@@ -94,12 +94,18 @@ public enum JstQueryUtilHelper {
 			}
 		}
 
-		//TODO: Verify
-		//query.setHint(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
-		//query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-		//query.setHint(QueryHints.REFRESH, HintValues.TRUE);
-		//query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
-		//query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+		// TODO: Verify
+		if (!queryPO.isSuppressForcedTripToDatabase()) {
+			query.setHint(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+			query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+			query.setHint(QueryHints.REFRESH, HintValues.TRUE);
+			query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+		}
+
+		if (!queryPO.isSuppressReadOnly()) {
+
+			query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+		}
 
 		if (queryPO.isFirstResult()) {
 

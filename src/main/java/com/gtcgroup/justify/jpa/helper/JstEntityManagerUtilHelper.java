@@ -28,12 +28,10 @@ package com.gtcgroup.justify.jpa.helper;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CascadePolicy;
-import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
@@ -55,44 +53,26 @@ public enum JstEntityManagerUtilHelper {
 	INSTANCE;
 
 	/** Optimization for read-only. */
-	public static final Map<String, Object> FIND_READ_ONLY = new HashMap<String, Object>();
-
-	/** Optimization for read-only. */
 	public static final Map<String, Object> CHECK_CACHE_ONLY = new HashMap<String, Object>();
 
 	/**
 	 * Optimization for reading from the database. Often used when there are
 	 * multiple servers and no cache coordination.
 	 */
-	public static final Map<String, Object> FIND_FORCING_DATABASE_TRIP = new HashMap<String, Object>();
-
-	/**
-	 * Optimization for reading from the database only. That is, cache is NOT
-	 * impacted.
-	 */
-	public static final Map<String, Object> FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY = new HashMap<String, Object>();
+	public static final Map<String, Object> FIND_FORCE_DATABASE_TRIP = new HashMap<String, Object>();
 
 	static {
 
 		JstEntityManagerUtilHelper.CHECK_CACHE_ONLY.put(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
 
-		JstEntityManagerUtilHelper.FIND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
+		JstEntityManagerUtilHelper.FIND_FORCE_DATABASE_TRIP.put(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
 
-		// JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE,
-		// CacheRetrieveMode.BYPASS);
-
-		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-
-		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.REFRESH_CASCADE,
+		JstEntityManagerUtilHelper.FIND_FORCE_DATABASE_TRIP.put(QueryHints.REFRESH_CASCADE,
 				CascadePolicy.CascadeByMapping);
 
-		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP.put(QueryHints.CACHE_USAGE,
+		JstEntityManagerUtilHelper.FIND_FORCE_DATABASE_TRIP.put(QueryHints.CACHE_USAGE,
 				CacheUsage.ConformResultsInUnitOfWork);
 
-		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.CACHE_RETRIEVE_MODE,
-				CacheRetrieveMode.BYPASS);
-
-		JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY.put(QueryHints.READ_ONLY, HintValues.TRUE);
 	}
 
 	/**
@@ -149,7 +129,7 @@ public enum JstEntityManagerUtilHelper {
 		for (final Object entityIdentity : entityIdentities) {
 
 			result = entityManager.find(entityClass, entityIdentity,
-					JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+					JstEntityManagerUtilHelper.FIND_FORCE_DATABASE_TRIP);
 
 			if (null != result) {
 				evictEntityInstanceFromSharedCache(entityManager, result);
@@ -172,7 +152,7 @@ public enum JstEntityManagerUtilHelper {
 		for (final Object entityIdentity : entityIdentities) {
 
 			result = entityManager.find(entityClass, entityIdentity,
-					JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+					JstEntityManagerUtilHelper.FIND_FORCE_DATABASE_TRIP);
 
 			if (null == result) {
 				return false;
@@ -198,7 +178,7 @@ public enum JstEntityManagerUtilHelper {
 
 				result = entityManager.find(populatedEntity.getClass(),
 						retrieveIdentity(entityManager, populatedEntity),
-						JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP_AND_READ_ONLY);
+						JstEntityManagerUtilHelper.FIND_FORCE_DATABASE_TRIP);
 
 				if (null == result) {
 					return false;
@@ -287,19 +267,27 @@ public enum JstEntityManagerUtilHelper {
 
 			for (final Object entity : entities) {
 
-				// TODO: Cache only.
+				Object identity;
 
-				cachedEntity = (ENTITY) entityManager.find(entity.getClass(), retrieveIdentity(entityManager, entity), CHECK_CACHE_ONLY);
+				try {
+					identity = retrieveIdentity(entityManager, entity);
+				} catch (Exception e) {
+					return false;
+				}
+
+				cachedEntity = (ENTITY) entityManager.find(entity.getClass(), identity, CHECK_CACHE_ONLY);
 
 				// TODO: Compare the identities.
-				if (null == cachedEntity || cachedEntity.equals(entity)) {
+				// if (null == cachedEntity || !cachedEntity.equals(entity)) {
+				if (null == cachedEntity
+						|| (System.identityHashCode(cachedEntity) != System.identityHashCode(entity))) {
 					return false;
 				}
 			}
 
 		} catch (final Exception e) {
 
-			throw new JustifyRuntimeException(e);
+			return false;
 		}
 		return true;
 	}
@@ -307,12 +295,14 @@ public enum JstEntityManagerUtilHelper {
 	/**
 	 * @return {@link Object} or null
 	 */
-	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager,
-			final Class<ENTITY> entityClass, final Object entityIdentity) {
+	public static <ENTITY> ENTITY findForcedTripToDatabase(final EntityManager entityManager,
+			final Class<ENTITY> entityClass, final Object entityIdentity, boolean suppressForcedTripToDatabase) {
 
 		try {
-			return entityManager.find(entityClass, entityIdentity,
-					JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP);
+			if (suppressForcedTripToDatabase) {
+				return entityManager.find(entityClass, entityIdentity);
+			}
+			return entityManager.find(entityClass, entityIdentity, JstEntityManagerUtilHelper.FIND_FORCE_DATABASE_TRIP);
 		} catch (final Exception e) {
 			throw new JustifyRuntimeException(e);
 		}
@@ -322,12 +312,22 @@ public enum JstEntityManagerUtilHelper {
 	 * @return {@link Object} or null
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ENTITY> ENTITY findReadOnlySingleOrNull(final EntityManager entityManager,
-			final Object populatedEntity) {
+	public static <ENTITY> ENTITY findForceTripToDatabase(final EntityManager entityManager,
+			final Object populatedEntity, boolean suppressForcedTripToDatabase) {
 
-		// TODO: Check this out.
-		return (ENTITY) entityManager.find(populatedEntity.getClass(), retrieveIdentity(entityManager, populatedEntity),
-				JstEntityManagerUtilHelper.FIND_FORCING_DATABASE_TRIP);
+		try {
+			if (suppressForcedTripToDatabase) {
+				return (ENTITY) entityManager.find(populatedEntity.getClass(),
+						retrieveIdentity(entityManager, populatedEntity));
+			}
+
+			return (ENTITY) entityManager.find(populatedEntity.getClass(),
+					retrieveIdentity(entityManager, populatedEntity),
+					JstEntityManagerUtilHelper.FIND_FORCE_DATABASE_TRIP);
+
+		} catch (final Exception e) {
+			throw new JustifyRuntimeException(e);
+		}
 	}
 
 	/**

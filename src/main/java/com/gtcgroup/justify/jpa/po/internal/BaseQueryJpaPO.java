@@ -45,6 +45,9 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 	protected int firstResult;
 
 	protected int maxResults;
+	
+	protected boolean suppressReadOnly = false;
+
 
 	/**
 	 * Constructor
@@ -85,5 +88,12 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 	 */
 	public boolean isMaxResults() {
 		return 0 != this.maxResults;
+	}
+	
+	/**
+	 * @return boolean
+	 */
+	public boolean isSuppressReadOnly() {
+		return this.suppressReadOnly;
 	}
 }

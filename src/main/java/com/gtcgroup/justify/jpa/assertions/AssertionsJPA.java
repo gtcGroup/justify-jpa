@@ -227,7 +227,7 @@ public enum AssertionsJPA {
 			assertFailWithMessage(persistenceUnitName, null, "shared cache", "class unexpectedly available");
 		}
 	}
-	
+
 	public static void assertInstanceExistsInSharedCache(final String persistenceUnitName,
 			final Object... populatedEntities) {
 
@@ -239,7 +239,7 @@ public enum AssertionsJPA {
 			assertFailWithMessage(persistenceUnitName, null, "shared cache", "instance not found");
 		}
 	}
-	
+
 	public static void assertInstanceNotExistsInSharedCache(final String persistenceUnitName,
 			final Object... populatedEntities) {
 
@@ -296,18 +296,23 @@ public enum AssertionsJPA {
 
 	private static void deleteParentEntity() {
 
-		JstTransactionUtilHelper.findAndDeleteEntity(AssertionsJPA.entityManager, AssertionsJPA.parentEntity);
+		if (null != AssertionsJPA.parentEntity) {
+
+			JstTransactionUtilHelper.findAndDeleteEntity(AssertionsJPA.entityManager, AssertionsJPA.parentEntity);
+		}
 	}
 
 	private static void deleteRemainingEntities() {
 
-		for (final String method : AssertionsJPA.assertionsJpaCascadePO.getAfterTheTestCleanupList()) {
+		if (null != AssertionsJPA.parentEntity) {
+			for (final String method : AssertionsJPA.assertionsJpaCascadePO.getAfterTheTestCleanupList()) {
 
-			try {
-				JstTransactionUtilHelper.findAndDeleteRelatedEntity(AssertionsJPA.entityManager,
-						AssertionsJPA.parentEntity, method);
-			} catch (final Exception e) {
-				// Ignore
+				try {
+					JstTransactionUtilHelper.findAndDeleteRelatedEntity(AssertionsJPA.entityManager,
+							AssertionsJPA.parentEntity, method);
+				} catch (final Exception e) {
+					// Ignore
+				}
 			}
 		}
 	}

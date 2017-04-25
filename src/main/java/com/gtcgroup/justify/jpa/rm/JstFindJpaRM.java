@@ -60,18 +60,18 @@ public enum JstFindJpaRM {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected static <ENTITY> ENTITY findReadOnly(final JstFindJpaPO findPO) {
+	protected static <ENTITY> ENTITY findContainingIdentity(final JstFindJpaPO findPO) {
 
 		ENTITY entity;
 		if (findPO.isPopulatedEntityContainingIdentity()) {
 
-			entity = (ENTITY) JstEntityManagerUtilHelper.findReadOnlySingleOrNull(findPO.getEntityManager(),
-					findPO.getPopulatedEntityContainingIdentity());
+			entity = (ENTITY) JstEntityManagerUtilHelper.findForceTripToDatabase(findPO.getEntityManager(),
+					findPO.getPopulatedEntityContainingIdentity(), findPO.isSuppressForcedTripToDatabase());
 
 		} else {
 
-			entity = (ENTITY) JstEntityManagerUtilHelper.findReadOnlySingleOrNull(findPO.getEntityManager(),
-					findPO.getEntityClass(), findPO.getEntityIdentity());
+			entity = (ENTITY) JstEntityManagerUtilHelper.findForcedTripToDatabase(findPO.getEntityManager(),
+					findPO.getEntityClass(), findPO.getEntityIdentity(), findPO.isSuppressForcedTripToDatabase());
 		}
 		return entity;
 	}
@@ -82,7 +82,7 @@ public enum JstFindJpaRM {
 
 		try {
 
-			entity = findReadOnly(findPO);
+			entity = findContainingIdentity(findPO);
 
 		} catch (final Exception e) {
 			throw new JustifyRuntimeException(e);

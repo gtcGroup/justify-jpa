@@ -32,7 +32,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -135,10 +134,7 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstFindAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		this.persistenceUnitName = persistenceUnitName;
-		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-
-		return this;
+		return (JstFindAllJpaPO) super.withPersistenceUnitName(persistenceUnitName);
 	}
 
 	/**

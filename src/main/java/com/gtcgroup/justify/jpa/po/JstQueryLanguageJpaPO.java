@@ -30,7 +30,6 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -158,10 +157,7 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstQueryLanguageJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		this.persistenceUnitName = persistenceUnitName;
-		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-
-		return this;
+		return (JstQueryLanguageJpaPO) super.withPersistenceUnitName(persistenceUnitName);
 	}
 
 	/**

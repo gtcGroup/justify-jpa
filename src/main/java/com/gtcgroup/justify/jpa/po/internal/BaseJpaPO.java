@@ -56,6 +56,8 @@ public abstract class BaseJpaPO extends JstBasePO {
 	protected String persistenceUnitName;
 
 	protected Map<String, Object> persistencePropertyMapOrNull;
+	
+	protected boolean suppressForcedTripToDatabase = false;
 
 	/**
 	 * Constructor
@@ -105,6 +107,14 @@ public abstract class BaseJpaPO extends JstBasePO {
 	 */
 	public boolean isSuppressException() {
 		return this.suppressExceptionForNull;
+	}
+	
+	
+	/**
+	 * @return boolean
+	 */
+	public boolean isSuppressForcedTripToDatabase() {
+		return this.suppressForcedTripToDatabase;
 	}
 
 	/**

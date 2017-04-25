@@ -58,7 +58,7 @@ public enum JstTransactionUtilHelper {
 	public static <ENTITY> void findAndDeleteEntity(final EntityManager entityManager,
 			final ENTITY entityWithIdentity) {
 
-		ENTITY entity = JstEntityManagerUtilHelper.findReadOnlySingleOrNull(entityManager, entityWithIdentity);
+		ENTITY entity = JstEntityManagerUtilHelper.findForceTripToDatabase(entityManager, entityWithIdentity, false);
 
 		if (null == entity) {
 			return;

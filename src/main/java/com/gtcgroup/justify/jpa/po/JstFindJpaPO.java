@@ -143,10 +143,8 @@ public class JstFindJpaPO extends BaseJpaPO {
 	 */
 	public JstFindJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		super.persistenceUnitName = persistenceUnitName;
-		return this;
+		return (JstFindJpaPO) super.withPersistenceUnitName(persistenceUnitName);
 	}
-
 	/**
 	 * @return {@link JstFindJpaPO}
 	 */
@@ -162,6 +160,15 @@ public class JstFindJpaPO extends BaseJpaPO {
 	public JstFindJpaPO withPopulatedEntityContainingIdentity(final Object populatedEntityContainingIdentity) {
 
 		this.populatedEntityContainingIdentity = populatedEntityContainingIdentity;
+		return this;
+	}
+	
+	/**
+	 * @return {@link JstNamedQueryJpaPO}
+	 */
+	public JstFindJpaPO withSuppressForcedTripToDatabase(final boolean suppress) {
+
+		this.suppressForcedTripToDatabase = suppress;
 		return this;
 	}
 }
