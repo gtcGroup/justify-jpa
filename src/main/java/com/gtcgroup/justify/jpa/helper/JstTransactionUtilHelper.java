@@ -58,7 +58,7 @@ public enum JstTransactionUtilHelper {
 	public static <ENTITY> void findAndDeleteEntity(final EntityManager entityManager,
 			final ENTITY entityWithIdentity) {
 
-		ENTITY entity = JstEntityManagerUtilHelper.findForceTripToDatabase(entityManager, entityWithIdentity, false);
+		ENTITY entity = JstFindUtilHelper.findForceDatabaseTrip(entityManager, entityWithIdentity, false);
 
 		if (null == entity) {
 			return;
@@ -111,14 +111,6 @@ public enum JstTransactionUtilHelper {
 		if (transactionPO.isEntityMerge()) {
 
 			for (Object entity : transactionPO.getEntityMergeList()) {
-
-				// TODO: Verify not cached instance.
-				if (JstEntityManagerUtilHelper.existsInSharedCacheWithInstance(transactionPO.getEntityManager(),
-						entity)) {
-
-					throw new JustifyRuntimeException(
-							"An attempt was made to modify an instance that exists in shared cache.");
-				}
 
 				entity = transactionPO.getEntityManager().merge(entity);
 				entityMergeList.add((ENTITY) entity);

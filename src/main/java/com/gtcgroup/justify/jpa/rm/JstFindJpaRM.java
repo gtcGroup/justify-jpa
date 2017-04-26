@@ -27,7 +27,7 @@
 package com.gtcgroup.justify.jpa.rm;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.jpa.helper.JstEntityManagerUtilHelper;
+import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
 
@@ -65,12 +65,12 @@ public enum JstFindJpaRM {
 		ENTITY entity;
 		if (findPO.isPopulatedEntityContainingIdentity()) {
 
-			entity = (ENTITY) JstEntityManagerUtilHelper.findForceTripToDatabase(findPO.getEntityManager(),
+			entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
 					findPO.getPopulatedEntityContainingIdentity(), findPO.isSuppressForcedTripToDatabase());
 
 		} else {
 
-			entity = (ENTITY) JstEntityManagerUtilHelper.findForcedTripToDatabase(findPO.getEntityManager(),
+			entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
 					findPO.getEntityClass(), findPO.getEntityIdentity(), findPO.isSuppressForcedTripToDatabase());
 		}
 		return entity;
