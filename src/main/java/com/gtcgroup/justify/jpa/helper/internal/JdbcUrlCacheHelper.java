@@ -27,6 +27,7 @@
 package com.gtcgroup.justify.jpa.helper.internal;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,18 +55,20 @@ import com.gtcgroup.justify.core.po.internal.StreamPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JdbcUrlUtilHelper {
+public enum JdbcUrlCacheHelper {
 
 	@SuppressWarnings("javadoc")
 	INTERNAL;
 
 	public static final String PERSISTENCE_DOT_XML = "META-INF/persistence.xml";
 
-	private static final String NOT_AVAILABLE = "n@tAvailable";
+    private static Map<String, String> combinationMap = new ConcurrentHashMap<>();
 
-	private static String jdbcURL = NOT_AVAILABLE;
+    // private static final String NOT_AVAILABLE = "n@tAvailable";
 
-	private static String persistenceUnitName = NOT_AVAILABLE;
+    // private static String jdbcURL = NOT_AVAILABLE;
+
+    // private static String persistenceUnitName = NOT_AVAILABLE;
 
 	/**
 	 * @return {@link String}
@@ -86,21 +89,23 @@ public enum JdbcUrlUtilHelper {
 	/**
 	 * This method searches the persistence.xml file for the
 	 * {@link PersistenceUnitProperties}.JDBC_URL.
-	 * 
+	 *
 	 * @return {@link String}
 	 */
-	public static String retrieveJdbcUrlOrNull(final String persistenceUnitName,
+    public static String retrieveJdbcUrlOrNull(final String persistenceUnitName,
 			final Map<String, Object> persistencePropertyMapOrNull) {
 
-		if ((NOT_AVAILABLE != jdbcURL) && (JdbcUrlUtilHelper.persistenceUnitName == persistenceUnitName)) {
-			return jdbcURL;
-		}
+        String jdbcURL = retrieveJdbcUrlOrNullFromPersistencePropertyMapOrNull(persistencePropertyMapOrNull);
 
-		String jdbcURL = retrieveJdbcUrlOrNullFromPersistencePropertyMapOrNull(persistencePropertyMapOrNull);
+        final String combinationKey = persistenceUnitName + jdbcURL;
 
-		if (null != jdbcURL) {
-			JdbcUrlUtilHelper.persistenceUnitName = persistenceUnitName;
-			JdbcUrlUtilHelper.jdbcURL = jdbcURL;
+        if (combinationMap.containsKey(combinationKey)) {
+            return combinationMap.get(combinationKey);
+        }
+
+        if (null != jdbcURL) {
+
+            combinationMap.put(combinationKey, jdbcURL);
 			return jdbcURL;
 		}
 
@@ -122,13 +127,12 @@ public enum JdbcUrlUtilHelper {
 			for (int i = 0; i < nodeList.getLength(); i++) {
 
 				nNode = nodeList.item(i);
-				final Element eElement = (Element) nNode;
+                final Element eElement = (Element)nNode;
 
-				if (eElement.getAttribute("name").equals(persistenceUnitName)) {
+                if (eElement.getAttribute("name").equals(persistenceUnitName)) {
 
-					JdbcUrlUtilHelper.persistenceUnitName = eElement.toString();
-					break;
-				}
+                    break;
+                }
 
 				if (i == nodeList.getLength() - 1) {
 
@@ -139,7 +143,7 @@ public enum JdbcUrlUtilHelper {
 
 			final Element eElement = (Element) nNode;
 
-			jdbcURL = processNodeList(eElement);
+			jdbcURL = retrieveJdbcUrlOrNull(eElement);
 
 		} catch (final Exception e) {
 
@@ -149,10 +153,11 @@ public enum JdbcUrlUtilHelper {
 				streamPO.closeInputStream();
 			}
 		}
+        combinationMap.put(combinationKey, jdbcURL);
 		return jdbcURL;
 	}
 
-	private static String processNodeList(final Element element) {
+	private static String retrieveJdbcUrlOrNull(final Element element) {
 
 		String jdbcUrlOrNull = null;
 
@@ -169,7 +174,6 @@ public enum JdbcUrlUtilHelper {
 			if (PersistenceUnitProperties.JDBC_URL.equals(node.getAttributes().getNamedItem("name").getNodeValue())) {
 
 				jdbcUrlOrNull = node.getAttributes().getNamedItem("value").getNodeValue();
-				JdbcUrlUtilHelper.jdbcURL = jdbcUrlOrNull;
 				break;
 			}
 		}

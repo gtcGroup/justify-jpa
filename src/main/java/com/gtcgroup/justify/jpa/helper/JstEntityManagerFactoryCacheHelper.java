@@ -34,7 +34,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.jpa.helper.internal.JdbcUrlUtilHelper;
+import com.gtcgroup.justify.jpa.helper.internal.JdbcUrlCacheHelper;
 import com.gtcgroup.justify.jpa.helper.internal.PersistenceKeyCacheHelper;
 
 /**
@@ -83,7 +83,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 
         String persistenceKey = null;
         final String jdbcURL =
-            JdbcUrlUtilHelper.retrieveJdbcUrlOrNull(persistenceUnitName, persistencePropertyMapOrNull);
+            JdbcUrlCacheHelper.retrieveJdbcUrlOrNull(persistenceUnitName, persistencePropertyMapOrNull);
 
         if (null == jdbcURL) {
 

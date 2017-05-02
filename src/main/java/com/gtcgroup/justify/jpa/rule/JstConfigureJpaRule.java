@@ -41,7 +41,7 @@ import com.gtcgroup.justify.core.exception.internal.RuleException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.helper.internal.JdbcUrlUtilHelper;
+import com.gtcgroup.justify.jpa.helper.internal.JdbcUrlCacheHelper;
 import com.gtcgroup.justify.jpa.helper.internal.PersistenceKeyCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
@@ -109,7 +109,7 @@ public class JstConfigureJpaRule extends JstBaseRule {
 
 		super();
 
-		final String jdbcURL = JdbcUrlUtilHelper.retrieveJdbcUrlOrNull(persistenceUnitName, persistencePropertyMap);
+		final String jdbcURL = JdbcUrlCacheHelper.retrieveJdbcUrlOrNull(persistenceUnitName, persistencePropertyMap);
 		if (null == jdbcURL) {
 			throw new JustifyRuntimeException("A jdbc url using the persistence unit name [" + this.persistenceUnitName
 					+ "] could not be found.");
