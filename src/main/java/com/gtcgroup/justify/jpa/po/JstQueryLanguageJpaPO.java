@@ -57,7 +57,7 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 
 	protected String queryLanguageString;
 
-	protected Class<?> resultClass;
+	protected Class<?> entityClass;
 
 	/**
 	 * Constructor
@@ -95,7 +95,7 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 
 			try {
 				if (isResultClass() && isQueryLanaguageString()) {
-					this.query = createQueryLanguageQuery(getQueryLanguageString(), getResultClass());
+					this.query = createQueryLanguageQuery(getQueryLanguageString(), getEntityClass());
 				} else if (isQueryLanaguageString()) {
 					this.query = createQueryLanguageQuery(getQueryLanguageString());
 				} else {
@@ -122,9 +122,9 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 	 * @return {@link Class}
 	 */
 	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getResultClass() {
+	public <ENTITY> Class<ENTITY> getEntityClass() {
 
-		return (Class<ENTITY>) this.resultClass;
+		return (Class<ENTITY>) this.entityClass;
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 	 */
 	public boolean isResultClass() {
 
-		return null != this.resultClass;
+		return null != this.entityClass;
 	}
 
 	/**
@@ -172,9 +172,9 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstQueryLanguageJpaPO}
 	 */
-	public <ENTITY> JstQueryLanguageJpaPO withResultClass(final Class<ENTITY> resultClass) {
+	public <ENTITY> JstQueryLanguageJpaPO withEntityClass(final Class<ENTITY> entityClass) {
 
-		this.resultClass = resultClass;
+		this.entityClass = entityClass;
 		return this;
 	}
 }

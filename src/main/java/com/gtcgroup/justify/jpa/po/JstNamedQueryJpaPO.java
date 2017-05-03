@@ -183,7 +183,7 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstNamedQueryJpaPO}
 	 */
-	public JstNamedQueryJpaPO withSuppressForcedTripToDatabase(final boolean suppress) {
+	public JstNamedQueryJpaPO withSuppressForceDatabaseTrip(final boolean suppress) {
 
 		this.suppressForceDatabaseTrip = suppress;
 		return this;
