@@ -48,81 +48,91 @@ import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
  */
 public abstract class BaseJpaPO extends JstBasePO {
 
-    protected boolean suppressExceptionForNull = false;
+	protected boolean suppressExceptionForNull = false;
 
-    protected EntityManager entityManager;
+	protected EntityManager entityManager;
 
-    protected boolean entityManagerNeedsToBeClosed = false;
+	protected boolean entityManagerNeedsToBeClosed = false;
 
-    protected String persistenceUnitName;
+	protected String persistenceUnitName;
 
-    protected Map<String, Object> persistencePropertyMapOrNull;
+	protected Map<String, Object> persistencePropertyMapOrNull;
 
-    protected boolean suppressForcedTripToDatabase = false;
+	protected boolean suppressForceDatabaseTrip = false;
 
-    /**
-     * Constructor
-     */
-    protected BaseJpaPO(final boolean suppressExceptionForNull) {
+	/**
+	 * Constructor
+	 */
+	protected BaseJpaPO(final boolean suppressExceptionForNull) {
 
-        super();
-        this.suppressExceptionForNull = suppressExceptionForNull;
-        return;
-    }
+		super();
+		this.suppressExceptionForNull = suppressExceptionForNull;
+		return;
+	}
 
-    /**
-     * This method closes the {@link EntityManager} if the creation is
-     * encapsulated within this PO.
-     */
-    public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
+	/**
+	 * This method closes the {@link EntityManager} if the creation is
+	 * encapsulated within this PO.
+	 */
+	public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
 
-        if (this.entityManagerNeedsToBeClosed) {
-            JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
-        }
-    }
+		if (this.entityManagerNeedsToBeClosed) {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
+		}
+	}
 
-    /**
-     * @return {@link EntityManager}
-     */
-    public EntityManager getEntityManager() {
+	/**
+	 * @return {@link EntityManager}
+	 */
+	public EntityManager getEntityManager() {
 
-        if (!isEntityManager()) {
+		if (!isEntityManager()) {
 
-            throw new JustifyRuntimeException("A persistence unit name, or entity manager, was not entered.");
-        }
+			throw new JustifyRuntimeException("A persistence unit name, or entity manager, was not entered.");
+		}
 
-        return this.entityManager;
-    }
+		return this.entityManager;
+	}
 
-    /**
-     * @return boolean
-     */
-    protected boolean isEntityManager() {
-        return null != this.entityManager;
-    }
+	/**
+	 * @return boolean
+	 */
+	protected boolean isEntityManager() {
+		return null != this.entityManager;
+	}
 
-    /**
-     * @return boolean
-     */
-    public boolean isSuppressException() {
-        return this.suppressExceptionForNull;
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isSuppressException() {
+		return this.suppressExceptionForNull;
+	}
 
-    /**
-     * @return boolean
-     */
-    public boolean isSuppressForcedTripToDatabase() {
-        return this.suppressForcedTripToDatabase;
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isSuppressForceDatabaseTrip() {
+		return this.suppressForceDatabaseTrip;
+	}
 
-    /**
-     * @return {@link JstCountAllJpaPO}
-     */
-    public BaseJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+	/**
+	 * @return {@link JstCountAllJpaPO}
+	 */
+	public BaseJpaPO withSuppressForceDatabaseTrip(final boolean suppressForceDatabaseTrip) {
 
-        this.persistenceUnitName = persistenceUnitName;
-        this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+		this.suppressForceDatabaseTrip = suppressForceDatabaseTrip;
 
-        return this;
-    }
+		return this;
+	}
+
+	/**
+	 * @return {@link JstCountAllJpaPO}
+	 */
+	public BaseJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+
+		this.persistenceUnitName = persistenceUnitName;
+		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+		return this;
+	}
 }

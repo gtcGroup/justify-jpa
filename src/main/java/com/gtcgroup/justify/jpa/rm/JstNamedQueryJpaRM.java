@@ -50,7 +50,7 @@ public enum JstNamedQueryJpaRM {
 	/**
 	 * @return {@link Object} or null or {@link Exception}
 	 */
-	public static <ENTITY> List<ENTITY> queryList(final JstNamedQueryJpaPO queryPO) {
+	public static <ENTITY> List<ENTITY> queryReadOnlyList(final JstNamedQueryJpaPO queryPO) {
 
 		List<ENTITY> entityList = null;
 
@@ -67,7 +67,7 @@ public enum JstNamedQueryJpaRM {
 	/**
 	 * @return {@link Object} or null or {@link Exception}
 	 */
-	public static <ENTITY> ENTITY querySingleReadOnly(final JstNamedQueryJpaPO queryPO) {
+	public static <ENTITY> ENTITY querySingle(final JstNamedQueryJpaPO queryPO) {
 
 		ENTITY entity = null;
 

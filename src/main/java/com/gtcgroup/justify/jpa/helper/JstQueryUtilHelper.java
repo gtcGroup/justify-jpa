@@ -95,7 +95,7 @@ public enum JstQueryUtilHelper {
 		}
 
 		// TODO: Verify
-		if (!queryPO.isSuppressForcedTripToDatabase()) {
+		if (!queryPO.isSuppressForceDatabaseTrip()) {
 			query.setHint(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
 			query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
 			query.setHint(QueryHints.REFRESH, HintValues.TRUE);

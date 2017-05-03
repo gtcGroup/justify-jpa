@@ -52,12 +52,22 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 	 *
 	 * @return {@link JstFindAllJpaPO}
 	 */
-	public static JstFindAllJpaPO withQuery(final boolean suppressExceptionForNull) {
+	public static JstFindAllJpaPO withFindAll() {
+
+		return new JstFindAllJpaPO(false);
+	}
+
+	/**
+	 * This method initializes the class.
+	 *
+	 * @return {@link JstFindAllJpaPO}
+	 */
+	public static JstFindAllJpaPO withFindAll(final boolean suppressExceptionForNull) {
 
 		return new JstFindAllJpaPO(suppressExceptionForNull);
 	}
 
-	protected Class<?> resultClass;
+	protected Class<?> entityClass;
 
 	/**
 	 * Constructor
@@ -90,7 +100,7 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 
 			if (isResultClass()) {
 				try {
-					this.query = createCriteriaQuery(getResultClass());
+					this.query = createCriteriaQuery(getEntityClass());
 				} catch (final Exception e) {
 					throw new JustifyRuntimeException(e);
 				}
@@ -107,9 +117,9 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 	 * @return {@link Class}
 	 */
 	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getResultClass() {
+	public <ENTITY> Class<ENTITY> getEntityClass() {
 
-		return (Class<ENTITY>) this.resultClass;
+		return (Class<ENTITY>) this.entityClass;
 	}
 
 	/**
@@ -117,7 +127,7 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 	 */
 	public boolean isResultClass() {
 
-		return null != this.resultClass;
+		return null != this.entityClass;
 	}
 
 	/**
@@ -132,8 +142,8 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstFindAllJpaPO}
 	 */
-    @Override
-    public JstFindAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+	@Override
+	public JstFindAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
 		return (JstFindAllJpaPO) super.withPersistenceUnitName(persistenceUnitName);
 	}
@@ -141,9 +151,17 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstFindAllJpaPO}
 	 */
-	public <ENTITY> JstFindAllJpaPO withResultClass(final Class<ENTITY> resultClass) {
+	public <ENTITY> JstFindAllJpaPO withEntityClass(final Class<ENTITY> entityClass) {
 
-		this.resultClass = resultClass;
+		this.entityClass = entityClass;
 		return this;
+	}
+
+	/**
+	 * @return {@link JstCountAllJpaPO}
+	 */
+	public JstFindAllJpaPO withSuppressForceDatabaseTrip(final boolean suppressForceDatabaseTrip) {
+
+		return (JstFindAllJpaPO) super.withSuppressForceDatabaseTrip(suppressForceDatabaseTrip);
 	}
 }

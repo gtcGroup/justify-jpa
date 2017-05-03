@@ -66,12 +66,12 @@ public enum JstFindJpaRM {
 		if (findPO.isPopulatedEntityContainingIdentity()) {
 
 			entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
-					findPO.getPopulatedEntityContainingIdentity(), findPO.isSuppressForcedTripToDatabase());
+					findPO.getPopulatedEntityContainingIdentity(), findPO.isSuppressForceDatabaseTrip());
 
 		} else {
 
 			entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
-					findPO.getEntityClass(), findPO.getEntityIdentity(), findPO.isSuppressForcedTripToDatabase());
+					findPO.getEntityClass(), findPO.getEntityIdentity(), findPO.isSuppressForceDatabaseTrip());
 		}
 		return entity;
 	}

@@ -165,11 +165,10 @@ public class JstFindJpaPO extends BaseJpaPO {
 	}
 
 	/**
-	 * @return {@link JstNamedQueryJpaPO}
+	 * @return {@link JstFindJpaPO}
 	 */
-	public JstFindJpaPO withSuppressForcedTripToDatabase(final boolean suppress) {
+	public JstFindJpaPO withSuppressForceDatabaseTrip(final boolean suppress) {
 
-		this.suppressForcedTripToDatabase = suppress;
-		return this;
+		return (JstFindJpaPO) super.withSuppressForceDatabaseTrip(suppress);
 	}
 }

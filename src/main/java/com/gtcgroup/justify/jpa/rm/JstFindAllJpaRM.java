@@ -50,8 +50,8 @@ public enum JstFindAllJpaRM {
 	/**
 	 * @return {@link Object} or null or {@link Exception}
 	 */
-	public static <ENTITY> List<ENTITY> queryList(final JstFindAllJpaPO queryPO) {
+	public static <ENTITY> List<ENTITY> findReadOnlyList(final JstFindAllJpaPO findAllPO) {
 
-		return JstQueryUtilHelper.queryResultList(queryPO);
+		return JstQueryUtilHelper.queryResultList(findAllPO);
 	}
 }
