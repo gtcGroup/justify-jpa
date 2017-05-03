@@ -31,7 +31,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 
 /**
@@ -47,134 +46,132 @@ import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
  */
 public class JstTransactionJpaPO extends BaseJpaPO {
 
-	/**
-	 * This method initializes the class.
-	 *
-	 * @return {@link JstTransactionJpaPO}
-	 */
-	public static JstTransactionJpaPO withException() {
+    /**
+     * This method initializes the class.
+     *
+     * @return {@link JstTransactionJpaPO}
+     */
+    public static JstTransactionJpaPO withException() {
 
-		return withException(false);
-	}
+        return withException(false);
+    }
 
-	/**
-	 * This method initializes the class.
-	 *
-	 * @return {@link JstTransactionJpaPO}
-	 */
-	public static JstTransactionJpaPO withException(final boolean suppressExceptionLogging) {
+    /**
+     * This method initializes the class.
+     *
+     * @return {@link JstTransactionJpaPO}
+     */
+    public static JstTransactionJpaPO withException(final boolean suppressExceptionLogging) {
 
-		return new JstTransactionJpaPO(suppressExceptionLogging);
-	}
+        return new JstTransactionJpaPO(suppressExceptionLogging);
+    }
 
-	private List<Object> entityMergeList = new ArrayList<Object>();
+    private List<Object> entityMergeList = new ArrayList<Object>();
 
-	private final List<Object> entityDeleteList = new ArrayList<Object>();
+    private final List<Object> entityDeleteList = new ArrayList<Object>();
 
-	/**
-	 * Constructor
-	 */
-	protected JstTransactionJpaPO(final boolean suppressExceptionForNull) {
+    /**
+     * Constructor
+     */
+    protected JstTransactionJpaPO(final boolean suppressExceptionForNull) {
 
-		super(suppressExceptionForNull);
-		return;
-	}
+        super(suppressExceptionForNull);
+        return;
+    }
 
-	/**
-	 * @return {@link Object}
-	 */
-	public List<Object> getEntityDeleteList() {
+    /**
+     * @return {@link Object}
+     */
+    public List<Object> getEntityDeleteList() {
 
-		return this.entityDeleteList;
-	}
+        return this.entityDeleteList;
+    }
 
-	/**
-	 * @return {@link Object}
-	 */
-	public List<Object> getEntityMergeList() {
+    /**
+     * @return {@link Object}
+     */
+    public List<Object> getEntityMergeList() {
 
-		return this.entityMergeList;
-	}
+        return this.entityMergeList;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isEntityDelete() {
-		return 0 != this.entityDeleteList.size();
-	}
+    /**
+     * @return boolean
+     */
+    public boolean isEntityDelete() {
+        return 0 != this.entityDeleteList.size();
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isEntityMerge() {
-		return 0 != this.entityMergeList.size();
-	}
+    /**
+     * @return boolean
+     */
+    public boolean isEntityMerge() {
+        return 0 != this.entityMergeList.size();
+    }
 
-	/**
-	 * This method substitutes merged entities after the transaction is
-	 * completed.
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> void replaceEntityMergeList(final List<ENTITY> entityMergeList) {
+    /**
+     * This method substitutes merged entities after the transaction is
+     * completed.
+     */
+    @SuppressWarnings("unchecked")
+    public <ENTITY> void replaceEntityMergeList(final List<ENTITY> entityMergeList) {
 
-		this.entityMergeList = (List<Object>) entityMergeList;
-		return;
-	}
+        this.entityMergeList = (List<Object>)entityMergeList;
+        return;
+    }
 
-	/**
-	 * @return {@link JstTransactionJpaPO}
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> JstTransactionJpaPO withCreateAndUpdateEntities(final ENTITY... entities) {
+    /**
+     * @return {@link JstTransactionJpaPO}
+     */
+    @SuppressWarnings("unchecked")
+    public <ENTITY> JstTransactionJpaPO withCreateAndUpdateEntities(final ENTITY... entities) {
 
-		this.entityMergeList.addAll(Arrays.asList(entities));
-		return this;
-	}
+        this.entityMergeList.addAll(Arrays.asList(entities));
+        return this;
+    }
 
-	/**
-	 * @return {@link JstTransactionJpaPO}
-	 */
-	public <ENTITY> JstTransactionJpaPO withCreateAndUpdateList(final List<ENTITY> entityList) {
+    /**
+     * @return {@link JstTransactionJpaPO}
+     */
+    public <ENTITY> JstTransactionJpaPO withCreateAndUpdateList(final List<ENTITY> entityList) {
 
-		this.entityMergeList.addAll(entityList);
-		return this;
-	}
+        this.entityMergeList.addAll(entityList);
+        return this;
+    }
 
-	/**
-	 * @return {@link JstTransactionJpaPO}
-	 */
-	public <ENTITY> JstTransactionJpaPO withDeleteEntities(@SuppressWarnings("unchecked") final ENTITY... entity) {
+    /**
+     * @return {@link JstTransactionJpaPO}
+     */
+    public <ENTITY> JstTransactionJpaPO withDeleteEntities(@SuppressWarnings("unchecked") final ENTITY... entity) {
 
-		this.entityDeleteList.addAll(Arrays.asList(entity));
-		return this;
-	}
+        this.entityDeleteList.addAll(Arrays.asList(entity));
+        return this;
+    }
 
-	/**
-	 * @return {@link JstTransactionJpaPO}
-	 */
-	public <ENTITY> JstTransactionJpaPO withDeleteList(final List<ENTITY> deleteList) {
+    /**
+     * @return {@link JstTransactionJpaPO}
+     */
+    public <ENTITY> JstTransactionJpaPO withDeleteList(final List<ENTITY> deleteList) {
 
-		this.entityDeleteList.addAll(deleteList);
-		return this;
-	}
+        this.entityDeleteList.addAll(deleteList);
+        return this;
+    }
 
-	/**
-	 * @return {@link JstTransactionJpaPO}
-	 */
-	public JstTransactionJpaPO withEntityManager(final EntityManager entityManager) {
+    /**
+     * @return {@link JstTransactionJpaPO}
+     */
+    public JstTransactionJpaPO withEntityManager(final EntityManager entityManager) {
 
-		this.entityManager = entityManager;
-		return this;
-	}
+        this.entityManager = entityManager;
+        return this;
+    }
 
-	/**
-	 * @return {@link JstTransactionJpaPO}
-	 */
-	public JstTransactionJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    /**
+     * @return {@link JstTransactionJpaPO}
+     */
+    @Override
+    public JstTransactionJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		this.persistenceUnitName = persistenceUnitName;
-		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-
-		return this;
-	}
+        return (JstTransactionJpaPO)super.withPersistenceUnitName(persistenceUnitName);
+    }
 }

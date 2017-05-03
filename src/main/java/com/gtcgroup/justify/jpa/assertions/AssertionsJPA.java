@@ -168,7 +168,7 @@ public enum AssertionsJPA {
 	}
 
 	private static <ENTITY> void assertFailWithMessage(final String persistenceUnitName,
-			final Class<ENTITY> entityClassOrNull, final String fromWhere, String availableOrUnavailable) {
+			final Class<ENTITY> entityClassOrNull, final String fromWhere, final String availableOrUnavailable) {
 
 		final StringBuilder assertionErrorMessage = new StringBuilder();
 
@@ -345,9 +345,9 @@ public enum AssertionsJPA {
 
 		for (final String methodName : existsList) {
 
-			final Object entity = ReflectionUtilHelper.invokePublicMethod(methodName, AssertionsJPA.parentEntity);
+            final Object entityOrList = ReflectionUtilHelper.invokePublicMethod(methodName, AssertionsJPA.parentEntity);
 			final boolean actual = JstFindUtilHelper.existsInDatabaseWithPopulatedEntities(AssertionsJPA.entityManager,
-					entity);
+                entityOrList);
 			if (expected != actual) {
 				return false;
 			}

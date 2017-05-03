@@ -157,7 +157,8 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstNamedQueryJpaPO}
 	 */
-	public JstNamedQueryJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    @Override
+    public JstNamedQueryJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
 		return (JstNamedQueryJpaPO) super.withPersistenceUnitName(persistenceUnitName);
 	}

@@ -132,7 +132,8 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstFindAllJpaPO}
 	 */
-	public JstFindAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    @Override
+    public JstFindAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
 		return (JstFindAllJpaPO) super.withPersistenceUnitName(persistenceUnitName);
 	}

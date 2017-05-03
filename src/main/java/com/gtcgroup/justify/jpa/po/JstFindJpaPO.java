@@ -53,7 +53,7 @@ public class JstFindJpaPO extends BaseJpaPO {
 
 		return new JstFindJpaPO(suppressExceptionForNull);
 	}
-	
+
 	/**
 	 * This method initializes the class.
 	 *
@@ -141,7 +141,8 @@ public class JstFindJpaPO extends BaseJpaPO {
 	/**
 	 * @return {@link JstFindJpaPO}
 	 */
-	public JstFindJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    @Override
+    public JstFindJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
 		return (JstFindJpaPO) super.withPersistenceUnitName(persistenceUnitName);
 	}
@@ -150,8 +151,8 @@ public class JstFindJpaPO extends BaseJpaPO {
 	 */
 	public JstFindJpaPO withPersistencePropertyMap(final Map<String, Object> persistencePropertyMap) {
 
-		super.persistencePropertyMapOrNull = persistencePropertyMap;
-		return this;
+        super.persistencePropertyMapOrNull = persistencePropertyMap;
+        return this;
 	}
 
 	/**
@@ -162,7 +163,7 @@ public class JstFindJpaPO extends BaseJpaPO {
 		this.populatedEntityContainingIdentity = populatedEntityContainingIdentity;
 		return this;
 	}
-	
+
 	/**
 	 * @return {@link JstNamedQueryJpaPO}
 	 */

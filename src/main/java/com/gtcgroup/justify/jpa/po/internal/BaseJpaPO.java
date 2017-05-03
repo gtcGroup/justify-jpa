@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.base.JstBasePO;
+import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
 
@@ -47,84 +48,81 @@ import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
  */
 public abstract class BaseJpaPO extends JstBasePO {
 
-	protected boolean suppressExceptionForNull = false;
+    protected boolean suppressExceptionForNull = false;
 
-	protected EntityManager entityManager;
+    protected EntityManager entityManager;
 
-	protected boolean entityManagerNeedsToBeClosed = false;
+    protected boolean entityManagerNeedsToBeClosed = false;
 
-	protected String persistenceUnitName;
+    protected String persistenceUnitName;
 
-	protected Map<String, Object> persistencePropertyMapOrNull;
-	
-	protected boolean suppressForcedTripToDatabase = false;
+    protected Map<String, Object> persistencePropertyMapOrNull;
 
-	/**
-	 * Constructor
-	 */
-	protected BaseJpaPO(final boolean suppressExceptionForNull) {
+    protected boolean suppressForcedTripToDatabase = false;
 
-		super();
-		this.suppressExceptionForNull = suppressExceptionForNull;
-		return;
-	}
+    /**
+     * Constructor
+     */
+    protected BaseJpaPO(final boolean suppressExceptionForNull) {
 
-	/**
-	 * This method closes the {@link EntityManager} if the creation is
-	 * encapsulated within this PO.
-	 */
-	public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
+        super();
+        this.suppressExceptionForNull = suppressExceptionForNull;
+        return;
+    }
 
-		if (this.entityManagerNeedsToBeClosed) {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
-		}
-	}
+    /**
+     * This method closes the {@link EntityManager} if the creation is
+     * encapsulated within this PO.
+     */
+    public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
 
-	/**
-	 * @return {@link EntityManager}
-	 */
-	public EntityManager getEntityManager() {
+        if (this.entityManagerNeedsToBeClosed) {
+            JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
+        }
+    }
 
-		if (!isEntityManager()) {
+    /**
+     * @return {@link EntityManager}
+     */
+    public EntityManager getEntityManager() {
 
-			this.entityManager = JstEntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(this.persistenceUnitName);
-			this.entityManagerNeedsToBeClosed = true;
-		}
+        if (!isEntityManager()) {
 
-		return this.entityManager;
-	}
+            throw new JustifyRuntimeException("A persistence unit name, or entity manager, was not entered.");
+        }
 
-	/**
-	 * @return boolean
-	 */
-	protected boolean isEntityManager() {
-		return null != this.entityManager;
-	}
+        return this.entityManager;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isSuppressException() {
-		return this.suppressExceptionForNull;
-	}
-	
-	
-	/**
-	 * @return boolean
-	 */
-	public boolean isSuppressForcedTripToDatabase() {
-		return this.suppressForcedTripToDatabase;
-	}
+    /**
+     * @return boolean
+     */
+    protected boolean isEntityManager() {
+        return null != this.entityManager;
+    }
 
-	/**
-	 * @return {@link JstCountAllJpaPO}
-	 */
-	public BaseJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    /**
+     * @return boolean
+     */
+    public boolean isSuppressException() {
+        return this.suppressExceptionForNull;
+    }
 
-		this.persistenceUnitName = persistenceUnitName;
-		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+    /**
+     * @return boolean
+     */
+    public boolean isSuppressForcedTripToDatabase() {
+        return this.suppressForcedTripToDatabase;
+    }
 
-		return this;
-	}
+    /**
+     * @return {@link JstCountAllJpaPO}
+     */
+    public BaseJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+
+        this.persistenceUnitName = persistenceUnitName;
+        this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+
+        return this;
+    }
 }

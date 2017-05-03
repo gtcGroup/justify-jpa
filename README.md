@@ -7,6 +7,15 @@ JPA MODULE: Justify supports JUnit testing with "real" (functionally equivalent)
 
 ### <a name="changes"></a>Release Notes
 
+#### Version 8.3.4 & 6.3.4 <span class="date">2017-05-02</span>
+
+*   15 [Cache JDBC URLs (JdbcUrlCacheHelper) ](https://github.com/gtcGroup/justify-jpa/issues/15)
+
+#### Version 8.3.1 & 6.3.3 <span class="date">2017-05-02</span>
+
+*   14 [Add an API to suppress a query trip to the database](https://github.com/gtcGroup/justify-jpa/issues/14)
+*   13 [Prepare for v6.3.3 and v8.3.1](https://github.com/gtcGroup/justify-jpa/issues/13)
+
 #### Version 6.3.2 <span class="date">2017-04-21</span>
 
 *   12 [Prepare for v6.3.2](https://github.com/gtcGroup/justify-jpa/issues/12)

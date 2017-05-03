@@ -155,7 +155,8 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstQueryLanguageJpaPO}
 	 */
-	public JstQueryLanguageJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    @Override
+    public JstQueryLanguageJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
 		return (JstQueryLanguageJpaPO) super.withPersistenceUnitName(persistenceUnitName);
 	}

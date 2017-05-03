@@ -83,7 +83,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 
         String persistenceKey = null;
         final String jdbcURL =
-            JdbcUrlCacheHelper.retrieveJdbcUrlOrNull(persistenceUnitName, persistencePropertyMapOrNull);
+            JdbcUrlCacheHelper.retrieveJdbcUrl(persistenceUnitName, persistencePropertyMapOrNull);
 
         if (null == jdbcURL) {
 

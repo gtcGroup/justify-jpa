@@ -44,8 +44,7 @@ import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
 import com.gtcgroup.justify.core.po.internal.StreamPO;
 
 /**
- * This Helper class searches the persistence.xml file for the
- * {@link PersistenceUnitProperties}.JDBC_URL.
+ * This Cache Helper class lazily retrieves the {@link PersistenceUnitProperties}.JDBC_URL.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -57,76 +56,84 @@ import com.gtcgroup.justify.core.po.internal.StreamPO;
  */
 public enum JdbcUrlCacheHelper {
 
-	@SuppressWarnings("javadoc")
-	INTERNAL;
+    @SuppressWarnings("javadoc")
+    INTERNAL;
 
-	public static final String PERSISTENCE_DOT_XML = "META-INF/persistence.xml";
+    public static final String PERSISTENCE_DOT_XML = "META-INF/persistence.xml";
 
-    private static Map<String, String> combinationMap = new ConcurrentHashMap<>();
+    private static Map<String, String> currentJdbcUrlMap = new ConcurrentHashMap<String, String>();
 
-    // private static final String NOT_AVAILABLE = "n@tAvailable";
+    private static Map<String, String> persistenceXmlJdbcUrlMap = new ConcurrentHashMap<String, String>();
 
-    // private static String jdbcURL = NOT_AVAILABLE;
+    /**
+     * @return {@link String}
+     */
+    private static String retrieveFromPersistencePropertyMap(
+        final String persistenceUnitName, final Map<String, Object> persistencePropertyMapOrNull) {
 
-    // private static String persistenceUnitName = NOT_AVAILABLE;
+        if (null != persistencePropertyMapOrNull) {
 
-	/**
-	 * @return {@link String}
-	 */
-	private static String retrieveJdbcUrlOrNullFromPersistencePropertyMapOrNull(
-			final Map<String, Object> persistencePropertyMapOrNull) {
+            if (persistencePropertyMapOrNull.containsKey(EntityManagerProperties.JDBC_URL)) {
 
-		if (null != persistencePropertyMapOrNull) {
-
-			if (persistencePropertyMapOrNull.containsKey(EntityManagerProperties.JDBC_URL)) {
-
-				return (String) persistencePropertyMapOrNull.get(EntityManagerProperties.JDBC_URL);
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * This method searches the persistence.xml file for the
-	 * {@link PersistenceUnitProperties}.JDBC_URL.
-	 *
-	 * @return {@link String}
-	 */
-    public static String retrieveJdbcUrlOrNull(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMapOrNull) {
-
-        String jdbcURL = retrieveJdbcUrlOrNullFromPersistencePropertyMapOrNull(persistencePropertyMapOrNull);
-
-        final String combinationKey = persistenceUnitName + jdbcURL;
-
-        if (combinationMap.containsKey(combinationKey)) {
-            return combinationMap.get(combinationKey);
+                return (String)persistencePropertyMapOrNull.get(EntityManagerProperties.JDBC_URL);
+            }
         }
 
+        if (persistenceXmlJdbcUrlMap.containsKey(persistenceUnitName)) {
+            return persistenceXmlJdbcUrlMap.get(persistenceUnitName);
+        }
+        return null;
+    }
+
+    /**
+     * This method searches the persistence.xml file for the
+     * {@link PersistenceUnitProperties}.JDBC_URL.
+     *
+     * @return {@link String}
+     */
+    public static String retrieveJdbcUrl(final String persistenceUnitName,
+        final Map<String, Object> persistencePropertyMapOrNull) {
+
+        String jdbcURL =
+            retrieveFromPersistencePropertyMap(persistenceUnitName, persistencePropertyMapOrNull);
+
         if (null != jdbcURL) {
+            currentJdbcUrlMap.put(persistenceUnitName, jdbcURL);
+            return jdbcURL;
+        }
 
-            combinationMap.put(combinationKey, jdbcURL);
-			return jdbcURL;
-		}
+        if (currentJdbcUrlMap.containsKey(persistenceUnitName)) {
+            return currentJdbcUrlMap.get(persistenceUnitName);
+        }
 
-		StreamPO streamPO = null;
+        jdbcURL = retrieveFromPersistenceDotXML(persistenceUnitName);
 
-		try {
+        currentJdbcUrlMap.put(persistenceUnitName, jdbcURL);
 
-			streamPO = ReflectionUtilHelper.getResourceAsStream(PERSISTENCE_DOT_XML, false);
+        return jdbcURL;
+    }
 
-			final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			final DocumentBuilder builder = factory.newDocumentBuilder();
+    private static String retrieveFromPersistenceDotXML(final String persistenceUnitName) {
 
-			final Document document = builder.parse(streamPO.getInputStreamToBeClosed());
+        StreamPO streamPO = null;
+        String jdbcURL;
 
-			final NodeList nodeList = document.getElementsByTagName("persistence-unit");
+        try {
 
-			Node nNode = null;
+            streamPO = ReflectionUtilHelper.getResourceAsStream(PERSISTENCE_DOT_XML, false);
 
-			for (int i = 0; i < nodeList.getLength(); i++) {
+            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder builder = factory.newDocumentBuilder();
 
-				nNode = nodeList.item(i);
+            final Document document = builder.parse(streamPO.getInputStreamToBeClosed());
+
+            final NodeList nodeList = document.getElementsByTagName("persistence-unit");
+
+            Node nNode = null;
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+
+                nNode = nodeList.item(i);
                 final Element eElement = (Element)nNode;
 
                 if (eElement.getAttribute("name").equals(persistenceUnitName)) {
@@ -134,49 +141,56 @@ public enum JdbcUrlCacheHelper {
                     break;
                 }
 
-				if (i == nodeList.getLength() - 1) {
+                if (i == nodeList.getLength() - 1) {
 
-					throw new JustifyRuntimeException(
-							"The persistence unit name [" + persistenceUnitName + "] could not be found.");
-				}
-			}
+                    throw new JustifyRuntimeException(
+                        "The persistence unit name [" + persistenceUnitName + "] could not be found.");
+                }
+            }
 
-			final Element eElement = (Element) nNode;
+            final Element eElement = (Element)nNode;
 
-			jdbcURL = retrieveJdbcUrlOrNull(eElement);
+            jdbcURL = retrieveFromElement(eElement);
 
-		} catch (final Exception e) {
+        } catch (final Exception e) {
 
-			throw new JustifyRuntimeException(e);
-		} finally {
-			if (null != streamPO) {
-				streamPO.closeInputStream();
-			}
-		}
-        combinationMap.put(combinationKey, jdbcURL);
-		return jdbcURL;
-	}
+            throw new JustifyRuntimeException(e);
+        } finally {
+            if (null != streamPO) {
+                streamPO.closeInputStream();
+            }
+        }
 
-	private static String retrieveJdbcUrlOrNull(final Element element) {
+        if (null == jdbcURL) {
 
-		String jdbcUrlOrNull = null;
+            throw new JustifyRuntimeException("The JPA property [" + PersistenceUnitProperties.JDBC_URL
+                + "] using the persistence unit name [" + persistenceUnitName
+                + "] could not be found.");
+        }
+        persistenceXmlJdbcUrlMap.put(persistenceUnitName, jdbcURL);
+        return jdbcURL;
+    }
 
-		final NodeList nodeList = element.getElementsByTagName("property");
+    private static String retrieveFromElement(final Element element) {
 
-		if (0 == nodeList.getLength()) {
-			return jdbcUrlOrNull;
-		}
+        String jdbcUrlOrNull = null;
 
-		for (int i = 0; i < nodeList.getLength(); i++) {
+        final NodeList nodeList = element.getElementsByTagName("property");
 
-			final Node node = nodeList.item(i);
+        if (0 == nodeList.getLength()) {
+            return jdbcUrlOrNull;
+        }
 
-			if (PersistenceUnitProperties.JDBC_URL.equals(node.getAttributes().getNamedItem("name").getNodeValue())) {
+        for (int i = 0; i < nodeList.getLength(); i++) {
 
-				jdbcUrlOrNull = node.getAttributes().getNamedItem("value").getNodeValue();
-				break;
-			}
-		}
-		return jdbcUrlOrNull;
-	}
+            final Node node = nodeList.item(i);
+
+            if (PersistenceUnitProperties.JDBC_URL.equals(node.getAttributes().getNamedItem("name").getNodeValue())) {
+
+                jdbcUrlOrNull = node.getAttributes().getNamedItem("value").getNodeValue();
+                break;
+            }
+        }
+        return jdbcUrlOrNull;
+    }
 }

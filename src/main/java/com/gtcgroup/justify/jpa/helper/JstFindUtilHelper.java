@@ -26,6 +26,7 @@
 package com.gtcgroup.justify.jpa.helper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.CacheRetrieveMode;
@@ -66,14 +67,14 @@ public enum JstFindUtilHelper {
 	static {
 
 		JstFindUtilHelper.CHECK_CACHE_ONLY.put(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
-		
+
 		JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
 
 		JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
 
 		JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH_CASCADE,
 				CascadePolicy.CascadeByMapping);
-		
+
 		JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH,
 				HintValues.TRUE);
 	}
@@ -115,6 +116,10 @@ public enum JstFindUtilHelper {
 		try {
 
 			for (final Object populatedEntity : populatedEntities) {
+
+                if (populatedEntity instanceof List<?>) {
+                    return existsInDatabaseWithPopulatedEntities(entityManager, ((List<?>)populatedEntity).toArray());
+                }
 
 				result = entityManager.find(populatedEntity.getClass(),
 						retrieveIdentity(entityManager, populatedEntity),
@@ -195,7 +200,7 @@ public enum JstFindUtilHelper {
 	 * @return {@link Object} or null
 	 */
 	public static <ENTITY> ENTITY findForceDatabaseTrip(final EntityManager entityManager,
-			final Class<ENTITY> entityClass, final Object entityIdentity, boolean suppressForceDatabaseTrip) {
+			final Class<ENTITY> entityClass, final Object entityIdentity, final boolean suppressForceDatabaseTrip) {
 
 		try {
 			if (suppressForceDatabaseTrip) {
@@ -212,7 +217,7 @@ public enum JstFindUtilHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ENTITY> ENTITY findForceDatabaseTrip(final EntityManager entityManager,
-			final Object populatedEntity, boolean suppressForceTripToDatabase) {
+			final Object populatedEntity, final boolean suppressForceTripToDatabase) {
 
 		try {
 			if (suppressForceTripToDatabase) {

@@ -84,7 +84,8 @@ public class JstCountAllJpaPO extends BaseJpaPO {
 	/**
 	 * @return {@link JstCountAllJpaPO}
 	 */
-	public JstCountAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    @Override
+    public JstCountAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
 		return (JstCountAllJpaPO) super.withPersistenceUnitName(persistenceUnitName);
 	}
