@@ -127,8 +127,8 @@ public enum AssertionsJPA {
 		assertFailWithMessage(persistenceUnitName, null, "database", "instance unavailable");
 	}
 
-	public static void assertExistsInDatabase(final String persistenceUnitName,
-			final List<Object> entityListContainingIdentities) {
+	public static <ENTITY> void assertExistsInDatabase(final String persistenceUnitName,
+			final List<ENTITY> entityListContainingIdentities) {
 
 		assertExistsInDatabaseWithPopulatedEntities(persistenceUnitName, entityListContainingIdentities.toArray());
 	}

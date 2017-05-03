@@ -51,7 +51,7 @@ public enum JstFindJpaRM {
 	 * @return {@link Object}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ENTITY> ENTITY find(final JstFindJpaPO findPO) {
+	public static <ENTITY> ENTITY findSingle(final JstFindJpaPO findPO) {
 
 		final Object entity = findWithEntityManager(findPO);
 		JstQueryUtilHelper.throwExceptionForNull(findPO, entity);

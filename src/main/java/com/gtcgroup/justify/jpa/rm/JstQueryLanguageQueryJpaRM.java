@@ -50,7 +50,7 @@ public enum JstQueryLanguageQueryJpaRM {
 	/**
 	 * @return {@link Object} or null or {@link Exception}
 	 */
-	public static <ENTITY> List<ENTITY> queryList(final JstQueryLanguageJpaPO queryPO) {
+	public static <ENTITY> List<ENTITY> queryReadOnlyList(final JstQueryLanguageJpaPO queryPO) {
 
 		return JstQueryUtilHelper.queryResultList(queryPO);
 	}

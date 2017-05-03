@@ -162,8 +162,7 @@ public class JstTransactionJpaPO extends BaseJpaPO {
      */
     public JstTransactionJpaPO withEntityManager(final EntityManager entityManager) {
 
-        this.entityManager = entityManager;
-        return this;
+        return (JstTransactionJpaPO)super.withEntityManager(entityManager);
     }
 
     /**

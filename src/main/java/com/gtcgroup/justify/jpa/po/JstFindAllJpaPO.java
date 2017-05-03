@@ -135,8 +135,7 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstFindAllJpaPO withEntityManager(final EntityManager entityManager) {
 
-		this.entityManager = entityManager;
-		return this;
+		return (JstFindAllJpaPO) super.withEntityManager(entityManager);
 	}
 
 	/**

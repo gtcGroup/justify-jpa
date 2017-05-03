@@ -67,7 +67,7 @@ public class JstConfigureJpaRule extends JstBaseRule {
      * @return {@link TestRule}
      */
     @SuppressWarnings("unchecked")
-    public static <RULE extends JstConfigureJpaRule> RULE withPersistence(final String persistenceUnitName) {
+    public static <RULE extends JstConfigureJpaRule> RULE withPersistenceUnit(final String persistenceUnitName) {
 
         return (RULE)new JstConfigureJpaRule(persistenceUnitName);
     }
@@ -76,7 +76,7 @@ public class JstConfigureJpaRule extends JstBaseRule {
      * @return {@link TestRule}
      */
     @SuppressWarnings("unchecked")
-    public static <RULE extends JstConfigureJpaRule> RULE withPersistence(final String persistenceUnitName,
+    public static <RULE extends JstConfigureJpaRule> RULE withPersistenceUnit(final String persistenceUnitName,
         final Map<String, Object> persistencePropertyMap) {
 
         return (RULE)new JstConfigureJpaRule(persistenceUnitName, persistencePropertyMap);
@@ -161,7 +161,7 @@ public class JstConfigureJpaRule extends JstBaseRule {
         entityManager = JstEntityManagerFactoryCacheHelper
             .createEntityManagerToBeClosedWithKey(retrievePersistenceKey(listKey));
 
-        JstTransactionJpaRM.transactEntities(JstTransactionJpaPO.withException()
+        JstTransactionJpaRM.transactMultipleEntities(JstTransactionJpaPO.withException()
             .withEntityManager(entityManager)
             .withCreateAndUpdateList(createList));
 

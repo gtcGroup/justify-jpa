@@ -134,8 +134,7 @@ public class JstFindJpaPO extends BaseJpaPO {
 	 */
 	public JstFindJpaPO withEntityManager(final EntityManager entityManager) {
 
-		super.entityManager = entityManager;
-		return this;
+		return (JstFindJpaPO) super.withEntityManager(entityManager);
 	}
 
 	/**
@@ -151,8 +150,7 @@ public class JstFindJpaPO extends BaseJpaPO {
 	 */
 	public JstFindJpaPO withPersistencePropertyMap(final Map<String, Object> persistencePropertyMap) {
 
-        super.persistencePropertyMapOrNull = persistencePropertyMap;
-        return this;
+		return (JstFindJpaPO) super.withPersistencePropertyMap(persistencePropertyMap);
 	}
 
 	/**

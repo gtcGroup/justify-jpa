@@ -132,8 +132,7 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstNamedQueryJpaPO withEntityManager(final EntityManager entityManager) {
 
-		this.entityManager = entityManager;
-		return this;
+		return (JstNamedQueryJpaPO) super.withEntityManager(entityManager);
 	}
 
 	/**
@@ -157,8 +156,8 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstNamedQueryJpaPO}
 	 */
-    @Override
-    public JstNamedQueryJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+	@Override
+	public JstNamedQueryJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
 		return (JstNamedQueryJpaPO) super.withPersistenceUnitName(persistenceUnitName);
 	}

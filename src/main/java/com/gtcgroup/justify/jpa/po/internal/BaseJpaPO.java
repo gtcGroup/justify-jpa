@@ -32,7 +32,6 @@ import javax.persistence.EntityManager;
 import com.gtcgroup.justify.core.base.JstBasePO;
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
 
 /**
  * This Parameter Object base class supports queries and transactions using a
@@ -56,7 +55,7 @@ public abstract class BaseJpaPO extends JstBasePO {
 
 	protected String persistenceUnitName;
 
-	protected Map<String, Object> persistencePropertyMapOrNull;
+	protected Map<String, Object> persistencePropertyMapOrNull = null;
 
 	protected boolean suppressForceDatabaseTrip = false;
 
@@ -116,23 +115,40 @@ public abstract class BaseJpaPO extends JstBasePO {
 	}
 
 	/**
-	 * @return {@link JstCountAllJpaPO}
+	 * @return {@link BaseJpaPO}
 	 */
 	public BaseJpaPO withSuppressForceDatabaseTrip(final boolean suppressForceDatabaseTrip) {
 
 		this.suppressForceDatabaseTrip = suppressForceDatabaseTrip;
-
 		return this;
 	}
 
 	/**
-	 * @return {@link JstCountAllJpaPO}
+	 * @return {@link BaseJpaPO}
 	 */
 	public BaseJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
 		this.persistenceUnitName = persistenceUnitName;
 		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
+		
+		return this;
+	}
 
+	/**
+	 * @return {@link BaseJpaPO}
+	 */
+	public BaseJpaPO withEntityManager(EntityManager entityManager) {
+
+		this.entityManager = entityManager;
+		return this;
+	}
+
+	/**
+	 * @return {@link BaseJpaPO}
+	 */
+	public BaseJpaPO withPersistencePropertyMap(Map<String, Object> persistencePropertyMap) {
+
+		this.persistencePropertyMapOrNull = persistencePropertyMap;
 		return this;
 	}
 }

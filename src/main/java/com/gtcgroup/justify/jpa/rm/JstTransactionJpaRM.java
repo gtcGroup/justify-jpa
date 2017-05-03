@@ -56,7 +56,7 @@ public enum JstTransactionJpaRM {
 	 *
 	 * @return {@link List}
 	 */
-	public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> transactEntities(final PO transactionPO) {
+	public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> transactMultipleEntities(final PO transactionPO) {
 
 		return JstTransactionUtilHelper.transactEntities(transactionPO);
 	}

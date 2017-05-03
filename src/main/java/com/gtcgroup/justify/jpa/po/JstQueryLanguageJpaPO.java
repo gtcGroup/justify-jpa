@@ -148,8 +148,7 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstQueryLanguageJpaPO withEntityManager(final EntityManager entityManager) {
 
-		this.entityManager = entityManager;
-		return this;
+		return (JstQueryLanguageJpaPO) super.withEntityManager(entityManager);
 	}
 
 	/**

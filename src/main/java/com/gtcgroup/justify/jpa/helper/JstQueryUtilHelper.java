@@ -30,12 +30,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.persistence.CacheRetrieveMode;
+import javax.persistence.CacheStoreMode;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
-import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
@@ -94,11 +94,9 @@ public enum JstQueryUtilHelper {
 			}
 		}
 
-		// TODO: Verify
 		if (!queryPO.isSuppressForceDatabaseTrip()) {
 			query.setHint(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
-			query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-			query.setHint(QueryHints.REFRESH, HintValues.TRUE);
+			query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
 			query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
 		}
 
