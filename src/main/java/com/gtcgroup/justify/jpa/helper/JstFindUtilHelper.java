@@ -72,11 +72,9 @@ public enum JstFindUtilHelper {
 
 		JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
 
-		JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH_CASCADE,
-				CascadePolicy.CascadeByMapping);
+		JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
 
-		JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH,
-				HintValues.TRUE);
+		JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH, HintValues.TRUE);
 	}
 
 	/**
@@ -85,15 +83,14 @@ public enum JstFindUtilHelper {
 	 *
 	 * @return boolean
 	 */
-	public static <ENTITY> boolean existsInDatabaseWithEntityIdentities(final EntityManager entityManager,
-			final Class<ENTITY> entityClass, final Object... entityIdentities) {
+	public static <ENTITY> boolean existsInDatabase(final EntityManager entityManager, final Class<ENTITY> entityClass,
+			final Object... entityIdentities) {
 
 		Object result;
 
 		for (final Object entityIdentity : entityIdentities) {
 
-			result = entityManager.find(entityClass, entityIdentity,
-					JstFindUtilHelper.FORCE_DATABASE_TRIP);
+			result = entityManager.find(entityClass, entityIdentity, JstFindUtilHelper.FORCE_DATABASE_TRIP);
 
 			if (null == result) {
 				return false;
@@ -108,21 +105,25 @@ public enum JstFindUtilHelper {
 	 *
 	 * @return boolean
 	 */
-	public static boolean existsInDatabaseWithPopulatedEntities(final EntityManager entityManager,
-			final Object... populatedEntities) {
+	public static boolean existsInDatabases(final EntityManager entityManager,
+			final Object... entititiesContainingIdentity) {
 
 		Object result;
 
 		try {
 
-			for (final Object populatedEntity : populatedEntities) {
+			for (final Object entityContainingIdentity : entititiesContainingIdentity) {
 
-                if (populatedEntity instanceof List<?>) {
-                    return existsInDatabaseWithPopulatedEntities(entityManager, ((List<?>)populatedEntity).toArray());
-                }
+				if (entityContainingIdentity instanceof List<?>) {
+					List<?> entityList = ((List<?>) entityContainingIdentity);
+					if (entityList.isEmpty()) {
+						return false;
+					}
+					return existsInDatabases(entityManager, entityList.toArray());
+				}
 
-				result = entityManager.find(populatedEntity.getClass(),
-						retrieveIdentity(entityManager, populatedEntity),
+				result = entityManager.find(entityContainingIdentity.getClass(),
+						retrieveIdentity(entityManager, entityContainingIdentity),
 						JstFindUtilHelper.FORCE_DATABASE_TRIP);
 
 				if (null == result) {
@@ -172,8 +173,7 @@ public enum JstFindUtilHelper {
 	 *
 	 * @return boolean
 	 */
-	public static boolean existsInSharedCacheWithPopulatedEntities(final EntityManager entityManager,
-			final Object... populatedEntities) {
+	public static boolean existsInSharedCache(final EntityManager entityManager, final Object... populatedEntities) {
 
 		boolean result = true;
 
@@ -216,8 +216,8 @@ public enum JstFindUtilHelper {
 	 * @return {@link Object} or null
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ENTITY> ENTITY findForceDatabaseTrip(final EntityManager entityManager,
-			final Object populatedEntity, final boolean suppressForceTripToDatabase) {
+	public static <ENTITY> ENTITY findForceDatabaseTrip(final EntityManager entityManager, final Object populatedEntity,
+			final boolean suppressForceTripToDatabase) {
 
 		try {
 			if (suppressForceTripToDatabase) {
@@ -226,8 +226,7 @@ public enum JstFindUtilHelper {
 			}
 
 			return (ENTITY) entityManager.find(populatedEntity.getClass(),
-					retrieveIdentity(entityManager, populatedEntity),
-					JstFindUtilHelper.FORCE_DATABASE_TRIP);
+					retrieveIdentity(entityManager, populatedEntity), JstFindUtilHelper.FORCE_DATABASE_TRIP);
 
 		} catch (final Exception e) {
 			throw new JustifyRuntimeException(e);
