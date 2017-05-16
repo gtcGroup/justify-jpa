@@ -233,8 +233,8 @@ public enum JstQueryUtilHelper {
 	public static void throwExceptionForNull(final BaseJpaPO queryPO, final Object entity) {
 
 		if (null == entity) {
-			if (!queryPO.isSuppressException()) {
-				throw new JustifyRuntimeException("Unable to retrieve a result for the query.");
+			if (!queryPO.isModifiableEntities()) {
+				throw new JustifyRuntimeException("Unable to retrieve a result instance.");
 
 			}
 		}
