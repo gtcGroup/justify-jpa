@@ -172,7 +172,7 @@ public enum AssertionsJPA {
 
 		final StringBuilder assertionErrorMessage = new StringBuilder();
 
-		assertionErrorMessage.append("An instance ");
+		assertionErrorMessage.append("An ");
 
 		if (null != entityClassOrNull) {
 			assertionErrorMessage.append("of [");

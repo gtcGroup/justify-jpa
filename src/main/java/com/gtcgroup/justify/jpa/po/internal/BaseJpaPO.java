@@ -47,7 +47,7 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
  */
 public abstract class BaseJpaPO extends JstBasePO {
 
-	protected boolean suppressExceptionForNull = false;
+	protected boolean modifiableEntities = false;
 
 	protected EntityManager entityManager;
 
@@ -62,10 +62,10 @@ public abstract class BaseJpaPO extends JstBasePO {
 	/**
 	 * Constructor
 	 */
-	protected BaseJpaPO(final boolean suppressExceptionForNull) {
+	protected BaseJpaPO(final boolean modifiableEntities) {
 
 		super();
-		this.suppressExceptionForNull = suppressExceptionForNull;
+		this.modifiableEntities = modifiableEntities;
 		return;
 	}
 
@@ -103,8 +103,8 @@ public abstract class BaseJpaPO extends JstBasePO {
 	/**
 	 * @return boolean
 	 */
-	public boolean isSuppressException() {
-		return this.suppressExceptionForNull;
+	public boolean isModifiableEntities() {
+		return this.modifiableEntities;
 	}
 
 	/**
