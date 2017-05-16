@@ -103,32 +103,27 @@ public enum JstTransactionUtilHelper {
 	/**
 	 * @return {@link List}
 	 */
-	@SuppressWarnings("unchecked")
-	private static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> mergeEntities(final PO transactionPO) {
+	private static <PO extends JstTransactionJpaPO> void mergeCreateAndUpdates(final PO transactionPO) {
 
-		final List<ENTITY> entityMergeList = new ArrayList<ENTITY>();
+		final List<Object> entityCreateAndUpdateList = new ArrayList<Object>();
 
-		if (transactionPO.isEntityMerge()) {
+		for (Object entity : transactionPO.getEntityCreateAndUpdateList()) {
 
-			for (Object entity : transactionPO.getEntityMergeList()) {
-
-				entity = transactionPO.getEntityManager().merge(entity);
-				entityMergeList.add((ENTITY) entity);
-			}
+			entity = transactionPO.getEntityManager().merge(entity);
+			entityCreateAndUpdateList.add((Object) entity);
 		}
-		return entityMergeList;
+
+		transactionPO.replaceEntityCreateAndUpdateList(entityCreateAndUpdateList);
 	}
 
 	private static <PO extends JstTransactionJpaPO> void removeEntities(final PO transactionPO) {
 
-		if (transactionPO.isEntityDelete()) {
+		for (Object entity : transactionPO.getEntityDeleteList()) {
 
-			for (Object entity : transactionPO.getEntityDeleteList()) {
-
-				entity = transactionPO.getEntityManager().merge(entity);
-				transactionPO.getEntityManager().remove(entity);
-			}
+			entity = transactionPO.getEntityManager().merge(entity);
+			transactionPO.getEntityManager().remove(entity);
 		}
+
 		return;
 	}
 
@@ -142,18 +137,14 @@ public enum JstTransactionUtilHelper {
 	 */
 	public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> transactEntities(final PO transactionPO) {
 
-		List<ENTITY> entityMergeList;
-
 		try {
 
 			transactionPO.getEntityManager().getTransaction().begin();
 
-			entityMergeList = mergeEntities(transactionPO);
+			mergeCreateAndUpdates(transactionPO);
 			removeEntities(transactionPO);
 
 			transactionPO.getEntityManager().getTransaction().commit();
-			transactionPO.replaceEntityMergeList(entityMergeList);
-
 		} catch (final RuntimeException e) {
 
 			throw new JustifyRuntimeException(e);
@@ -162,7 +153,7 @@ public enum JstTransactionUtilHelper {
 
 			transactionPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
 		}
-		return entityMergeList;
+		return transactionPO.getEntityCreateAndUpdateList();
 	}
 
 	/**
