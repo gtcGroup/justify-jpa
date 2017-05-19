@@ -28,7 +28,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-def javaVersion = JavaVersion.VERSION_1_8;
+def javaVersion = JavaVersion.VERSION_1_6;
 sourceCompatibility = javaVersion;
 targetCompatibility = javaVersion;
 
@@ -40,8 +40,10 @@ repositories {
 dependencies {
 
     //compile project(':justify-core')
-    compile 'com.gtcgroup:justify-core:8.3.0' 
-    compile 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.6.4'
+    //compile 'com.gtcgroup:justify-core:8.3.0' 
+    compile 'com.gtcgroup:justify-core:6.3.0' 
+    //compile 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.6.4'
+    compile 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.4.2'
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
@@ -68,7 +70,7 @@ signing {
 
 group = "com.gtcgroup"
 archivesBaseName = "justify-jpa"
-version = "8.3.5"
+version = "6.3.6"
 
 artifacts {
     archives javadocJar, sourcesJar
