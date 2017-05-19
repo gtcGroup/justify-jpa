@@ -51,7 +51,7 @@ public enum PersistenceKeyCacheHelper {
 	/**
 	 * @return boolean
 	 */
-	public static boolean containsJdbcURL(final String persistenceUnitName) {
+	public static boolean containsJdbcUrlOrDatasource(final String persistenceUnitName) {
 
 		return PersistenceKeyCacheHelper.persistenceKeyMap.containsKey(persistenceUnitName);
 	}
@@ -59,7 +59,7 @@ public enum PersistenceKeyCacheHelper {
 	/**
 	 * @return {@link String}
 	 */
-	public static String formatPersistenceKey(final String persistenceUnitName, final String jdbcURL) {
-		return persistenceUnitName + "_~_" + jdbcURL;
+	public static String formatPersistenceKey(final String persistenceUnitName, final String jdbcUrlOrDatasource) {
+		return persistenceUnitName + "_~_" + jdbcUrlOrDatasource;
 	}
 }

@@ -7,6 +7,11 @@ JPA MODULE: Justify supports JUnit testing with "real" (functionally equivalent)
 
 ### <a name="changes"></a>Release Notes
 
+#### Version 8.3.6 & 6.3.6 <span class="date">2017-05-19</span>
+
+*   20 [Enable use of datasource.](https://github.com/gtcGroup/justify-jpa/issues/20)
+*   19 [AssertionsJPA maturation.](https://github.com/gtcGroup/justify-jpa/issues/19)
+
 #### Version 8.3.5 & 6.3.5 <span class="date">2017-05-09</span>
 
 *   18 [Verify external database changes are reflected in cache.](https://github.com/gtcGroup/justify-jpa/issues/18)
