@@ -7,6 +7,10 @@ JPA MODULE: Justify supports JUnit testing with "real" (functionally equivalent)
 
 ### <a name="changes"></a>Release Notes
 
+#### Version 8.3.7 & 6.3.7 <span class="date">2017-05-21</span>
+
+*   21 [JstFindUtilHelper.assertNotExistsInSharedCache() not properly implemented.](https://github.com/gtcGroup/justify-jpa/issues/21)
+
 #### Version 8.3.6 & 6.3.6 <span class="date">2017-05-19</span>
 
 *   20 [Enable use of datasource.](https://github.com/gtcGroup/justify-jpa/issues/20)
