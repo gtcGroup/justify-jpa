@@ -144,7 +144,7 @@ public enum JstFindUtilHelper {
 	 *
 	 * @return boolean
 	 */
-	public static <ENTITY> boolean existsInSharedCacheWithEntityIdentities(final EntityManager entityManager,
+	public static <ENTITY> boolean existsInSharedCache(final EntityManager entityManager,
 			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
 		boolean result = true;

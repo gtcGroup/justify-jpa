@@ -102,8 +102,7 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (!JstFindUtilHelper.existsInDatabase(AssertionsJPA.entityManager, entityClass,
-				entityIdentities)) {
+		if (!JstFindUtilHelper.existsInDatabase(AssertionsJPA.entityManager, entityClass, entityIdentities)) {
 
 			assertFailWithMessage(persistenceUnitName, entityClass, "database", "instance unavailable");
 		}
@@ -133,8 +132,7 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (!JstFindUtilHelper.existsInSharedCacheWithEntityIdentities(AssertionsJPA.entityManager, entityClass,
-				entityIdentities)) {
+		if (!JstFindUtilHelper.existsInSharedCache(AssertionsJPA.entityManager, entityClass, entityIdentities)) {
 
 			assertFailWithMessage(persistenceUnitName, null, "shared cache", "class unavailable");
 		}
@@ -177,19 +175,18 @@ public enum AssertionsJPA {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (JstFindUtilHelper.existsInDatabase(AssertionsJPA.entityManager, entityClass,
-				entityIdentities)) {
+		if (JstFindUtilHelper.existsInDatabase(AssertionsJPA.entityManager, entityClass, entityIdentities)) {
 
 			assertFailWithMessage(persistenceUnitName, entityClass, "database", "instance unexpectedly available");
 		}
 		return;
 	}
-	
+
 	public static <ENTITY> void assertNotExistsInDatabase(final String persistenceUnitName,
 			final List<ENTITY> entityListContainingIdentities) {
-		
+
 		assertNotExistsInDatabase(persistenceUnitName, entityListContainingIdentities.toArray());
-	
+
 	}
 
 	public static void assertNotExistsInDatabase(final String persistenceUnitName,
@@ -203,15 +200,14 @@ public enum AssertionsJPA {
 		}
 	}
 
-	public static void assertNotExistsInSharedCache(final String persistenceUnitName,
-			final Object... entitiesContainingIdentity) {
+	public static <ENTITY> void assertNotExistsInSharedCache(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object... entityIdentities) {
 
 		AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
 
-		if (JstFindUtilHelper.existsInSharedCache(AssertionsJPA.entityManager,
-				entitiesContainingIdentity)) {
+		if (JstFindUtilHelper.existsInSharedCache(AssertionsJPA.entityManager, entityClass, entityIdentities)) {
 
-			assertFailWithMessage(persistenceUnitName, null, "shared cache", "class unexpectedly available");
+			assertFailWithMessage(persistenceUnitName, null, "shared cache", "class available");
 		}
 	}
 
@@ -311,9 +307,8 @@ public enum AssertionsJPA {
 
 		for (final String methodName : existsList) {
 
-            final Object entityOrList = ReflectionUtilHelper.invokePublicMethod(methodName, AssertionsJPA.parentEntity);
-			final boolean actual = JstFindUtilHelper.existsInDatabases(AssertionsJPA.entityManager,
-                entityOrList);
+			final Object entityOrList = ReflectionUtilHelper.invokePublicMethod(methodName, AssertionsJPA.parentEntity);
+			final boolean actual = JstFindUtilHelper.existsInDatabases(AssertionsJPA.entityManager, entityOrList);
 			if (expected != actual) {
 				return false;
 			}
