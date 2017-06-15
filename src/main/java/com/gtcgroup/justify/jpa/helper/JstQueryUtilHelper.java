@@ -121,7 +121,6 @@ public enum JstQueryUtilHelper {
 	 *
 	 * @return {@link List}
 	 */
-	@SuppressWarnings("unchecked")
 	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
 			final Map<String, Object> stringParameterMap) {
 
@@ -131,11 +130,7 @@ public enum JstQueryUtilHelper {
 
 			final Query query = decorateQuery(queryPO, stringParameterMap);
 
-			entityList = query.getResultList();
-
-		} catch (final Exception e) {
-
-			throw new JustifyRuntimeException(e);
+			entityList = queryList(query, queryPO);
 
 		} finally {
 			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
@@ -148,7 +143,6 @@ public enum JstQueryUtilHelper {
 	 *
 	 * @return {@link List}
 	 */
-	@SuppressWarnings("unchecked")
 	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO) {
 
 		List<ENTITY> entityList = null;
@@ -157,13 +151,31 @@ public enum JstQueryUtilHelper {
 
 			final Query query = decorateQuery(queryPO, null);
 
-			entityList = query.getResultList();
-		} catch (final Exception e) {
-
-			throw new JustifyRuntimeException(e);
+			entityList = queryList(query, queryPO);
 
 		} finally {
 			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+		}
+		return entityList;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <ENTITY> List<ENTITY> queryList(final Query query, final BaseQueryJpaPO queryPO) {
+
+		List<ENTITY> entityList;
+		try {
+			entityList = query.getResultList();
+
+		} catch (final Exception e) {
+
+			throw new JustifyRuntimeException(e);
+		}
+
+		if (entityList.isEmpty()) {
+			if (!queryPO.isSuppressExceptionForNull()) {
+
+				throw new JustifyRuntimeException("The list is empty.");
+			}
 		}
 		return entityList;
 	}
@@ -185,10 +197,6 @@ public enum JstQueryUtilHelper {
 
 			entity = (ENTITY) query.getSingleResult();
 			JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
-
-		} catch (final Exception e) {
-
-			throw new JustifyRuntimeException(e);
 
 		} finally {
 			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
@@ -233,7 +241,7 @@ public enum JstQueryUtilHelper {
 	public static void throwExceptionForNull(final BaseJpaPO queryPO, final Object entity) {
 
 		if (null == entity) {
-			if (!queryPO.isModifiableEntities()) {
+			if (!queryPO.isSuppressExceptionForNull()) {
 				throw new JustifyRuntimeException("Unable to retrieve a result instance.");
 
 			}
