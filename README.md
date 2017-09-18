@@ -9,7 +9,7 @@ JPA MODULE: Justify supports JUnit testing with "real" (functionally equivalent)
 
 #### Version 8.3.9 & 6.3.9 <span class="date">2017-09-18</span>
 
-*   23 [JstTransactionUtilHelper.transactEntities](https://github.com/gtcGroup/justify-jpa/issues/23)
+*   23 [JstTransactionUtilHelper.transactEntities not preserving Optimistic Lock exception.	](https://github.com/gtcGroup/justify-jpa/issues/23)
 
 #### Version 8.3.8 & 6.3.8 <span class="date">2017-06-15</span>
 
