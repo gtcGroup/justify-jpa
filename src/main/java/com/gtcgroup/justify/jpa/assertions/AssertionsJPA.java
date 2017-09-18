@@ -52,7 +52,6 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings("javadoc")
 public enum AssertionsJPA {
 
 	INSTANCE;
@@ -221,12 +220,13 @@ public enum AssertionsJPA {
 	private static void catchBlock(final Exception e) {
 
 		try {
-			// Cleanup the parent if needed.
+
 			JstTransactionUtilHelper.transactEntities(JstTransactionJpaPO.withException()
 					.withEntityManager(AssertionsJPA.entityManager).withDeleteEntities(AssertionsJPA.parentEntity));
-		} catch (final Exception ignore) {
 
-			throw (JustifyRuntimeException) e;
+		} catch (final Exception e2) {
+
+			throw new JustifyRuntimeException(e2);
 		}
 		throw (JustifyRuntimeException) e;
 	}

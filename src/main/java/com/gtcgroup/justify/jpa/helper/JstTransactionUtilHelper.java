@@ -33,6 +33,7 @@ import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
+import com.gtcgroup.justify.jpa.exception.JstOptimisiticLockException;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 
 /**
@@ -48,12 +49,11 @@ import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
  */
 public enum JstTransactionUtilHelper {
 
-	@SuppressWarnings("javadoc")
 	INSTANCE;
 
 	/**
-	 * This convenience method guarantees deletion as long as the entity
-	 * identity is specified.
+	 * This convenience method guarantees deletion as long as the entity identity is
+	 * specified.
 	 */
 	public static <ENTITY> void findAndDeleteEntity(final EntityManager entityManager,
 			final ENTITY entityWithIdentity) {
@@ -71,8 +71,8 @@ public enum JstTransactionUtilHelper {
 	}
 
 	/**
-	 * This convenience method guarantees deletion as long as the entity
-	 * identity is specified.
+	 * This convenience method guarantees deletion as long as the entity identity is
+	 * specified.
 	 */
 	public static <ENTITY> void findAndDeleteEntity(final String persistenceUnitName, final ENTITY entityWithIdentity) {
 
@@ -81,9 +81,9 @@ public enum JstTransactionUtilHelper {
 	}
 
 	/**
-	 * This convenience method guarantees deletion of child objects typically
-	 * not marked for cascading remove that needs removal programmatically from
-	 * a parent entity.
+	 * This convenience method guarantees deletion of child objects typically not
+	 * marked for cascading remove that needs removal programmatically from a parent
+	 * entity.
 	 */
 	public static <ENTITY> void findAndDeleteRelatedEntity(final EntityManager entityManager,
 			final Object entityWithReleatedEnitityContainingIdentity, final String relatedEntityGetterMethodName) {
@@ -128,14 +128,14 @@ public enum JstTransactionUtilHelper {
 	}
 
 	/**
-	 * This method is used for committing multiple entities. If any of the
-	 * related child objects are not marked for an applicable
-	 * {@link CascadeType} then they need to be explicitly in the
-	 * {@link JstTransactionJpaPO}.
+	 * This method is used for committing multiple entities. If any of the related
+	 * child objects are not marked for an applicable {@link CascadeType} then they
+	 * need to be explicitly in the {@link JstTransactionJpaPO}.
 	 *
 	 * @return {@link List}
+	 * @throws JstOptimisiticLockException
 	 */
-	public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> transactEntities(final PO transactionPO) {
+	public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> transactEntities(final PO transactionPO) throws JstOptimisiticLockException {
 
 		try {
 
@@ -145,6 +145,15 @@ public enum JstTransactionUtilHelper {
 			removeEntities(transactionPO);
 
 			transactionPO.getEntityManager().getTransaction().commit();
+
+		} catch (final javax.persistence.OptimisticLockException e) {
+
+			throw new JstOptimisiticLockException(e);
+
+		} catch (final org.eclipse.persistence.exceptions.OptimisticLockException e) {
+
+			throw new JstOptimisiticLockException(e);
+
 		} catch (final RuntimeException e) {
 
 			throw new JustifyRuntimeException(e);
@@ -158,8 +167,8 @@ public enum JstTransactionUtilHelper {
 
 	/**
 	 * This method is used for committing a single entity. If any of the related
-	 * child objects are not marked for an applicable {@link CascadeType} then
-	 * they need to be explicitly in the {@link JstTransactionJpaPO}.
+	 * child objects are not marked for an applicable {@link CascadeType} then they
+	 * need to be explicitly in the {@link JstTransactionJpaPO}.
 	 *
 	 * @return {@link Object}
 	 */

@@ -70,7 +70,7 @@ signing {
 
 group = "com.gtcgroup"
 archivesBaseName = "justify-jpa"
-version = "8.3.8"
+version = "8.3.9"
 
 artifacts {
     archives javadocJar, sourcesJar

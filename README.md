@@ -7,6 +7,10 @@ JPA MODULE: Justify supports JUnit testing with "real" (functionally equivalent)
 
 ### <a name="changes"></a>Release Notes
 
+#### Version 8.3.9 & 6.3.9 <span class="date">2017-09-18</span>
+
+*   23 [JstTransactionUtilHelper.transactEntities](https://github.com/gtcGroup/justify-jpa/issues/23)
+
 #### Version 8.3.8 & 6.3.8 <span class="date">2017-06-15</span>
 
 *   22 [JstQueryUtilHelper.queryResultList()](https://github.com/gtcGroup/justify-jpa/issues/22)
