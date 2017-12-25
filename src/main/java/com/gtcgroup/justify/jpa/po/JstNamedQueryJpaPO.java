@@ -46,155 +46,157 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  */
 public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
 
-	/**
-	 * This method initializes the class.
-	 *
-	 * @return {@link JstNamedQueryJpaPO}
-	 */
-	public static JstNamedQueryJpaPO withQuery() {
+    /**
+     * This method initializes the class.
+     *
+     * @return {@link JstNamedQueryJpaPO}
+     */
+    public static JstNamedQueryJpaPO withQuery() {
 
-		return new JstNamedQueryJpaPO(false);
-	}
+        return new JstNamedQueryJpaPO(false);
+    }
 
-	/**
-	 * This method initializes the class.
-	 *
-	 * @return {@link JstNamedQueryJpaPO}
-	 */
-	public static JstNamedQueryJpaPO withQuery(final boolean suppressExceptionForNull) {
+    /**
+     * This method initializes the class.
+     *
+     * @return {@link JstNamedQueryJpaPO}
+     */
+    public static JstNamedQueryJpaPO withQuery(final boolean suppressExceptionForNull) {
 
-		return new JstNamedQueryJpaPO(suppressExceptionForNull);
-	}
+        return new JstNamedQueryJpaPO(suppressExceptionForNull);
+    }
 
-	protected String queryName;
+    protected String queryName;
 
-	protected Map<String, Object> parameterMap;
+    protected Map<String, Object> parameterMap;
 
-	/**
-	 * Constructor
-	 */
-	protected JstNamedQueryJpaPO(final boolean suppressExceptionForNull) {
+    /**
+     * Constructor
+     */
+    protected JstNamedQueryJpaPO(final boolean suppressExceptionForNull) {
 
-		super(suppressExceptionForNull);
-		return;
-	}
+        super(suppressExceptionForNull);
+        return;
+    }
 
-	/**
-	 * This method retains the {@link Query} as a class field.
-	 */
-	protected void createNamedQuery() {
+    /**
+     * This method retains the {@link Query} as a class field.
+     */
+    protected void createNamedQuery() {
 
-		this.query = this.entityManager.createNamedQuery(getQueryName());
-	}
+        this.query = this.entityManager.createNamedQuery(getQueryName());
+    }
 
-	/**
-	 * @return {@link Query}
-	 */
-	@Override
-	public Query getQuery() {
+    /**
+     * @return {@link Map}
+     */
+    public Map<String, Object> getParameterMap() {
 
-		try {
-			if (null == this.query) {
-				createNamedQuery();
-			}
-		} catch (final Exception e) {
-			throw new JustifyRuntimeException(e);
-		}
-		return this.query;
-	}
+        return this.parameterMap;
+    }
 
-	/**
-	 * @return {@link String}
-	 */
-	public String getQueryName() {
+    /**
+     * @return {@link Query}
+     */
+    @Override
+    public Query getQuery() {
 
-		return this.queryName;
-	}
+        try {
+            if (null == this.query) {
+                createNamedQuery();
+            }
+        } catch (final Exception e) {
+            throw new JustifyRuntimeException(e);
+        }
+        return this.query;
+    }
 
-	/**
-	 * @return {@link Map}
-	 */
-	public Map<String, Object> getParameterMap() {
+    /**
+     * @return {@link String}
+     */
+    public String getQueryName() {
 
-		return this.parameterMap;
-	}
+        return this.queryName;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isParameterMap() {
+    /**
+     * @return boolean
+     */
+    public boolean isParameterMap() {
 
-		return null != this.parameterMap;
-	}
+        return null != this.parameterMap;
+    }
 
-	/**
-	 * @return {@link JstNamedQueryJpaPO}
-	 */
-	public JstNamedQueryJpaPO withEntityManager(final EntityManager entityManager) {
+    /**
+     * @return {@link JstNamedQueryJpaPO}
+     */
+    @Override
+    public JstNamedQueryJpaPO withEntityManager(final EntityManager entityManager) {
 
-		return (JstNamedQueryJpaPO) super.withEntityManager(entityManager);
-	}
+        return (JstNamedQueryJpaPO) super.withEntityManager(entityManager);
+    }
 
-	/**
-	 * @return {@link JstNamedQueryJpaPO}
-	 */
-	public JstNamedQueryJpaPO withFirstResult(final int firstResult) {
+    /**
+     * @return {@link JstNamedQueryJpaPO}
+     */
+    public JstNamedQueryJpaPO withFirstResult(final int firstResult) {
 
-		this.firstResult = firstResult;
-		return this;
-	}
+        this.firstResult = firstResult;
+        return this;
+    }
 
-	/**
-	 * @return {@link JstNamedQueryJpaPO}
-	 */
-	public JstNamedQueryJpaPO withMaxResults(final int maxResults) {
+    /**
+     * @return {@link JstNamedQueryJpaPO}
+     */
+    public JstNamedQueryJpaPO withMaxResults(final int maxResults) {
 
-		this.maxResults = maxResults;
-		return this;
-	}
+        this.maxResults = maxResults;
+        return this;
+    }
 
-	/**
-	 * @return {@link JstNamedQueryJpaPO}
-	 */
-	@Override
-	public JstNamedQueryJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    /**
+     * @return {@link JstNamedQueryJpaPO}
+     */
+    public JstNamedQueryJpaPO withParameterMap(final Map<String, Object> parameterMap) {
 
-		return (JstNamedQueryJpaPO) super.withPersistenceUnitName(persistenceUnitName);
-	}
+        this.parameterMap = parameterMap;
+        return this;
+    }
 
-	/**
-	 * @return {@link JstNamedQueryJpaPO}
-	 */
-	public JstNamedQueryJpaPO withQueryName(final String queryName) {
+    /**
+     * @return {@link JstNamedQueryJpaPO}
+     */
+    @Override
+    public JstNamedQueryJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		this.queryName = queryName;
-		return this;
-	}
+        return (JstNamedQueryJpaPO) super.withPersistenceUnitName(persistenceUnitName);
+    }
 
-	/**
-	 * @return {@link JstNamedQueryJpaPO}
-	 */
-	public JstNamedQueryJpaPO withSuppressReadOnly(final boolean suppress) {
+    /**
+     * @return {@link JstNamedQueryJpaPO}
+     */
+    public JstNamedQueryJpaPO withQueryName(final String queryName) {
 
-		this.suppressReadOnly = suppress;
-		return this;
-	}
+        this.queryName = queryName;
+        return this;
+    }
 
-	/**
-	 * @return {@link JstNamedQueryJpaPO}
-	 */
-	public JstNamedQueryJpaPO withSuppressForceDatabaseTrip(final boolean suppress) {
+    /**
+     * @return {@link JstNamedQueryJpaPO}
+     */
+    @Override
+    public JstNamedQueryJpaPO withSuppressForceDatabaseTrip(final boolean suppress) {
 
-		this.suppressForceDatabaseTrip = suppress;
-		return this;
-	}
+        this.suppressForceDatabaseTrip = suppress;
+        return this;
+    }
 
-	/**
-	 * @return {@link JstNamedQueryJpaPO}
-	 */
-	public JstNamedQueryJpaPO withParameterMap(final Map<String, Object> parameterMap) {
+    /**
+     * @return {@link JstNamedQueryJpaPO}
+     */
+    public JstNamedQueryJpaPO withSuppressReadOnly(final boolean suppress) {
 
-		this.parameterMap = parameterMap;
-		return this;
-	}
+        this.suppressReadOnly = suppress;
+        return this;
+    }
 }

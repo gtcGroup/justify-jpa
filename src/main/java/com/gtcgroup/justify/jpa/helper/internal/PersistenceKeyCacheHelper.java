@@ -42,24 +42,23 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public enum PersistenceKeyCacheHelper {
 
-	@SuppressWarnings("javadoc")
-	INTERNAL;
+    INTERNAL;
 
-	// Contains persistence unit name and jdbc URL.
-	private static Map<String, String> persistenceKeyMap = new ConcurrentHashMap<String, String>();
+    // Contains persistence unit name and jdbc URL.
+    private static Map<String, String> persistenceKeyMap = new ConcurrentHashMap<>();
 
-	/**
-	 * @return boolean
-	 */
-	public static boolean containsJdbcUrlOrDatasource(final String persistenceUnitName) {
+    /**
+     * @return boolean
+     */
+    public static boolean containsJdbcUrlOrDatasource(final String persistenceUnitName) {
 
-		return PersistenceKeyCacheHelper.persistenceKeyMap.containsKey(persistenceUnitName);
-	}
+        return PersistenceKeyCacheHelper.persistenceKeyMap.containsKey(persistenceUnitName);
+    }
 
-	/**
-	 * @return {@link String}
-	 */
-	public static String formatPersistenceKey(final String persistenceUnitName, final String jdbcUrlOrDatasource) {
-		return persistenceUnitName + "_~_" + jdbcUrlOrDatasource;
-	}
+    /**
+     * @return {@link String}
+     */
+    public static String formatPersistenceKey(final String persistenceUnitName, final String jdbcUrlOrDatasource) {
+        return persistenceUnitName + "_~_" + jdbcUrlOrDatasource;
+    }
 }

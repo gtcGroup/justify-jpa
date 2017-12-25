@@ -32,7 +32,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
-import com.gtcgroup.justify.core.helper.internal.ReflectionUtilHelper;
+import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
 import com.gtcgroup.justify.jpa.exception.JstOptimisiticLockException;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 
@@ -49,132 +49,133 @@ import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
  */
 public enum JstTransactionUtilHelper {
 
-	INSTANCE;
+    INSTANCE;
 
-	/**
-	 * This convenience method guarantees deletion as long as the entity identity is
-	 * specified.
-	 */
-	public static <ENTITY> void findAndDeleteEntity(final EntityManager entityManager,
-			final ENTITY entityWithIdentity) {
+    /**
+     * This convenience method guarantees deletion as long as the entity identity is
+     * specified.
+     */
+    public static <ENTITY> void findAndDeleteEntity(final EntityManager entityManager,
+            final ENTITY entityWithIdentity) {
 
-		ENTITY entity = JstFindUtilHelper.findForceDatabaseTrip(entityManager, entityWithIdentity, false);
+        ENTITY entity = JstFindUtilHelper.findForceDatabaseTrip(entityManager, entityWithIdentity, false);
 
-		if (null == entity) {
-			return;
-		}
+        if (null == entity) {
+            return;
+        }
 
-		entityManager.getTransaction().begin();
-		entity = entityManager.merge(entity);
-		entityManager.remove(entity);
-		entityManager.getTransaction().commit();
-	}
+        entityManager.getTransaction().begin();
+        entity = entityManager.merge(entity);
+        entityManager.remove(entity);
+        entityManager.getTransaction().commit();
+    }
 
-	/**
-	 * This convenience method guarantees deletion as long as the entity identity is
-	 * specified.
-	 */
-	public static <ENTITY> void findAndDeleteEntity(final String persistenceUnitName, final ENTITY entityWithIdentity) {
+    /**
+     * This convenience method guarantees deletion as long as the entity identity is
+     * specified.
+     */
+    public static <ENTITY> void findAndDeleteEntity(final String persistenceUnitName, final ENTITY entityWithIdentity) {
 
-		findAndDeleteEntity(JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName),
-				entityWithIdentity);
-	}
+        findAndDeleteEntity(JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName),
+                entityWithIdentity);
+    }
 
-	/**
-	 * This convenience method guarantees deletion of child objects typically not
-	 * marked for cascading remove that needs removal programmatically from a parent
-	 * entity.
-	 */
-	public static <ENTITY> void findAndDeleteRelatedEntity(final EntityManager entityManager,
-			final Object entityWithReleatedEnitityContainingIdentity, final String relatedEntityGetterMethodName) {
+    /**
+     * This convenience method guarantees deletion of child objects typically not
+     * marked for cascading remove that needs removal programmatically from a parent
+     * entity.
+     */
+    public static <ENTITY> void findAndDeleteRelatedEntity(final EntityManager entityManager,
+            final Object entityWithReleatedEnitityContainingIdentity, final String relatedEntityGetterMethodName) {
 
-		@SuppressWarnings("unchecked")
-		final ENTITY entity = (ENTITY) ReflectionUtilHelper.invokePublicMethod(relatedEntityGetterMethodName,
-				entityWithReleatedEnitityContainingIdentity);
+        @SuppressWarnings("unchecked")
+        final ENTITY entity = (ENTITY) JstReflectionUtilHelper.invokePublicMethod(relatedEntityGetterMethodName,
+                entityWithReleatedEnitityContainingIdentity);
 
-		if (null == entity) {
-			throw new JustifyRuntimeException("The entity represented by the method [" + relatedEntityGetterMethodName
-					+ "] could not be found for deletion (removal).");
-		}
+        if (null == entity) {
+            throw new JustifyRuntimeException("The entity represented by the method [" + relatedEntityGetterMethodName
+                    + "] could not be found for deletion (removal).");
+        }
 
-		findAndDeleteEntity(entityManager, entity);
-	}
+        findAndDeleteEntity(entityManager, entity);
+    }
 
-	/**
-	 * @return {@link List}
-	 */
-	private static <PO extends JstTransactionJpaPO> void mergeCreateAndUpdates(final PO transactionPO) {
+    /**
+     * @return {@link List}
+     */
+    private static <PO extends JstTransactionJpaPO> void mergeCreateAndUpdates(final PO transactionPO) {
 
-		final List<Object> entityCreateAndUpdateList = new ArrayList<Object>();
+        final List<Object> entityCreateAndUpdateList = new ArrayList<>();
 
-		for (Object entity : transactionPO.getEntityCreateAndUpdateList()) {
+        for (Object entity : transactionPO.getEntityCreateAndUpdateList()) {
 
-			entity = transactionPO.getEntityManager().merge(entity);
-			entityCreateAndUpdateList.add((Object) entity);
-		}
+            entity = transactionPO.getEntityManager().merge(entity);
+            entityCreateAndUpdateList.add(entity);
+        }
 
-		transactionPO.replaceEntityCreateAndUpdateList(entityCreateAndUpdateList);
-	}
+        transactionPO.replaceEntityCreateAndUpdateList(entityCreateAndUpdateList);
+    }
 
-	private static <PO extends JstTransactionJpaPO> void removeEntities(final PO transactionPO) {
+    private static <PO extends JstTransactionJpaPO> void removeEntities(final PO transactionPO) {
 
-		for (Object entity : transactionPO.getEntityDeleteList()) {
+        for (Object entity : transactionPO.getEntityDeleteList()) {
 
-			entity = transactionPO.getEntityManager().merge(entity);
-			transactionPO.getEntityManager().remove(entity);
-		}
+            entity = transactionPO.getEntityManager().merge(entity);
+            transactionPO.getEntityManager().remove(entity);
+        }
 
-		return;
-	}
+        return;
+    }
 
-	/**
-	 * This method is used for committing multiple entities. If any of the related
-	 * child objects are not marked for an applicable {@link CascadeType} then they
-	 * need to be explicitly in the {@link JstTransactionJpaPO}.
-	 *
-	 * @return {@link List}
-	 * @throws JstOptimisiticLockException
-	 */
-	public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> transactEntities(final PO transactionPO) throws JstOptimisiticLockException {
+    /**
+     * This method is used for committing multiple entities. If any of the related
+     * child objects are not marked for an applicable {@link CascadeType} then they
+     * need to be explicitly in the {@link JstTransactionJpaPO}.
+     *
+     * @return {@link List}
+     * @throws JstOptimisiticLockException
+     */
+    public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> transactEntities(final PO transactionPO)
+            throws JstOptimisiticLockException {
 
-		try {
+        try {
 
-			transactionPO.getEntityManager().getTransaction().begin();
+            transactionPO.getEntityManager().getTransaction().begin();
 
-			mergeCreateAndUpdates(transactionPO);
-			removeEntities(transactionPO);
+            mergeCreateAndUpdates(transactionPO);
+            removeEntities(transactionPO);
 
-			transactionPO.getEntityManager().getTransaction().commit();
+            transactionPO.getEntityManager().getTransaction().commit();
 
-		} catch (final javax.persistence.OptimisticLockException e) {
+        } catch (final javax.persistence.OptimisticLockException e) {
 
-			throw new JstOptimisiticLockException(e);
+            throw new JstOptimisiticLockException(e);
 
-		} catch (final org.eclipse.persistence.exceptions.OptimisticLockException e) {
+        } catch (final org.eclipse.persistence.exceptions.OptimisticLockException e) {
 
-			throw new JstOptimisiticLockException(e);
+            throw new JstOptimisiticLockException(e);
 
-		} catch (final RuntimeException e) {
+        } catch (final RuntimeException e) {
 
-			throw new JustifyRuntimeException(e);
+            throw new JustifyRuntimeException(e);
 
-		} finally {
+        } finally {
 
-			transactionPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-		}
-		return transactionPO.getEntityCreateAndUpdateList();
-	}
+            transactionPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+        }
+        return transactionPO.getEntityCreateAndUpdateList();
+    }
 
-	/**
-	 * This method is used for committing a single entity. If any of the related
-	 * child objects are not marked for an applicable {@link CascadeType} then they
-	 * need to be explicitly in the {@link JstTransactionJpaPO}.
-	 *
-	 * @return {@link Object}
-	 */
-	@SuppressWarnings("unchecked")
-	public static <ENTITY, PO extends JstTransactionJpaPO> ENTITY transactEntity(final PO transactionPO) {
+    /**
+     * This method is used for committing a single entity. If any of the related
+     * child objects are not marked for an applicable {@link CascadeType} then they
+     * need to be explicitly in the {@link JstTransactionJpaPO}.
+     *
+     * @return {@link Object}
+     */
+    @SuppressWarnings("unchecked")
+    public static <ENTITY, PO extends JstTransactionJpaPO> ENTITY transactEntity(final PO transactionPO) {
 
-		return (ENTITY) transactEntities(transactionPO).get(0);
-	}
+        return (ENTITY) transactEntities(transactionPO).get(0);
+    }
 }

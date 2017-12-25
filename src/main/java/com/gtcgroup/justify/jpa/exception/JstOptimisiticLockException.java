@@ -26,7 +26,7 @@
 
 package com.gtcgroup.justify.jpa.exception;
 
-import com.gtcgroup.justify.core.base.JstBaseException;
+import com.gtcgroup.justify.core.base.internal.BaseException;
 
 /**
  * This Exception class indicates a special case.
@@ -39,7 +39,7 @@ import com.gtcgroup.justify.core.base.JstBaseException;
  * @author Marvin Toll
  * @since v3.0
  */
-public class JstOptimisiticLockException extends JstBaseException {
+public class JstOptimisiticLockException extends BaseException {
 
 	private static final long serialVersionUID = 1L;
 

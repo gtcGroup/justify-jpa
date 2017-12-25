@@ -42,60 +42,61 @@ import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
  */
 public class JstCountAllJpaPO extends BaseJpaPO {
 
-	/**
-	 * This method initializes the class.
-	 *
-	 * @return {@link JstCountAllJpaPO}
-	 */
-	public static JstCountAllJpaPO withQuery(final boolean suppressExceptionForNull) {
+    /**
+     * This method initializes the class.
+     *
+     * @return {@link JstCountAllJpaPO}
+     */
+    public static JstCountAllJpaPO withQuery(final boolean suppressExceptionForNull) {
 
-		return new JstCountAllJpaPO(suppressExceptionForNull);
-	}
+        return new JstCountAllJpaPO(suppressExceptionForNull);
+    }
 
-	protected Class<?> resultClass;
+    protected Class<?> resultClass;
 
-	/**
-	 * Constructor
-	 */
-	protected JstCountAllJpaPO(final boolean suppressExceptionForNull) {
+    /**
+     * Constructor
+     */
+    protected JstCountAllJpaPO(final boolean suppressExceptionForNull) {
 
-		super(suppressExceptionForNull);
-		return;
-	}
+        super(suppressExceptionForNull);
+        return;
+    }
 
-	/**
-	 * @return {@link Class}
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getResultClass() {
+    /**
+     * @return {@link Class}
+     */
+    @SuppressWarnings("unchecked")
+    public <ENTITY> Class<ENTITY> getResultClass() {
 
-		return (Class<ENTITY>) this.resultClass;
-	}
+        return (Class<ENTITY>) this.resultClass;
+    }
 
-	/**
-	 * @return {@link JstCountAllJpaPO}
-	 */
-	public JstCountAllJpaPO withEntityManager(final EntityManager entityManager) {
+    /**
+     * @return {@link JstCountAllJpaPO}
+     */
+    @Override
+    public JstCountAllJpaPO withEntityManager(final EntityManager entityManager) {
 
-		this.entityManager = entityManager;
-		return this;
-	}
+        this.entityManager = entityManager;
+        return this;
+    }
 
-	/**
-	 * @return {@link JstCountAllJpaPO}
-	 */
+    /**
+     * @return {@link JstCountAllJpaPO}
+     */
     @Override
     public JstCountAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		return (JstCountAllJpaPO) super.withPersistenceUnitName(persistenceUnitName);
-	}
+        return (JstCountAllJpaPO) super.withPersistenceUnitName(persistenceUnitName);
+    }
 
-	/**
-	 * @return {@link JstCountAllJpaPO}
-	 */
-	public <ENTITY> JstCountAllJpaPO withResultClass(final Class<ENTITY> resultClass) {
+    /**
+     * @return {@link JstCountAllJpaPO}
+     */
+    public <ENTITY> JstCountAllJpaPO withResultClass(final Class<ENTITY> resultClass) {
 
-		this.resultClass = resultClass;
-		return this;
-	}
+        this.resultClass = resultClass;
+        return this;
+    }
 }

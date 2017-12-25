@@ -47,120 +47,122 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  */
 public class JstFindAllJpaPO extends BaseQueryJpaPO {
 
-	/**
-	 * This method initializes the class.
-	 *
-	 * @return {@link JstFindAllJpaPO}
-	 */
-	public static JstFindAllJpaPO withFindAll() {
+    /**
+     * This method initializes the class.
+     *
+     * @return {@link JstFindAllJpaPO}
+     */
+    public static JstFindAllJpaPO withFindAll() {
 
-		return new JstFindAllJpaPO(false);
-	}
+        return new JstFindAllJpaPO(false);
+    }
 
-	/**
-	 * This method initializes the class.
-	 *
-	 * @return {@link JstFindAllJpaPO}
-	 */
-	public static JstFindAllJpaPO withFindAll(final boolean suppressExceptionForNull) {
+    /**
+     * This method initializes the class.
+     *
+     * @return {@link JstFindAllJpaPO}
+     */
+    public static JstFindAllJpaPO withFindAll(final boolean suppressExceptionForNull) {
 
-		return new JstFindAllJpaPO(suppressExceptionForNull);
-	}
+        return new JstFindAllJpaPO(suppressExceptionForNull);
+    }
 
-	protected Class<?> entityClass;
+    protected Class<?> entityClass;
 
-	/**
-	 * Constructor
-	 */
-	protected JstFindAllJpaPO(final boolean suppressExceptionForNull) {
+    /**
+     * Constructor
+     */
+    protected JstFindAllJpaPO(final boolean suppressExceptionForNull) {
 
-		super(suppressExceptionForNull);
-		return;
-	}
+        super(suppressExceptionForNull);
+        return;
+    }
 
-	/**
-	 * @return {@link TypedQuery}
-	 */
-	protected <ENTITY> TypedQuery<ENTITY> createCriteriaQuery(final Class<ENTITY> resultClass) {
+    /**
+     * @return {@link TypedQuery}
+     */
+    protected <ENTITY> TypedQuery<ENTITY> createCriteriaQuery(final Class<ENTITY> resultClass) {
 
-		final CriteriaQuery<ENTITY> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(resultClass);
-		final Root<ENTITY> rootEntry = criteriaQuery.from(resultClass);
-		final CriteriaQuery<ENTITY> criteria = criteriaQuery.select(rootEntry);
+        final CriteriaQuery<ENTITY> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(resultClass);
+        final Root<ENTITY> rootEntry = criteriaQuery.from(resultClass);
+        final CriteriaQuery<ENTITY> criteria = criteriaQuery.select(rootEntry);
 
-		return getEntityManager().createQuery(criteria);
-	}
+        return getEntityManager().createQuery(criteria);
+    }
 
-	/**
-	 * @return {@link Query}
-	 */
-	@Override
-	public Query getQuery() {
+    /**
+     * @return {@link Class}
+     */
+    @SuppressWarnings("unchecked")
+    public <ENTITY> Class<ENTITY> getEntityClass() {
 
-		if (null == this.query) {
+        return (Class<ENTITY>) this.entityClass;
+    }
 
-			if (isResultClass()) {
-				try {
-					this.query = createCriteriaQuery(getEntityClass());
-				} catch (final Exception e) {
-					throw new JustifyRuntimeException(e);
-				}
-			} else {
-				throw new JustifyRuntimeException(
-						"Verify that a result class is defined in the PO [" + this.getClass().getName() + "].");
-			}
+    /**
+     * @return {@link Query}
+     */
+    @Override
+    public Query getQuery() {
 
-		}
-		return this.query;
-	}
+        if (null == this.query) {
 
-	/**
-	 * @return {@link Class}
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getEntityClass() {
+            if (isResultClass()) {
+                try {
+                    this.query = createCriteriaQuery(getEntityClass());
+                } catch (final Exception e) {
+                    throw new JustifyRuntimeException(e);
+                }
+            } else {
+                throw new JustifyRuntimeException(
+                        "Verify that a result class is defined in the PO [" + this.getClass().getName() + "].");
+            }
 
-		return (Class<ENTITY>) this.entityClass;
-	}
+        }
+        return this.query;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isResultClass() {
+    /**
+     * @return boolean
+     */
+    public boolean isResultClass() {
 
-		return null != this.entityClass;
-	}
+        return null != this.entityClass;
+    }
 
-	/**
-	 * @return {@link JstFindAllJpaPO}
-	 */
-	public JstFindAllJpaPO withEntityManager(final EntityManager entityManager) {
+    /**
+     * @return {@link JstFindAllJpaPO}
+     */
+    public <ENTITY> JstFindAllJpaPO withEntityClass(final Class<ENTITY> entityClass) {
 
-		return (JstFindAllJpaPO) super.withEntityManager(entityManager);
-	}
+        this.entityClass = entityClass;
+        return this;
+    }
 
-	/**
-	 * @return {@link JstFindAllJpaPO}
-	 */
-	@Override
-	public JstFindAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    /**
+     * @return {@link JstFindAllJpaPO}
+     */
+    @Override
+    public JstFindAllJpaPO withEntityManager(final EntityManager entityManager) {
 
-		return (JstFindAllJpaPO) super.withPersistenceUnitName(persistenceUnitName);
-	}
+        return (JstFindAllJpaPO) super.withEntityManager(entityManager);
+    }
 
-	/**
-	 * @return {@link JstFindAllJpaPO}
-	 */
-	public <ENTITY> JstFindAllJpaPO withEntityClass(final Class<ENTITY> entityClass) {
+    /**
+     * @return {@link JstFindAllJpaPO}
+     */
+    @Override
+    public JstFindAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		this.entityClass = entityClass;
-		return this;
-	}
+        return (JstFindAllJpaPO) super.withPersistenceUnitName(persistenceUnitName);
+    }
 
-	/**
-	 * @return {@link JstCountAllJpaPO}
-	 */
-	public JstFindAllJpaPO withSuppressForceDatabaseTrip(final boolean suppressForceDatabaseTrip) {
+    /**
+     * @return {@link JstCountAllJpaPO}
+     */
+    @Override
+    public JstFindAllJpaPO withSuppressForceDatabaseTrip(final boolean suppressForceDatabaseTrip) {
 
-		return (JstFindAllJpaPO) super.withSuppressForceDatabaseTrip(suppressForceDatabaseTrip);
-	}
+        return (JstFindAllJpaPO) super.withSuppressForceDatabaseTrip(suppressForceDatabaseTrip);
+    }
 }

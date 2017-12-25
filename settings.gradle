@@ -1,2 +1,3 @@
 include ':justify-core'
+
 project(':justify-core').projectDir = new File(settingsDir, '../justify-core')

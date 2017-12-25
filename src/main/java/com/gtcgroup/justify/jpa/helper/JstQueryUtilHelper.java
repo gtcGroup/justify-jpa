@@ -58,193 +58,191 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  */
 public enum JstQueryUtilHelper {
 
-	@SuppressWarnings("javadoc")
-	INSTANCE;
+    @SuppressWarnings("javadoc")
+    INSTANCE;
 
-	/**
-	 * This method returns the number of records in the table or view.
-	 *
-	 * @return long
-	 */
-	public static long count(final JstCountAllJpaPO queryPO) {
+    /**
+     * This method returns the number of records in the table or view.
+     *
+     * @return long
+     */
+    public static long count(final JstCountAllJpaPO queryPO) {
 
-		final CriteriaBuilder criteriaBuilder = queryPO.getEntityManager().getCriteriaBuilder();
-		final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        final CriteriaBuilder criteriaBuilder = queryPO.getEntityManager().getCriteriaBuilder();
+        final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 
-		criteriaQuery.select(criteriaBuilder.count(criteriaQuery.from(queryPO.getResultClass())));
+        criteriaQuery.select(criteriaBuilder.count(criteriaQuery.from(queryPO.getResultClass())));
 
-		final Query query = queryPO.getEntityManager().createQuery(criteriaQuery);
+        final Query query = queryPO.getEntityManager().createQuery(criteriaQuery);
 
-		final Long countLong = (Long) query.getSingleResult();
-		final long count = countLong.longValue();
+        final Long countLong = (Long) query.getSingleResult();
+        final long count = countLong.longValue();
 
-		return count;
-	}
+        return count;
+    }
 
-	@SuppressWarnings("boxing")
-	static Query decorateQuery(final BaseQueryJpaPO queryPO, final Map<String, Object> stringParameterMap) {
+    static Query decorateQuery(final BaseQueryJpaPO queryPO, final Map<String, Object> stringParameterMap) {
 
-		final Query query = queryPO.getQuery();
+        final Query query = queryPO.getQuery();
 
-		if (null != stringParameterMap) {
+        if (null != stringParameterMap) {
 
-			for (final Entry<String, Object> stringEntry : stringParameterMap.entrySet()) {
+            for (final Entry<String, Object> stringEntry : stringParameterMap.entrySet()) {
 
-				query.setParameter(stringEntry.getKey(), stringEntry.getValue());
-			}
-		}
+                query.setParameter(stringEntry.getKey(), stringEntry.getValue());
+            }
+        }
 
-		if (!queryPO.isSuppressForceDatabaseTrip()) {
-			query.setHint(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
-			query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
-			query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
-		}
+        if (!queryPO.isSuppressForceDatabaseTrip()) {
+            query.setHint(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+            query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
+            query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+        }
 
-		if (!queryPO.isSuppressReadOnly()) {
+        if (!queryPO.isSuppressReadOnly()) {
 
-			query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-		}
+            query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+        }
 
-		if (queryPO.isFirstResult()) {
+        if (queryPO.isFirstResult()) {
 
-			query.setFirstResult(queryPO.getFirstResult());
-		}
-		if (queryPO.isMaxResults()) {
+            query.setFirstResult(queryPO.getFirstResult());
+        }
+        if (queryPO.isMaxResults()) {
 
-			query.setMaxResults(queryPO.getMaxResults());
-		}
-		return query;
-	}
+            query.setMaxResults(queryPO.getMaxResults());
+        }
+        return query;
+    }
 
-	/**
-	 * This method executes a query with parameters.
-	 *
-	 * @return {@link List}
-	 */
-	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
-			final Map<String, Object> stringParameterMap) {
+    private static <ENTITY> List<ENTITY> queryList(final Query query, final BaseQueryJpaPO queryPO) {
 
-		List<ENTITY> entityList = null;
+        List<ENTITY> entityList;
+        try {
+            entityList = query.getResultList();
 
-		try {
+        } catch (final Exception e) {
 
-			final Query query = decorateQuery(queryPO, stringParameterMap);
+            throw new JustifyRuntimeException(e);
+        }
 
-			entityList = queryList(query, queryPO);
+        if (entityList.isEmpty()) {
+            if (!queryPO.isSuppressExceptionForNull()) {
 
-		} finally {
-			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-		}
-		return entityList;
-	}
+                throw new JustifyRuntimeException("The list is empty.");
+            }
+        }
+        return entityList;
+    }
 
-	/**
-	 * This method executes a query with parameters.
-	 *
-	 * @return {@link List}
-	 */
-	public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO) {
+    /**
+     * This method executes a query with parameters.
+     *
+     * @return {@link List}
+     */
+    public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO) {
 
-		List<ENTITY> entityList = null;
+        List<ENTITY> entityList = null;
 
-		try {
+        try {
 
-			final Query query = decorateQuery(queryPO, null);
+            final Query query = decorateQuery(queryPO, null);
 
-			entityList = queryList(query, queryPO);
+            entityList = queryList(query, queryPO);
 
-		} finally {
-			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-		}
-		return entityList;
-	}
+        } finally {
+            queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+        }
+        return entityList;
+    }
 
-	@SuppressWarnings("unchecked")
-	private static <ENTITY> List<ENTITY> queryList(final Query query, final BaseQueryJpaPO queryPO) {
+    /**
+     * This method executes a query with parameters.
+     *
+     * @return {@link List}
+     */
+    public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
+            final Map<String, Object> stringParameterMap) {
 
-		List<ENTITY> entityList;
-		try {
-			entityList = query.getResultList();
+        List<ENTITY> entityList = null;
 
-		} catch (final Exception e) {
+        try {
 
-			throw new JustifyRuntimeException(e);
-		}
+            final Query query = decorateQuery(queryPO, stringParameterMap);
 
-		if (entityList.isEmpty()) {
-			if (!queryPO.isSuppressExceptionForNull()) {
+            entityList = queryList(query, queryPO);
 
-				throw new JustifyRuntimeException("The list is empty.");
-			}
-		}
-		return entityList;
-	}
+        } finally {
+            queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+        }
+        return entityList;
+    }
 
-	/**
-	 * This method executes a query with parameters.
-	 *
-	 * @return ENTITY
-	 */
-	@SuppressWarnings("unchecked")
-	public static <ENTITY> ENTITY querySingleResult(final BaseQueryJpaPO queryPO,
-			final Map<String, Object> parameterMap) {
+    /**
+     * This method executes a query with parameters.
+     *
+     * @return ENTITY
+     */
+    @SuppressWarnings("unchecked")
+    public static <ENTITY> ENTITY querySingleResult(final BaseQueryJpaPO queryPO) {
 
-		ENTITY entity = null;
+        ENTITY entity = null;
 
-		try {
+        try {
 
-			final Query query = decorateQuery(queryPO, parameterMap);
+            final Query query = decorateQuery(queryPO, null);
 
-			entity = (ENTITY) query.getSingleResult();
-			JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
+            entity = (ENTITY) query.getSingleResult();
+            JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
 
-		} finally {
-			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-		}
-		return entity;
-	}
+        } catch (@SuppressWarnings("unused") final NoResultException e) {
 
-	/**
-	 * This method executes a query with parameters.
-	 *
-	 * @return ENTITY
-	 */
-	@SuppressWarnings("unchecked")
-	public static <ENTITY> ENTITY querySingleResult(final BaseQueryJpaPO queryPO) {
+            JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
 
-		ENTITY entity = null;
+        } catch (final Exception e) {
 
-		try {
+            throw new JustifyRuntimeException(e);
 
-			final Query query = decorateQuery(queryPO, null);
+        } finally {
+            queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+        }
+        return entity;
+    }
 
-			entity = (ENTITY) query.getSingleResult();
-			JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
+    /**
+     * This method executes a query with parameters.
+     *
+     * @return ENTITY
+     */
+    @SuppressWarnings("unchecked")
+    public static <ENTITY> ENTITY querySingleResult(final BaseQueryJpaPO queryPO,
+            final Map<String, Object> parameterMap) {
 
-		} catch (final NoResultException e) {
+        ENTITY entity = null;
 
-			JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
+        try {
 
-		} catch (final Exception e) {
+            final Query query = decorateQuery(queryPO, parameterMap);
 
-			throw new JustifyRuntimeException(e);
+            entity = (ENTITY) query.getSingleResult();
+            JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
 
-		} finally {
-			queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-		}
-		return entity;
-	}
+        } finally {
+            queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+        }
+        return entity;
+    }
 
-	/**
-	 * This method handles exception suppression.
-	 */
-	public static void throwExceptionForNull(final BaseJpaPO queryPO, final Object entity) {
+    /**
+     * This method handles exception suppression.
+     */
+    public static void throwExceptionForNull(final BaseJpaPO queryPO, final Object entity) {
 
-		if (null == entity) {
-			if (!queryPO.isSuppressExceptionForNull()) {
-				throw new JustifyRuntimeException("Unable to retrieve a result instance.");
+        if (null == entity) {
+            if (!queryPO.isSuppressExceptionForNull()) {
+                throw new JustifyRuntimeException("Unable to retrieve a result instance.");
 
-			}
-		}
-	}
+            }
+        }
+    }
 }
