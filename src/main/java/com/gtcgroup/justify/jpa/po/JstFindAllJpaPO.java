@@ -31,7 +31,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -111,10 +111,10 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
                 try {
                     this.query = createCriteriaQuery(getEntityClass());
                 } catch (final Exception e) {
-                    throw new JustifyRuntimeException(e);
+                    throw new JustifyTestingException(e);
                 }
             } else {
-                throw new JustifyRuntimeException(
+                throw new JustifyTestingException(
                         "Verify that a result class is defined in the PO [" + this.getClass().getName() + "].");
             }
 

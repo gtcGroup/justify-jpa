@@ -29,7 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -108,12 +108,12 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
                 } else if (isQueryLanaguageString()) {
                     this.query = createQueryLanguageQuery(getQueryLanguageString());
                 } else {
-                    throw new JustifyRuntimeException(
+                    throw new JustifyTestingException(
                             "Verify that a coherent set of parameters were defined in the PO ["
                                     + this.getClass().getName() + "].");
                 }
             } catch (final Exception e) {
-                throw new JustifyRuntimeException(e);
+                throw new JustifyTestingException(e);
             }
         }
         return this.query;

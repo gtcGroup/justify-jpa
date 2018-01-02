@@ -33,7 +33,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
 import com.gtcgroup.justify.jpa.helper.internal.PersistenceDotXmlCacheHelper;
 import com.gtcgroup.justify.jpa.helper.internal.PersistenceKeyCacheHelper;
 
@@ -87,7 +87,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 
         if (null == jdbcUrlOrDatasource) {
 
-            throw new JustifyRuntimeException(
+            throw new JustifyTestingException(
                     "A jdbc url was not found for persistence unit name [" + persistenceUnitName + "].");
         }
 
@@ -117,7 +117,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 
         } catch (final Exception e) {
 
-            throw new JustifyRuntimeException(e);
+            throw new JustifyTestingException(e);
         }
         return persistenceKey;
     }
@@ -152,7 +152,7 @@ public enum JstEntityManagerFactoryCacheHelper {
             return JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(persistenceKey)
                     .createEntityManager();
         }
-        throw new JustifyRuntimeException(
+        throw new JustifyTestingException(
                 "An entity manager was not found for the persistence key [" + persistenceKey + "].");
     }
 }

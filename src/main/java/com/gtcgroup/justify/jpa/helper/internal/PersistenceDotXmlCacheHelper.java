@@ -42,9 +42,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
 import com.gtcgroup.justify.core.po.JstStreamPO;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
 
 /**
  * This Cache Helper class lazily retrieves the
@@ -107,7 +107,7 @@ public enum PersistenceDotXmlCacheHelper {
 
             if (null == nNode) {
 
-                throw new JustifyRuntimeException(
+                throw new JustifyTestingException(
                         "The persistence unit name [" + persistenceUnitName + "] could not be found.");
             }
 
@@ -147,7 +147,7 @@ public enum PersistenceDotXmlCacheHelper {
 
         final Exception e) {
 
-            throw new JustifyRuntimeException(e);
+            throw new JustifyTestingException(e);
         } finally {
             if (null != jstStreamPO) {
                 jstStreamPO.closeInputStream();
@@ -156,7 +156,7 @@ public enum PersistenceDotXmlCacheHelper {
 
         if (null == jdbcUrlOrDatasource) {
 
-            throw new JustifyRuntimeException("The JPA property [" + PersistenceUnitProperties.JDBC_URL
+            throw new JustifyTestingException("The JPA property [" + PersistenceUnitProperties.JDBC_URL
                     + "] using the persistence unit name [" + persistenceUnitName + "] could not be found.");
         }
         PersistenceDotXmlCacheHelper.persistenceXmlJdbcUrlOrDatasourceMap.put(persistenceUnitName, jdbcUrlOrDatasource);

@@ -35,9 +35,9 @@ import javax.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import com.gtcgroup.justify.core.base.JstBaseExtension;
-import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
+import com.gtcgroup.justify.core.test.base.JstBaseExtension;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
@@ -86,7 +86,7 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
         try {
             dataPopulator = Class.forName(stringArray[1]);
         } catch (final Exception e) {
-            throw new JustifyRuntimeException(e);
+            throw new JustifyTestingException(e);
         }
 
         return dataPopulator;
@@ -148,7 +148,7 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
 
                 if (!JstBaseDataPopulator.class.isAssignableFrom(dataPopulator)) {
 
-                    throw new JustifyRuntimeException("\nThe class [" + dataPopulator.getSimpleName()
+                    throw new JustifyTestingException("\nThe class [" + dataPopulator.getSimpleName()
                             + "] does not appear to extend a base class for populating persistence test data.\n");
                 }
                 JstConfigureJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.add(listKey);
@@ -169,10 +169,10 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
 
         try {
             dataPopulator = (JstBaseDataPopulator) JstReflectionUtilHelper
-                    .instantiatePublicConstructorNoArgument(populatorClass);
+                    .instantiateInstanceWithPublicConstructorNoArgument(populatorClass);
         } catch (final Exception e) {
             JstConfigureJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.remove(formatListKey(populatorClass));
-            throw (JustifyRuntimeException) e;
+            throw (JustifyTestingException) e;
         }
 
         final List<Object> createList = dataPopulator.populateCreateListTM(retrievePersistenceUnitName(listKey));

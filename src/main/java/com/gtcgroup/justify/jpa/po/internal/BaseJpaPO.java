@@ -30,7 +30,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.base.JstBasePO;
-import com.gtcgroup.justify.core.exception.internal.JustifyRuntimeException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 
 /**
@@ -87,7 +87,7 @@ public abstract class BaseJpaPO extends JstBasePO {
 
 		if (!isEntityManager()) {
 
-			throw new JustifyRuntimeException("A persistence unit name, or entity manager, was not entered.");
+			throw new JustifyTestingException("A persistence unit name, or entity manager, was not entered.");
 		}
 
 		return this.entityManager;
