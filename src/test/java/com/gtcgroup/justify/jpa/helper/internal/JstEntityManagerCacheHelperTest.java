@@ -23,13 +23,22 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package com.gtcgroup.justify.jpa.helper.internal;
 
-package com.gtcgroup.justify.jpa.exception;
+import javax.persistence.EntityManager;
 
+import org.junit.FixMethodOrder;
+import org.junit.Rule;
+import org.junit.jupiter.api.Test;
+import org.junit.runners.MethodSorters;
+
+import com.gtcgroup.justify.core.rulechain.JstRuleChain;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
+import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 
 /**
- * This Exception class indicates a special case.
+ * Test Class
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -39,38 +48,39 @@ import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
  * @author Marvin Toll
  * @since v3.0
  */
-public class JstOptimisiticLockException extends JustifyException {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@SuppressWarnings({ "javadoc", "static-method" })
+public class JstEntityManagerCacheHelperTest {
 
-	private static final long serialVersionUID = 1L;
 
-	private static String formulateExceptionMessage(final Throwable exception, final StringBuilder message) {
+	public JstRuleChain ruleChain = JstRuleChain.outerRule(false);
+	
+	@Test (expected = JustifyException.class)
+	public void testCreateEntityManagerToBeClosedWithKey() {
 
-		if (null == exception.getCause()) {
-
-			message.append("\n\n\tCausal exception: " + exception.getClass().getName() + "\n\tA causal message: "
-					+ exception.getMessage() + "\n");
-			
-			exception.printStackTrace();
-			message.append("\n");
-
-			return message.toString();
-		}
-
-		message.append("\n\n\tCausal exception: " + exception.getClass().getName() + "\n\tA causal message: "
-				+ exception.getMessage() + "\n");
-		
-		exception.printStackTrace();
-		message.append("\n");
-
-		return formulateExceptionMessage(exception.getCause(), message);
-
+		JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosedWithKey("noKey");
 	}
 
-	/**
-	 * Constructor
-	 */
-	public JstOptimisiticLockException(final Throwable exception) {
+	@Test
+	public void testCloseEntityManager_null() {
 
-		super(formulateExceptionMessage(exception, new StringBuilder()));
+		JstEntityManagerFactoryCacheHelper.closeEntityManager(null);
+	}
+
+	@Test
+	public void test5RetrieveEntityManagerFactoryfromCache() throws Exception {
+
+		EntityManager entityManager = null;
+
+		try {
+
+			entityManager = JstEntityManagerFactoryCacheHelper
+					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
+
+			PersistenceKeyCacheHelper.containsJdbcUrlOrDatasource(ConstantsTestJPA.JUSTIFY_PU);
+
+		} finally {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		}
 	}
 }

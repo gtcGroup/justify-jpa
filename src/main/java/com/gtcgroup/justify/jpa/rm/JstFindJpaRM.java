@@ -26,7 +26,7 @@
 
 package com.gtcgroup.justify.jpa.rm;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
@@ -85,7 +85,7 @@ public enum JstFindJpaRM {
 			entity = findContainingIdentity(findPO);
 
 		} catch (final Exception e) {
-			throw new JustifyTestingException(e);
+			throw new JustifyException(e);
 
 		} finally {
 

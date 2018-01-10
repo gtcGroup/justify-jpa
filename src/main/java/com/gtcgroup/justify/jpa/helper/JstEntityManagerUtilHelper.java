@@ -27,7 +27,7 @@ package com.gtcgroup.justify.jpa.helper;
 
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 
 /**
  * This Helper class provides persistence {@link EntityManager} support.
@@ -73,7 +73,7 @@ public enum JstEntityManagerUtilHelper {
 			entityManager.getEntityManagerFactory().getCache().evict(populatedEntity.getClass(),
 					retrieveIdentity(entityManager, populatedEntity));
 		} catch (final Exception e) {
-			throw new JustifyTestingException(e);
+			throw new JustifyException(e);
 		}
 	}
 

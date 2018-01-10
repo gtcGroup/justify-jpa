@@ -26,7 +26,7 @@
 
 package com.gtcgroup.justify.jpa.rm;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
 
@@ -60,7 +60,7 @@ public enum JstCountAllJpaRM {
 			count = JstQueryUtilHelper.count(queryPO);
 		} catch (final Exception e) {
 
-			throw new JustifyTestingException(e);
+			throw new JustifyException(e);
 		}
 		return count;
 	}

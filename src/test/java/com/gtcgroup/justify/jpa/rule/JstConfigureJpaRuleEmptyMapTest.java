@@ -23,13 +23,22 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package com.gtcgroup.justify.jpa.rule;
 
-package com.gtcgroup.justify.jpa.exception;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import com.gtcgroup.justify.core.rulechain.JstRuleChain;
+import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
+import com.gtcgroup.justify.jpa.rule.dependency.ConfigureJpaRule;
 
 /**
- * This Exception class indicates a special case.
+ * Test Class
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -39,38 +48,20 @@ import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
  * @author Marvin Toll
  * @since v3.0
  */
-public class JstOptimisiticLockException extends JustifyException {
+@SuppressWarnings("all")
+public class JstConfigureJpaRuleEmptyMapTest {
 
-	private static final long serialVersionUID = 1L;
+	private static final Map<String, Object> PERSISTENCE_PROPERTY_MAP = new HashMap<>();
 
-	private static String formulateExceptionMessage(final Throwable exception, final StringBuilder message) {
 
-		if (null == exception.getCause()) {
+	public JstRuleChain ruleChain = JstRuleChain.outerRule(false)
+        .around(ConfigureJpaRule
+            .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU, JstConfigureJpaRuleEmptyMapTest.PERSISTENCE_PROPERTY_MAP)
+					.withDataPopulators(NoteDataPopulator.class));
 
-			message.append("\n\n\tCausal exception: " + exception.getClass().getName() + "\n\tA causal message: "
-					+ exception.getMessage() + "\n");
-			
-			exception.printStackTrace();
-			message.append("\n");
+	@Test
+	public void testInvocation() {
 
-			return message.toString();
-		}
-
-		message.append("\n\n\tCausal exception: " + exception.getClass().getName() + "\n\tA causal message: "
-				+ exception.getMessage() + "\n");
-		
-		exception.printStackTrace();
-		message.append("\n");
-
-		return formulateExceptionMessage(exception.getCause(), message);
-
-	}
-
-	/**
-	 * Constructor
-	 */
-	public JstOptimisiticLockException(final Throwable exception) {
-
-		super(formulateExceptionMessage(exception, new StringBuilder()));
+		Assertions.assertThat(true).isTrue();
 	}
 }

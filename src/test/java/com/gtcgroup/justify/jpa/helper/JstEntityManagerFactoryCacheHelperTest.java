@@ -23,13 +23,20 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package com.gtcgroup.justify.jpa.helper;
 
-package com.gtcgroup.justify.jpa.exception;
+import javax.persistence.EntityManager;
 
+import org.junit.Rule;
+import org.junit.jupiter.api.Test;
+
+import com.gtcgroup.justify.core.rulechain.JstRuleChain;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
+import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 
 /**
- * This Exception class indicates a special case.
+ * Test Class
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -39,38 +46,27 @@ import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
  * @author Marvin Toll
  * @since v3.0
  */
-public class JstOptimisiticLockException extends JustifyException {
+@SuppressWarnings({ "javadoc", "static-method" })
+public class JstEntityManagerFactoryCacheHelperTest {
 
-	private static final long serialVersionUID = 1L;
 
-	private static String formulateExceptionMessage(final Throwable exception, final StringBuilder message) {
+	public JstRuleChain ruleChain = JstRuleChain.outerRule()
+			.around(JstConfigureJpaExtension.withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU));
 
-		if (null == exception.getCause()) {
+	@Test
+	public void testClearAllInstancesFromPersistenceContext() {
 
-			message.append("\n\n\tCausal exception: " + exception.getClass().getName() + "\n\tA causal message: "
-					+ exception.getMessage() + "\n");
-			
-			exception.printStackTrace();
-			message.append("\n");
-
-			return message.toString();
-		}
-
-		message.append("\n\n\tCausal exception: " + exception.getClass().getName() + "\n\tA causal message: "
-				+ exception.getMessage() + "\n");
-		
-		exception.printStackTrace();
-		message.append("\n");
-
-		return formulateExceptionMessage(exception.getCause(), message);
+		final EntityManager entityManager = JstEntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
+		JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+		JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 
 	}
 
-	/**
-	 * Constructor
-	 */
-	public JstOptimisiticLockException(final Throwable exception) {
+	@Test(expected = JustifyException.class)
+	public void testRetrieve() {
 
-		super(formulateExceptionMessage(exception, new StringBuilder()));
+        JstEntityManagerFactoryCacheHelper.createEntityManagerFactory("fakePU", null);
+
 	}
 }

@@ -37,7 +37,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
 import com.gtcgroup.justify.core.test.base.JstBaseExtension;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
@@ -86,7 +86,7 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
         try {
             dataPopulator = Class.forName(stringArray[1]);
         } catch (final Exception e) {
-            throw new JustifyTestingException(e);
+            throw new JustifyException(e);
         }
 
         return dataPopulator;
@@ -148,7 +148,7 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
 
                 if (!JstBaseDataPopulator.class.isAssignableFrom(dataPopulator)) {
 
-                    throw new JustifyTestingException("\nThe class [" + dataPopulator.getSimpleName()
+                    throw new JustifyException("\nThe class [" + dataPopulator.getSimpleName()
                             + "] does not appear to extend a base class for populating persistence test data.\n");
                 }
                 JstConfigureJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.add(listKey);
@@ -172,7 +172,7 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
                     .instantiateInstanceWithPublicConstructorNoArgument(populatorClass);
         } catch (final Exception e) {
             JstConfigureJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.remove(formatListKey(populatorClass));
-            throw (JustifyTestingException) e;
+            throw (JustifyException) e;
         }
 
         final List<Object> createList = dataPopulator.populateCreateListTM(retrievePersistenceUnitName(listKey));

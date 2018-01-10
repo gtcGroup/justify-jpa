@@ -33,7 +33,7 @@ import javax.persistence.EntityManager;
 import org.eclipse.persistence.jpa.jpql.Assert;
 
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
@@ -226,9 +226,9 @@ public enum AssertionsJPA {
 
         } catch (final Exception e2) {
 
-            throw new JustifyTestingException(e2);
+            throw new JustifyException(e2);
         }
-        throw (JustifyTestingException) e;
+        throw (JustifyException) e;
     }
 
     private static void closeEntityManager() {

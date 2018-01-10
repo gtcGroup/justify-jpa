@@ -33,7 +33,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.helper.internal.PersistenceDotXmlCacheHelper;
 import com.gtcgroup.justify.jpa.helper.internal.PersistenceKeyCacheHelper;
 
@@ -53,22 +53,18 @@ public enum JstEntityManagerFactoryCacheHelper {
     /** Instance */
     INSTANCE;
 
-    private static Map<String, EntityManagerFactory> ENTITY_MANAGER_FACTORY_MAP = new ConcurrentHashMap<>();
+    private static Map<String, EntityManagerFactory> entityManagerFactoryMap = new ConcurrentHashMap<>();
 
     /**
      * This method closes the {@link EntityManager}.
      */
     public static void closeEntityManager(final EntityManager entityManager) {
 
-        if (null != entityManager) {
+        if (null != entityManager && entityManager.isOpen()) {
 
-            if (entityManager.isOpen()) {
-
-                entityManager.clear();
-                entityManager.close();
-            }
+            entityManager.clear();
+            entityManager.close();
         }
-        return;
     }
 
     /**
@@ -87,7 +83,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 
         if (null == jdbcUrlOrDatasource) {
 
-            throw new JustifyTestingException(
+            throw new JustifyException(
                     "A jdbc url was not found for persistence unit name [" + persistenceUnitName + "].");
         }
 
@@ -101,7 +97,7 @@ public enum JstEntityManagerFactoryCacheHelper {
     private static String createEntityManagerFactory(final String persistenceUnitName,
             final Map<String, Object> persistencePropertyMapOrNull, final String persistenceKey) {
 
-        if (JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(persistenceKey)) {
+        if (JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.containsKey(persistenceKey)) {
             return persistenceKey;
         }
 
@@ -113,11 +109,11 @@ public enum JstEntityManagerFactoryCacheHelper {
             entityManager.setProperty(null, "toForceCompletingConfiguration");
             JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 
-            JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.put(persistenceKey, entityManagerFactory);
+            JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.put(persistenceKey, entityManagerFactory);
 
         } catch (final Exception e) {
 
-            throw new JustifyTestingException(e);
+            throw new JustifyException(e);
         }
         return persistenceKey;
     }
@@ -139,7 +135,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 
         final String persistenceKey = createEntityManagerFactory(persistenceUnitName, persistencePropertyMapOrNull);
 
-        return JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(persistenceKey).createEntityManager();
+        return JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.get(persistenceKey).createEntityManager();
 
     }
 
@@ -148,11 +144,9 @@ public enum JstEntityManagerFactoryCacheHelper {
      */
     public static EntityManager createEntityManagerToBeClosedWithKey(final String persistenceKey) {
 
-        if (JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.containsKey(persistenceKey)) {
-            return JstEntityManagerFactoryCacheHelper.ENTITY_MANAGER_FACTORY_MAP.get(persistenceKey)
-                    .createEntityManager();
+        if (JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.containsKey(persistenceKey)) {
+            return JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.get(persistenceKey).createEntityManager();
         }
-        throw new JustifyTestingException(
-                "An entity manager was not found for the persistence key [" + persistenceKey + "].");
+        throw new JustifyException("An entity manager was not found for the persistence key [" + persistenceKey + "].");
     }
 }

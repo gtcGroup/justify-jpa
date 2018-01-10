@@ -40,7 +40,7 @@ import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
 import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
@@ -123,13 +123,13 @@ public enum JstQueryUtilHelper {
 
         } catch (final Exception e) {
 
-            throw new JustifyTestingException(e);
+            throw new JustifyException(e);
         }
 
         if (entityList.isEmpty()) {
             if (!queryPO.isSuppressExceptionForNull()) {
 
-                throw new JustifyTestingException("The list is empty.");
+                throw new JustifyException("The list is empty.");
             }
         }
         return entityList;
@@ -201,7 +201,7 @@ public enum JstQueryUtilHelper {
 
         } catch (final Exception e) {
 
-            throw new JustifyTestingException(e);
+            throw new JustifyException(e);
 
         } finally {
             queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
@@ -240,7 +240,7 @@ public enum JstQueryUtilHelper {
 
         if (null == entity) {
             if (!queryPO.isSuppressExceptionForNull()) {
-                throw new JustifyTestingException("Unable to retrieve a result instance.");
+                throw new JustifyException("Unable to retrieve a result instance.");
 
             }
         }

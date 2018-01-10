@@ -30,7 +30,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -106,7 +106,7 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
                 createNamedQuery();
             }
         } catch (final Exception e) {
-            throw new JustifyTestingException(e);
+            throw new JustifyException(e);
         }
         return this.query;
     }

@@ -32,7 +32,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.exception.JstOptimisiticLockException;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 
@@ -93,7 +93,7 @@ public enum JstTransactionUtilHelper {
                 entityWithReleatedEnitityContainingIdentity);
 
         if (null == entity) {
-            throw new JustifyTestingException("The entity represented by the method [" + relatedEntityGetterMethodName
+            throw new JustifyException("The entity represented by the method [" + relatedEntityGetterMethodName
                     + "] could not be found for deletion (removal).");
         }
 
@@ -157,7 +157,7 @@ public enum JstTransactionUtilHelper {
 
         } catch (final RuntimeException e) {
 
-            throw new JustifyTestingException(e);
+            throw new JustifyException(e);
 
         } finally {
 

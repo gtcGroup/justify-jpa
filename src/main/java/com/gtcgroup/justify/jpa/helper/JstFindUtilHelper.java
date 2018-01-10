@@ -37,7 +37,7 @@ import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 
 /**
  * This Helper class provides persistence {@link EntityManager} support.
@@ -161,7 +161,7 @@ public enum JstFindUtilHelper {
 
         } catch (final Exception e) {
 
-            throw new JustifyTestingException(e);
+            throw new JustifyException(e);
         }
         return result;
     }
@@ -190,7 +190,7 @@ public enum JstFindUtilHelper {
 
         } catch (final Exception e) {
 
-            throw new JustifyTestingException(e);
+            throw new JustifyException(e);
         }
         return result;
     }
@@ -207,7 +207,7 @@ public enum JstFindUtilHelper {
             }
             return entityManager.find(entityClass, entityIdentity, JstFindUtilHelper.FORCE_DATABASE_TRIP);
         } catch (final Exception e) {
-            throw new JustifyTestingException(e);
+            throw new JustifyException(e);
         }
     }
 
@@ -228,7 +228,7 @@ public enum JstFindUtilHelper {
                     retrieveIdentity(entityManager, populatedEntity), JstFindUtilHelper.FORCE_DATABASE_TRIP);
 
         } catch (final Exception e) {
-            throw new JustifyTestingException(e);
+            throw new JustifyException(e);
         }
     }
 
