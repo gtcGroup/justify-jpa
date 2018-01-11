@@ -27,6 +27,7 @@
 package com.gtcgroup.justify.jpa.helper;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.EntityManager;
@@ -71,30 +72,25 @@ public enum JstEntityManagerFactoryCacheHelper {
      * This method returns the entity manager factory key for use in subsequent
      * retrieval invocations.
      *
-     * @return {@link String} Persistence key used to cache
-     *         {@link EntityManagerFactory}.
+     * @return {@link Optional} Persistence key used to cache
      */
-    public static String createEntityManagerFactory(final String persistenceUnitName,
+    public static Optional<String> createEntityManagerFactory(final String persistenceUnitName,
             final Map<String, Object> persistencePropertyMapOrNull) {
 
-        String persistenceKey = null;
-        final String jdbcUrlOrDatasource = PersistenceDotXmlCacheHelper.retrieveJdbcUrlOrDatasource(persistenceUnitName,
-                persistencePropertyMapOrNull);
+        final Optional<String> jdbcUrlOrDatasource = PersistenceDotXmlCacheHelper
+                .retrieveJdbcUrlOrDatasource(persistenceUnitName, persistencePropertyMapOrNull);
 
-        if (null == jdbcUrlOrDatasource) {
+        if (jdbcUrlOrDatasource.isPresent()) {
 
-            throw new JustifyException(
-                    "A jdbc url was not found for persistence unit name [" + persistenceUnitName + "].");
+            final String persistenceKey = PersistenceKeyCacheHelper.formatPersistenceKey(persistenceUnitName,
+                    jdbcUrlOrDatasource.get());
+
+            createEntityManagerFactory(persistenceUnitName, persistencePropertyMapOrNull, persistenceKey);
         }
-
-        persistenceKey = PersistenceKeyCacheHelper.formatPersistenceKey(persistenceUnitName, jdbcUrlOrDatasource);
-
-        createEntityManagerFactory(persistenceUnitName, persistencePropertyMapOrNull, persistenceKey);
-
-        return persistenceKey;
+        return Optional.empty();
     }
 
-    private static String createEntityManagerFactory(final String persistenceUnitName,
+    private static Optional<String> createEntityManagerFactory(final String persistenceUnitName,
             final Map<String, Object> persistencePropertyMapOrNull, final String persistenceKey) {
 
         if (JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.containsKey(persistenceKey)) {

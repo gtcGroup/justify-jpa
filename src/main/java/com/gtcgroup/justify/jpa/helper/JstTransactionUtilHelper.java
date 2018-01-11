@@ -27,12 +27,15 @@ package com.gtcgroup.justify.jpa.helper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
+import com.gtcgroup.justify.core.po.JstExceptionPO;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
 import com.gtcgroup.justify.jpa.exception.JstOptimisiticLockException;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 
@@ -135,8 +138,8 @@ public enum JstTransactionUtilHelper {
      * @return {@link List}
      * @throws JstOptimisiticLockException
      */
-    public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> transactEntities(final PO transactionPO)
-            throws JstOptimisiticLockException {
+    public static <ENTITY, PO extends JstTransactionJpaPO> Optional<List<ENTITY>> transactEntities(
+            final PO transactionPO) {
 
         try {
 
@@ -147,35 +150,41 @@ public enum JstTransactionUtilHelper {
 
             transactionPO.getEntityManager().getTransaction().commit();
 
+            Optional.of(transactionPO.getEntityCreateAndUpdateList());
+
         } catch (final javax.persistence.OptimisticLockException e) {
 
-            throw new JstOptimisiticLockException(e);
+            throwOptimisticLockException(e);
 
         } catch (final org.eclipse.persistence.exceptions.OptimisticLockException e) {
 
-            throw new JstOptimisiticLockException(e);
-
-        } catch (final RuntimeException e) {
-
-            throw new JustifyException(e);
+            throwOptimisticLockException(e);
 
         } finally {
 
             transactionPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
         }
-        return transactionPO.getEntityCreateAndUpdateList();
+        return Optional.empty();
     }
 
     /**
      * This method is used for committing a single entity. If any of the related
      * child objects are not marked for an applicable {@link CascadeType} then they
-     * need to be explicitly in the {@link JstTransactionJpaPO}.
+     * need to be identified explicitly in the {@link JstTransactionJpaPO}.
      *
      * @return {@link Object}
      */
     @SuppressWarnings("unchecked")
-    public static <ENTITY, PO extends JstTransactionJpaPO> ENTITY transactEntity(final PO transactionPO) {
+    public static <ENTITY, PO extends JstTransactionJpaPO> Optional<ENTITY> transactEntity(final PO transactionPO) {
 
-        return (ENTITY) transactEntities(transactionPO).get(0);
+        return transactEntities(transactionPO).get(0);
+    }
+
+    private void throwOptimisticLockException(final Exception e) {
+
+        throw new JustifyException(
+                JstExceptionPO.withMessage(e.getMessage()).withExceptionClassName(AssertionsJPA.class.getSimpleName())
+                        .withExceptionMethodName(assertCascadeTypes));
+
     }
 }

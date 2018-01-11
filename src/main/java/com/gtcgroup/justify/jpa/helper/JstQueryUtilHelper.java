@@ -28,6 +28,7 @@ package com.gtcgroup.justify.jpa.helper;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
@@ -115,24 +116,17 @@ public enum JstQueryUtilHelper {
         return query;
     }
 
-    private static <ENTITY> List<ENTITY> queryList(final Query query, final BaseQueryJpaPO queryPO) {
+    @SuppressWarnings("unchecked")
+    private static <ENTITY> Optional<List<ENTITY>> queryList(final Query query) {
 
-        List<ENTITY> entityList;
         try {
-            entityList = query.getResultList();
+            return Optional.of(query.getResultList());
 
-        } catch (final Exception e) {
+        } catch (@SuppressWarnings("unused") final Exception e) {
 
-            throw new JustifyException(e);
+            // Continue.
         }
-
-        if (entityList.isEmpty()) {
-            if (!queryPO.isSuppressExceptionForNull()) {
-
-                throw new JustifyException("The list is empty.");
-            }
-        }
-        return entityList;
+        return Optional.empty();
     }
 
     /**
@@ -140,16 +134,14 @@ public enum JstQueryUtilHelper {
      *
      * @return {@link List}
      */
-    public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO) {
+    public static <ENTITY> Optional<List<ENTITY>> queryResultList(final BaseQueryJpaPO queryPO) {
 
-        List<ENTITY> entityList = null;
+        final List<ENTITY> entityList = null;
 
         try {
 
             final Query query = decorateQuery(queryPO, null);
-
-            entityList = queryList(query, queryPO);
-
+            return queryList(query);
         } finally {
             queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
         }

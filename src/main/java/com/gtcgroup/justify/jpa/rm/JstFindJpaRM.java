@@ -26,7 +26,8 @@
 
 package com.gtcgroup.justify.jpa.rm;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import java.util.Optional;
+
 import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
@@ -44,54 +45,49 @@ import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
  */
 public enum JstFindJpaRM {
 
-	@SuppressWarnings("javadoc")
-	INTERNAL;
+    @SuppressWarnings("javadoc")
+    INTERNAL;
 
-	/**
-	 * @return {@link Object}
-	 */
-	@SuppressWarnings("unchecked")
-	public static <ENTITY> ENTITY findSingle(final JstFindJpaPO findPO) {
+    @SuppressWarnings("unchecked")
+    protected static <ENTITY> Optional<ENTITY> findContainingIdentity(final JstFindJpaPO findPO) {
 
-		final Object entity = findWithEntityManager(findPO);
-		JstQueryUtilHelper.throwExceptionForNull(findPO, entity);
+        ENTITY entity;
+        if (findPO.isPopulatedEntityContainingIdentity()) {
 
-		return (ENTITY) entity;
-	}
+            entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
+                    findPO.getPopulatedEntityContainingIdentity(), findPO.isSuppressForceDatabaseTrip());
 
-	@SuppressWarnings("unchecked")
-	protected static <ENTITY> ENTITY findContainingIdentity(final JstFindJpaPO findPO) {
+        } else {
 
-		ENTITY entity;
-		if (findPO.isPopulatedEntityContainingIdentity()) {
+            entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
+                    findPO.getEntityClass(), findPO.getEntityIdentity(), findPO.isSuppressForceDatabaseTrip());
+        }
+        return Optional.ofNullable(entity);
+    }
 
-			entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
-					findPO.getPopulatedEntityContainingIdentity(), findPO.isSuppressForceDatabaseTrip());
+    /**
+     * @return {@link Object}
+     */
+    @SuppressWarnings("unchecked")
+    public static <ENTITY> ENTITY findSingle(final JstFindJpaPO findPO) {
 
-		} else {
+        final Object entity = findWithEntityManager(findPO);
+        JstQueryUtilHelper.throwExceptionForNull(findPO, entity);
 
-			entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
-					findPO.getEntityClass(), findPO.getEntityIdentity(), findPO.isSuppressForceDatabaseTrip());
-		}
-		return entity;
-	}
+        return (ENTITY) entity;
+    }
 
-	protected static <ENTITY> ENTITY findWithEntityManager(final JstFindJpaPO findPO) {
+    protected static <ENTITY> Optional<ENTITY> findWithEntityManager(final JstFindJpaPO findPO) {
 
-		ENTITY entity = null;
+        try {
+            final Optional<ENTITY> entity = findContainingIdentity(findPO);
+            findPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
 
-		try {
+            return entity;
 
-			entity = findContainingIdentity(findPO);
+        } finally {
 
-		} catch (final Exception e) {
-			throw new JustifyException(e);
-
-		} finally {
-
-			findPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-		}
-
-		return entity;
-	}
+            findPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+        }
+    }
 }

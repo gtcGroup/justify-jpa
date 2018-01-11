@@ -26,10 +26,11 @@
 
 package com.gtcgroup.justify.jpa.exception;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import com.gtcgroup.justify.core.base.JstBaseRuntimeException;
+import com.gtcgroup.justify.core.po.JstExceptionPO;
 
 /**
- * This Exception class indicates a special case.
+ * This {@link Exception} class indicates a special case.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -39,38 +40,17 @@ import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
  * @author Marvin Toll
  * @since v3.0
  */
-public class JstOptimisiticLockException extends JustifyException {
+public class JstOptimisiticLockException extends JstBaseRuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static String formulateExceptionMessage(final Throwable exception, final StringBuilder message) {
+    public JstOptimisiticLockException(final JstExceptionPO exceptionPO) {
+        super(exceptionPO);
+    }
 
-		if (null == exception.getCause()) {
+    @Override
+    protected void logExceptionTM(final JstExceptionPO exceptionPO) {
+        // TODO Auto-generated method stub
 
-			message.append("\n\n\tCausal exception: " + exception.getClass().getName() + "\n\tA causal message: "
-					+ exception.getMessage() + "\n");
-			
-			exception.printStackTrace();
-			message.append("\n");
-
-			return message.toString();
-		}
-
-		message.append("\n\n\tCausal exception: " + exception.getClass().getName() + "\n\tA causal message: "
-				+ exception.getMessage() + "\n");
-		
-		exception.printStackTrace();
-		message.append("\n");
-
-		return formulateExceptionMessage(exception.getCause(), message);
-
-	}
-
-	/**
-	 * Constructor
-	 */
-	public JstOptimisiticLockException(final Throwable exception) {
-
-		super(formulateExceptionMessage(exception, new StringBuilder()));
-	}
+    }
 }

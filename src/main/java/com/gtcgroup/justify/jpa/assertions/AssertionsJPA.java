@@ -27,12 +27,14 @@
 package com.gtcgroup.justify.jpa.assertions;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.jpa.jpql.Assert;
 
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
+import com.gtcgroup.justify.core.po.JstExceptionPO;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
@@ -217,18 +219,19 @@ public enum AssertionsJPA {
                 + "Check both the domain entity and the test Parameter Object to determine the source of the error.");
     }
 
-    private static void catchBlock(final Exception e) {
+    private static <ENTITY> void catchBlock(final Exception e) {
 
-        try {
+        final Optional<List<ENTITY>> entityList = JstTransactionUtilHelper
+                .transactEntities(JstTransactionJpaPO.withException().withEntityManager(AssertionsJPA.entityManager)
+                        .withDeleteEntities(AssertionsJPA.parentEntity));
 
-            JstTransactionUtilHelper.transactEntities(JstTransactionJpaPO.withException()
-                    .withEntityManager(AssertionsJPA.entityManager).withDeleteEntities(AssertionsJPA.parentEntity));
-
-        } catch (final Exception e2) {
-
-            throw new JustifyException(e2);
+        if (entityList.isPresent()) {
+            return;
         }
-        throw (JustifyException) e;
+
+        throw new JustifyException(
+                JstExceptionPO.withMessage(e.getMessage()).withExceptionClassName(AssertionsJPA.class.getSimpleName())
+                        .withExceptionMethodName("assertCascadeTypes"));
     }
 
     private static void closeEntityManager() {
@@ -307,7 +310,8 @@ public enum AssertionsJPA {
 
         for (final String methodName : existsList) {
 
-            final Object entityOrList = JstReflectionUtilHelper.invokePublicMethod(methodName, AssertionsJPA.parentEntity);
+            final Object entityOrList = JstReflectionUtilHelper.invokePublicMethod(methodName,
+                    AssertionsJPA.parentEntity);
             final boolean actual = JstFindUtilHelper.existsInDatabases(AssertionsJPA.entityManager, entityOrList);
             if (expected != actual) {
                 return false;
@@ -316,11 +320,7 @@ public enum AssertionsJPA {
         return true;
     }
 
-    /**
-     * @throws ClassNotFoundException
-     */
-    private static void verifyCascadeEntitiesPersisted(final List<String> persistList, final boolean expected)
-            throws ClassNotFoundException {
+    private static void verifyCascadeEntitiesPersisted(final List<String> persistList, final boolean expected) {
 
         final boolean actual = isExists(persistList, expected);
 
@@ -332,8 +332,7 @@ public enum AssertionsJPA {
     /**
      * @throws ClassNotFoundException
      */
-    private static void verifyCascadeEntitiesRemoved(final List<String> persistList, final boolean expected)
-            throws ClassNotFoundException {
+    private static void verifyCascadeEntitiesRemoved(final List<String> persistList, final boolean expected) {
 
         final boolean actual = isExists(persistList, expected);
 

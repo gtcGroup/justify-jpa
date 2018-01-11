@@ -44,14 +44,13 @@ import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
  */
 public enum JstFindAllJpaRM {
 
-	@SuppressWarnings("javadoc")
-	INTERNAL;
+    INTERNAL;
 
-	/**
-	 * @return {@link Object} or null or {@link Exception}
-	 */
-	public static <ENTITY> List<ENTITY> findReadOnlyList(final JstFindAllJpaPO findAllPO) {
+    /**
+     * @return {@link Object} or null or {@link Exception}
+     */
+    public static <ENTITY> List<ENTITY> findReadOnlyList(final JstFindAllJpaPO findAllPO) {
 
-		return JstQueryUtilHelper.queryResultList(findAllPO);
-	}
+        return JstQueryUtilHelper.queryResultList(findAllPO);
+    }
 }

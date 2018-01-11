@@ -26,11 +26,11 @@
 package com.gtcgroup.justify.jpa.po.internal;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
 import com.gtcgroup.justify.core.base.JstBasePO;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 
 /**
@@ -47,108 +47,85 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
  */
 public abstract class BaseJpaPO extends JstBasePO {
 
-	protected boolean suppressExceptionForNull = false;
+    protected EntityManager entityManager;
 
-	protected EntityManager entityManager;
+    protected boolean entityManagerNeedsToBeClosed = false;
 
-	protected boolean entityManagerNeedsToBeClosed = false;
+    protected String persistenceUnitName;
 
-	protected String persistenceUnitName;
+    protected Map<String, Object> persistencePropertyMapOrNull = null;
 
-	protected Map<String, Object> persistencePropertyMapOrNull = null;
+    protected boolean suppressForceDatabaseTrip = false;
 
-	protected boolean suppressForceDatabaseTrip = false;
+    /**
+     * Constructor
+     */
+    protected BaseJpaPO(final String persistenceUnitName) {
+        super();
 
-	/**
-	 * Constructor
-	 */
-	protected BaseJpaPO(final boolean suppressExceptionForNull) {
+        this.persistenceUnitName = persistenceUnitName;
+        this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName);
 
-		super();
-		this.suppressExceptionForNull = suppressExceptionForNull;
-		return;
-	}
+        return;
+    }
 
-	/**
-	 * This method closes the {@link EntityManager} if the creation is
-	 * encapsulated within this PO.
-	 */
-	public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
+    /**
+     * This method closes the {@link EntityManager} if the creation is encapsulated
+     * within this PO.
+     */
+    public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
 
-		if (this.entityManagerNeedsToBeClosed) {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
-		}
-	}
+        if (this.entityManagerNeedsToBeClosed) {
+            JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
+        }
+    }
 
-	/**
-	 * @return {@link EntityManager}
-	 */
-	public EntityManager getEntityManager() {
+    /**
+     * @return {@link Optional}
+     */
+    public Optional<EntityManager> getEntityManager() {
 
-		if (!isEntityManager()) {
+        return Optional.ofNullable(this.entityManager);
+    }
 
-			throw new JustifyException("A persistence unit name, or entity manager, was not entered.");
-		}
+    /**
+     * @return boolean
+     */
+    protected boolean isEntityManager() {
+        return null != this.entityManager;
+    }
 
-		return this.entityManager;
-	}
+    /**
+     * @return boolean
+     */
+    public boolean isSuppressForceDatabaseTrip() {
+        return this.suppressForceDatabaseTrip;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	protected boolean isEntityManager() {
-		return null != this.entityManager;
-	}
+    /**
+     * @return {@link BaseJpaPO}
+     */
+    public BaseJpaPO withEntityManager(final EntityManager entityManager) {
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isSuppressExceptionForNull() {
-		return this.suppressExceptionForNull;
-	}
+        this.entityManager = entityManager;
+        return this;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isSuppressForceDatabaseTrip() {
-		return this.suppressForceDatabaseTrip;
-	}
+    /**
+     * @return {@link BaseJpaPO}
+     */
+    public BaseJpaPO withPersistencePropertyMap(final Map<String, Object> persistencePropertyMap) {
 
-	/**
-	 * @return {@link BaseJpaPO}
-	 */
-	public BaseJpaPO withSuppressForceDatabaseTrip(final boolean suppressForceDatabaseTrip) {
+        this.persistencePropertyMapOrNull = persistencePropertyMap;
+        return this;
+    }
 
-		this.suppressForceDatabaseTrip = suppressForceDatabaseTrip;
-		return this;
-	}
+    /**
+     * @return {@link BaseJpaPO}
+     */
+    public BaseJpaPO withSuppressForceDatabaseTrip(final boolean suppressForceDatabaseTrip) {
 
-	/**
-	 * @return {@link BaseJpaPO}
-	 */
-	public BaseJpaPO withPersistenceUnitName(final String persistenceUnitName) {
-
-		this.persistenceUnitName = persistenceUnitName;
-		this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName);
-		
-		return this;
-	}
-
-	/**
-	 * @return {@link BaseJpaPO}
-	 */
-	public BaseJpaPO withEntityManager(EntityManager entityManager) {
-
-		this.entityManager = entityManager;
-		return this;
-	}
-
-	/**
-	 * @return {@link BaseJpaPO}
-	 */
-	public BaseJpaPO withPersistencePropertyMap(Map<String, Object> persistencePropertyMap) {
-
-		this.persistencePropertyMapOrNull = persistencePropertyMap;
-		return this;
-	}
+        this.suppressForceDatabaseTrip = suppressForceDatabaseTrip;
+        return this;
+    }
 }

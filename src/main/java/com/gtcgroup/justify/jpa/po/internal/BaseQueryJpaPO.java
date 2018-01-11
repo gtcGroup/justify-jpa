@@ -40,60 +40,59 @@ import javax.persistence.Query;
  */
 public abstract class BaseQueryJpaPO extends BaseJpaPO {
 
-	protected Query query;
+    protected Query query;
 
-	protected int firstResult;
+    protected int firstResult;
 
-	protected int maxResults;
-	
-	protected boolean suppressReadOnly = false;
+    protected int maxResults;
 
+    protected boolean suppressReadOnly = false;
 
-	/**
-	 * Constructor
-	 */
-	protected BaseQueryJpaPO(final boolean suppressExceptionForNull) {
+    /**
+     * Constructor
+     */
+    protected BaseQueryJpaPO() {
 
-		super(suppressExceptionForNull);
-	}
+        super();
+    }
 
-	/**
-	 * @return int
-	 */
-	public int getFirstResult() {
-		return this.firstResult;
-	}
+    /**
+     * @return int
+     */
+    public int getFirstResult() {
+        return this.firstResult;
+    }
 
-	/**
-	 * @return int}
-	 */
-	public int getMaxResults() {
-		return this.maxResults;
-	}
+    /**
+     * @return int}
+     */
+    public int getMaxResults() {
+        return this.maxResults;
+    }
 
-	/**
-	 * @return {@link Query}
-	 */
-	public abstract Query getQuery();
+    /**
+     * @return {@link Query}
+     */
+    public abstract Query getQuery();
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isFirstResult() {
-		return 0 != this.firstResult;
-	}
+    /**
+     * @return boolean
+     */
+    public boolean isFirstResult() {
+        return 0 != this.firstResult;
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isMaxResults() {
-		return 0 != this.maxResults;
-	}
-	
-	/**
-	 * @return boolean
-	 */
-	public boolean isSuppressReadOnly() {
-		return this.suppressReadOnly;
-	}
+    /**
+     * @return boolean
+     */
+    public boolean isMaxResults() {
+        return 0 != this.maxResults;
+    }
+
+    /**
+     * @return boolean
+     */
+    public boolean isSuppressReadOnly() {
+        return this.suppressReadOnly;
+    }
 }

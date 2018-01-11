@@ -71,6 +71,9 @@ public enum PersistenceDotXmlCacheHelper {
 
     private static Map<String, String> persistenceXmlJdbcUrlOrDatasourceMap = new ConcurrentHashMap<>();
 
+    /**
+     * @return {@link Optional}
+     */
     private static Optional<String> retrieveFromElement(final Element element) {
 
         try {
@@ -93,6 +96,9 @@ public enum PersistenceDotXmlCacheHelper {
         return Optional.empty();
     }
 
+    /**
+     * @return {@link Optional}
+     */
     private static Optional<String> retrieveFromPersistenceDotXML(final String persistenceUnitName) {
 
         Optional<JstStreamPO> jstStreamPO = Optional.empty();
@@ -106,7 +112,7 @@ public enum PersistenceDotXmlCacheHelper {
 
                 final Optional<NodeList> nodeList = retrieveNodeList(jstStreamPO.get());
 
-                return search(persistenceUnitName, nodeList);
+                return searchElement(persistenceUnitName, nodeList);
             }
         } catch (@SuppressWarnings("unused") final Exception e) {
             // Continue.
@@ -144,11 +150,19 @@ public enum PersistenceDotXmlCacheHelper {
 
         jdbcUrlOrDatasource = retrieveFromPersistenceDotXML(persistenceUnitName);
 
-        PersistenceDotXmlCacheHelper.currentJdbcUrlOrDatasourceMap.put(persistenceUnitName, jdbcUrlOrDatasource);
+        if (jdbcUrlOrDatasource.isPresent()) {
 
-        return jdbcUrlOrDatasource;
+            PersistenceDotXmlCacheHelper.currentJdbcUrlOrDatasourceMap.put(persistenceUnitName,
+                    jdbcUrlOrDatasource.get());
+
+            return jdbcUrlOrDatasource;
+        }
+        return Optional.empty();
     }
 
+    /**
+     * @return {@link Optional}
+     */
     private static Optional<NodeList> retrieveNodeList(final JstStreamPO jstStreamPO) {
 
         try {
@@ -168,6 +182,9 @@ public enum PersistenceDotXmlCacheHelper {
         return Optional.empty();
     }
 
+    /**
+     * @return {@link Optional}
+     */
     private static Optional<Node> retrievePersistenceUnitNode(final String persistenceUnitName,
             final NodeList nodeList) {
 
@@ -202,11 +219,34 @@ public enum PersistenceDotXmlCacheHelper {
                 .ofNullable(PersistenceDotXmlCacheHelper.persistenceXmlJdbcUrlOrDatasourceMap.get(persistenceUnitName));
     }
 
-    private static Optional<String> search(final String persistenceUnitName, final Optional<NodeList> nodeList) {
+    /**
+     * @return {@link Optional}
+     */
+    private static void searchElement(final Element eElement, final NodeList dataSourceList) {
 
-        Element eElement = null;
+        if (0 != dataSourceList.getLength()) {
+
+            eElement.getElementsByTagName(PersistenceDotXmlCacheHelper.JTA_DATA_SOURCE).item(0).getTextContent();
+        } else {
+
+            final NodeList dataSourceListTemp = eElement
+                    .getElementsByTagName(PersistenceDotXmlCacheHelper.JDBC_DATA_SOURCE);
+
+            if (0 != dataSourceListTemp.getLength()) {
+
+                eElement.getElementsByTagName(PersistenceDotXmlCacheHelper.JDBC_DATA_SOURCE).item(0).getTextContent();
+            }
+        }
+    }
+
+    /**
+     * @return {@link Optional}
+     */
+    private static Optional<String> searchElement(final String persistenceUnitName, final Optional<NodeList> nodeList) {
 
         if (nodeList.isPresent()) {
+
+            Element eElement;
 
             final Optional<Node> nNode = retrievePersistenceUnitNode(persistenceUnitName, nodeList.get());
 
@@ -227,25 +267,12 @@ public enum PersistenceDotXmlCacheHelper {
 
                         dataSourceList = eElement.getElementsByTagName(PersistenceDotXmlCacheHelper.JTA_DATA_SOURCE);
 
-                        if (0 != dataSourceList.getLength()) {
-
-                            eElement.getElementsByTagName(PersistenceDotXmlCacheHelper.JTA_DATA_SOURCE).item(0)
-                                    .getTextContent();
-                        } else {
-
-                            dataSourceList = eElement
-                                    .getElementsByTagName(PersistenceDotXmlCacheHelper.JDBC_DATA_SOURCE);
-
-                            if (0 != dataSourceList.getLength()) {
-
-                                eElement.getElementsByTagName(PersistenceDotXmlCacheHelper.JDBC_DATA_SOURCE).item(0)
-                                        .getTextContent();
-                            }
-                        }
+                        searchElement(eElement, dataSourceList);
                     }
                 }
+                return retrieveFromElement(eElement);
             }
         }
-        return retrieveFromElement(eElement);
+        return Optional.empty();
     }
 }

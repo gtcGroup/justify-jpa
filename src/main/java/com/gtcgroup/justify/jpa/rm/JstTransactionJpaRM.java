@@ -26,6 +26,7 @@
 package com.gtcgroup.justify.jpa.rm;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 
@@ -45,33 +46,31 @@ import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
  */
 public enum JstTransactionJpaRM {
 
-	@SuppressWarnings("javadoc")
-	INTERNAL;
+    @SuppressWarnings("javadoc")
+    INTERNAL;
 
-	/**
-	 * This method is used for committing a single transaction. If any of the
-	 * related child objects are not marked for an applicable
-	 * {@link CascadeType} then they need to be explicitly in the
-	 * {@link JstTransactionJpaPO}.d.
-	 *
-	 * @return {@link List}
-	 */
-	public static <ENTITY, PO extends JstTransactionJpaPO> List<ENTITY> transactMultipleEntities(final PO transactionPO) {
+    /**
+     * This method is used for committing a single transaction. If any of the
+     * related child objects are not marked for an applicable {@link CascadeType}
+     * then they need to be explicitly in the {@link JstTransactionJpaPO}.
+     *
+     * @return {@link Object}
+     */
+    public static <ENTITY, PO extends JstTransactionJpaPO> Optional<ENTITY> transactEntity(final PO transactionPO) {
 
-		return JstTransactionUtilHelper.transactEntities(transactionPO);
-	}
+        return JstTransactionUtilHelper.transactEntity(transactionPO);
+    }
 
-	/**
-	 * This method is used for committing a single transaction. If any of the
-	 * related child objects are not marked for an applicable
-	 * {@link CascadeType} then they need to be explicitly in the
-	 * {@link JstTransactionJpaPO}.
-	 *
-	 * @return {@link Object}
-	 */
-	public static <ENTITY, PO extends JstTransactionJpaPO> ENTITY transactEntity(final PO transactionPO) {
+    /**
+     * This method is used for committing a single transaction. If any of the
+     * related child objects are not marked for an applicable {@link CascadeType}
+     * then they need to be explicitly in the {@link JstTransactionJpaPO}.d.
+     *
+     * @return {@link Optional}
+     */
+    public static <ENTITY, PO extends JstTransactionJpaPO> Optional<List<ENTITY>> transactMultipleEntities(
+            final PO transactionPO) {
 
-		return JstTransactionUtilHelper.transactEntity(transactionPO);
-	}
-
+        return JstTransactionUtilHelper.transactEntities(transactionPO);
+    }
 }
