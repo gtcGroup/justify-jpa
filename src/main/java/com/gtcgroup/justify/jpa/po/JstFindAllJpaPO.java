@@ -161,8 +161,8 @@ public class JstFindAllJpaPO extends BaseQueryJpaPO {
      * @return {@link JstCountAllJpaPO}
      */
     @Override
-    public JstFindAllJpaPO withSuppressForceDatabaseTrip(final boolean suppressForceDatabaseTrip) {
+    public JstFindAllJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppressForceDatabaseTrip) {
 
-        return (JstFindAllJpaPO) super.withSuppressForceDatabaseTrip(suppressForceDatabaseTrip);
+        return (JstFindAllJpaPO) super.withForceDatabaseTripWhenNoCacheCoordination(suppressForceDatabaseTrip);
     }
 }

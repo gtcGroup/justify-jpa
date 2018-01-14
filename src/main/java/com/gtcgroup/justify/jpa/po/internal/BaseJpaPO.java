@@ -55,7 +55,7 @@ public abstract class BaseJpaPO extends JstBasePO {
 
     protected Map<String, Object> persistencePropertyMapOrNull = null;
 
-    protected boolean suppressForceDatabaseTrip = false;
+    protected boolean forceDatabaseTripWhenNoCacheCoordination = false;
 
     /**
      * Constructor
@@ -64,7 +64,6 @@ public abstract class BaseJpaPO extends JstBasePO {
         super();
 
         this.persistenceUnitName = persistenceUnitName;
-        this.entityManager = JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName);
 
         return;
     }
@@ -85,6 +84,12 @@ public abstract class BaseJpaPO extends JstBasePO {
      */
     public Optional<EntityManager> getEntityManager() {
 
+        if (null == this.entityManager) {
+
+            return Optional
+                    .of(JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName));
+        }
+
         return Optional.ofNullable(this.entityManager);
     }
 
@@ -98,34 +103,11 @@ public abstract class BaseJpaPO extends JstBasePO {
     /**
      * @return boolean
      */
-    public boolean isSuppressForceDatabaseTrip() {
-        return this.suppressForceDatabaseTrip;
+    public boolean isForceDatabaseTripWhenNoCacheCoordination() {
+        return this.forceDatabaseTripWhenNoCacheCoordination;
     }
 
-    /**
-     * @return {@link BaseJpaPO}
-     */
-    public BaseJpaPO withEntityManager(final EntityManager entityManager) {
-
+    protected void setEntityManager(final EntityManager entityManager) {
         this.entityManager = entityManager;
-        return this;
-    }
-
-    /**
-     * @return {@link BaseJpaPO}
-     */
-    public BaseJpaPO withPersistencePropertyMap(final Map<String, Object> persistencePropertyMap) {
-
-        this.persistencePropertyMapOrNull = persistencePropertyMap;
-        return this;
-    }
-
-    /**
-     * @return {@link BaseJpaPO}
-     */
-    public BaseJpaPO withSuppressForceDatabaseTrip(final boolean suppressForceDatabaseTrip) {
-
-        this.suppressForceDatabaseTrip = suppressForceDatabaseTrip;
-        return this;
     }
 }

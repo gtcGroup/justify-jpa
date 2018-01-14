@@ -26,13 +26,11 @@
 package com.gtcgroup.justify.jpa.helper;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
-import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -41,9 +39,7 @@ import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
-import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -82,19 +78,19 @@ public enum JstQueryUtilHelper {
         return count;
     }
 
-    static Query decorateQuery(final BaseQueryJpaPO queryPO, final Map<String, Object> stringParameterMap) {
+    private static Query decorateQuery(final BaseQueryJpaPO queryPO) {
 
         final Query query = queryPO.getQuery();
 
-        if (null != stringParameterMap) {
+        if (queryPO.isQueryParameterMap()) {
 
-            for (final Entry<String, Object> stringEntry : stringParameterMap.entrySet()) {
+            for (final Entry<String, Object> stringEntry : queryPO.getQueryParameterMap().entrySet()) {
 
                 query.setParameter(stringEntry.getKey(), stringEntry.getValue());
             }
         }
 
-        if (!queryPO.isSuppressForceDatabaseTrip()) {
+        if (queryPO.isForceDatabaseTripWhenNoCacheCoordination()) {
             query.setHint(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
             query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
             query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
@@ -116,125 +112,35 @@ public enum JstQueryUtilHelper {
         return query;
     }
 
-    @SuppressWarnings("unchecked")
-    private static <ENTITY> Optional<List<ENTITY>> queryList(final Query query) {
-
-        try {
-            return Optional.of(query.getResultList());
-
-        } catch (@SuppressWarnings("unused") final Exception e) {
-
-            // Continue.
-        }
-        return Optional.empty();
-    }
-
     /**
-     * This method executes a query with parameters.
-     *
-     * @return {@link List}
+     * @return {@link Optional}
      */
+    @SuppressWarnings("unchecked")
     public static <ENTITY> Optional<List<ENTITY>> queryResultList(final BaseQueryJpaPO queryPO) {
 
-        final List<ENTITY> entityList = null;
-
         try {
-
-            final Query query = decorateQuery(queryPO, null);
-            return queryList(query);
+            final Query query = decorateQuery(queryPO);
+            return Optional.of(query.getResultList());
+        } catch (@SuppressWarnings("unused") final Exception e) {
+            return Optional.empty();
         } finally {
             queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
         }
-        return entityList;
     }
 
     /**
-     * This method executes a query with parameters.
-     *
-     * @return {@link List}
-     */
-    public static <ENTITY> List<ENTITY> queryResultList(final BaseQueryJpaPO queryPO,
-            final Map<String, Object> stringParameterMap) {
-
-        List<ENTITY> entityList = null;
-
-        try {
-
-            final Query query = decorateQuery(queryPO, stringParameterMap);
-
-            entityList = queryList(query, queryPO);
-
-        } finally {
-            queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-        }
-        return entityList;
-    }
-
-    /**
-     * This method executes a query with parameters.
-     *
-     * @return ENTITY
+     * @return {@link Optional}
      */
     @SuppressWarnings("unchecked")
-    public static <ENTITY> ENTITY querySingleResult(final BaseQueryJpaPO queryPO) {
-
-        ENTITY entity = null;
+    public static <ENTITY> Optional<ENTITY> querySingleResult(final BaseQueryJpaPO queryPO) {
 
         try {
-
-            final Query query = decorateQuery(queryPO, null);
-
-            entity = (ENTITY) query.getSingleResult();
-            JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
-
-        } catch (@SuppressWarnings("unused") final NoResultException e) {
-
-            JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
-
-        } catch (final Exception e) {
-
-            throw new JustifyException(e);
-
+            final Query query = decorateQuery(queryPO);
+            return (Optional<ENTITY>) Optional.of(query.getSingleResult());
+        } catch (@SuppressWarnings("unused") final Exception e) {
+            return Optional.empty();
         } finally {
             queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-        }
-        return entity;
-    }
-
-    /**
-     * This method executes a query with parameters.
-     *
-     * @return ENTITY
-     */
-    @SuppressWarnings("unchecked")
-    public static <ENTITY> ENTITY querySingleResult(final BaseQueryJpaPO queryPO,
-            final Map<String, Object> parameterMap) {
-
-        ENTITY entity = null;
-
-        try {
-
-            final Query query = decorateQuery(queryPO, parameterMap);
-
-            entity = (ENTITY) query.getSingleResult();
-            JstQueryUtilHelper.throwExceptionForNull(queryPO, entity);
-
-        } finally {
-            queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-        }
-        return entity;
-    }
-
-    /**
-     * This method handles exception suppression.
-     */
-    public static void throwExceptionForNull(final BaseJpaPO queryPO, final Object entity) {
-
-        if (null == entity) {
-            if (!queryPO.isSuppressExceptionForNull()) {
-                throw new JustifyException("Unable to retrieve a result instance.");
-
-            }
         }
     }
 }

@@ -23,14 +23,17 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po.internal;
 
-import java.util.Map;
+package com.gtcgroup.justify.jpa.rm;
 
-import javax.persistence.Query;
+import java.util.List;
+import java.util.Optional;
+
+import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
+import com.gtcgroup.justify.jpa.po.JstQueryStringJpaPO;
 
 /**
- * This Parameter Object base class supports queries using a Resource Manager.
+ * This Resource Manager class supports queries using an SQL or JPQL string.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -38,81 +41,25 @@ import javax.persistence.Query;
  * </p>
  *
  * @author Marvin Toll
- * @since v.6.2
+ * @since v3.0
  */
-public abstract class BaseQueryJpaPO extends BaseJpaPO {
+public enum JstQueryStringJpaRM {
 
-    protected Query query;
-
-    protected int firstResult;
-
-    protected int maxResults;
-
-    protected boolean suppressReadOnly = false;
-
-    protected Map<String, Object> queryParameterMap;
+    INTERNAL;
 
     /**
-     * Constructor
+     * @return {@link Optional}
      */
-    protected BaseQueryJpaPO(final String persistenceUnitName) {
+    public static <ENTITY> Optional<List<ENTITY>> queryReadOnlyList(final JstQueryStringJpaPO queryPO) {
 
-        super(persistenceUnitName);
+        return JstQueryUtilHelper.queryResultList(queryPO);
     }
 
     /**
-     * @return int
+     * @return {@link Optional}
      */
-    public int getFirstResult() {
-        return this.firstResult;
-    }
+    public static <ENTITY> Optional<ENTITY> querySingle(final JstQueryStringJpaPO queryPO) {
 
-    /**
-     * @return int}
-     */
-    public int getMaxResults() {
-        return this.maxResults;
-    }
-
-    /**
-     * @return {@link Map}
-     */
-    public Map<String, Object> getQueryParameterMap() {
-
-        return this.queryParameterMap;
-    }
-
-    /**
-     * @return {@link Query}
-     */
-    public abstract Query getQuery();
-
-    /**
-     * @return boolean
-     */
-    public boolean isFirstResult() {
-        return 0 != this.firstResult;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isMaxResults() {
-        return 0 != this.maxResults;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isQueryParameterMap() {
-
-        return null != this.queryParameterMap;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isSuppressReadOnly() {
-        return this.suppressReadOnly;
+        return JstQueryUtilHelper.querySingleResult(queryPO);
     }
 }

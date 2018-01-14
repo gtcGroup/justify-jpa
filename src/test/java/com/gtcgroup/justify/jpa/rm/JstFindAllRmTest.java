@@ -63,7 +63,7 @@ public class JstFindAllRmTest {
     @Test
     public void testFindAllList_happyPath() {
 
-        final List<NoteDE> noteList = JstFindAllJpaRM.findReadOnlyList(JstFindAllJpaPO.withFindAll(false)
+        final List<NoteDE> noteList = JstQueryFindAllJpaRM.findReadOnlyList(JstFindAllJpaPO.withFindAll(false)
                 .withEntityClass(NoteDE.class).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);
@@ -72,7 +72,7 @@ public class JstFindAllRmTest {
     @Test(expected = JustifyException.class)
     public void testFindAllList_noResultClass() {
 
-        final List<NoteDE> noteList = JstFindAllJpaRM.findReadOnlyList(
+        final List<NoteDE> noteList = JstQueryFindAllJpaRM.findReadOnlyList(
                 JstFindAllJpaPO.withFindAll(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);

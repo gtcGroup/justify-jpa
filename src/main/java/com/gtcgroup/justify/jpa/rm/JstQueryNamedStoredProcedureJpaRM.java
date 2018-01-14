@@ -26,14 +26,14 @@
 
 package com.gtcgroup.justify.jpa.rm;
 
+import java.util.List;
 import java.util.Optional;
 
-import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryNamedStoredProcedureJpaPO;
 
 /**
- * This Resource Manager class supports find operations.
+ * This Resource Manager class supports queries using an SQL or JPQL string.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -43,51 +43,23 @@ import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstFindJpaRM {
+public enum JstQueryNamedStoredProcedureJpaRM {
 
-    @SuppressWarnings("javadoc")
     INTERNAL;
 
-    @SuppressWarnings("unchecked")
-    protected static <ENTITY> Optional<ENTITY> findContainingIdentity(final JstFindJpaPO findPO) {
+    /**
+     * @return {@link Optional}
+     */
+    public static <ENTITY> Optional<List<ENTITY>> queryReadOnlyList(final JstQueryNamedStoredProcedureJpaPO queryPO) {
 
-        ENTITY entity;
-        if (findPO.isPopulatedEntityContainingIdentity()) {
-
-            entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
-                    findPO.getPopulatedEntityContainingIdentity(), findPO.isSuppressForceDatabaseTrip());
-
-        } else {
-
-            entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
-                    findPO.getEntityClass(), findPO.getEntityIdentity(), findPO.isSuppressForceDatabaseTrip());
-        }
-        return Optional.ofNullable(entity);
+        return JstQueryUtilHelper.queryResultList(queryPO);
     }
 
     /**
-     * @return {@link Object}
+     * @return {@link Optional}
      */
-    @SuppressWarnings("unchecked")
-    public static <ENTITY> ENTITY findSingle(final JstFindJpaPO findPO) {
+    public static <ENTITY> Optional<ENTITY> querySingle(final JstQueryNamedStoredProcedureJpaPO queryPO) {
 
-        final Object entity = findWithEntityManager(findPO);
-        JstQueryUtilHelper.throwExceptionForNull(findPO, entity);
-
-        return (ENTITY) entity;
-    }
-
-    protected static <ENTITY> Optional<ENTITY> findWithEntityManager(final JstFindJpaPO findPO) {
-
-        try {
-            final Optional<ENTITY> entity = findContainingIdentity(findPO);
-            findPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-
-            return entity;
-
-        } finally {
-
-            findPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-        }
+        return JstQueryUtilHelper.querySingleResult(queryPO);
     }
 }

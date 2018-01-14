@@ -44,7 +44,6 @@ public enum PersistenceKeyCacheHelper {
 
     INTERNAL;
 
-    // Contains persistence unit name and jdbc URL.
     private static Map<String, String> persistenceKeyMap = new ConcurrentHashMap<>();
 
     /**

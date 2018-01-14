@@ -27,12 +27,15 @@
 package com.gtcgroup.justify.jpa.rm;
 
 import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.NamedQueries;
 
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryNamedJpaPO;
 
 /**
- * This Resource Manager class supports finding all entities.
+ * This Resource Manager class supports {@link NamedQueries}.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -42,15 +45,23 @@ import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstFindAllJpaRM {
+public enum JstQueryNamedJpaRM {
 
     INTERNAL;
 
     /**
-     * @return {@link Object} or null or {@link Exception}
+     * @return {@link Optional}
      */
-    public static <ENTITY> List<ENTITY> findReadOnlyList(final JstFindAllJpaPO findAllPO) {
+    public static <ENTITY> Optional<List<ENTITY>> queryReadOnlyList(final JstQueryNamedJpaPO queryPO) {
 
-        return JstQueryUtilHelper.queryResultList(findAllPO);
+        return JstQueryUtilHelper.queryResultList(queryPO);
+    }
+
+    /**
+     * @return {@link Optional}
+     */
+    public static <ENTITY> Optional<ENTITY> querySingle(final JstQueryNamedJpaPO queryPO) {
+
+        return JstQueryUtilHelper.querySingleResult(queryPO);
     }
 }

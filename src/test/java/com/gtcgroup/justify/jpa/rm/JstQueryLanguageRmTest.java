@@ -39,7 +39,7 @@ import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstQueryLanguageJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryStringJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
@@ -72,22 +72,22 @@ public class JstQueryLanguageRmTest {
     @Test(expected = JustifyException.class)
     public void testQueryLanguageSingle_exception() {
 
-        JstQueryLanguageQueryJpaRM.querySingle(
-                JstQueryLanguageJpaPO.withQuery(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
+        JstQueryStringJpaRM.querySingle(
+                JstQueryStringJpaPO.withQuery(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
     }
 
     @Test(expected = JustifyException.class)
     public void testQueryLanguageSingle_exceptionString() {
-        JstQueryLanguageQueryJpaRM
-                .querySingle(JstQueryLanguageJpaPO.withQuery(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        JstQueryStringJpaRM
+                .querySingle(JstQueryStringJpaPO.withQuery(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                         .withQueryLanguageString(JstQueryLanguageRmTest.SELECT_NOTE_SINGLE_FAKE));
     }
 
     @Test
     public void testQueryLanguageSingle_exceptionString_supress() {
 
-        final NoteDE note = JstQueryLanguageQueryJpaRM
-                .querySingle(JstQueryLanguageJpaPO.withQuery(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        final NoteDE note = JstQueryStringJpaRM
+                .querySingle(JstQueryStringJpaPO.withQuery(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                         .withQueryLanguageString(JstQueryLanguageRmTest.SELECT_NOTE_SINGLE_FAKE));
 
         Assertions.assertThat(note).isNull();
@@ -96,7 +96,7 @@ public class JstQueryLanguageRmTest {
     @Test
     public void testQueryLanguageSingle_queryLanguageString_resultClass() {
 
-        final NoteDE note = JstQueryLanguageQueryJpaRM.querySingle(JstQueryLanguageJpaPO.withQuery(false)
+        final NoteDE note = JstQueryStringJpaRM.querySingle(JstQueryStringJpaPO.withQuery(false)
                 .withEntityClass(NoteDE.class).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                 .withQueryLanguageString(JstQueryLanguageRmTest.SELECT_NOTE_SINGLE_MODIFIABLE));
 
@@ -106,7 +106,7 @@ public class JstQueryLanguageRmTest {
     @Test
     public void testQueryList_queryLanguageString() {
 
-        final List<Object> noteList = JstQueryLanguageQueryJpaRM.queryReadOnlyList(JstQueryLanguageJpaPO
+        final List<Object> noteList = JstQueryStringJpaRM.queryReadOnlyList(JstQueryStringJpaPO
                 .withQuery(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                 .withQueryLanguageString(JstQueryLanguageRmTest.SELECT_NOTE_LIST).withEntityClass(NoteDE.class));
 
@@ -116,8 +116,8 @@ public class JstQueryLanguageRmTest {
     @Test
     public void testQueryList_queryLanguageString_incomplete() {
 
-        final List<Object> noteList = JstQueryLanguageQueryJpaRM.queryReadOnlyList(
-                JstQueryLanguageJpaPO.withQuery(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        final List<Object> noteList = JstQueryStringJpaRM.queryReadOnlyList(
+                JstQueryStringJpaPO.withQuery(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                         .withQueryLanguageString(JstQueryLanguageRmTest.SELECT_NOTE_LIST));
 
         AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);

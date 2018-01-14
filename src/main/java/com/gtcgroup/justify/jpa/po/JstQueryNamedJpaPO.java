@@ -34,7 +34,7 @@ import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
- * This Parameter Object class supports named queries.
+ * This Parameter Object class supports @ queries.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -44,38 +44,26 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
+public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
 
     /**
      * This method initializes the class.
      *
-     * @return {@link JstNamedQueryJpaPO}
+     * @return {@link JstQueryNamedJpaPO}
      */
-    public static JstNamedQueryJpaPO withQuery() {
+    public static JstQueryNamedJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-        return new JstNamedQueryJpaPO(false);
-    }
-
-    /**
-     * This method initializes the class.
-     *
-     * @return {@link JstNamedQueryJpaPO}
-     */
-    public static JstNamedQueryJpaPO withQuery(final boolean suppressExceptionForNull) {
-
-        return new JstNamedQueryJpaPO(suppressExceptionForNull);
+        return new JstQueryNamedJpaPO(persistenceUnitName);
     }
 
     protected String queryName;
 
-    protected Map<String, Object> parameterMap;
-
     /**
      * Constructor
      */
-    protected JstNamedQueryJpaPO(final boolean suppressExceptionForNull) {
+    protected JstQueryNamedJpaPO(final String persistenceUnitName) {
 
-        super(suppressExceptionForNull);
+        super(persistenceUnitName);
         return;
     }
 
@@ -87,13 +75,7 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
         this.query = this.entityManager.createNamedQuery(getQueryName());
     }
 
-    /**
-     * @return {@link Map}
-     */
-    public Map<String, Object> getParameterMap() {
 
-        return this.parameterMap;
-    }
 
     /**
      * @return {@link Query}
@@ -119,82 +101,67 @@ public class JstNamedQueryJpaPO extends BaseQueryJpaPO {
         return this.queryName;
     }
 
-    /**
-     * @return boolean
-     */
-    public boolean isParameterMap() {
 
-        return null != this.parameterMap;
+
+    /**
+     * @return {@link JstQueryNamedJpaPO}
+     */
+    public JstQueryNamedJpaPO withEntityManager(final EntityManager entityManager) {
+
+        super.setEntityManager(entityManager);
+        return this;
     }
 
     /**
-     * @return {@link JstNamedQueryJpaPO}
+     * @return {@link JstQueryNamedJpaPO}
      */
-    @Override
-    public JstNamedQueryJpaPO withEntityManager(final EntityManager entityManager) {
-
-        return (JstNamedQueryJpaPO) super.withEntityManager(entityManager);
-    }
-
-    /**
-     * @return {@link JstNamedQueryJpaPO}
-     */
-    public JstNamedQueryJpaPO withFirstResult(final int firstResult) {
+    public JstQueryNamedJpaPO withFirstResult(final int firstResult) {
 
         this.firstResult = firstResult;
         return this;
     }
 
     /**
-     * @return {@link JstNamedQueryJpaPO}
+     * @return {@link JstQueryNamedJpaPO}
      */
-    public JstNamedQueryJpaPO withMaxResults(final int maxResults) {
+    @Override
+    public JstQueryNamedJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppress) {
+
+        this.forceDatabaseTripWhenNoCacheCoordination = suppress;
+        return this;
+    }
+
+    /**
+     * @return {@link JstQueryNamedJpaPO}
+     */
+    public JstQueryNamedJpaPO withMaxResults(final int maxResults) {
 
         this.maxResults = maxResults;
         return this;
     }
 
     /**
-     * @return {@link JstNamedQueryJpaPO}
+     * @return {@link JstQueryNamedJpaPO}
      */
-    public JstNamedQueryJpaPO withParameterMap(final Map<String, Object> parameterMap) {
+    public JstQueryNamedJpaPO withParameterMap(final Map<String, Object> parameterMap) {
 
-        this.parameterMap = parameterMap;
+        this.queryParameterMap = parameterMap;
         return this;
     }
 
     /**
-     * @return {@link JstNamedQueryJpaPO}
+     * @return {@link JstQueryNamedJpaPO}
      */
-    @Override
-    public JstNamedQueryJpaPO withPersistenceUnitName(final String persistenceUnitName) {
-
-        return (JstNamedQueryJpaPO) super.withPersistenceUnitName(persistenceUnitName);
-    }
-
-    /**
-     * @return {@link JstNamedQueryJpaPO}
-     */
-    public JstNamedQueryJpaPO withQueryName(final String queryName) {
+    public JstQueryNamedJpaPO withQueryName(final String queryName) {
 
         this.queryName = queryName;
         return this;
     }
 
     /**
-     * @return {@link JstNamedQueryJpaPO}
+     * @return {@link JstQueryNamedJpaPO}
      */
-    @Override
-    public JstNamedQueryJpaPO withSuppressForceDatabaseTrip(final boolean suppress) {
-
-        this.suppressForceDatabaseTrip = suppress;
-        return this;
-    }
-
-    /**
-     * @return {@link JstNamedQueryJpaPO}
-     */
-    public JstNamedQueryJpaPO withSuppressReadOnly(final boolean suppress) {
+    public JstQueryNamedJpaPO withSuppressReadOnly(final boolean suppress) {
 
         this.suppressReadOnly = suppress;
         return this;

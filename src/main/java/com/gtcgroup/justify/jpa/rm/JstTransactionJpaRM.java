@@ -46,15 +46,14 @@ import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
  */
 public enum JstTransactionJpaRM {
 
-    @SuppressWarnings("javadoc")
     INTERNAL;
 
     /**
      * This method is used for committing a single transaction. If any of the
      * related child objects are not marked for an applicable {@link CascadeType}
-     * then they need to be explicitly in the {@link JstTransactionJpaPO}.
+     * then they need to be explicitly handled in the {@link JstTransactionJpaPO}.
      *
-     * @return {@link Object}
+     * @return {@link Optional}
      */
     public static <ENTITY, PO extends JstTransactionJpaPO> Optional<ENTITY> transactEntity(final PO transactionPO) {
 
@@ -64,7 +63,7 @@ public enum JstTransactionJpaRM {
     /**
      * This method is used for committing a single transaction. If any of the
      * related child objects are not marked for an applicable {@link CascadeType}
-     * then they need to be explicitly in the {@link JstTransactionJpaPO}.d.
+     * then they need to be explicitly handled in the {@link JstTransactionJpaPO}.
      *
      * @return {@link Optional}
      */

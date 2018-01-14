@@ -42,40 +42,28 @@ import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstFindJpaPO extends BaseJpaPO {
+public class JstQueryFindSingleJpaPO extends BaseJpaPO {
 
     /**
      * This method initializes the class.
      *
-     * @return {@link JstFindJpaPO}
+     * @return {@link JstQueryNamedJpaPO}
      */
-    public static JstFindJpaPO withFind() {
+    public static JstQueryFindSingleJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-        return new JstFindJpaPO(false);
-    }
-
-    /**
-     * This method initializes the class.
-     *
-     * @return {@link JstFindJpaPO}
-     */
-    public static JstFindJpaPO withFind(final boolean suppressExceptionForNull) {
-
-        return new JstFindJpaPO(suppressExceptionForNull);
+        return new JstQueryFindSingleJpaPO(persistenceUnitName);
     }
 
     private Class<Object> entityClass;
 
     private Object entityIdentity;
 
-    private Object populatedEntityContainingIdentity;
-
     /**
      * Constructor
      */
-    protected JstFindJpaPO(final boolean suppressExceptionForNull) {
+    protected JstQueryFindSingleJpaPO(final String persistenceUnitName) {
 
-        super(suppressExceptionForNull);
+        super(persistenceUnitName);
         return;
     }
 
@@ -96,81 +84,58 @@ public class JstFindJpaPO extends BaseJpaPO {
     }
 
     /**
-     * @return {@link Object}
-     */
-    public Object getPopulatedEntityContainingIdentity() {
-
-        return this.populatedEntityContainingIdentity;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isPopulatedEntityContainingIdentity() {
-        return null != this.populatedEntityContainingIdentity;
-    }
-
-    /**
-     * @return {@link JstFindJpaPO}
+     * @return {@link JstQueryFindSingleJpaPO}
      */
     @SuppressWarnings("unchecked")
-    public <ENTITY> JstFindJpaPO withEntityClass(final Class<ENTITY> entityClass) {
+    public <ENTITY> JstQueryFindSingleJpaPO withEntityClass(final Class<ENTITY> entityClass) {
 
         this.entityClass = (Class<Object>) entityClass;
         return this;
     }
 
     /**
-     * @return {@link JstFindJpaPO}
+     * @return {@link JstQueryFindSingleJpaPO}
      */
-    public JstFindJpaPO withEntityIdentity(final Object entityIdentity) {
+    public JstQueryFindSingleJpaPO withEntityIdentity(final Object entityIdentity) {
 
         this.entityIdentity = entityIdentity;
         return this;
     }
 
     /**
-     * @return {@link JstFindJpaPO}
+     * @return {@link JstQueryFindSingleJpaPO}
      */
-    @Override
-    public JstFindJpaPO withEntityManager(final EntityManager entityManager) {
+    public JstQueryFindSingleJpaPO withEntityManager(final EntityManager entityManager) {
 
-        return (JstFindJpaPO) super.withEntityManager(entityManager);
-    }
-
-    /**
-     * @return {@link JstFindJpaPO}
-     */
-    @Override
-    public JstFindJpaPO withPersistencePropertyMap(final Map<String, Object> persistencePropertyMap) {
-
-        return (JstFindJpaPO) super.withPersistencePropertyMap(persistencePropertyMap);
-    }
-
-    /**
-     * @return {@link JstFindJpaPO}
-     */
-    @Override
-    public JstFindJpaPO withPersistenceUnitName(final String persistenceUnitName) {
-
-        return (JstFindJpaPO) super.withPersistenceUnitName(persistenceUnitName);
-    }
-
-    /**
-     * @return {@link JstFindJpaPO}
-     */
-    public JstFindJpaPO withPopulatedEntityContainingIdentity(final Object populatedEntityContainingIdentity) {
-
-        this.populatedEntityContainingIdentity = populatedEntityContainingIdentity;
+        super.setEntityManager(entityManager);
         return this;
     }
 
     /**
-     * @return {@link JstFindJpaPO}
+     * @return {@link JstQueryFindSingleJpaPO}
      */
     @Override
-    public JstFindJpaPO withSuppressForceDatabaseTrip(final boolean suppress) {
+    public JstQueryFindSingleJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppress) {
 
-        return (JstFindJpaPO) super.withSuppressForceDatabaseTrip(suppress);
+        return (JstQueryFindSingleJpaPO) super.withForceDatabaseTripWhenNoCacheCoordination(suppress);
+    }
+
+    /**
+     * @return {@link JstQueryFindSingleJpaPO}
+     */
+    @Override
+    public JstQueryFindSingleJpaPO withPersistencePropertyMap(final Map<String, Object> persistencePropertyMap) {
+
+        return (JstQueryFindSingleJpaPO) super.withPersistencePropertyMap(persistencePropertyMap);
+    }
+
+    /**
+     * @return {@link JstQueryFindSingleJpaPO}
+     */
+    public JstQueryFindSingleJpaPO withPopulatedEntityContainingIdentity(
+            final Object populatedEntityContainingIdentity) {
+
+        this.populatedEntityContainingIdentity = populatedEntityContainingIdentity;
+        return this;
     }
 }

@@ -29,10 +29,10 @@ package com.gtcgroup.justify.jpa.rm;
 import java.util.List;
 
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstNamedQueryJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
 
 /**
- * This Resource Manager class supports named queries.
+ * This Resource Manager class supports finding all entities.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -42,43 +42,15 @@ import com.gtcgroup.justify.jpa.po.JstNamedQueryJpaPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstNamedQueryJpaRM {
+public enum JstQueryFindAllJpaRM {
 
-	@SuppressWarnings("javadoc")
-	INTERNAL;
+    INTERNAL;
 
-	/**
-	 * @return {@link Object} or null or {@link Exception}
-	 */
-	public static <ENTITY> List<ENTITY> queryReadOnlyList(final JstNamedQueryJpaPO queryPO) {
+    /**
+     * @return {@link Object} or null or {@link Exception}
+     */
+    public static <ENTITY> List<ENTITY> findReadOnlyList(final JstFindAllJpaPO findAllPO) {
 
-		List<ENTITY> entityList = null;
-
-		if (queryPO.isParameterMap()) {
-
-			entityList = JstQueryUtilHelper.queryResultList(queryPO, queryPO.getParameterMap());
-		} else {
-
-			entityList = JstQueryUtilHelper.queryResultList(queryPO);
-		}
-		return entityList;
-	}
-
-	/**
-	 * @return {@link Object} or null or {@link Exception}
-	 */
-	public static <ENTITY> ENTITY querySingle(final JstNamedQueryJpaPO queryPO) {
-
-		ENTITY entity = null;
-
-		if (queryPO.isParameterMap()) {
-
-			entity = JstQueryUtilHelper.querySingleResult(queryPO, queryPO.getParameterMap());
-		} else {
-
-			entity = JstQueryUtilHelper.querySingleResult(queryPO);
-		}
-
-		return entity;
-	}
+        return JstQueryUtilHelper.queryResultList(findAllPO);
+    }
 }

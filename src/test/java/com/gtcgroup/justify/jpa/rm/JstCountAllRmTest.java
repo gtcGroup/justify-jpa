@@ -71,7 +71,7 @@ public class JstCountAllRmTest {
         final long count = JstCountAllJpaRM.count(JstCountAllJpaPO.withQuery(false).withResultClass(NoteDE.class)
                 .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
-        final List<NoteDE> noteList = JstFindAllJpaRM.findReadOnlyList(JstFindAllJpaPO.withFindAll(false)
+        final List<NoteDE> noteList = JstQueryFindAllJpaRM.findReadOnlyList(JstFindAllJpaPO.withFindAll(false)
                 .withEntityClass(NoteDE.class).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         Assertions.assertThat(count).isEqualTo(noteList.size());
@@ -91,7 +91,7 @@ public class JstCountAllRmTest {
             count = JstCountAllJpaRM.count(
                     JstCountAllJpaPO.withQuery(false).withResultClass(NoteDE.class).withEntityManager(entityManager));
 
-            noteList = JstFindAllJpaRM.findReadOnlyList(JstFindAllJpaPO.withFindAll(false).withEntityClass(NoteDE.class)
+            noteList = JstQueryFindAllJpaRM.findReadOnlyList(JstFindAllJpaPO.withFindAll(false).withEntityClass(NoteDE.class)
                     .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         } finally {

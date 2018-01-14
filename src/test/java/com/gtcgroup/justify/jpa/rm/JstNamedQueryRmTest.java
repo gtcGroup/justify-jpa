@@ -44,7 +44,7 @@ import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstNamedQueryJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryNamedJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
@@ -78,7 +78,7 @@ public class JstNamedQueryRmTest {
 
     private List<NoteDE> createNamedQueryListMapPO(final boolean suppressExceptionForNull, final String queryName) {
 
-        final List<NoteDE> noteList = JstNamedQueryJpaRM.queryReadOnlyList(JstNamedQueryJpaPO
+        final List<NoteDE> noteList = JstQueryNamedJpaRM.queryReadOnlyList(JstQueryNamedJpaPO
                 .withQuery(suppressExceptionForNull).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                 .withQueryName(queryName).withParameterMap(createModifiableParameterMap()));
         return noteList;
@@ -86,8 +86,8 @@ public class JstNamedQueryRmTest {
 
     private List<NoteDE> createNamedQueryListPO(final boolean suppressExceptionForNull, final String queryName) {
 
-        final List<NoteDE> noteList = JstNamedQueryJpaRM
-                .queryReadOnlyList(JstNamedQueryJpaPO.withQuery(suppressExceptionForNull)
+        final List<NoteDE> noteList = JstQueryNamedJpaRM
+                .queryReadOnlyList(JstQueryNamedJpaPO.withQuery(suppressExceptionForNull)
                         .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withQueryName(queryName));
         return noteList;
     }
@@ -98,7 +98,7 @@ public class JstNamedQueryRmTest {
                 .createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
         NoteDE note = null;
         try {
-            note = JstNamedQueryJpaRM.querySingle(JstNamedQueryJpaPO.withQuery(suppressExceptionForNull)
+            note = JstQueryNamedJpaRM.querySingle(JstQueryNamedJpaPO.withQuery(suppressExceptionForNull)
                     .withEntityManager(entityManager).withQueryName(queryName).withParameterMap(createParameterMap()));
         } catch (final Exception e) {
             JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
@@ -109,7 +109,7 @@ public class JstNamedQueryRmTest {
 
     private NoteDE createNamedQuerySingleMapPO(final boolean suppressExceptionForNull, final String queryName) {
 
-        final NoteDE note = JstNamedQueryJpaRM.querySingle(JstNamedQueryJpaPO.withQuery(suppressExceptionForNull)
+        final NoteDE note = JstQueryNamedJpaRM.querySingle(JstQueryNamedJpaPO.withQuery(suppressExceptionForNull)
                 .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withQueryName(queryName)
                 .withParameterMap(createModifiableParameterMap()));
         return note;
@@ -124,7 +124,7 @@ public class JstNamedQueryRmTest {
 
     private NoteDE retrieveNamedQuerySingle(final boolean suppressExceptionForNull, final String queryName) {
 
-        final NoteDE note = JstNamedQueryJpaRM.querySingle(JstNamedQueryJpaPO.withQuery(suppressExceptionForNull)
+        final NoteDE note = JstQueryNamedJpaRM.querySingle(JstQueryNamedJpaPO.withQuery(suppressExceptionForNull)
                 .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withQueryName(queryName));
         return note;
     }
@@ -181,8 +181,8 @@ public class JstNamedQueryRmTest {
         final Map<String, Object> stringParameterMap = new HashMap<>();
         stringParameterMap.put("text", "*fake*");
 
-        JstNamedQueryJpaRM.queryReadOnlyList(
-                JstNamedQueryJpaPO.withQuery(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        JstQueryNamedJpaRM.queryReadOnlyList(
+                JstQueryNamedJpaPO.withQuery(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                         .withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER)
                         .withParameterMap(stringParameterMap));
     }
@@ -193,8 +193,8 @@ public class JstNamedQueryRmTest {
         final Map<String, Object> stringParameterMap = new HashMap<>();
         stringParameterMap.put("text", "*fake*");
 
-        final List<NoteDE> noteList = JstNamedQueryJpaRM.queryReadOnlyList(
-                JstNamedQueryJpaPO.withQuery(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        final List<NoteDE> noteList = JstQueryNamedJpaRM.queryReadOnlyList(
+                JstQueryNamedJpaPO.withQuery(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                         .withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER)
                         .withParameterMap(stringParameterMap));
 

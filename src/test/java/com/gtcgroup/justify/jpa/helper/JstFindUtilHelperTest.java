@@ -41,7 +41,7 @@ import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
-import com.gtcgroup.justify.jpa.rm.JstFindAllJpaRM;
+import com.gtcgroup.justify.jpa.rm.JstQueryFindAllJpaRM;
 
 /**
  * Test Class
@@ -99,7 +99,7 @@ public class JstFindUtilHelperTest {
     @Test
     public void testExistsInSharedCacheWithPopulatedEntities_ReadOnly() {
 
-        JstFindAllJpaRM.findReadOnlyList(
+        JstQueryFindAllJpaRM.findReadOnlyList(
                 JstFindAllJpaPO.withFindAll(false).withEntityManager(this.entityManager).withEntityClass(NoteDE.class));
 
         Assertions.assertThat(JstFindUtilHelper.existsInSharedCache(this.entityManager, NoteDataPopulator.noteOne))

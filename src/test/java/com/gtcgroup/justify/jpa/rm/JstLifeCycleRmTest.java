@@ -44,8 +44,8 @@ import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
-import com.gtcgroup.justify.jpa.po.JstFindJpaPO;
-import com.gtcgroup.justify.jpa.po.JstNamedQueryJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryNamedJpaPO;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
@@ -73,11 +73,11 @@ public class JstLifeCycleRmTest {
     @Test
     public void test1LifeCycle_querySingle() {
 
-        NoteDE note = JstNamedQueryJpaRM
-                .querySingle(JstNamedQueryJpaPO.withQuery().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        NoteDE note = JstQueryNamedJpaRM
+                .querySingle(JstQueryNamedJpaPO.withPersistenceUnitName().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                         .withQueryName(ConstantsTestJPA.QUERY_NOTE_SINGLE_ONE));
 
-        note = JstFindJpaRM.findSingle(JstFindJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        note = JstQueryFindSingleJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                 .withEntityClass(NoteDE.class).withEntityIdentity(note.getUuid()));
 
         AssertionsJPA.assertExistsInSharedCache(ConstantsTestJPA.JUSTIFY_PU, note);
@@ -100,9 +100,9 @@ public class JstLifeCycleRmTest {
     @Test
     public void test2LifeCycle_findAll_suppressDatabaseTrip() {
 
-        final List<NoteDE> noteList = JstFindAllJpaRM
+        final List<NoteDE> noteList = JstQueryFindAllJpaRM
                 .findReadOnlyList(JstFindAllJpaPO.withFindAll().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-                        .withEntityClass(NoteDE.class).withSuppressForceDatabaseTrip(true)); // Note:
+                        .withEntityClass(NoteDE.class).withForceDatabaseTripWhenNoCacheCoordination(true)); // Note:
                                                                                              // TRUE
 
         AssertionsJPA.assertExistsInSharedCache(ConstantsTestJPA.JUSTIFY_PU, noteList.toArray());
@@ -120,15 +120,15 @@ public class JstLifeCycleRmTest {
         // External update.
         updateWithJDBC();
 
-        note = JstFindJpaRM.findSingle(JstFindJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        note = JstQueryFindSingleJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                 .withEntityClass(NoteDE.class).withEntityIdentity(ConstantsTestJPA.NOTE_UUID_ONE)
-                .withSuppressForceDatabaseTrip(true)); // Note: TRUE
+                .withForceDatabaseTripWhenNoCacheCoordination(true)); // Note: TRUE
 
         Assertions.assertThat(note.getText()).isEqualTo(ConstantsTestJPA.NOTE_TEXT_ONE);
 
-        note = JstFindJpaRM.findSingle(JstFindJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        note = JstQueryFindSingleJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                 .withEntityClass(NoteDE.class).withEntityIdentity(ConstantsTestJPA.NOTE_UUID_ONE)
-                .withSuppressForceDatabaseTrip(false)); // Note: FALSE
+                .withForceDatabaseTripWhenNoCacheCoordination(false)); // Note: FALSE
 
         Assertions.assertThat(note.getText()).isEqualTo(this.UPDATED_TEXT);
 

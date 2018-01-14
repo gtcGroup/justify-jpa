@@ -69,10 +69,8 @@ public enum JstEntityManagerFactoryCacheHelper {
     }
 
     /**
-     * This method returns the entity manager factory key for use in subsequent
-     * retrieval invocations.
-     *
-     * @return {@link Optional} Persistence key used to cache
+     * @return {@link Optional} persistence key used to cache
+     *         {@link EntityManagerFactory}.
      */
     public static Optional<String> createEntityManagerFactory(final String persistenceUnitName,
             final Map<String, Object> persistencePropertyMapOrNull) {
@@ -85,7 +83,7 @@ public enum JstEntityManagerFactoryCacheHelper {
             final String persistenceKey = PersistenceKeyCacheHelper.formatPersistenceKey(persistenceUnitName,
                     jdbcUrlOrDatasource.get());
 
-            createEntityManagerFactory(persistenceUnitName, persistencePropertyMapOrNull, persistenceKey);
+            return createEntityManagerFactory(persistenceUnitName, persistencePropertyMapOrNull, persistenceKey);
         }
         return Optional.empty();
     }
@@ -126,12 +124,18 @@ public enum JstEntityManagerFactoryCacheHelper {
     /**
      * @return {@link EntityManager}
      */
-    public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName,
+    public static Optional<EntityManager> createEntityManagerToBeClosed(final String persistenceUnitName,
             final Map<String, Object> persistencePropertyMapOrNull) {
 
-        final String persistenceKey = createEntityManagerFactory(persistenceUnitName, persistencePropertyMapOrNull);
+        final Optional<String> persistenceKey = createEntityManagerFactory(persistenceUnitName,
+                persistencePropertyMapOrNull);
 
-        return JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.get(persistenceKey).createEntityManager();
+        if (persistenceKey.isPresent()) {
+            return Optional.of(JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.get(persistenceKey.get())
+                    .createEntityManager());
+        }
+
+        return Optional.empty();
 
     }
 

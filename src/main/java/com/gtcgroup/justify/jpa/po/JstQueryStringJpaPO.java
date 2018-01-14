@@ -43,16 +43,16 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
+public class JstQueryStringJpaPO extends BaseQueryJpaPO {
 
     /**
      * This method initializes the class.
      *
-     * @return {@link JstQueryLanguageJpaPO}
+     * @return {@link JstQueryStringJpaPO}
      */
-    public static JstQueryLanguageJpaPO withQuery(final boolean suppressExceptionForNull) {
+    public static JstQueryStringJpaPO withQuery(final boolean suppressExceptionForNull) {
 
-        return new JstQueryLanguageJpaPO(suppressExceptionForNull);
+        return new JstQueryStringJpaPO(suppressExceptionForNull);
     }
 
     protected String queryLanguageString;
@@ -62,7 +62,7 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
     /**
      * Constructor
      */
-    protected JstQueryLanguageJpaPO(final boolean suppressExceptionForNull) {
+    protected JstQueryStringJpaPO(final boolean suppressExceptionForNull) {
 
         super(suppressExceptionForNull);
         return;
@@ -144,36 +144,36 @@ public class JstQueryLanguageJpaPO extends BaseQueryJpaPO {
     }
 
     /**
-     * @return {@link JstQueryLanguageJpaPO}
+     * @return {@link JstQueryStringJpaPO}
      */
-    public <ENTITY> JstQueryLanguageJpaPO withEntityClass(final Class<ENTITY> entityClass) {
+    public <ENTITY> JstQueryStringJpaPO withEntityClass(final Class<ENTITY> entityClass) {
 
         this.entityClass = entityClass;
         return this;
     }
 
     /**
-     * @return {@link JstQueryLanguageJpaPO}
+     * @return {@link JstQueryStringJpaPO}
      */
     @Override
-    public JstQueryLanguageJpaPO withEntityManager(final EntityManager entityManager) {
+    public JstQueryStringJpaPO withEntityManager(final EntityManager entityManager) {
 
-        return (JstQueryLanguageJpaPO) super.withEntityManager(entityManager);
+        return (JstQueryStringJpaPO) super.withEntityManager(entityManager);
     }
 
     /**
-     * @return {@link JstQueryLanguageJpaPO}
+     * @return {@link JstQueryStringJpaPO}
      */
     @Override
-    public JstQueryLanguageJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    public JstQueryStringJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-        return (JstQueryLanguageJpaPO) super.withPersistenceUnitName(persistenceUnitName);
+        return (JstQueryStringJpaPO) super.withPersistenceUnitName(persistenceUnitName);
     }
 
     /**
-     * @return {@link JstQueryLanguageJpaPO}
+     * @return {@link JstQueryStringJpaPO}
      */
-    public JstQueryLanguageJpaPO withQueryLanguageString(final String queryLanguageString) {
+    public JstQueryStringJpaPO withQueryLanguageString(final String queryLanguageString) {
 
         this.queryLanguageString = queryLanguageString;
         return this;
