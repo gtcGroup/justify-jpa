@@ -162,7 +162,7 @@ public enum JstTransactionUtilHelper {
 
         } finally {
 
-            transactionPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+            transactionPO.closeEncapsulatedEntityManager();
         }
         return Optional.empty();
     }

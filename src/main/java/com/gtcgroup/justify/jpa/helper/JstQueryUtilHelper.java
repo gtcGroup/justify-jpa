@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -39,7 +40,7 @@ import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
-import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryCountJpaPO;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -55,27 +56,32 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  */
 public enum JstQueryUtilHelper {
 
-    @SuppressWarnings("javadoc")
     INSTANCE;
 
     /**
      * This method returns the number of records in the table or view.
      *
-     * @return long
+     * @return {@link Optional}
      */
-    public static long count(final JstCountAllJpaPO queryPO) {
+    public static Optional<Long> count(final JstQueryCountJpaPO queryPO) {
 
-        final CriteriaBuilder criteriaBuilder = queryPO.getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        final Optional<EntityManager> entityManager = queryPO.getEntityManager();
 
-        criteriaQuery.select(criteriaBuilder.count(criteriaQuery.from(queryPO.getResultClass())));
+        try {
+            if (entityManager.isPresent()) {
+                final CriteriaBuilder criteriaBuilder = entityManager.get().getCriteriaBuilder();
+                final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 
-        final Query query = queryPO.getEntityManager().createQuery(criteriaQuery);
+                criteriaQuery.select(criteriaBuilder.count(criteriaQuery.from(queryPO.getResultClass())));
 
-        final Long countLong = (Long) query.getSingleResult();
-        final long count = countLong.longValue();
-
-        return count;
+                final Query query = entityManager.get().createQuery(criteriaQuery);
+                final Long count = (Long) query.getSingleResult();
+                return Optional.of(count);
+            }
+        } catch (@SuppressWarnings("unused") final Exception e) {
+            // Continue.
+        }
+        return Optional.empty();
     }
 
     private static Query decorateQuery(final BaseQueryJpaPO queryPO) {
@@ -96,7 +102,7 @@ public enum JstQueryUtilHelper {
             query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
         }
 
-        if (!queryPO.isSuppressReadOnly()) {
+        if (!queryPO.isReadOnly()) {
 
             query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
         }
@@ -124,7 +130,7 @@ public enum JstQueryUtilHelper {
         } catch (@SuppressWarnings("unused") final Exception e) {
             return Optional.empty();
         } finally {
-            queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+            queryPO.closeEncapsulatedEntityManager();
         }
     }
 
@@ -140,7 +146,7 @@ public enum JstQueryUtilHelper {
         } catch (@SuppressWarnings("unused") final Exception e) {
             return Optional.empty();
         } finally {
-            queryPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+            queryPO.closeEncapsulatedEntityManager();
         }
     }
 }

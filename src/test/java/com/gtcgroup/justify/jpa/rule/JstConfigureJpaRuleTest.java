@@ -34,12 +34,12 @@ import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.rulechain.JstRuleChain;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteAdditionalDataPopulator;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
-import com.gtcgroup.justify.jpa.rm.JstQueryFindSingleJpaRM;
+import com.gtcgroup.justify.jpa.rm.JstQueryFindJpaRM;
 
 /**
  * Test Class
@@ -74,17 +74,17 @@ public class JstConfigureJpaRuleTest {
 
     @Rule
     public JstRuleChain ruleChain = JstRuleChain.outerRule(false)
-        .around(JstConfigureJpaExtension
+        .around(JstConfigureTestJpaExtension
             .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU, JstConfigureJpaRuleTest.PERSISTENCE_PROPERTY_ADDITIONAL_MAP)
             .withDataPopulators(
                 NoteDataPopulator.class, NoteDataPopulator.class, NoteAdditionalDataPopulator.class))
-        .around(JstConfigureJpaExtension
+        .around(JstConfigureTestJpaExtension
             .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU, JstConfigureJpaRuleTest.PERSISTENCE_PROPERTY_MAP2)
             .withDataPopulators(
                 NoteDataPopulator.class, NoteDataPopulator.class, NoteAdditionalDataPopulator.class))
-        .around(JstConfigureJpaExtension.withPersistenceUnit(ConstantsTestJPA.JUSTIFY_SECOND_PU)
+        .around(JstConfigureTestJpaExtension.withPersistenceUnit(ConstantsTestJPA.JUSTIFY_SECOND_PU)
             .withDataPopulators(NoteDataPopulator.class, NoteDataPopulator.class, NoteAdditionalDataPopulator.class))
-        .around(JstConfigureJpaExtension
+        .around(JstConfigureTestJpaExtension
             .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU)
             .withDataPopulators(
                 NoteDataPopulator.class, NoteDataPopulator.class, NoteAdditionalDataPopulator.class));
@@ -92,7 +92,7 @@ public class JstConfigureJpaRuleTest {
     @Test
     public void testForPopulator_additional() {
 
-        JstQueryFindSingleJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(false)
+        JstQueryFindJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(false)
             .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
             .withEntityClass(NoteDE.class)
             .withEntityIdentity(NoteAdditionalDataPopulator.ADDITIONAL_UUID)
@@ -102,7 +102,7 @@ public class JstConfigureJpaRuleTest {
     @Test
     public void testForPopulator_note_readonly() {
 
-        JstQueryFindSingleJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(false)
+        JstQueryFindJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(false)
             .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
             .withEntityClass(NoteDE.class)
             .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));

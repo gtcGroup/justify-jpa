@@ -23,19 +23,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.helper;
+package com.gtcgroup.justify.jpa.de.dependency;
 
-import javax.persistence.EntityManager;
-
-import org.junit.Rule;
-import org.junit.jupiter.api.Test;
-
-import com.gtcgroup.justify.core.rulechain.JstRuleChain;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
-import com.gtcgroup.justify.jpa.de.dependency.BookingDE;
-import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
-import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.core.base.JstBaseDE;
 
 /**
  * Test Class
@@ -48,30 +38,8 @@ import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings({ "javadoc", "static-method" })
-public class JstTransactionUtilHelperTest {
+public class NotAnEntityDE extends JstBaseDE {
 
+	private static final long serialVersionUID = 1L;
 
-	public JstRuleChain ruleChain = JstRuleChain.outerRule()
-			.around(JstConfigureTestJpaExtension.withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU));
-
-	private BookingDE populateBooking() {
-
-		final NoteDE noteDE = new NoteDE();
-
-		final BookingDE bookingDE = new BookingDE();
-		bookingDE.setNote(noteDE);
-		bookingDE.setCustomer(null);
-
-		return bookingDE;
-	}
-
-	@Test(expected = JustifyException.class)
-	public void testFindAndDeleteRelatedEntity() {
-
-		final EntityManager entityManager = JstEntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
-
-		JstTransactionUtilHelper.findAndDeleteRelatedEntity(entityManager, populateBooking(), "getCustomer");
-	}
 }

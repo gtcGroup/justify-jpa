@@ -39,11 +39,11 @@ import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestUserIdExtension;
 import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
-import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryCountJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryFindAllJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
@@ -61,17 +61,17 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 public class JstCountAllRmTest {
 
     @Rule
-    public JstRuleChainSI ruleChain = JstRuleChain.outerRule(false).around(JstConfigureJpaExtension
+    public JstRuleChainSI ruleChain = JstRuleChain.outerRule(false).around(JstConfigureTestJpaExtension
             .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU).withDataPopulators(NoteDataPopulator.class))
             .around(JstConfigureTestUserIdExtension.withUserId());
 
     @Test
     public void testCount_happyPath1() {
 
-        final long count = JstCountAllJpaRM.count(JstCountAllJpaPO.withQuery(false).withResultClass(NoteDE.class)
+        final long count = JstCountAllJpaRM.count(JstQueryCountJpaPO.withQuery(false).withResultClass(NoteDE.class)
                 .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
-        final List<NoteDE> noteList = JstQueryFindAllJpaRM.findReadOnlyList(JstFindAllJpaPO.withFindAll(false)
+        final List<NoteDE> noteList = JstQueryFindAllJpaRM.findAll(JstQueryFindAllJpaPO.withFindAll(false)
                 .withEntityClass(NoteDE.class).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         Assertions.assertThat(count).isEqualTo(noteList.size());
@@ -89,9 +89,9 @@ public class JstCountAllRmTest {
         try {
 
             count = JstCountAllJpaRM.count(
-                    JstCountAllJpaPO.withQuery(false).withResultClass(NoteDE.class).withEntityManager(entityManager));
+                    JstQueryCountJpaPO.withQuery(false).withResultClass(NoteDE.class).withEntityManager(entityManager));
 
-            noteList = JstQueryFindAllJpaRM.findReadOnlyList(JstFindAllJpaPO.withFindAll(false).withEntityClass(NoteDE.class)
+            noteList = JstQueryFindAllJpaRM.findAll(JstQueryFindAllJpaPO.withFindAll(false).withEntityClass(NoteDE.class)
                     .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         } finally {
@@ -105,7 +105,7 @@ public class JstCountAllRmTest {
     public void testCount_missingResultClass() {
 
         final long count = JstCountAllJpaRM
-                .count(JstCountAllJpaPO.withQuery(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
+                .count(JstQueryCountJpaPO.withQuery(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         Assertions.assertThat(count).isGreaterThan(0);
     }
@@ -113,7 +113,7 @@ public class JstCountAllRmTest {
     @Test(expected = JustifyException.class)
     public void testCount_notAnEntity_exception() {
 
-        JstCountAllJpaRM.count(JstCountAllJpaPO.withQuery(false).withResultClass(NotAnEntityDE.class)
+        JstCountAllJpaRM.count(JstQueryCountJpaPO.withQuery(false).withResultClass(NotAnEntityDE.class)
                 .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
     }
 }

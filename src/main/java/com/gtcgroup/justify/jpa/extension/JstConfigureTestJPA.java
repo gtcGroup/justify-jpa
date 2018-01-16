@@ -24,44 +24,26 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gtcgroup.justify.jpa.rm;
+package com.gtcgroup.justify.jpa.extension;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
-import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstCountAllJpaPO;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * This Resource Manager class supports counting all entities.
- *
- * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
- * <a href="http://gtcGroup.com">gtcGroup.com </a>.
- * </p>
- *
- * @author Marvin Toll
- * @since v3.0
- */
-public enum JstCountAllJpaRM {
+import org.junit.jupiter.api.extension.ExtendWith;
 
-	@SuppressWarnings("javadoc")
-	INTERNAL;
+import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 
-	/**
-	 * This method returns the number of records in the table or view. It may be
-	 * used in support of query processing.
-	 *
-	 * @return long
-	 */
-	public static long count(final JstCountAllJpaPO queryPO) {
+@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@ExtendWith(JstConfigureTestJpaExtension.class)
+public @interface JstConfigureTestJPA {
 
-		long count = 0;
+    // TODO:
+    // public Map<String, Object> persistencePropertyMap();
 
-		try {
-			count = JstQueryUtilHelper.count(queryPO);
-		} catch (final Exception e) {
+    public Class<? extends JstBaseDataPopulator>[] dataPopulators();
 
-			throw new JustifyException(e);
-		}
-		return count;
-	}
+    public String persistenceUnitName() default "";
 }

@@ -159,7 +159,7 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
      */
     public JstQueryNamedStoredProcedureJpaPO withSuppressReadOnly(final boolean suppress) {
 
-        this.suppressReadOnly = suppress;
+        this.readOnly = suppress;
         return this;
     }
 }

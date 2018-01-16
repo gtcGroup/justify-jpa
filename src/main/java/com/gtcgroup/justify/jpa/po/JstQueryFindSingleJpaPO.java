@@ -29,7 +29,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
+import com.gtcgroup.justify.jpa.po.internal.BaseEntityManagerPropertiesPO;
 
 /**
  * This Parameter Object class supports find operations.
@@ -42,7 +42,7 @@ import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstQueryFindSingleJpaPO extends BaseJpaPO {
+public class JstQueryFindSingleJpaPO extends BaseEntityManagerPropertiesPO {
 
     /**
      * This method initializes the class.
@@ -114,19 +114,29 @@ public class JstQueryFindSingleJpaPO extends BaseJpaPO {
     /**
      * @return {@link JstQueryFindSingleJpaPO}
      */
-    @Override
-    public JstQueryFindSingleJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppress) {
+    public JstQueryFindSingleJpaPO withEntityManagerProperties(final Map<String, Object> entityManagerProperties) {
 
-        return (JstQueryFindSingleJpaPO) super.withForceDatabaseTripWhenNoCacheCoordination(suppress);
+        super.setQueryHints(entityManagerProperties);
+        return this;
     }
 
     /**
      * @return {@link JstQueryFindSingleJpaPO}
      */
-    @Override
-    public JstQueryFindSingleJpaPO withPersistencePropertyMap(final Map<String, Object> persistencePropertyMap) {
+    public JstQueryFindSingleJpaPO withFactoryProperties(final Map<String, Object> factoryProperties) {
 
-        return (JstQueryFindSingleJpaPO) super.withPersistencePropertyMap(persistencePropertyMap);
+        super.setFactoryProperties(factoryProperties);
+        return this;
+    }
+
+    /**
+     * @return {@link JstQueryFindSingleJpaPO}
+     */
+    public JstQueryFindSingleJpaPO withForceDatabaseTripWhenNoCacheCoordination(
+            final boolean forceDatabaseTripWhenNoCacheCoordination) {
+
+        super.setForceDatabaseTripWhenNoCacheCoordinationAvailable(forceDatabaseTripWhenNoCacheCoordination);
+        return this;
     }
 
     /**

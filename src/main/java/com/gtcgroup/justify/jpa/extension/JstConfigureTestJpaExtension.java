@@ -28,23 +28,26 @@ package com.gtcgroup.justify.jpa.extension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
+import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
 import com.gtcgroup.justify.core.test.base.JstBaseExtension;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import com.gtcgroup.justify.core.test.helper.internal.LogTestConsoleUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
 
 /**
- * This {@link Rule} class initializes persistence.
+ * This {@link Extension} class initializes JPA.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -52,11 +55,11 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
  * </p>
  *
  * @author Marvin Toll
- * @since v3.0
+ * @since v8.5
  */
-public class JstConfigureJpaExtension extends JstBaseExtension implements BeforeTestExecutionCallback {
+public class JstConfigureTestJpaExtension extends JstBaseExtension implements BeforeTestExecutionCallback {
 
-    public final static String KEY_DELIMITER = "_~_";
+    public static final String KEY_DELIMITER = "_~_";
 
     private static List<String> DATA_POPULATOR_ALREADY_PROCESSED_LIST = new ArrayList<>();
 
@@ -66,14 +69,16 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
 
     protected static String persistenceUnitName;
 
-    protected static void initializePersistenceUnitName(final ExtensionContext context) {
+    protected static void initializePersistenceUnitName(final ExtensionContext extensionContext) {
 
-        final JstConfigureJPA configureJPA = retrieveAnnotation(context, JstConfigureJPA.class);
+        @SuppressWarnings("unchecked")
+        final Optional<JstConfigureTestJPA> configureJPA = (Optional<JstConfigureTestJPA>) LogTestConsoleUtilHelper
+                .retrieveAnnotationRequired(extensionContext, JstConfigureTestJPA.class);
 
-        if (null != configureJPA) {
+        if (configureJPA.isPresent()) {
 
-            JstConfigureJpaExtension.persistenceUnitName = configureJPA.persistenceUnitName();
-            JstConfigureJpaExtension.dataPopulators = configureJPA.dataPopulators();
+            JstConfigureTestJpaExtension.persistenceUnitName = configureJPA.get().persistenceUnitName();
+            JstConfigureTestJpaExtension.dataPopulators = configureJPA.get().dataPopulators();
         }
     }
 
@@ -81,7 +86,7 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
 
         Class<?> dataPopulator;
 
-        final String[] stringArray = listKey.split(JstConfigureJpaExtension.KEY_DELIMITER);
+        final String[] stringArray = listKey.split(JstConfigureTestJpaExtension.KEY_DELIMITER);
 
         try {
             dataPopulator = Class.forName(stringArray[1]);
@@ -94,14 +99,14 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
 
     protected static String retrievePersistenceKey(final String listKey) {
 
-        final String[] stringArray = listKey.split(JstConfigureJpaExtension.KEY_DELIMITER);
+        final String[] stringArray = listKey.split(JstConfigureTestJpaExtension.KEY_DELIMITER);
 
-        return stringArray[0] + JstConfigureJpaExtension.KEY_DELIMITER + stringArray[1];
+        return stringArray[0] + JstConfigureTestJpaExtension.KEY_DELIMITER + stringArray[1];
     }
 
     protected static String retrievePersistenceUnitName(final String listKey) {
 
-        final String[] stringArray = listKey.split(JstConfigureJpaExtension.KEY_DELIMITER);
+        final String[] stringArray = listKey.split(JstConfigureTestJpaExtension.KEY_DELIMITER);
 
         return stringArray[0];
     }
@@ -120,18 +125,18 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
         initializePersistenceUnitName(context);
         determineToBeProcessed();
 
-        if (0 != JstConfigureJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.size()) {
+        if (0 != JstConfigureTestJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.size()) {
 
-            for (final String listKey : JstConfigureJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST) {
+            for (final String listKey : JstConfigureTestJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST) {
 
                 final Class<?> dataPopulator = retrieveClassname(listKey);
 
                 processDataPopulator(dataPopulator, listKey);
 
-                JstConfigureJpaExtension.DATA_POPULATOR_ALREADY_PROCESSED_LIST.add(listKey);
+                JstConfigureTestJpaExtension.DATA_POPULATOR_ALREADY_PROCESSED_LIST.add(listKey);
             }
         }
-        JstConfigureJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.clear();
+        JstConfigureTestJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.clear();
 
     }
 
@@ -139,26 +144,26 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
 
         this.dataPopulatorSubmitted = true;
 
-        for (final Class<?> dataPopulator : JstConfigureJpaExtension.dataPopulators) {
+        for (final Class<?> dataPopulator : JstConfigureTestJpaExtension.dataPopulators) {
 
             final String listKey = formatListKey(dataPopulator);
 
-            if (!JstConfigureJpaExtension.DATA_POPULATOR_ALREADY_PROCESSED_LIST.contains(listKey)
-                    && !JstConfigureJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.contains(listKey)) {
+            if (!JstConfigureTestJpaExtension.DATA_POPULATOR_ALREADY_PROCESSED_LIST.contains(listKey)
+                    && !JstConfigureTestJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.contains(listKey)) {
 
                 if (!JstBaseDataPopulator.class.isAssignableFrom(dataPopulator)) {
 
                     throw new JustifyException("\nThe class [" + dataPopulator.getSimpleName()
                             + "] does not appear to extend a base class for populating persistence test data.\n");
                 }
-                JstConfigureJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.add(listKey);
+                JstConfigureTestJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.add(listKey);
             }
         }
     }
 
     protected final String formatListKey(final Class<?> dataPopulator) {
 
-        return this.persistenceKey + JstConfigureJpaExtension.KEY_DELIMITER + dataPopulator.getName();
+        return this.persistenceKey + JstConfigureTestJpaExtension.KEY_DELIMITER + dataPopulator.getName();
     }
 
     protected void processDataPopulator(final Class<?> populatorClass, final String listKey) {
@@ -171,14 +176,14 @@ public class JstConfigureJpaExtension extends JstBaseExtension implements Before
             dataPopulator = (JstBaseDataPopulator) JstReflectionUtilHelper
                     .instantiateInstanceWithPublicConstructorNoArgument(populatorClass);
         } catch (final Exception e) {
-            JstConfigureJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.remove(formatListKey(populatorClass));
+            JstConfigureTestJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.remove(formatListKey(populatorClass));
             throw (JustifyException) e;
         }
 
         final List<Object> createList = dataPopulator.populateCreateListTM(retrievePersistenceUnitName(listKey));
 
         entityManager = JstEntityManagerFactoryCacheHelper
-                .createEntityManagerToBeClosed(JstConfigureJpaExtension.persistenceUnitName);
+                .createEntityManagerToBeClosed(JstConfigureTestJpaExtension.persistenceUnitName);
         // .createEntityManagerToBeClosedWithKey(retrievePersistenceKey(listKey));
 
         JstTransactionJpaRM.transactMultipleEntities(JstTransactionJpaPO.withException()

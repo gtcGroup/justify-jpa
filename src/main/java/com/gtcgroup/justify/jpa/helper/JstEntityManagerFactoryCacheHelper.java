@@ -115,7 +115,7 @@ public enum JstEntityManagerFactoryCacheHelper {
     /**
      * @return {@link EntityManager}
      */
-    public static EntityManager createEntityManagerToBeClosed(final String persistenceUnitName) {
+    public static Optional<EntityManager> createEntityManagerToBeClosed(final String persistenceUnitName) {
 
         return createEntityManagerToBeClosed(persistenceUnitName, null);
 
@@ -127,6 +127,7 @@ public enum JstEntityManagerFactoryCacheHelper {
     public static Optional<EntityManager> createEntityManagerToBeClosed(final String persistenceUnitName,
             final Map<String, Object> persistencePropertyMapOrNull) {
 
+        // tODO: Try/Catch.
         final Optional<String> persistenceKey = createEntityManagerFactory(persistenceUnitName,
                 persistencePropertyMapOrNull);
 

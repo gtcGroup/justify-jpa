@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.rulechain.JstRuleChain;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
-import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 
 /**
@@ -51,7 +51,7 @@ public class JstEntityManagerFactoryCacheHelperTest {
 
 
 	public JstRuleChain ruleChain = JstRuleChain.outerRule()
-			.around(JstConfigureJpaExtension.withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU));
+			.around(JstConfigureTestJpaExtension.withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU));
 
 	@Test
 	public void testClearAllInstancesFromPersistenceContext() {

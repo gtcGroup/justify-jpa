@@ -26,13 +26,16 @@
 
 package com.gtcgroup.justify.jpa.rm;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
+import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
+import com.gtcgroup.justify.jpa.po.JstQueryFindAllJpaPO;
 import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
 
 /**
- * This Resource Manager class supports find operations.
+ * This Resource Manager class supports "find" operations.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -42,44 +45,32 @@ import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstQueryFindSingleJpaRM {
+public enum JstQueryFindJpaRM {
 
-    @SuppressWarnings("javadoc")
     INTERNAL;
 
-    @SuppressWarnings("unchecked")
-    protected static <ENTITY> Optional<ENTITY> findContainingIdentity(final JstQueryFindSingleJpaPO findPO) {
+    /**
+     * @return {@link Optional}
+     */
+    public static <ENTITY> Optional<List<ENTITY>> findAll(final JstQueryFindAllJpaPO findAllPO) {
 
-        ENTITY entity;
-        if (findPO.isPopulatedEntityContainingIdentity()) {
-
-            entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
-                    findPO.getPopulatedEntityContainingIdentity(), findPO.isForceDatabaseTripWhenNoCacheCoordination());
-
-        } else {
-
-            entity = (ENTITY) JstFindUtilHelper.findForceDatabaseTrip(findPO.getEntityManager(),
-                    findPO.getEntityClass(), findPO.getEntityIdentity(),
-                    findPO.isForceDatabaseTripWhenNoCacheCoordination());
-        }
-        return Optional.ofNullable(entity);
+        return JstQueryUtilHelper.queryResultList(findAllPO);
     }
 
     /**
-     * @return {@link Object}
+     * @return {@link Optional}
      */
-    @SuppressWarnings("unchecked")
     public static <ENTITY> Optional<ENTITY> findSingle(final JstQueryFindSingleJpaPO findPO) {
 
-        try {
-            final Optional<ENTITY> entity = findContainingIdentity(findPO);
-            findPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
+        return JstFindUtilHelper.findSingle(findPO);
+    }
 
-            return entity;
+    /**
+     * @return {@link Optional}
+     */
+    public static <ENTITY> Optional<ENTITY> retrieveIdentity(final String persistenceUnitName,
+            final Object entityWithPrimaryKey) {
 
-        } finally {
-
-            findPO.closeEntityManagerIfCreatedWithPersistenceUnitName();
-        }
+        return JstFindUtilHelper.retrieveIdentity(persistenceUnitName, entityWithPrimaryKey);
     }
 }

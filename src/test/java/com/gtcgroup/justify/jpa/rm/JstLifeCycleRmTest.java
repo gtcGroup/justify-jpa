@@ -41,9 +41,9 @@ import com.gtcgroup.justify.core.rulechain.JstRuleChain;
 import com.gtcgroup.justify.core.si.JstRuleChainSI;
 import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryFindAllJpaPO;
 import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
 import com.gtcgroup.justify.jpa.po.JstQueryNamedJpaPO;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
@@ -67,7 +67,7 @@ public class JstLifeCycleRmTest {
     String UPDATED_TEXT = "Updated Text";
 
     @Rule
-    public JstRuleChainSI ruleChain = JstRuleChain.outerRule(false).around(JstConfigureJpaExtension
+    public JstRuleChainSI ruleChain = JstRuleChain.outerRule(false).around(JstConfigureTestJpaExtension
             .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU).withDataPopulators(NoteDataPopulator.class));
 
     @Test
@@ -77,7 +77,7 @@ public class JstLifeCycleRmTest {
                 .querySingle(JstQueryNamedJpaPO.withPersistenceUnitName().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                         .withQueryName(ConstantsTestJPA.QUERY_NOTE_SINGLE_ONE));
 
-        note = JstQueryFindSingleJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        note = JstQueryFindJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                 .withEntityClass(NoteDE.class).withEntityIdentity(note.getUuid()));
 
         AssertionsJPA.assertExistsInSharedCache(ConstantsTestJPA.JUSTIFY_PU, note);
@@ -101,7 +101,7 @@ public class JstLifeCycleRmTest {
     public void test2LifeCycle_findAll_suppressDatabaseTrip() {
 
         final List<NoteDE> noteList = JstQueryFindAllJpaRM
-                .findReadOnlyList(JstFindAllJpaPO.withFindAll().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+                .findAll(JstQueryFindAllJpaPO.withFindAll().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                         .withEntityClass(NoteDE.class).withForceDatabaseTripWhenNoCacheCoordination(true)); // Note:
                                                                                              // TRUE
 
@@ -120,13 +120,13 @@ public class JstLifeCycleRmTest {
         // External update.
         updateWithJDBC();
 
-        note = JstQueryFindSingleJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        note = JstQueryFindJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                 .withEntityClass(NoteDE.class).withEntityIdentity(ConstantsTestJPA.NOTE_UUID_ONE)
                 .withForceDatabaseTripWhenNoCacheCoordination(true)); // Note: TRUE
 
         Assertions.assertThat(note.getText()).isEqualTo(ConstantsTestJPA.NOTE_TEXT_ONE);
 
-        note = JstQueryFindSingleJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+        note = JstQueryFindJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind().withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                 .withEntityClass(NoteDE.class).withEntityIdentity(ConstantsTestJPA.NOTE_UUID_ONE)
                 .withForceDatabaseTripWhenNoCacheCoordination(false)); // Note: FALSE
 

@@ -36,7 +36,7 @@ import com.gtcgroup.justify.core.rulechain.JstRuleChain;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
@@ -56,7 +56,7 @@ public class JstEntityManagerUtilHelperTest {
     private EntityManager entityManager;
 
     @Rule
-    public JstRuleChain ruleChain = JstRuleChain.outerRule(true).around(JstConfigureJpaExtension
+    public JstRuleChain ruleChain = JstRuleChain.outerRule(true).around(JstConfigureTestJpaExtension
             .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU).withDataPopulators(NoteDataPopulator.class));
 
     @Before

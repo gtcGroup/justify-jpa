@@ -36,7 +36,7 @@ import com.gtcgroup.justify.core.si.JstRuleChainSI;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
@@ -59,7 +59,7 @@ public class JstFindJpaRmTest {
     private static final String FAKE_IDENTITY = "fakeIdentity";
 
     @Rule
-    public JstRuleChainSI ruleChain = JstRuleChain.outerRule(false).around(JstConfigureJpaExtension
+    public JstRuleChainSI ruleChain = JstRuleChain.outerRule(false).around(JstConfigureTestJpaExtension
             .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU).withDataPopulators(NoteDataPopulator.class));
 
     private NoteDE createFindJpaPO(final boolean suppressExceptionForNull, final Class<?> clazz,
@@ -69,7 +69,7 @@ public class JstFindJpaRmTest {
                 .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withEntityClass(clazz)
                 .withEntityIdentity(entityIdentity);
 
-        final NoteDE note = JstQueryFindSingleJpaRM.findSingle(findJpaPO);
+        final NoteDE note = JstQueryFindJpaRM.findSingle(findJpaPO);
         return note;
     }
 
@@ -111,7 +111,7 @@ public class JstFindJpaRmTest {
             entityManager = JstEntityManagerFactoryCacheHelper
                     .createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
 
-            note = JstQueryFindSingleJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
+            note = JstQueryFindJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
                     .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO).withEntityManager(entityManager));
         } finally {
             JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
@@ -123,7 +123,7 @@ public class JstFindJpaRmTest {
     @Test
     public void testWithModifiablePopulatedEntityContainingIdentity() {
 
-        final NoteDE note = JstQueryFindSingleJpaRM
+        final NoteDE note = JstQueryFindJpaRM
                 .findSingle(JstQueryFindSingleJpaPO.withFind(true).withPopulatedEntityContainingIdentity(NoteDataPopulator.noteTwo)
                         .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
@@ -133,14 +133,14 @@ public class JstFindJpaRmTest {
     @Test(expected = JustifyException.class)
     public void testWithoutEntityManager() {
 
-        JstQueryFindSingleJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
+        JstQueryFindJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
                 .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));
     }
 
     @Test(expected = JustifyException.class)
     public void testWithoutTargetEntity() {
 
-        final NoteDE note = JstQueryFindSingleJpaRM
+        final NoteDE note = JstQueryFindJpaRM
                 .findSingle(JstQueryFindSingleJpaPO.withFind(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                         .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));
 

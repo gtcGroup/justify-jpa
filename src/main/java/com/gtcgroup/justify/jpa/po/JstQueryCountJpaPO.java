@@ -30,7 +30,8 @@ import javax.persistence.EntityManager;
 import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 
 /**
- * This Parameter Object class supports counting all entities.
+ * This Parameter Object class supports counting all entities from a database
+ * table.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -40,26 +41,26 @@ import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstCountAllJpaPO extends BaseJpaPO {
+public class JstQueryCountJpaPO extends BaseJpaPO {
 
     /**
      * This method initializes the class.
      *
-     * @return {@link JstCountAllJpaPO}
+     * @return {@link JstQueryCountJpaPO}
      */
-    public static JstCountAllJpaPO withQuery(final boolean suppressExceptionForNull) {
+    public static JstQueryCountJpaPO withQuery(final String persistenceUnitName) {
 
-        return new JstCountAllJpaPO(suppressExceptionForNull);
+        return new JstQueryCountJpaPO(persistenceUnitName);
     }
 
-    protected Class<?> resultClass;
+    protected Class<Object> resultClass;
 
     /**
      * Constructor
      */
-    protected JstCountAllJpaPO(final boolean suppressExceptionForNull) {
+    protected JstQueryCountJpaPO(final String persistenceUnitName) {
 
-        super(suppressExceptionForNull);
+        super(persistenceUnitName);
         return;
     }
 
@@ -73,30 +74,21 @@ public class JstCountAllJpaPO extends BaseJpaPO {
     }
 
     /**
-     * @return {@link JstCountAllJpaPO}
+     * @return {@link JstQueryCountJpaPO}
      */
-    @Override
-    public JstCountAllJpaPO withEntityManager(final EntityManager entityManager) {
+    public JstQueryCountJpaPO withEntityManager(final EntityManager entityManager) {
 
-        this.entityManager = entityManager;
+        setEntityManager(entityManager);
         return this;
     }
 
     /**
-     * @return {@link JstCountAllJpaPO}
+     * @return {@link JstQueryCountJpaPO}
      */
-    @Override
-    public JstCountAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    @SuppressWarnings("unchecked")
+    public <ENTITY> JstQueryCountJpaPO withResultClass(final Class<ENTITY> resultClass) {
 
-        return (JstCountAllJpaPO) super.withPersistenceUnitName(persistenceUnitName);
-    }
-
-    /**
-     * @return {@link JstCountAllJpaPO}
-     */
-    public <ENTITY> JstCountAllJpaPO withResultClass(final Class<ENTITY> resultClass) {
-
-        this.resultClass = resultClass;
+        this.resultClass = (Class<Object>) resultClass;
         return this;
     }
 }

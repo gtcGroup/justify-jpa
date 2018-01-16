@@ -35,7 +35,7 @@ import com.gtcgroup.justify.core.test.extension.JstConfigureTestUserId;
 import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
 import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureJPA;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
@@ -52,7 +52,7 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
  */
 @JstConfigureTestLogToConsole
 @JstConfigureTestUserId
-@JstConfigureJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
 public class AssertionsJpaTest {
 
     @Test

@@ -50,9 +50,9 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
      *
      * @return {@link JstQueryStringJpaPO}
      */
-    public static JstQueryStringJpaPO withQuery(final boolean suppressExceptionForNull) {
+    public static JstQueryStringJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-        return new JstQueryStringJpaPO(suppressExceptionForNull);
+        return new JstQueryStringJpaPO(persistenceUnitName);
     }
 
     protected String queryLanguageString;
@@ -62,9 +62,9 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
     /**
      * Constructor
      */
-    protected JstQueryStringJpaPO(final boolean suppressExceptionForNull) {
+    protected JstQueryStringJpaPO(final String persistenceUnitName) {
 
-        super(suppressExceptionForNull);
+        super(persistenceUnitName);
         return;
     }
 
@@ -108,9 +108,8 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
                 } else if (isQueryLanaguageString()) {
                     this.query = createQueryLanguageQuery(getQueryLanguageString());
                 } else {
-                    throw new JustifyException(
-                            "Verify that a coherent set of parameters were defined in the PO ["
-                                    + this.getClass().getName() + "].");
+                    throw new JustifyException("Verify that a coherent set of parameters were defined in the PO ["
+                            + this.getClass().getName() + "].");
                 }
             } catch (final Exception e) {
                 throw new JustifyException(e);
@@ -159,15 +158,6 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
     public JstQueryStringJpaPO withEntityManager(final EntityManager entityManager) {
 
         return (JstQueryStringJpaPO) super.withEntityManager(entityManager);
-    }
-
-    /**
-     * @return {@link JstQueryStringJpaPO}
-     */
-    @Override
-    public JstQueryStringJpaPO withPersistenceUnitName(final String persistenceUnitName) {
-
-        return (JstQueryStringJpaPO) super.withPersistenceUnitName(persistenceUnitName);
     }
 
     /**

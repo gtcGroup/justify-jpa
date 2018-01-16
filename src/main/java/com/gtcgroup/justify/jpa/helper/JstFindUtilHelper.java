@@ -25,19 +25,11 @@
  */
 package com.gtcgroup.justify.jpa.helper;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
-import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 
-import org.eclipse.persistence.config.CacheUsage;
-import org.eclipse.persistence.config.CascadePolicy;
-import org.eclipse.persistence.config.HintValues;
-import org.eclipse.persistence.config.QueryHints;
-
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
 
 /**
  * This Helper class provides persistence {@link EntityManager} support.
@@ -54,189 +46,51 @@ public enum JstFindUtilHelper {
 
     INSTANCE;
 
-    /** Optimization for read-only. */
-    public static final Map<String, Object> CHECK_CACHE_ONLY = new HashMap<>();
-
-    /**
-     * Optimization for reading from the database. Often used when there are
-     * multiple servers and no cache coordination.
-     */
-    public static final Map<String, Object> FORCE_DATABASE_TRIP = new HashMap<>();
-
-    static {
-
-        JstFindUtilHelper.CHECK_CACHE_ONLY.put(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
-
-        JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
-
-        JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-
-        JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
-
-        JstFindUtilHelper.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH, HintValues.TRUE);
-    }
-
-    /**
-     * This method forces a trip to the database without altering the state of
-     * cache.
-     *
-     * @return boolean
-     */
-    public static <ENTITY> boolean existsInDatabase(final EntityManager entityManager, final Class<ENTITY> entityClass,
-            final Object... entityIdentities) {
-
-        Object result;
-
-        for (final Object entityIdentity : entityIdentities) {
-
-            result = entityManager.find(entityClass, entityIdentity, JstFindUtilHelper.FORCE_DATABASE_TRIP);
-
-            if (null == result) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * This method forces a trip to the database without altering the state of
-     * cache.
-     *
-     * @return boolean
-     */
-    public static boolean existsInDatabases(final EntityManager entityManager,
-            final Object... entititiesContainingIdentity) {
-
-        Object result;
-
-        try {
-
-            for (final Object entityContainingIdentity : entititiesContainingIdentity) {
-
-                if (entityContainingIdentity instanceof List<?>) {
-                    final List<?> entityList = (List<?>) entityContainingIdentity;
-                    if (entityList.isEmpty()) {
-                        return false;
-                    }
-                    return existsInDatabases(entityManager, entityList.toArray());
-                }
-
-                result = entityManager.find(entityContainingIdentity.getClass(),
-                        retrieveIdentity(entityManager, entityContainingIdentity),
-                        JstFindUtilHelper.FORCE_DATABASE_TRIP);
-
-                if (null == result) {
-                    return false;
-                }
-            }
-
-        } catch (@SuppressWarnings("unused") final Exception e) {
-
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * This method determines whether the shared (L2) cache contains the given
-     * entities.
-     *
-     * @return boolean
-     */
-    public static <ENTITY> boolean existsInSharedCache(final EntityManager entityManager,
-            final Class<ENTITY> entityClass, final Object... entityIdentities) {
-
-        boolean result = true;
-
-        try {
-
-            for (final Object entityIdentity : entityIdentities) {
-
-                result = entityManager.getEntityManagerFactory().getCache().contains(entityClass, entityIdentity);
-
-                if (false == result) {
-                    return false;
-                }
-            }
-
-        } catch (final Exception e) {
-
-            throw new JustifyException(e);
-        }
-        return result;
-    }
-
-    /**
-     * This method determines whether the shared (L2) cache contains the given
-     * persisted entities.
-     *
-     * @return boolean
-     */
-    public static boolean existsInSharedCache(final EntityManager entityManager, final Object... populatedEntities) {
-
-        boolean result = true;
-
-        try {
-
-            for (final Object populatedEntity : populatedEntities) {
-
-                result = entityManager.getEntityManagerFactory().getCache().contains(populatedEntity.getClass(),
-                        retrieveIdentity(entityManager, populatedEntity));
-
-                if (false == result) {
-                    return false;
-                }
-            }
-
-        } catch (final Exception e) {
-
-            throw new JustifyException(e);
-        }
-        return result;
-    }
-
-    /**
-     * @return {@link Object} or null
-     */
-    public static <ENTITY> ENTITY findForceDatabaseTrip(final EntityManager entityManager,
-            final Class<ENTITY> entityClass, final Object entityIdentity, final boolean suppressForceDatabaseTrip) {
-
-        try {
-            if (suppressForceDatabaseTrip) {
-                return entityManager.find(entityClass, entityIdentity);
-            }
-            return entityManager.find(entityClass, entityIdentity, JstFindUtilHelper.FORCE_DATABASE_TRIP);
-        } catch (final Exception e) {
-            throw new JustifyException(e);
-        }
-    }
-
     /**
      * @return {@link Object} or null
      */
     @SuppressWarnings("unchecked")
-    public static <ENTITY> ENTITY findForceDatabaseTrip(final EntityManager entityManager, final Object populatedEntity,
-            final boolean suppressForceTripToDatabase) {
+    public static <ENTITY> Optional<ENTITY> findSingle(final JstQueryFindSingleJpaPO findPO) {
+
+        final Optional<EntityManager> entityManager = findPO.getEntityManager();
 
         try {
-            if (suppressForceTripToDatabase) {
-                return (ENTITY) entityManager.find(populatedEntity.getClass(),
-                        retrieveIdentity(entityManager, populatedEntity));
+
+            if (entityManager.isPresent()) {
+
+                return (Optional<ENTITY>) Optional.ofNullable(entityManager.get().find(findPO.getEntityClass(),
+                        findPO.getEntityIdentity(), findPO.getQueryHints()));
             }
-
-            return (ENTITY) entityManager.find(populatedEntity.getClass(),
-                    retrieveIdentity(entityManager, populatedEntity), JstFindUtilHelper.FORCE_DATABASE_TRIP);
-
-        } catch (final Exception e) {
-            throw new JustifyException(e);
+        } catch (@SuppressWarnings("unused") final Exception e) {
+            // Continue.
+        } finally {
+            findPO.closeEncapsulatedEntityManager();
         }
+        return Optional.empty();
     }
 
     /**
-     * @return Object
+     * @return {@link Optional}
      */
-    public static Object retrieveIdentity(final EntityManager entityManager, final Object populatedEntity) {
+    @SuppressWarnings("unchecked")
+    public static <ENTITY> Optional<ENTITY> retrieveIdentity(final String persistenceUnitName,
+            final Object entityWithPrimaryKey) {
 
-        return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(populatedEntity);
+        final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
+                .createEntityManagerToBeClosed(persistenceUnitName);
+
+        try {
+            if (entityManager.isPresent()) {
+                return (Optional<ENTITY>) Optional.ofNullable(entityManager.get().getEntityManagerFactory()
+                        .getPersistenceUnitUtil().getIdentifier(entityWithPrimaryKey));
+            }
+        } catch (@SuppressWarnings("unused") final Exception e) {
+            // Continue.
+        } finally {
+            if (entityManager.isPresent()) {
+                JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
+            }
+        }
+        return Optional.empty();
     }
 }

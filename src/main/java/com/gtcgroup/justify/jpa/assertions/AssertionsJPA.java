@@ -139,16 +139,6 @@ public enum AssertionsJPA {
         }
     }
 
-    public static void assertExistsInSharedCache(final String persistenceUnitName, final Object... managedEntities) {
-
-        AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
-
-        if (!JstFindUtilHelper.existsInSharedCache(AssertionsJPA.entityManager, managedEntities)) {
-
-            assertFailWithMessage(persistenceUnitName, null, "shared cache", "class unavailable");
-        }
-    }
-
     private static <ENTITY> void assertFailWithMessage(final String persistenceUnitName,
             final Class<ENTITY> entityClassOrNull, final String fromWhere, final String availableOrUnavailable) {
 

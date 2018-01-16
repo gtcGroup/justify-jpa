@@ -34,14 +34,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.rulechain.JstRuleChain;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
-import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstFindAllJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
-import com.gtcgroup.justify.jpa.rm.JstQueryFindAllJpaRM;
 
 /**
  * Test Class
@@ -60,7 +56,7 @@ public class JstFindUtilHelperTest {
     private EntityManager entityManager;
 
     @Rule
-    public JstRuleChain ruleChain = JstRuleChain.outerRule(true).around(JstConfigureJpaExtension
+    public JstRuleChain ruleChain = JstRuleChain.outerRule(true).around(JstConfigureTestJpaExtension
             .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU).withDataPopulators(NoteDataPopulator.class));
 
     @Before
@@ -87,27 +83,5 @@ public class JstFindUtilHelperTest {
 
         Assertions.assertThat(JstFindUtilHelper.existsInDatabases(this.entityManager, NoteDataPopulator.noteTwo))
                 .isTrue();
-    }
-
-    @Test(expected = JustifyException.class)
-    public void testExistsInSharedCacheWithPopulatedEntities_Exception() {
-
-        Assertions.assertThat(JstFindUtilHelper.existsInSharedCache(this.entityManager, new NotAnEntityDE(),
-                ConstantsTestJPA.NOTE_UUID_ONE)).isFalse();
-    }
-
-    @Test
-    public void testExistsInSharedCacheWithPopulatedEntities_ReadOnly() {
-
-        JstQueryFindAllJpaRM.findReadOnlyList(
-                JstFindAllJpaPO.withFindAll(false).withEntityManager(this.entityManager).withEntityClass(NoteDE.class));
-
-        Assertions.assertThat(JstFindUtilHelper.existsInSharedCache(this.entityManager, NoteDataPopulator.noteOne))
-                .isTrue();
-
-        JstEntityManagerUtilHelper.evictEntityInstanceFromSharedCache(this.entityManager, NoteDataPopulator.noteOne);
-
-        Assertions.assertThat(JstFindUtilHelper.existsInSharedCache(this.entityManager, NoteDataPopulator.noteOne))
-                .isFalse();
     }
 }

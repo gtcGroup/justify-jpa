@@ -25,7 +25,6 @@
  */
 package com.gtcgroup.justify.jpa.po.internal;
 
-import java.util.Map;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -49,13 +48,9 @@ public abstract class BaseJpaPO extends JstBasePO {
 
     protected EntityManager entityManager;
 
-    protected boolean entityManagerNeedsToBeClosed = false;
+    protected boolean entityManagerEncapsulated = false;
 
     protected String persistenceUnitName;
-
-    protected Map<String, Object> persistencePropertyMapOrNull = null;
-
-    protected boolean forceDatabaseTripWhenNoCacheCoordination = false;
 
     /**
      * Constructor
@@ -69,13 +64,14 @@ public abstract class BaseJpaPO extends JstBasePO {
     }
 
     /**
-     * This method closes the {@link EntityManager} if the creation is encapsulated
+     * This method closes the {@link EntityManager} if the creation was encapsulated
      * within this PO.
      */
-    public void closeEntityManagerIfCreatedWithPersistenceUnitName() {
+    public void closeEncapsulatedEntityManager() {
 
-        if (this.entityManagerNeedsToBeClosed) {
+        if (this.entityManagerEncapsulated) {
             JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
+            this.entityManager = null;
         }
     }
 
@@ -86,11 +82,10 @@ public abstract class BaseJpaPO extends JstBasePO {
 
         if (null == this.entityManager) {
 
-            return Optional
-                    .of(JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName));
+            return JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName);
         }
 
-        return Optional.ofNullable(this.entityManager);
+        return Optional.of(this.entityManager);
     }
 
     /**
@@ -98,13 +93,6 @@ public abstract class BaseJpaPO extends JstBasePO {
      */
     protected boolean isEntityManager() {
         return null != this.entityManager;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isForceDatabaseTripWhenNoCacheCoordination() {
-        return this.forceDatabaseTripWhenNoCacheCoordination;
     }
 
     protected void setEntityManager(final EntityManager entityManager) {

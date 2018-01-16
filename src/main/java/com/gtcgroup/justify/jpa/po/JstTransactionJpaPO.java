@@ -51,19 +51,9 @@ public class JstTransactionJpaPO extends BaseJpaPO {
      *
      * @return {@link JstTransactionJpaPO}
      */
-    public static JstTransactionJpaPO withException() {
+    public static JstTransactionJpaPO withException(final String persistenceUnitName) {
 
-        return withException(false);
-    }
-
-    /**
-     * This method initializes the class.
-     *
-     * @return {@link JstTransactionJpaPO}
-     */
-    public static JstTransactionJpaPO withException(final boolean suppressExceptionLogging) {
-
-        return new JstTransactionJpaPO(suppressExceptionLogging);
+        return new JstTransactionJpaPO(persistenceUnitName);
     }
 
     private List<Object> entityCreateAndUpdateList = new ArrayList<>();
@@ -73,9 +63,9 @@ public class JstTransactionJpaPO extends BaseJpaPO {
     /**
      * Constructor
      */
-    protected JstTransactionJpaPO(final boolean suppressExceptionForNull) {
+    protected JstTransactionJpaPO(final String persistenceUnitName) {
 
-        super(suppressExceptionForNull);
+        super(persistenceUnitName);
         return;
     }
 
@@ -145,18 +135,9 @@ public class JstTransactionJpaPO extends BaseJpaPO {
     /**
      * @return {@link JstTransactionJpaPO}
      */
-    @Override
     public JstTransactionJpaPO withEntityManager(final EntityManager entityManager) {
 
-        return (JstTransactionJpaPO) super.withEntityManager(entityManager);
-    }
-
-    /**
-     * @return {@link JstTransactionJpaPO}
-     */
-    @Override
-    public JstTransactionJpaPO withPersistenceUnitName(final String persistenceUnitName) {
-
-        return (JstTransactionJpaPO) super.withPersistenceUnitName(persistenceUnitName);
+        super.setEntityManager(entityManager);
+        return this;
     }
 }

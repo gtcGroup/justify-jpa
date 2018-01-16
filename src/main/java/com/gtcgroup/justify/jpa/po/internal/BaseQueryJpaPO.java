@@ -48,9 +48,11 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 
     protected int maxResults;
 
-    protected boolean suppressReadOnly = false;
+    protected boolean readOnly = false;
 
     protected Map<String, Object> queryParameterMap;
+
+    protected boolean forceDatabaseTripWhenNoCacheCoordination = false;
 
     /**
      * Constructor
@@ -75,6 +77,11 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
     }
 
     /**
+     * @return {@link Query}
+     */
+    public abstract Query getQuery();
+
+    /**
      * @return {@link Map}
      */
     public Map<String, Object> getQueryParameterMap() {
@@ -83,15 +90,17 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
     }
 
     /**
-     * @return {@link Query}
-     */
-    public abstract Query getQuery();
-
-    /**
      * @return boolean
      */
     public boolean isFirstResult() {
         return 0 != this.firstResult;
+    }
+
+    /**
+     * @return boolean
+     */
+    public boolean isForceDatabaseTripWhenNoCacheCoordination() {
+        return this.forceDatabaseTripWhenNoCacheCoordination;
     }
 
     /**
@@ -112,7 +121,11 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
     /**
      * @return boolean
      */
-    public boolean isSuppressReadOnly() {
-        return this.suppressReadOnly;
+    public boolean isReadOnly() {
+        return this.readOnly;
+    }
+
+    public void setForceDatabaseTripWhenNoCacheCoordination(final boolean forceDatabaseTripWhenNoCacheCoordination) {
+        this.forceDatabaseTripWhenNoCacheCoordination = forceDatabaseTripWhenNoCacheCoordination;
     }
 }

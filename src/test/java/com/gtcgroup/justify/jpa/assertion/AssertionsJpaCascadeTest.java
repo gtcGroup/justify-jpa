@@ -37,7 +37,7 @@ import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
 import com.gtcgroup.justify.jpa.de.dependency.BookingDE;
 import com.gtcgroup.justify.jpa.de.dependency.CustomerDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureJPA;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstAssertCascadeJpaPO;
@@ -57,7 +57,7 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
  */
 @JstConfigureTestLogToConsole
 @JstConfigureTestUserId
-@JstConfigureJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU)
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU)
 public class AssertionsJpaCascadeTest {
 
     private static final String CUSTOMER_UUID = "customerUUID";

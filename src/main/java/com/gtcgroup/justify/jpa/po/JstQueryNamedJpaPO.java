@@ -75,8 +75,6 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
         this.query = this.entityManager.createNamedQuery(getQueryName());
     }
 
-
-
     /**
      * @return {@link Query}
      */
@@ -101,8 +99,6 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
         return this.queryName;
     }
 
-
-
     /**
      * @return {@link JstQueryNamedJpaPO}
      */
@@ -124,7 +120,6 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
     /**
      * @return {@link JstQueryNamedJpaPO}
      */
-    @Override
     public JstQueryNamedJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppress) {
 
         this.forceDatabaseTripWhenNoCacheCoordination = suppress;
@@ -163,7 +158,7 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
      */
     public JstQueryNamedJpaPO withSuppressReadOnly(final boolean suppress) {
 
-        this.suppressReadOnly = suppress;
+        this.readOnly = suppress;
         return this;
     }
 }
