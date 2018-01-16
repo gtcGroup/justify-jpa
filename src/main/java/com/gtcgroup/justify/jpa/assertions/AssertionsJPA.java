@@ -65,37 +65,46 @@ public enum AssertionsJPA {
     /**
      * This method verifies cascade annotations. If properly executed, it will
      * remove any persisted instances used for verification.
+     *
+     * return {@link Optional}
      */
     @SuppressWarnings("unchecked")
-    public static <ENTITY, PO extends JstAssertCascadeJpaPO> ENTITY assertCascadeTypes(final PO assertionsCascadePO) {
+    public static <ENTITY, PO extends JstAssertCascadeJpaPO> Optional<ENTITY> assertCascadeTypes(
+            final PO assertionsCascadePO) {
 
         AssertionsJPA.assertionsJpaCascadePO = assertionsCascadePO;
 
-        AssertionsJPA.entityManager = getEntityManager(AssertionsJPA.assertionsJpaCascadePO.getPersistenceUnitName());
+        final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
+                .createEntityManagerToBeClosed(assertionsCascadePO.getPersistenceUnitName());
 
-        try {
+        if (entityManager.isPresent()) {
+            AssertionsJPA.entityManager = entityManager.get();
 
-            createParentEntity();
+            try {
 
-            verifyCascadeEntitiesPersisted(assertionsCascadePO.getCascadePersistList(), true);
+                createParentEntity();
 
-            verifyCascadeEntitiesPersisted(assertionsCascadePO.getCascadeNoPersistList(), false);
+                verifyCascadeEntitiesPersisted(assertionsCascadePO.getCascadePersistList(), true);
 
-            deleteParentEntity();
+                verifyCascadeEntitiesPersisted(assertionsCascadePO.getCascadeNoPersistList(), false);
 
-            verifyCascadeEntitiesRemoved(assertionsCascadePO.getCascadeRemoveList(), false);
+                deleteParentEntity();
 
-            verifyCascadeEntitiesRemoved(assertionsCascadePO.getCascadeNoRemoveList(), true);
+                verifyCascadeEntitiesRemoved(assertionsCascadePO.getCascadeRemoveList(), false);
 
-        } catch (final Exception e) {
+                verifyCascadeEntitiesRemoved(assertionsCascadePO.getCascadeNoRemoveList(), true);
 
-            catchBlock(e);
+            } catch (final Exception e) {
 
-        } finally {
+                catchBlock(e);
 
-            finallyBlock();
+            } finally {
+
+                finallyBlock();
+            }
+            return (Optional<ENTITY>) Optional.of(AssertionsJPA.parentEntity);
         }
-        return (ENTITY) AssertionsJPA.parentEntity;
+        return Optional.empty();
     }
 
     public static <ENTITY> void assertExistsInDatabase(final String persistenceUnitName,
@@ -126,17 +135,6 @@ public enum AssertionsJPA {
             assertFailWithMessage(persistenceUnitName, null, "database", "instance unavailable");
         }
         return;
-    }
-
-    public static <ENTITY> void assertExistsInSharedCache(final String persistenceUnitName,
-            final Class<ENTITY> entityClass, final Object... entityIdentities) {
-
-        AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
-
-        if (!JstFindUtilHelper.existsInSharedCache(AssertionsJPA.entityManager, entityClass, entityIdentities)) {
-
-            assertFailWithMessage(persistenceUnitName, null, "shared cache", "class unavailable");
-        }
     }
 
     private static <ENTITY> void assertFailWithMessage(final String persistenceUnitName,
@@ -232,11 +230,11 @@ public enum AssertionsJPA {
     /**
      * @return {@link Object} representing entityIdentity.
      */
-    private static void createParentEntity() {
+    private static void createParentEntity(final String persistenceUnitName) {
 
         Object parentEntity = null;
 
-        final JstTransactionJpaPO transactPO = JstTransactionJpaPO.withException()
+        final JstTransactionJpaPO transactPO = JstTransactionJpaPO.withPersistenceUnitName(persistenceUnitName)
                 .withEntityManager(AssertionsJPA.entityManager)
                 .withCreateAndUpdateEntities(AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity());
 
@@ -246,11 +244,11 @@ public enum AssertionsJPA {
         AssertionsJPA.assertionsJpaCascadePO.replacePopulatedEntity(parentEntity);
     }
 
-    private static void deleteParentEntity() {
+    private static void deleteParentEntity(final String persistenceUnitName) {
 
         if (null != AssertionsJPA.parentEntity) {
 
-            JstTransactionUtilHelper.findAndDeleteEntity(AssertionsJPA.entityManager, AssertionsJPA.parentEntity);
+            JstTransactionUtilHelper.findAndDeleteEntity(persistenceUnitName, AssertionsJPA.parentEntity);
         }
     }
 
@@ -280,20 +278,6 @@ public enum AssertionsJPA {
             closeEntityManager();
             AssertionsJPA.entityManager = null;
         }
-    }
-
-    /**
-     * @return EntityManager
-     */
-    public static EntityManager getEntityManager(final String persistenceUnitName) {
-
-        if (null == AssertionsJPA.entityManager) {
-
-            AssertionsJPA.entityManager = JstEntityManagerFactoryCacheHelper
-                    .createEntityManagerToBeClosed(persistenceUnitName);
-        }
-
-        return AssertionsJPA.entityManager;
     }
 
     private static boolean isExists(final List<String> existsList, final boolean expected) {

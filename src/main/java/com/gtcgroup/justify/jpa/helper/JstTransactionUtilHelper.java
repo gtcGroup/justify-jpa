@@ -37,6 +37,7 @@ import com.gtcgroup.justify.core.po.JstExceptionPO;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
 import com.gtcgroup.justify.jpa.exception.JstOptimisiticLockException;
+import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 
 /**
@@ -55,32 +56,34 @@ public enum JstTransactionUtilHelper {
     INSTANCE;
 
     /**
-     * This convenience method guarantees deletion as long as the entity identity is
-     * specified.
+     * return boolean
      */
-    public static <ENTITY> void findAndDeleteEntity(final EntityManager entityManager,
+    public static <ENTITY> boolean findAndDeleteEntity(final String persistenceUnitName,
             final ENTITY entityWithIdentity) {
 
-        ENTITY entity = JstFindUtilHelper.findForceDatabaseTrip(entityManager, entityWithIdentity, false);
-
-        if (null == entity) {
-            return;
-        }
-
-        entityManager.getTransaction().begin();
-        entity = entityManager.merge(entity);
-        entityManager.remove(entity);
-        entityManager.getTransaction().commit();
-    }
-
-    /**
-     * This convenience method guarantees deletion as long as the entity identity is
-     * specified.
-     */
-    public static <ENTITY> void findAndDeleteEntity(final String persistenceUnitName, final ENTITY entityWithIdentity) {
-
-        findAndDeleteEntity(JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(persistenceUnitName),
+        final Optional<Object> entityIdentity = JstFindUtilHelper.retrieveIdentity(persistenceUnitName,
                 entityWithIdentity);
+
+        if (entityIdentity.isPresent()) {
+
+            Optional<ENTITY> entity = JstFindUtilHelper.findSingle(JstQueryFindSingleJpaPO
+                    .withPersistenceUnitName(persistenceUnitName).withEntityIdentity(entityIdentity));
+
+            if (entity.isPresent()) {
+
+                final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
+                        .createEntityManagerToBeClosed(persistenceUnitName);
+
+                if (entityManager.isPresent()) {
+                    entityManager.get().getTransaction().begin();
+                    entity = entityManager.get().merge(entity);
+                    entityManager.get().remove(entity);
+                    entityManager.get().getTransaction().commit();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

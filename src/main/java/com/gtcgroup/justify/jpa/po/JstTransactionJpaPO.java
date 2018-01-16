@@ -51,7 +51,7 @@ public class JstTransactionJpaPO extends BaseJpaPO {
      *
      * @return {@link JstTransactionJpaPO}
      */
-    public static JstTransactionJpaPO withException(final String persistenceUnitName) {
+    public static JstTransactionJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
         return new JstTransactionJpaPO(persistenceUnitName);
     }
@@ -118,7 +118,7 @@ public class JstTransactionJpaPO extends BaseJpaPO {
     /**
      * @return {@link JstTransactionJpaPO}
      */
-    public <ENTITY> JstTransactionJpaPO withDeleteEntities(final ENTITY... entity) {
+    public <ENTITY> JstTransactionJpaPO withDeleteEntities(@SuppressWarnings("unchecked") final ENTITY... entity) {
 
         this.entityDeleteList.addAll(Arrays.asList(entity));
         return this;

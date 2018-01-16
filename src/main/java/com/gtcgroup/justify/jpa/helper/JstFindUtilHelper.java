@@ -74,7 +74,7 @@ public enum JstFindUtilHelper {
      */
     @SuppressWarnings("unchecked")
     public static <ENTITY> Optional<ENTITY> retrieveIdentity(final String persistenceUnitName,
-            final Object entityWithPrimaryKey) {
+            final Object entityWithIdentity) {
 
         final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
                 .createEntityManagerToBeClosed(persistenceUnitName);
@@ -82,7 +82,7 @@ public enum JstFindUtilHelper {
         try {
             if (entityManager.isPresent()) {
                 return (Optional<ENTITY>) Optional.ofNullable(entityManager.get().getEntityManagerFactory()
-                        .getPersistenceUnitUtil().getIdentifier(entityWithPrimaryKey));
+                        .getPersistenceUnitUtil().getIdentifier(entityWithIdentity));
             }
         } catch (@SuppressWarnings("unused") final Exception e) {
             // Continue.
