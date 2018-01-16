@@ -88,13 +88,6 @@ public abstract class BaseJpaPO extends JstBasePO {
         return Optional.of(this.entityManager);
     }
 
-    /**
-     * @return boolean
-     */
-    protected boolean isEntityManager() {
-        return null != this.entityManager;
-    }
-
     protected void setEntityManager(final EntityManager entityManager) {
         this.entityManager = entityManager;
     }

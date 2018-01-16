@@ -25,11 +25,12 @@
  */
 package com.gtcgroup.justify.jpa.po;
 
-import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-import com.gtcgroup.justify.jpa.po.internal.BaseEntityManagerPropertiesPO;
+import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
  * This Parameter Object class supports find operations.
@@ -42,7 +43,7 @@ import com.gtcgroup.justify.jpa.po.internal.BaseEntityManagerPropertiesPO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstQueryFindSingleJpaPO extends BaseEntityManagerPropertiesPO {
+public class JstQueryFindSingleJpaPO extends BaseQueryJpaPO {
 
     /**
      * This method initializes the class.
@@ -53,8 +54,6 @@ public class JstQueryFindSingleJpaPO extends BaseEntityManagerPropertiesPO {
 
         return new JstQueryFindSingleJpaPO(persistenceUnitName);
     }
-
-    private Class<Object> entityClass;
 
     private Object entityIdentity;
 
@@ -67,12 +66,18 @@ public class JstQueryFindSingleJpaPO extends BaseEntityManagerPropertiesPO {
         return;
     }
 
-    /**
-     * @return {@link Class}
-     */
-    public Class<Object> getEntityClass() {
+    @Override
+    public Optional<Query> createQuery() {
+        final Optional<EntityManager> entityManager = getEntityManager();
 
-        return this.entityClass;
+        try {
+            if (entityManager.isPresent()) {
+                return Optional.of(entityManager.get().find(getEntityClass(), getEntityIdentity()));
+            }
+        } catch (@SuppressWarnings("unused") final Exception e) {
+            // Continue
+        }
+        return Optional.empty();
     }
 
     /**
@@ -114,38 +119,19 @@ public class JstQueryFindSingleJpaPO extends BaseEntityManagerPropertiesPO {
     /**
      * @return {@link JstQueryFindSingleJpaPO}
      */
-    public JstQueryFindSingleJpaPO withEntityManagerProperties(final Map<String, Object> entityManagerProperties) {
-
-        super.setQueryHints(entityManagerProperties);
-        return this;
-    }
-
-    /**
-     * @return {@link JstQueryFindSingleJpaPO}
-     */
-    public JstQueryFindSingleJpaPO withFactoryProperties(final Map<String, Object> factoryProperties) {
-
-        super.setFactoryProperties(factoryProperties);
-        return this;
-    }
-
-    /**
-     * @return {@link JstQueryFindSingleJpaPO}
-     */
     public JstQueryFindSingleJpaPO withForceDatabaseTripWhenNoCacheCoordination(
-            final boolean forceDatabaseTripWhenNoCacheCoordination) {
+            final boolean suppressForceDatabaseTrip) {
 
-        super.setForceDatabaseTripWhenNoCacheCoordinationAvailable(forceDatabaseTripWhenNoCacheCoordination);
+        super.setForceDatabaseTripWhenNoCacheCoordination(suppressForceDatabaseTrip);
         return this;
     }
 
     /**
      * @return {@link JstQueryFindSingleJpaPO}
      */
-    public JstQueryFindSingleJpaPO withPopulatedEntityContainingIdentity(
-            final Object populatedEntityContainingIdentity) {
+    public JstQueryFindSingleJpaPO withQueryHint(final String key, final Object value) {
 
-        this.populatedEntityContainingIdentity = populatedEntityContainingIdentity;
+        super.setQueryHint(key, value);
         return this;
     }
 }

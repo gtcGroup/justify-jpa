@@ -92,7 +92,7 @@ public enum JstEntityManagerFactoryCacheHelper {
             final Map<String, Object> persistencePropertyMapOrNull, final String persistenceKey) {
 
         if (JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.containsKey(persistenceKey)) {
-            return persistenceKey;
+            return Optional.of(persistenceKey);
         }
 
         try {
@@ -107,7 +107,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 
         } catch (final Exception e) {
 
-            throw new JustifyException(e);
+            // Continue.
         }
         return persistenceKey;
     }

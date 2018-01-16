@@ -25,11 +25,12 @@
  */
 package com.gtcgroup.justify.jpa.po;
 
+import java.util.Optional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -57,8 +58,6 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
 
     protected String queryLanguageString;
 
-    protected Class<?> entityClass;
-
     /**
      * Constructor
      */
@@ -69,11 +68,30 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
     }
 
     /**
+     * @return {@link Optional}
+     */
+    @Override
+    public Optional<Query> createQuery() {
+
+        try {
+            if (isResultClass() && isQueryLanaguageString()) {
+                return Optional.of(createQueryLanguageQuery(getQueryLanguageString(), getEntityClass()));
+
+            } else if (isQueryLanaguageString()) {
+                return Optional.of(createQueryLanguageQuery(getQueryLanguageString()));
+            }
+        } catch (@SuppressWarnings("unused") final Exception e) {
+            // Continue.
+        }
+        return Optional.empty();
+    }
+
+    /**
      * @return {@link Query}
      */
     protected Query createQueryLanguageQuery(final String queryLanguageString) {
 
-        return getEntityManager().createQuery(queryLanguageString);
+        return getEntityManager().get().createQuery(queryLanguageString);
     }
 
     /**
@@ -82,47 +100,20 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
     protected <ENTITY> TypedQuery<ENTITY> createQueryLanguageQuery(final String queryLanguageString,
             final Class<ENTITY> resultClass) {
 
-        return getEntityManager().createQuery(queryLanguageString, resultClass);
+        return getEntityManager().get().createQuery(queryLanguageString, resultClass);
     }
 
     /**
      * @return {@link Class}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <ENTITY> Class<ENTITY> getEntityClass() {
 
         return (Class<ENTITY>) this.entityClass;
     }
 
-    /**
-     * @return {@link Query}
-     */
-    @Override
-    public Query getQuery() {
-
-        if (null == this.query) {
-
-            try {
-                if (isResultClass() && isQueryLanaguageString()) {
-                    this.query = createQueryLanguageQuery(getQueryLanguageString(), getEntityClass());
-                } else if (isQueryLanaguageString()) {
-                    this.query = createQueryLanguageQuery(getQueryLanguageString());
-                } else {
-                    throw new JustifyException("Verify that a coherent set of parameters were defined in the PO ["
-                            + this.getClass().getName() + "].");
-                }
-            } catch (final Exception e) {
-                throw new JustifyException(e);
-            }
-        }
-        return this.query;
-    }
-
-    /**
-     * @return {@link String}
-     */
     public String getQueryLanguageString() {
-
         return this.queryLanguageString;
     }
 
@@ -147,17 +138,17 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
      */
     public <ENTITY> JstQueryStringJpaPO withEntityClass(final Class<ENTITY> entityClass) {
 
-        this.entityClass = entityClass;
+        setEntityClass(entityClass);
         return this;
     }
 
     /**
      * @return {@link JstQueryStringJpaPO}
      */
-    @Override
     public JstQueryStringJpaPO withEntityManager(final EntityManager entityManager) {
 
-        return (JstQueryStringJpaPO) super.withEntityManager(entityManager);
+        super.setEntityManager(entityManager);
+        return this;
     }
 
     /**

@@ -26,11 +26,11 @@
 package com.gtcgroup.justify.jpa.po;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
 /**
@@ -68,27 +68,21 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
     }
 
     /**
-     * This method retains the {@link Query} as a class field.
-     */
-    protected void createNamedQuery() {
-
-        this.query = this.entityManager.createNamedStoredProcedureQuery(getQueryName());
-    }
-
-    /**
-     * @return {@link Query}
+     * @return {@link Optional}
      */
     @Override
-    public Query getQuery() {
+    public Optional<Query> createQuery() {
+
+        final Optional<EntityManager> entityManager = getEntityManager();
 
         try {
-            if (null == this.query) {
-                createNamedQuery();
+            if (entityManager.isPresent()) {
+                return Optional.of(entityManager.get().createNamedStoredProcedureQuery(getQueryName()));
             }
-        } catch (final Exception e) {
-            throw new JustifyException(e);
+        } catch (@SuppressWarnings("unused") final Exception e) {
+            // Continue.
         }
-        return this.query;
+        return Optional.empty();
     }
 
     /**
@@ -120,7 +114,6 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
     /**
      * @return {@link JstQueryNamedStoredProcedureJpaPO}
      */
-    @Override
     public JstQueryNamedStoredProcedureJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppress) {
 
         this.forceDatabaseTripWhenNoCacheCoordination = suppress;
@@ -141,7 +134,7 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
      */
     public JstQueryNamedStoredProcedureJpaPO withParameterMap(final Map<String, Object> parameterMap) {
 
-        this.queryParameterMap = parameterMap;
+        this.queryHintsMap = parameterMap;
         return this;
     }
 

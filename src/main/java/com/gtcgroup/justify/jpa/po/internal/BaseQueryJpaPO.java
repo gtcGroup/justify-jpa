@@ -25,12 +25,21 @@
  */
 package com.gtcgroup.justify.jpa.po.internal;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import javax.persistence.CacheRetrieveMode;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.CascadePolicy;
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+
 /**
- * This Parameter Object base class supports queries using a Resource Manager.
+ * This Parameter Object base class supports queries using the Resource Manager
+ * pattern.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
@@ -42,7 +51,24 @@ import javax.persistence.Query;
  */
 public abstract class BaseQueryJpaPO extends BaseJpaPO {
 
-    protected Query query;
+    /**
+     * These {@link QueryHints} are typically used when there are multiple servers
+     * without cache coordination.
+     */
+    protected static final Map<String, Object> FORCE_DATABASE_TRIP = new HashMap<>();
+
+    static {
+
+        BaseQueryJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+
+        BaseQueryJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+
+        BaseQueryJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+
+        BaseQueryJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH, HintValues.TRUE);
+    }
+
+    protected Class<Object> entityClass;
 
     protected int firstResult;
 
@@ -50,7 +76,7 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 
     protected boolean readOnly = false;
 
-    protected Map<String, Object> queryParameterMap;
+    protected Map<String, Object> queryHintsMap;
 
     protected boolean forceDatabaseTripWhenNoCacheCoordination = false;
 
@@ -58,8 +84,20 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
      * Constructor
      */
     protected BaseQueryJpaPO(final String persistenceUnitName) {
-
         super(persistenceUnitName);
+    }
+
+    /**
+     * @return {@link Optional}
+     */
+    public abstract Optional<Query> createQuery();
+
+    /**
+     * @return {@link Class}
+     */
+    @SuppressWarnings("unchecked")
+    public <ENTITY> Class<ENTITY> getEntityClass() {
+        return (Class<ENTITY>) this.entityClass;
     }
 
     /**
@@ -77,16 +115,17 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
     }
 
     /**
-     * @return {@link Query}
-     */
-    public abstract Query getQuery();
-
-    /**
      * @return {@link Map}
      */
-    public Map<String, Object> getQueryParameterMap() {
+    public Map<String, Object> getQueryHintsMap() {
+        return this.queryHintsMap;
+    }
 
-        return this.queryParameterMap;
+    /**
+     * @return boolean
+     */
+    public boolean isEntityClass() {
+        return null != this.entityClass;
     }
 
     /**
@@ -114,8 +153,7 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
      * @return boolean
      */
     public boolean isQueryParameterMap() {
-
-        return null != this.queryParameterMap;
+        return null != this.queryHintsMap;
     }
 
     /**
@@ -125,7 +163,16 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
         return this.readOnly;
     }
 
+    @SuppressWarnings("unchecked")
+    public <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
+        this.entityClass = (Class<Object>) entityClass;
+    }
+
     public void setForceDatabaseTripWhenNoCacheCoordination(final boolean forceDatabaseTripWhenNoCacheCoordination) {
         this.forceDatabaseTripWhenNoCacheCoordination = forceDatabaseTripWhenNoCacheCoordination;
+    }
+
+    public void setQueryHint(final String key, final Object value) {
+        getQueryHintsMap().put(key, value);
     }
 }

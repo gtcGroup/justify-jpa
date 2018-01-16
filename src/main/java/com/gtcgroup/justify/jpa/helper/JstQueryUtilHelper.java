@@ -86,11 +86,11 @@ public enum JstQueryUtilHelper {
 
     private static Query decorateQuery(final BaseQueryJpaPO queryPO) {
 
-        final Query query = queryPO.getQuery();
+        final Query query = queryPO.createQuery();
 
         if (queryPO.isQueryParameterMap()) {
 
-            for (final Entry<String, Object> stringEntry : queryPO.getQueryParameterMap().entrySet()) {
+            for (final Entry<String, Object> stringEntry : queryPO.getQueryHintsMap().entrySet()) {
 
                 query.setParameter(stringEntry.getKey(), stringEntry.getValue());
             }

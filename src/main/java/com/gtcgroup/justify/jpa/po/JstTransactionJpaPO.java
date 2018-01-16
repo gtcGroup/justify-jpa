@@ -99,7 +99,8 @@ public class JstTransactionJpaPO extends BaseJpaPO {
     /**
      * @return {@link JstTransactionJpaPO}
      */
-    public <ENTITY> JstTransactionJpaPO withCreateAndUpdateEntities(final ENTITY... entities) {
+    public <ENTITY> JstTransactionJpaPO withCreateAndUpdateEntities(
+            @SuppressWarnings("unchecked") final ENTITY... entities) {
 
         this.entityCreateAndUpdateList.addAll(Arrays.asList(entities));
         return this;
