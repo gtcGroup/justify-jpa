@@ -1,7 +1,7 @@
 /*
  * [Licensed per the Open Source "MIT License".]
  *
- * Copyright (c) 2006 - 2017 by
+ * Copyright (c) 2006 - 2018 by
  * Global Technology Consulting Group, Inc. at
  * http://gtcGroup.com
  *
@@ -50,7 +50,7 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
  * This {@link Extension} class initializes JPA.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
+ * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
@@ -58,8 +58,6 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
  * @since v8.5
  */
 public class JstConfigureTestJpaExtension extends JstBaseExtension implements BeforeTestExecutionCallback {
-
-    public static final String KEY_DELIMITER = "_~_";
 
     private static List<String> DATA_POPULATOR_ALREADY_PROCESSED_LIST = new ArrayList<>();
 
@@ -73,7 +71,7 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension implements Be
 
         @SuppressWarnings("unchecked")
         final Optional<JstConfigureTestJPA> configureJPA = (Optional<JstConfigureTestJPA>) LogTestConsoleUtilHelper
-                .retrieveAnnotationRequired(extensionContext, JstConfigureTestJPA.class);
+                .retrieveAnnotation(extensionContext, JstConfigureTestJPA.class);
 
         if (configureJPA.isPresent()) {
 
@@ -115,15 +113,15 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension implements Be
 
     protected EntityManagerFactory entityManagerFactory;
 
-    protected boolean dataPopulatorSubmitted = false;
+    protected boolean isDataPopulatorSubmitted = false;
 
-    protected String persistenceKey;
+    // protected String persistenceKey;
 
     @Override
-    public void beforeTestExecution(final ExtensionContext context) throws Exception {
+    public void beforeTestExecution(final ExtensionContext extensionContext) throws Exception {
 
-        initializePersistenceUnitName(context);
-        determineToBeProcessed();
+        initializePersistenceUnitName(extensionContext);
+        determinePopulatorsToBeProcessed();
 
         if (0 != JstConfigureTestJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.size()) {
 
@@ -140,28 +138,28 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension implements Be
 
     }
 
-    protected void determineToBeProcessed() {
+    protected boolean determinePopulatorsToBeProcessed() {
 
-        this.dataPopulatorSubmitted = true;
+        this.isDataPopulatorSubmitted = true;
 
         for (final Class<?> dataPopulator : JstConfigureTestJpaExtension.dataPopulators) {
 
-            final String listKey = formatListKey(dataPopulator);
+            final String listKey = formatPopulatorKey(dataPopulator);
 
             if (!JstConfigureTestJpaExtension.DATA_POPULATOR_ALREADY_PROCESSED_LIST.contains(listKey)
                     && !JstConfigureTestJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.contains(listKey)) {
 
                 if (!JstBaseDataPopulator.class.isAssignableFrom(dataPopulator)) {
 
-                    throw new JustifyException("\nThe class [" + dataPopulator.getSimpleName()
-                            + "] does not appear to extend a base class for populating persistence test data.\n");
+                    return false;
                 }
                 JstConfigureTestJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.add(listKey);
             }
         }
+        return true;
     }
 
-    protected final String formatListKey(final Class<?> dataPopulator) {
+    protected final String formatPopulatorKey(final Class<?> dataPopulator) {
 
         return this.persistenceKey + JstConfigureTestJpaExtension.KEY_DELIMITER + dataPopulator.getName();
     }
@@ -176,7 +174,7 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension implements Be
             dataPopulator = (JstBaseDataPopulator) JstReflectionUtilHelper
                     .instantiateInstanceWithPublicConstructorNoArgument(populatorClass);
         } catch (final Exception e) {
-            JstConfigureTestJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.remove(formatListKey(populatorClass));
+            JstConfigureTestJpaExtension.DATA_POPULATOR_TO_BE_PROCESSED_LIST.remove(formatPopulatorKey(populatorClass));
             throw (JustifyException) e;
         }
 
