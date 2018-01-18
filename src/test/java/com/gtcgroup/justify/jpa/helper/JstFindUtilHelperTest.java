@@ -25,18 +25,14 @@
  */
 package com.gtcgroup.justify.jpa.helper;
 
-import javax.persistence.EntityManager;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.rulechain.JstRuleChain;
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.po.JstFindInstancesJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
@@ -50,38 +46,15 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings("javadoc")
+@JstConfigureTestLogToConsole
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
+@SuppressWarnings("static-method")
 public class JstFindUtilHelperTest {
-
-    private EntityManager entityManager;
-
-    @Rule
-    public JstRuleChain ruleChain = JstRuleChain.outerRule(true).around(JstConfigureTestJpaExtension
-            .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU).withDataPopulators(NoteDataPopulator.class));
-
-    @Before
-    public void setup() {
-
-        this.entityManager = JstEntityManagerFactoryCacheHelper
-                .createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
-    }
-
-    @After
-    public void teardown() {
-
-        JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
-    }
 
     @Test
     public void testExistsInDataBaseWithPopulatedEntities_new() {
 
-        Assertions.assertThat(JstFindUtilHelper.existsInDatabases(this.entityManager, new NoteDE())).isFalse();
-    }
-
-    @Test
-    public void testExistsInDataBaseWithPopulatedEntities_readonly() {
-
-        Assertions.assertThat(JstFindUtilHelper.existsInDatabases(this.entityManager, NoteDataPopulator.noteTwo))
-                .isTrue();
+        Assertions.assertFalse(JstFindUtilHelper.existsInDatabase(JstFindInstancesJpaPO
+                .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withEntitiesContainingIdentity(new NoteDE())));
     }
 }

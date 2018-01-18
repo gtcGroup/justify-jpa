@@ -30,18 +30,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.rulechain.JstRuleChain;
-import com.gtcgroup.justify.core.si.JstRuleChainSI;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
-import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
  * Test Class
@@ -54,11 +50,8 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
  * @author Marvin Toll
  * @since v3.0
  */
+@SuppressWarnings("static-method")
 public class JstTransactionJpaRmTest {
-
-    @Rule
-    public JstRuleChainSI ruleChain = JstRuleChain.outerRule(false).around(JstConfigureTestJpaExtension
-            .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU).withDataPopulators(NoteDataPopulator.class));
 
     @Test
     public void testDeleteList() {
@@ -69,18 +62,17 @@ public class JstTransactionJpaRmTest {
         final NoteDE note2 = new NoteDE();
         note2.setText("Two");
 
-        List<NoteDE> noteList = JstTransactionJpaRM.transactMultipleEntities(JstTransactionJpaPO.withException()
+        Optional<List<Object>> noteList = JstTransactionJpaRM.transactMultipleEntities(JstTransactionJpaPO
                 .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withCreateAndUpdateEntities(note1, note2));
 
-        Assertions.assertThat(noteList.size()).isEqualTo(2);
+        if (noteList.isPresent()) {
 
-        updateWithJDBC();
+            updateWithJDBC();
 
-        noteList = JstTransactionJpaRM.transactMultipleEntities(JstTransactionJpaPO.withException()
-                .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withDeleteList(noteList));
-
-        Assertions.assertThat(noteList.size()).isEqualTo(0);
-
+            noteList = JstTransactionJpaRM.transactMultipleEntities(JstTransactionJpaPO
+                    .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withDeleteList(noteList.get()));
+        }
+        Assertions.assertTrue(noteList.isPresent());
     }
 
     private void updateWithJDBC() {

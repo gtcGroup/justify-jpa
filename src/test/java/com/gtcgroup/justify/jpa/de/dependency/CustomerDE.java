@@ -31,7 +31,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.gtcgroup.justify.jpa.de.base.dependency.BaseUuidDE;
+import com.gtcgroup.justify.jpa.de.BaseUuidDE;
 
 @Entity
 @Table(name = "CUSTOMER")

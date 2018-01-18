@@ -23,7 +23,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.de.base.dependency;
+package com.gtcgroup.justify.jpa.de;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -55,7 +55,7 @@ public abstract class BaseUuidDE extends BaseAuditDE {
         }
 
         final BaseUuidDE other = (BaseUuidDE) obj;
-        return Objects.equal(this.uuid, other.uuid);
+        return Objects.equals(this.uuid, other.uuid);
     }
 
     @SuppressWarnings("unchecked")

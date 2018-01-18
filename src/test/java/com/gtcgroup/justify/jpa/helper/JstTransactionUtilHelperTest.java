@@ -25,16 +25,14 @@
  */
 package com.gtcgroup.justify.jpa.helper;
 
-import javax.persistence.EntityManager;
-
-import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.rulechain.JstRuleChain;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.de.dependency.BookingDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 
 /**
@@ -48,30 +46,28 @@ import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings({ "javadoc", "static-method" })
+@JstConfigureTestLogToConsole
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU)
+@SuppressWarnings("static-method")
 public class JstTransactionUtilHelperTest {
 
+    private BookingDE populateBooking() {
 
-	public JstRuleChain ruleChain = JstRuleChain.outerRule()
-			.around(JstConfigureTestJpaExtension.withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU));
+        final NoteDE noteDE = new NoteDE();
 
-	private BookingDE populateBooking() {
+        final BookingDE bookingDE = new BookingDE();
+        bookingDE.setNote(noteDE);
+        bookingDE.setCustomer(null);
 
-		final NoteDE noteDE = new NoteDE();
+        return bookingDE;
+    }
 
-		final BookingDE bookingDE = new BookingDE();
-		bookingDE.setNote(noteDE);
-		bookingDE.setCustomer(null);
+    @Test
+    public void testFindAndDeleteRelatedEntity() {
 
-		return bookingDE;
-	}
-
-	@Test(expected = JustifyException.class)
-	public void testFindAndDeleteRelatedEntity() {
-
-		final EntityManager entityManager = JstEntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
-
-		JstTransactionUtilHelper.findAndDeleteRelatedEntity(entityManager, populateBooking(), "getCustomer");
-	}
+        Assertions.assertThrows(JustifyException.class, () -> {
+            JstTransactionUtilHelper.findAndDeleteRelatedEntity(ConstantsTestJPA.JUSTIFY_PU, populateBooking(),
+                    "getCustomer");
+        });
+    }
 }

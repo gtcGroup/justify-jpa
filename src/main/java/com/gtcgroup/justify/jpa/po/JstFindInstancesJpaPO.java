@@ -70,7 +70,7 @@ public class JstFindInstancesJpaPO extends BaseFindJpaPO {
         return null != this.entitiesContainingIdentity;
     }
 
-    public JstFindInstancesJpaPO withEntitiesContainingIdentity(final Object[] entitiesContainingIdentity) {
+    public JstFindInstancesJpaPO withEntitiesContainingIdentity(final Object... entitiesContainingIdentity) {
         this.entitiesContainingIdentity = entitiesContainingIdentity;
         return this;
     }

@@ -37,17 +37,17 @@ import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Cache;
 
-import com.gtcgroup.justify.jpa.de.base.dependency.BaseUuidDE;
+import com.gtcgroup.justify.jpa.de.BaseUuidDE;
 
 @Entity
 @Table(name = "NOTE")
 @AttributeOverrides({ @AttributeOverride(name = "uuid", column = @Column(name = "NOTE_UUID")) })
 @Cacheable
 @Cache(size = 100)
-@NamedQueries({ @NamedQuery(name = "queryNoteList", query = "SELECT note FROM NothingBean note"),
-        @NamedQuery(name = "queryNoteSingleOne", query = "SELECT note FROM NothingBean note WHERE note.text = 'testTextOne' "),
-        @NamedQuery(name = "queryNoteSingleTwo", query = "SELECT note FROM NothingBean note WHERE note.text = 'testTextTwo' "),
-        @NamedQuery(name = "queryNoteListWithStringParameter", query = "SELECT note FROM NothingBean note WHERE note.text = :text"), })
+@NamedQueries({ @NamedQuery(name = "queryNoteList", query = "SELECT note FROM NoteDE note"),
+        @NamedQuery(name = "queryNoteSingleOne", query = "SELECT note FROM NoteDE note WHERE note.text = 'testTextOne' "),
+        @NamedQuery(name = "queryNoteSingleTwo", query = "SELECT note FROM NoteDE note WHERE note.text = 'testTextTwo' "),
+        @NamedQuery(name = "queryNoteListWithStringParameter", query = "SELECT note FROM NoteDE note WHERE note.text = :text"), })
 public class NoteDE extends BaseUuidDE {
 
     private static final long serialVersionUID = 1L;

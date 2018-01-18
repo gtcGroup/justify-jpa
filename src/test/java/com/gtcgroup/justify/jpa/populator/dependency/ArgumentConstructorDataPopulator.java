@@ -43,25 +43,24 @@ import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
  */
 public class ArgumentConstructorDataPopulator extends JstBaseDataPopulator {
 
-	@SuppressWarnings("javadoc")
-	public final static String ADDITIONAL_UUID = "additionalUUID";
+    public final static String ADDITIONAL_UUID = "additionalUUID";
 
-	/**
-	 * Constructor
-	 */
-	public ArgumentConstructorDataPopulator(final String fakeArgument) {
+    /**
+     * Constructor
+     */
+    public ArgumentConstructorDataPopulator(@SuppressWarnings("unused") final String fakeArgument) {
 
-		super();
-		return;
-	}
+        super();
+        return;
+    }
 
-	/**
-	 * @see JstBaseDataPopulator#populateCreateListTM(String)
-	 */
-	@Override
-	public List<Object> populateCreateListTM(final String persistenceUnitName) {
+    /**
+     * @see JstBaseDataPopulator#populateCreateListTM(String)
+     */
+    @Override
+    public List<Object> populateCreateListTM(final String persistenceUnitName) {
 
-		final List<Object> createList = new ArrayList<>();
-		return createList;
-	}
+        final List<Object> createList = new ArrayList<>();
+        return createList;
+    }
 }

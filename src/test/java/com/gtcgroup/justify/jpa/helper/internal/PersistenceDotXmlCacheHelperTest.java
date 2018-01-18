@@ -25,11 +25,10 @@
  */
 package com.gtcgroup.justify.jpa.helper.internal;
 
-import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.rulechain.JstRuleChain;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 
 /**
  * Test Class
@@ -42,15 +41,13 @@ import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings({ "javadoc", "static-method" })
+@JstConfigureTestLogToConsole
+@SuppressWarnings("static-method")
 public class PersistenceDotXmlCacheHelperTest {
 
+    @Test
+    public void testRetrieveJdbcUrlOrNull_fake() {
 
-	public JstRuleChain ruleChain = JstRuleChain.outerRule(false);
-
-	@Test(expected = JustifyException.class)
-	public void testRetrieveJdbcUrlOrNull_fake() {
-
-		PersistenceDotXmlCacheHelper.retrieveJdbcUrlOrDatasource("fake", null);
-	}
+        Assertions.assertFalse(PersistenceDotXmlCacheHelper.retrieveJdbcUrlOrDatasource("fake", null).isPresent());
+    }
 }

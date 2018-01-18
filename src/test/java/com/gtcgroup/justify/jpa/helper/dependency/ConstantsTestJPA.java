@@ -34,7 +34,6 @@ package com.gtcgroup.justify.jpa.helper.dependency;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings("javadoc")
 public enum ConstantsTestJPA {
 
     INSTANCE;
@@ -42,7 +41,7 @@ public enum ConstantsTestJPA {
     public final static String NOTE_TEXT_ONE = "testTextOne";
 
     public final static String NOTE_TEXT_TWO = "testTextTwo";
-    
+
     public final static String QUERY_NOTE_SINGLE_ONE = "queryNoteSingleOne";
 
     public final static String QUERY_NOTE_SINGLE_TWO = "queryNoteSingleTwo";

@@ -53,6 +53,7 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 @JstConfigureTestLogToConsole
 @JstConfigureTestUserId
 @JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
+@SuppressWarnings("static-method")
 public class AssertionsJpaTest {
 
     @Test

@@ -23,7 +23,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.de.base.dependency;
+package com.gtcgroup.justify.jpa.de;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -37,7 +37,6 @@ import javax.persistence.Version;
 import com.gtcgroup.justify.core.base.JstBaseDE;
 import com.gtcgroup.justify.core.test.base.JstBaseExtension;
 
-@SuppressWarnings("javadoc")
 @MappedSuperclass
 public abstract class BaseAuditDE extends JstBaseDE {
 

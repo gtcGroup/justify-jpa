@@ -54,9 +54,11 @@ public enum JstFindUtilHelper {
      *
      * @return boolean
      */
+    @SuppressWarnings("unchecked")
     public static <ENTITY> boolean existsInDatabase(final JstFindInstancesJpaPO findPO) {
 
         final Optional<EntityManager> entityManager = findPO.getEntityManager();
+        ENTITY entity = null;
 
         try {
             if (entityManager.isPresent()) {
@@ -69,10 +71,11 @@ public enum JstFindUtilHelper {
                     if (entityIdentity.isPresent()) {
 
                         if (findPO.isForceDatabaseTripWhenNoCacheCoordination()) {
-                            entityManager.get().find(entityContainingIdentity.getClass(), entityIdentity.get(),
-                                    BaseJpaPO.getForceDatabaseTrip());
+                            entity = (ENTITY) entityManager.get().find(entityContainingIdentity.getClass(),
+                                    entityIdentity.get(), BaseJpaPO.getForceDatabaseTrip());
                         } else {
-                            entityManager.get().find(entityContainingIdentity.getClass(), entityIdentity.get());
+                            entity = (ENTITY) entityManager.get().find(entityContainingIdentity.getClass(),
+                                    entityIdentity.get());
                         }
 
                     }
@@ -81,7 +84,7 @@ public enum JstFindUtilHelper {
         } catch (@SuppressWarnings("unused") final Exception e) {
             return false;
         }
-        return true;
+        return null != entity;
     }
 
     /**

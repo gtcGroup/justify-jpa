@@ -34,7 +34,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.gtcgroup.justify.jpa.de.base.dependency.BaseUuidDE;
+import com.gtcgroup.justify.jpa.de.BaseUuidDE;
 
 @Entity
 @Table(name = "BOOKING")
