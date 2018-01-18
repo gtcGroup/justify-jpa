@@ -1,7 +1,7 @@
 /*
  * [Licensed per the Open Source "MIT License".]
  *
- * Copyright (c) 2006 - 2018 by
+ * Copyright (c) 2006 - 2017 by
  * Global Technology Consulting Group, Inc. at
  * http://gtcGroup.com
  *
@@ -23,32 +23,59 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.helper;
+package com.gtcgroup.justify.jpa.populator.dependency;
 
-import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
+import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
  * Test Class
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
+ * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
  * @author Marvin Toll
  * @since v3.0
  */
-@JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
-public class JstEntityManagerUtilHelperTest {
+@SuppressWarnings("javadoc")
+public class NoteDataPopulator extends JstBaseDataPopulator {
 
-    @Test
-    public void test() {
-        // empty test
-    }
+	public static NoteDE noteOne = new NoteDE().setText(ConstantsTestJPA.NOTE_TEXT_ONE)
+			.setUuid(ConstantsTestJPA.NOTE_UUID_ONE);
+	public static NoteDE noteTwo = new NoteDE().setText(ConstantsTestJPA.NOTE_TEXT_TWO)
+			.setUuid(ConstantsTestJPA.NOTE_UUID_TWO);
+
+	public static List<Object> populatedList;
+
+	protected static void buildList(final List<Object> populatedList) {
+
+		for (int i = 0; i < 3; i++) {
+
+			populatedList.add(new NoteDE().setUuid("Id: " + i));
+
+		}
+	}
+
+	/**
+	 * @see JstBaseDataPopulator#populateCreateListTM(JstQueryJpaRM)
+	 */
+	@Override
+	public List<Object> populateCreateListTM(final String persistenceUnitName) {
+
+		final List<Object> populatedList = new ArrayList<>();
+		populatedList.add(NoteDataPopulator.noteOne);
+		populatedList.add(NoteDataPopulator.noteTwo);
+
+		buildList(populatedList);
+
+		NoteDataPopulator.populatedList = populatedList;
+
+		return NoteDataPopulator.populatedList;
+	}
 }

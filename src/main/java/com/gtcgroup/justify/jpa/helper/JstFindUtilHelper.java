@@ -29,7 +29,9 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindInstancesJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
+import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 
 /**
  * This Helper class provides persistence {@link EntityManager} support.
@@ -47,15 +49,50 @@ public enum JstFindUtilHelper {
     INSTANCE;
 
     /**
-     * @return {@link Object} or null
+     * This method forces a trip to the database without altering the state of
+     * cache.
+     *
+     * @return boolean
      */
-    @SuppressWarnings("unchecked")
-    public static <ENTITY> Optional<ENTITY> findSingle(final JstQueryFindSingleJpaPO findPO) {
+    public static <ENTITY> boolean existsInDatabase(final JstFindInstancesJpaPO findPO) {
 
         final Optional<EntityManager> entityManager = findPO.getEntityManager();
 
         try {
+            if (entityManager.isPresent()) {
 
+                for (final Object entityContainingIdentity : findPO.getEntitiesContainingIdentity()) {
+
+                    final Optional<ENTITY> entityIdentity = retrieveEntityIdentity(entityManager.get(),
+                            entityContainingIdentity);
+
+                    if (entityIdentity.isPresent()) {
+
+                        if (findPO.isForceDatabaseTripWhenNoCacheCoordination()) {
+                            entityManager.get().find(entityContainingIdentity.getClass(), entityIdentity.get(),
+                                    BaseJpaPO.getForceDatabaseTrip());
+                        } else {
+                            entityManager.get().find(entityContainingIdentity.getClass(), entityIdentity.get());
+                        }
+
+                    }
+                }
+            }
+        } catch (@SuppressWarnings("unused") final Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @return {@link Optional}
+     */
+    @SuppressWarnings("unchecked")
+    public static <ENTITY> Optional<ENTITY> findSingle(final JstFindSingleJpaPO findPO) {
+
+        final Optional<EntityManager> entityManager = findPO.getEntityManager();
+
+        try {
             if (entityManager.isPresent()) {
 
                 return (Optional<ENTITY>) Optional.ofNullable(entityManager.get().find(findPO.getEntityClass(),
@@ -73,23 +110,15 @@ public enum JstFindUtilHelper {
      * @return {@link Optional}
      */
     @SuppressWarnings("unchecked")
-    public static <ENTITY> Optional<ENTITY> retrieveIdentity(final String persistenceUnitName,
+    public static <IDENTITY> Optional<IDENTITY> retrieveEntityIdentity(final EntityManager entityManager,
             final Object entityWithIdentity) {
 
-        final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
-                .createEntityManagerToBeClosed(persistenceUnitName);
-
         try {
-            if (entityManager.isPresent()) {
-                return (Optional<ENTITY>) Optional.ofNullable(entityManager.get().getEntityManagerFactory()
-                        .getPersistenceUnitUtil().getIdentifier(entityWithIdentity));
-            }
+            return (Optional<IDENTITY>) Optional.ofNullable(
+                    entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entityWithIdentity));
+
         } catch (@SuppressWarnings("unused") final Exception e) {
             // Continue.
-        } finally {
-            if (entityManager.isPresent()) {
-                JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
-            }
         }
         return Optional.empty();
     }

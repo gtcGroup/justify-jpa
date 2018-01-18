@@ -38,7 +38,7 @@ import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstQueryFindAllJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryAllJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
@@ -63,7 +63,7 @@ public class JstFindAllRmTest {
     @Test
     public void testFindAllList_happyPath() {
 
-        final List<NoteDE> noteList = JstQueryFindAllJpaRM.findAll(JstQueryFindAllJpaPO.withFindAll(false)
+        final List<NoteDE> noteList = JstQueryFindAllJpaRM.queryAll(JstQueryAllJpaPO.withQueryAll(false)
                 .withEntityClass(NoteDE.class).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);
@@ -72,8 +72,8 @@ public class JstFindAllRmTest {
     @Test(expected = JustifyException.class)
     public void testFindAllList_noResultClass() {
 
-        final List<NoteDE> noteList = JstQueryFindAllJpaRM.findAll(
-                JstQueryFindAllJpaPO.withFindAll(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
+        final List<NoteDE> noteList = JstQueryFindAllJpaRM.queryAll(
+                JstQueryAllJpaPO.withQueryAll(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);
     }

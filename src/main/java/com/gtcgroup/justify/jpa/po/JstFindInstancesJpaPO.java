@@ -25,12 +25,9 @@
  */
 package com.gtcgroup.justify.jpa.po;
 
-import java.util.Optional;
-
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
-import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
+import com.gtcgroup.justify.jpa.po.internal.BaseFindJpaPO;
 
 /**
  * This Parameter Object class supports find operations.
@@ -43,93 +40,64 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstQueryFindSingleJpaPO extends BaseQueryJpaPO {
+public class JstFindInstancesJpaPO extends BaseFindJpaPO {
 
     /**
      * This method initializes the class.
      *
      * @return {@link JstQueryNamedJpaPO}
      */
-    public static JstQueryFindSingleJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+    public static JstFindInstancesJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-        return new JstQueryFindSingleJpaPO(persistenceUnitName);
+        return new JstFindInstancesJpaPO(persistenceUnitName);
     }
 
-    private Object entityIdentity;
+    private Object[] entitiesContainingIdentity;
 
     /**
      * Constructor
      */
-    protected JstQueryFindSingleJpaPO(final String persistenceUnitName) {
-
+    protected JstFindInstancesJpaPO(final String persistenceUnitName) {
         super(persistenceUnitName);
         return;
     }
 
-    @Override
-    public Optional<Query> createQuery() {
-        final Optional<EntityManager> entityManager = getEntityManager();
-
-        try {
-            if (entityManager.isPresent()) {
-                return Optional.of(entityManager.get().find(getEntityClass(), getEntityIdentity()));
-            }
-        } catch (@SuppressWarnings("unused") final Exception e) {
-            // Continue
-        }
-        return Optional.empty();
+    public Object[] getEntitiesContainingIdentity() {
+        return this.entitiesContainingIdentity;
     }
 
-    /**
-     * @return {@link Object}
-     */
-    public Object getEntityIdentity() {
-
-        return this.entityIdentity;
+    public boolean isEntitiesContainingIdentity() {
+        return null != this.entitiesContainingIdentity;
     }
 
-    /**
-     * @return {@link JstQueryFindSingleJpaPO}
-     */
-    @SuppressWarnings("unchecked")
-    public <ENTITY> JstQueryFindSingleJpaPO withEntityClass(final Class<ENTITY> entityClass) {
-
-        this.entityClass = (Class<Object>) entityClass;
+    public JstFindInstancesJpaPO withEntitiesContainingIdentity(final Object[] entitiesContainingIdentity) {
+        this.entitiesContainingIdentity = entitiesContainingIdentity;
         return this;
     }
 
     /**
-     * @return {@link JstQueryFindSingleJpaPO}
+     * @return {@link JstFindInstancesJpaPO}
      */
-    public JstQueryFindSingleJpaPO withEntityIdentity(final Object entityIdentity) {
-
-        this.entityIdentity = entityIdentity;
-        return this;
-    }
-
-    /**
-     * @return {@link JstQueryFindSingleJpaPO}
-     */
-    public JstQueryFindSingleJpaPO withEntityManager(final EntityManager entityManager) {
+    public JstFindInstancesJpaPO withEntityManager(final EntityManager entityManager) {
 
         super.setEntityManager(entityManager);
         return this;
     }
 
     /**
-     * @return {@link JstQueryFindSingleJpaPO}
+     * @return {@link JstFindInstancesJpaPO}
      */
-    public JstQueryFindSingleJpaPO withForceDatabaseTripWhenNoCacheCoordination(
-            final boolean suppressForceDatabaseTrip) {
+    public JstFindInstancesJpaPO withForceDatabaseTripWhenNoCacheCoordination(
+            final boolean forceDatabaseTripWhenNoCacheCoordination) {
 
-        super.setForceDatabaseTripWhenNoCacheCoordination(suppressForceDatabaseTrip);
+        super.setForceDatabaseTripWhenNoCacheCoordination(forceDatabaseTripWhenNoCacheCoordination);
         return this;
     }
 
     /**
-     * @return {@link JstQueryFindSingleJpaPO}
+     * @return {@link JstFindInstancesJpaPO}
      */
-    public JstQueryFindSingleJpaPO withQueryHint(final String key, final Object value) {
+    public JstFindInstancesJpaPO withQueryHint(final String key, final Object value) {
 
         super.setQueryHint(key, value);
         return this;

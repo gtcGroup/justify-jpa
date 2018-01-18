@@ -26,13 +26,10 @@
 package com.gtcgroup.justify.jpa.po.internal;
 
 import java.util.Map;
-import java.util.Optional;
-
-import javax.persistence.Query;
 
 /**
- * This Parameter Object base class supports queries using the Resource Manager
- * pattern.
+ * This Parameter Object base class supports find operations using the Resource
+ * Manager pattern.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -40,15 +37,11 @@ import javax.persistence.Query;
  * </p>
  *
  * @author Marvin Toll
- * @since v.6.2
+ * @since v.8.5
  */
-public abstract class BaseQueryJpaPO extends BaseJpaPO {
+public abstract class BaseFindJpaPO extends BaseJpaPO {
 
     protected Class<Object> entityClass;
-
-    protected int firstResult;
-
-    protected int maxResults;
 
     protected boolean readOnly = false;
 
@@ -59,14 +52,9 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
     /**
      * Constructor
      */
-    protected BaseQueryJpaPO(final String persistenceUnitName) {
+    protected BaseFindJpaPO(final String persistenceUnitName) {
         super(persistenceUnitName);
     }
-
-    /**
-     * @return {@link Optional}
-     */
-    public abstract Optional<Query> createQuery();
 
     /**
      * @return {@link Class}
@@ -74,20 +62,6 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
     @SuppressWarnings("unchecked")
     public <ENTITY> Class<ENTITY> getEntityClass() {
         return (Class<ENTITY>) this.entityClass;
-    }
-
-    /**
-     * @return int
-     */
-    public int getFirstResult() {
-        return this.firstResult;
-    }
-
-    /**
-     * @return int}
-     */
-    public int getMaxResults() {
-        return this.maxResults;
     }
 
     /**
@@ -107,22 +81,8 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
     /**
      * @return boolean
      */
-    public boolean isFirstResult() {
-        return 0 != this.firstResult;
-    }
-
-    /**
-     * @return boolean
-     */
     public boolean isForceDatabaseTripWhenNoCacheCoordination() {
         return this.forceDatabaseTripWhenNoCacheCoordination;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isMaxResults() {
-        return 0 != this.maxResults;
     }
 
     /**

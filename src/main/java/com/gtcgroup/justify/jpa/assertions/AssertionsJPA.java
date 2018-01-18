@@ -40,6 +40,8 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstAssertCascadeJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindInstancesJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
 
@@ -58,9 +60,11 @@ public enum AssertionsJPA {
 
     INSTANCE;
 
+    private static final String DATABASE = "database";
     private static JstAssertCascadeJpaPO assertionsJpaCascadePO;
-    private static EntityManager entityManager;
-    private static Object parentEntity;
+    private static EntityManager entityManagerForCascadeTypes;
+    private static String persistenceUnitNameForCascadeTypes;
+    private static Object parentEntityForCascadeTypes;
 
     /**
      * This method verifies cascade annotations. If properly executed, it will
@@ -69,8 +73,7 @@ public enum AssertionsJPA {
      * return {@link Optional}
      */
     @SuppressWarnings("unchecked")
-    public static <ENTITY, PO extends JstAssertCascadeJpaPO> Optional<ENTITY> assertCascadeTypes(
-            final PO assertionsCascadePO) {
+    public static <ENTITY> Optional<ENTITY> assertCascadeTypes(final JstAssertCascadeJpaPO assertionsCascadePO) {
 
         AssertionsJPA.assertionsJpaCascadePO = assertionsCascadePO;
 
@@ -78,7 +81,8 @@ public enum AssertionsJPA {
                 .createEntityManagerToBeClosed(assertionsCascadePO.getPersistenceUnitName());
 
         if (entityManager.isPresent()) {
-            AssertionsJPA.entityManager = entityManager.get();
+            AssertionsJPA.entityManagerForCascadeTypes = entityManager.get();
+            AssertionsJPA.persistenceUnitNameForCascadeTypes = assertionsCascadePO.getPersistenceUnitName();
 
             try {
 
@@ -102,19 +106,20 @@ public enum AssertionsJPA {
 
                 finallyBlock();
             }
-            return (Optional<ENTITY>) Optional.of(AssertionsJPA.parentEntity);
+            return (Optional<ENTITY>) Optional.of(AssertionsJPA.parentEntityForCascadeTypes);
         }
         return Optional.empty();
     }
 
     public static <ENTITY> void assertExistsInDatabase(final String persistenceUnitName,
-            final Class<ENTITY> entityClass, final Object... entityIdentities) {
+            final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-        AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
+        final Optional<ENTITY> entity = JstFindUtilHelper
+                .findSingle(JstFindSingleJpaPO.withPersistenceUnitName(persistenceUnitName).withEntityClass(entityClass)
+                        .withEntityIdentity(entityIdentity));
 
-        if (!JstFindUtilHelper.existsInDatabase(AssertionsJPA.entityManager, entityClass, entityIdentities)) {
-
-            assertFailWithMessage(persistenceUnitName, entityClass, "database", "instance unavailable");
+        if (!entity.isPresent()) {
+            assertFailWithMessage(persistenceUnitName, entityClass, AssertionsJPA.DATABASE, "instance unavailable");
         }
         return;
     }
@@ -128,11 +133,10 @@ public enum AssertionsJPA {
     public static void assertExistsInDatabase(final String persistenceUnitName,
             final Object... entititiesContainingIdentity) {
 
-        AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
+        final boolean exists = existsInDatabase(persistenceUnitName, entititiesContainingIdentity);
 
-        if (!JstFindUtilHelper.existsInDatabases(AssertionsJPA.entityManager, entititiesContainingIdentity)) {
-
-            assertFailWithMessage(persistenceUnitName, null, "database", "instance unavailable");
+        if (!exists) {
+            assertFailWithMessage(persistenceUnitName, null, AssertionsJPA.DATABASE, "instance unavailable");
         }
         return;
     }
@@ -160,18 +164,6 @@ public enum AssertionsJPA {
     }
 
     public static <ENTITY> void assertNotExistsInDatabase(final String persistenceUnitName,
-            final Class<ENTITY> entityClass, final Object... entityIdentities) {
-
-        AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
-
-        if (JstFindUtilHelper.existsInDatabase(AssertionsJPA.entityManager, entityClass, entityIdentities)) {
-
-            assertFailWithMessage(persistenceUnitName, entityClass, "database", "instance unexpectedly available");
-        }
-        return;
-    }
-
-    public static <ENTITY> void assertNotExistsInDatabase(final String persistenceUnitName,
             final List<ENTITY> entityListContainingIdentities) {
 
         assertNotExistsInDatabase(persistenceUnitName, entityListContainingIdentities.toArray());
@@ -181,23 +173,12 @@ public enum AssertionsJPA {
     public static void assertNotExistsInDatabase(final String persistenceUnitName,
             final Object... entititiesContainingIdentity) {
 
-        AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
+        final boolean exists = existsInDatabase(persistenceUnitName, entititiesContainingIdentity);
 
-        if (JstFindUtilHelper.existsInDatabases(AssertionsJPA.entityManager, entititiesContainingIdentity)) {
-
-            assertFailWithMessage(persistenceUnitName, null, "database", "instance unexpectedly available");
+        if (exists) {
+            assertFailWithMessage(persistenceUnitName, null, AssertionsJPA.DATABASE, "instance unexpectedly available");
         }
-    }
-
-    public static <ENTITY> void assertNotExistsInSharedCache(final String persistenceUnitName,
-            final Class<ENTITY> entityClass, final Object... entityIdentities) {
-
-        AssertionsJPA.entityManager = getEntityManager(persistenceUnitName);
-
-        if (JstFindUtilHelper.existsInSharedCache(AssertionsJPA.entityManager, entityClass, entityIdentities)) {
-
-            assertFailWithMessage(persistenceUnitName, null, "shared cache", "class available");
-        }
+        return;
     }
 
     private static void cascadeError() {
@@ -209,9 +190,10 @@ public enum AssertionsJPA {
 
     private static <ENTITY> void catchBlock(final Exception e) {
 
-        final Optional<List<ENTITY>> entityList = JstTransactionUtilHelper
-                .transactEntities(JstTransactionJpaPO.withException().withEntityManager(AssertionsJPA.entityManager)
-                        .withDeleteEntities(AssertionsJPA.parentEntity));
+        final Optional<List<ENTITY>> entityList = JstTransactionUtilHelper.transactEntities(
+                JstTransactionJpaPO.withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
+                        .withEntityManager(AssertionsJPA.entityManagerForCascadeTypes)
+                        .withDeleteEntities(AssertionsJPA.parentEntityForCascadeTypes));
 
         if (entityList.isPresent()) {
             return;
@@ -222,44 +204,39 @@ public enum AssertionsJPA {
                         .withExceptionMethodName("assertCascadeTypes"));
     }
 
-    private static void closeEntityManager() {
-
-        JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManager);
-    }
-
-    /**
-     * @return {@link Object} representing entityIdentity.
-     */
-    private static void createParentEntity(final String persistenceUnitName) {
+    private static void createParentEntity() {
 
         Object parentEntity = null;
 
-        final JstTransactionJpaPO transactPO = JstTransactionJpaPO.withPersistenceUnitName(persistenceUnitName)
-                .withEntityManager(AssertionsJPA.entityManager)
+        final JstTransactionJpaPO transactPO = JstTransactionJpaPO
+                .withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
+                .withEntityManager(AssertionsJPA.entityManagerForCascadeTypes)
                 .withCreateAndUpdateEntities(AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity());
 
         parentEntity = JstTransactionJpaRM.transactEntity(transactPO);
 
-        AssertionsJPA.parentEntity = parentEntity;
+        AssertionsJPA.parentEntityForCascadeTypes = parentEntity;
         AssertionsJPA.assertionsJpaCascadePO.replacePopulatedEntity(parentEntity);
     }
 
-    private static void deleteParentEntity(final String persistenceUnitName) {
+    private static void deleteParentEntity() {
 
-        if (null != AssertionsJPA.parentEntity) {
+        if (null != AssertionsJPA.parentEntityForCascadeTypes) {
 
-            JstTransactionUtilHelper.findAndDeleteEntity(persistenceUnitName, AssertionsJPA.parentEntity);
+            JstTransactionUtilHelper.findAndDeleteEntity(AssertionsJPA.persistenceUnitNameForCascadeTypes,
+                    AssertionsJPA.parentEntityForCascadeTypes);
         }
     }
 
     private static void deleteRemainingEntities() {
 
-        if (null != AssertionsJPA.parentEntity) {
+        if (null != AssertionsJPA.parentEntityForCascadeTypes) {
             for (final String method : AssertionsJPA.assertionsJpaCascadePO.getAfterTheTestCleanupList()) {
 
                 try {
-                    JstTransactionUtilHelper.findAndDeleteRelatedEntity(AssertionsJPA.entityManager,
-                            AssertionsJPA.parentEntity, method);
+                    JstTransactionUtilHelper.findAndDeleteRelatedEntity(
+                            AssertionsJPA.persistenceUnitNameForCascadeTypes, AssertionsJPA.parentEntityForCascadeTypes,
+                            method);
                 } catch (@SuppressWarnings("unused") final Exception e) {
                     // Ignore
                 }
@@ -267,17 +244,22 @@ public enum AssertionsJPA {
         }
     }
 
+    private static boolean existsInDatabase(final String persistenceUnitName,
+            final Object... entititiesContainingIdentity) {
+
+        return JstFindUtilHelper.existsInDatabase(JstFindInstancesJpaPO.withPersistenceUnitName(persistenceUnitName)
+                .withForceDatabaseTripWhenNoCacheCoordination(true)
+                .withEntitiesContainingIdentity(entititiesContainingIdentity));
+    }
+
     private static void finallyBlock() {
 
-        try {
-            deleteParentEntity();
-            deleteRemainingEntities();
+        JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManagerForCascadeTypes);
+        AssertionsJPA.entityManagerForCascadeTypes = null;
 
-        } finally {
+        deleteParentEntity();
+        deleteRemainingEntities();
 
-            closeEntityManager();
-            AssertionsJPA.entityManager = null;
-        }
     }
 
     private static boolean isExists(final List<String> existsList, final boolean expected) {
@@ -285,8 +267,13 @@ public enum AssertionsJPA {
         for (final String methodName : existsList) {
 
             final Object entityOrList = JstReflectionUtilHelper.invokePublicMethod(methodName,
-                    AssertionsJPA.parentEntity);
-            final boolean actual = JstFindUtilHelper.existsInDatabases(AssertionsJPA.entityManager, entityOrList);
+                    AssertionsJPA.parentEntityForCascadeTypes);
+
+            final boolean actual = JstFindUtilHelper.existsInDatabase(
+                    JstFindInstancesJpaPO.withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
+                            .withEntityManager(AssertionsJPA.entityManagerForCascadeTypes)
+                            .withEntitiesContainingIdentity(entitiesContainingIdentity),
+                    entityOrList);
             if (expected != actual) {
                 return false;
             }

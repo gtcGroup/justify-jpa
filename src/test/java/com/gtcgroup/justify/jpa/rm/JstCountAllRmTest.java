@@ -43,7 +43,7 @@ import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryCountJpaPO;
-import com.gtcgroup.justify.jpa.po.JstQueryFindAllJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryAllJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
@@ -71,7 +71,7 @@ public class JstCountAllRmTest {
         final long count = JstCountAllJpaRM.count(JstQueryCountJpaPO.withQuery(false).withResultClass(NoteDE.class)
                 .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
-        final List<NoteDE> noteList = JstQueryFindAllJpaRM.findAll(JstQueryFindAllJpaPO.withFindAll(false)
+        final List<NoteDE> noteList = JstQueryFindAllJpaRM.queryAll(JstQueryAllJpaPO.withQueryAll(false)
                 .withEntityClass(NoteDE.class).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         Assertions.assertThat(count).isEqualTo(noteList.size());
@@ -91,7 +91,7 @@ public class JstCountAllRmTest {
             count = JstCountAllJpaRM.count(
                     JstQueryCountJpaPO.withQuery(false).withResultClass(NoteDE.class).withEntityManager(entityManager));
 
-            noteList = JstQueryFindAllJpaRM.findAll(JstQueryFindAllJpaPO.withFindAll(false).withEntityClass(NoteDE.class)
+            noteList = JstQueryFindAllJpaRM.queryAll(JstQueryAllJpaPO.withQueryAll(false).withEntityClass(NoteDE.class)
                     .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         } finally {

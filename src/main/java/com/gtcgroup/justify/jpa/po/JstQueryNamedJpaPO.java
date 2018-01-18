@@ -134,7 +134,7 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
      */
     public JstQueryNamedJpaPO withParameterMap(final Map<String, Object> parameterMap) {
 
-        this.queryHintsMap = parameterMap;
+        this.queryHints = parameterMap;
         return this;
     }
 

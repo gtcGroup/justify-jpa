@@ -36,7 +36,7 @@ import com.gtcgroup.justify.core.rulechain.JstRuleChain;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteAdditionalDataPopulator;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 import com.gtcgroup.justify.jpa.rm.JstQueryFindJpaRM;
@@ -92,7 +92,7 @@ public class JstConfigureJpaRuleTest {
     @Test
     public void testForPopulator_additional() {
 
-        JstQueryFindJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(false)
+        JstQueryFindJpaRM.findSingle(JstFindSingleJpaPO.withFind(false)
             .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
             .withEntityClass(NoteDE.class)
             .withEntityIdentity(NoteAdditionalDataPopulator.ADDITIONAL_UUID)
@@ -102,7 +102,7 @@ public class JstConfigureJpaRuleTest {
     @Test
     public void testForPopulator_note_readonly() {
 
-        JstQueryFindJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(false)
+        JstQueryFindJpaRM.findSingle(JstFindSingleJpaPO.withFind(false)
             .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
             .withEntityClass(NoteDE.class)
             .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));

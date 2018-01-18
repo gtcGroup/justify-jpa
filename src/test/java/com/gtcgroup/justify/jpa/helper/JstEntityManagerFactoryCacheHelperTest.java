@@ -25,14 +25,14 @@
  */
 package com.gtcgroup.justify.jpa.helper;
 
+import java.util.Optional;
+
 import javax.persistence.EntityManager;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.rulechain.JstRuleChain;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 
 /**
@@ -46,27 +46,28 @@ import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings({ "javadoc", "static-method" })
+@JstConfigureTestLogToConsole
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU)
+@SuppressWarnings("static-method")
 public class JstEntityManagerFactoryCacheHelperTest {
 
+    @Test
+    public void testCloseEntityManager() {
 
-	public JstRuleChain ruleChain = JstRuleChain.outerRule()
-			.around(JstConfigureTestJpaExtension.withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU));
+        final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
+                .createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
 
-	@Test
-	public void testClearAllInstancesFromPersistenceContext() {
+        if (entityManager.isPresent()) {
+            JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
+            JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
+        }
 
-		final EntityManager entityManager = JstEntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
-		JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-		JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+    }
 
-	}
+    @Test
+    public void testRetrieve() {
 
-	@Test(expected = JustifyException.class)
-	public void testRetrieve() {
+        JstEntityManagerFactoryCacheHelper.createEntityManagerFactory("fakePU", null, false);
 
-        JstEntityManagerFactoryCacheHelper.createEntityManagerFactory("fakePU", null);
-
-	}
+    }
 }

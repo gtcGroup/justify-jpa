@@ -1,7 +1,7 @@
 /*
  * [Licensed per the Open Source "MIT License".]
  *
- * Copyright (c) 2006 - 2018 by
+ * Copyright (c) 2006 - 2017 by
  * Global Technology Consulting Group, Inc. at
  * http://gtcGroup.com
  *
@@ -23,32 +23,38 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.helper;
+package com.gtcgroup.justify.jpa.populator.dependency;
 
-import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
-import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
+import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
+import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 
 /**
  * Test Class
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
+ * Copyright (c) 2006 - 2017 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
  * @author Marvin Toll
  * @since v3.0
  */
-@JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
-public class JstEntityManagerUtilHelperTest {
+public class NoteAdditionalDataPopulator extends JstBaseDataPopulator {
 
-    @Test
-    public void test() {
-        // empty test
-    }
+	@SuppressWarnings("javadoc")
+	public final static String ADDITIONAL_UUID = "additionalUUID";
+
+	/**
+	 * @see JstBaseDataPopulator#populateCreateListTM(String)
+	 */
+	@Override
+	public List<Object> populateCreateListTM(final String persistenceUnitName) {
+
+		final List<Object> createList = new ArrayList<>();
+		createList.add(new NoteDE().setUuid(NoteAdditionalDataPopulator.ADDITIONAL_UUID));
+		return createList;
+	}
 }

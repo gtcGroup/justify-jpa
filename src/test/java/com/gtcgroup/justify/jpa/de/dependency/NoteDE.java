@@ -43,69 +43,68 @@ import com.gtcgroup.justify.jpa.de.base.dependency.BaseUuidDE;
 @Table(name = "NOTE")
 @AttributeOverrides({ @AttributeOverride(name = "uuid", column = @Column(name = "NOTE_UUID")) })
 @Cacheable
-@Cache (size=100)
+@Cache(size = 100)
 @NamedQueries({ @NamedQuery(name = "queryNoteList", query = "SELECT note FROM NothingBean note"),
-		@NamedQuery(name = "queryNoteSingleOne", query = "SELECT note FROM NothingBean note WHERE note.text = 'testTextOne' "),
-		@NamedQuery(name = "queryNoteSingleTwo", query = "SELECT note FROM NothingBean note WHERE note.text = 'testTextTwo' "),
-		@NamedQuery(name = "queryNoteListWithStringParameter", query = "SELECT note FROM NothingBean note WHERE note.text = :text"), })
-@SuppressWarnings("javadoc")
+        @NamedQuery(name = "queryNoteSingleOne", query = "SELECT note FROM NothingBean note WHERE note.text = 'testTextOne' "),
+        @NamedQuery(name = "queryNoteSingleTwo", query = "SELECT note FROM NothingBean note WHERE note.text = 'testTextTwo' "),
+        @NamedQuery(name = "queryNoteListWithStringParameter", query = "SELECT note FROM NothingBean note WHERE note.text = :text"), })
 public class NoteDE extends BaseUuidDE {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static String STRING = "string";
+    public static String STRING = "string";
 
-	@Column(name = "NOTE_TEXT")
-	private String text;
+    @Column(name = "NOTE_TEXT")
+    private String text;
 
-	@Transient
-	private String string = NoteDE.STRING;
+    @Transient
+    private String string = NoteDE.STRING;
 
-	public String getString() {
+    public String getString() {
 
-		return this.string;
-	}
+        return this.string;
+    }
 
-	/**
-	 * @return String
-	 */
-	@SuppressWarnings("static-method")
-	public String getSTRING() {
-		return NoteDE.STRING;
-	}
+    /**
+     * @return String
+     */
+    @SuppressWarnings("static-method")
+    public String getSTRING() {
+        return NoteDE.STRING;
+    }
 
-	public String getText() {
+    public String getText() {
 
-		return this.text;
-	}
+        return this.text;
+    }
 
-	@SuppressWarnings("static-method")
-	public String retrieveException() {
+    @SuppressWarnings("static-method")
+    public String retrieveException() {
 
-		throw new RuntimeException();
-	}
+        throw new RuntimeException();
+    }
 
-	/**
-	 * @param string
-	 * @return NothingBean.java
-	 */
-	public NoteDE setString(final String string) {
-		this.string = string;
-		return this;
-	}
+    /**
+     * @param string
+     * @return NothingBean.java
+     */
+    public NoteDE setString(final String string) {
+        this.string = string;
+        return this;
+    }
 
-	/**
-	 * @param sTRING
-	 * @return NothingBean.java
-	 */
-	public NoteDE setSTRING(final String sTRING) {
-		NoteDE.STRING = sTRING;
-		return this;
-	}
+    /**
+     * @param sTRING
+     * @return NothingBean.java
+     */
+    public NoteDE setSTRING(final String sTRING) {
+        NoteDE.STRING = sTRING;
+        return this;
+    }
 
-	public NoteDE setText(final String text) {
+    public NoteDE setText(final String text) {
 
-		this.text = text;
-		return this;
-	}
+        this.text = text;
+        return this;
+    }
 }

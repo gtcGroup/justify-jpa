@@ -49,9 +49,10 @@ public enum JstTransactionJpaRM {
     INTERNAL;
 
     /**
-     * This method is used for committing a single transaction. If any of the
-     * related child objects are not marked for an applicable {@link CascadeType}
-     * then they need to be explicitly handled in the {@link JstTransactionJpaPO}.
+     * This method is used for committing a single transaction with a single entity.
+     * If any of the related child objects are not marked for an applicable
+     * {@link CascadeType} then they need to be explicitly handled in the
+     * {@link JstTransactionJpaPO}.
      *
      * @return {@link Optional}
      */
@@ -61,9 +62,10 @@ public enum JstTransactionJpaRM {
     }
 
     /**
-     * This method is used for committing a single transaction. If any of the
-     * related child objects are not marked for an applicable {@link CascadeType}
-     * then they need to be explicitly handled in the {@link JstTransactionJpaPO}.
+     * This method is used for committing a single transaction with multiple
+     * entities. If any of the related child objects are not marked for an
+     * applicable {@link CascadeType} then they need to be explicitly handled in the
+     * {@link JstTransactionJpaPO}.
      *
      * @return {@link Optional}
      */

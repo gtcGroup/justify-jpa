@@ -31,8 +31,8 @@ import java.util.Optional;
 
 import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstQueryFindAllJpaPO;
-import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryAllJpaPO;
 
 /**
  * This Resource Manager class supports "find" operations.
@@ -52,15 +52,7 @@ public enum JstQueryFindJpaRM {
     /**
      * @return {@link Optional}
      */
-    public static <ENTITY> Optional<List<ENTITY>> findAll(final JstQueryFindAllJpaPO findAllPO) {
-
-        return JstQueryUtilHelper.queryResultList(findAllPO);
-    }
-
-    /**
-     * @return {@link Optional}
-     */
-    public static <ENTITY> Optional<ENTITY> findSingle(final JstQueryFindSingleJpaPO findPO) {
+    public static <ENTITY> Optional<ENTITY> findSingle(final JstFindSingleJpaPO findPO) {
 
         return JstFindUtilHelper.findSingle(findPO);
     }
@@ -68,9 +60,8 @@ public enum JstQueryFindJpaRM {
     /**
      * @return {@link Optional}
      */
-    public static <ENTITY> Optional<ENTITY> retrieveIdentity(final String persistenceUnitName,
-            final Object entityWithPrimaryKey) {
+    public static <ENTITY> Optional<List<ENTITY>> queryAll(final JstQueryAllJpaPO queryAllPO) {
 
-        return JstFindUtilHelper.retrieveIdentity(persistenceUnitName, entityWithPrimaryKey);
+        return JstQueryUtilHelper.queryResultList(queryAllPO);
     }
 }

@@ -39,7 +39,7 @@ import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstQueryFindSingleJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
@@ -65,7 +65,7 @@ public class JstFindJpaRmTest {
     private NoteDE createFindJpaPO(final boolean suppressExceptionForNull, final Class<?> clazz,
             final String entityIdentity) {
 
-        final JstQueryFindSingleJpaPO findJpaPO = JstQueryFindSingleJpaPO.withFind(suppressExceptionForNull)
+        final JstFindSingleJpaPO findJpaPO = JstFindSingleJpaPO.withFind(suppressExceptionForNull)
                 .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withEntityClass(clazz)
                 .withEntityIdentity(entityIdentity);
 
@@ -111,7 +111,7 @@ public class JstFindJpaRmTest {
             entityManager = JstEntityManagerFactoryCacheHelper
                     .createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
 
-            note = JstQueryFindJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
+            note = JstQueryFindJpaRM.findSingle(JstFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
                     .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO).withEntityManager(entityManager));
         } finally {
             JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
@@ -124,7 +124,7 @@ public class JstFindJpaRmTest {
     public void testWithModifiablePopulatedEntityContainingIdentity() {
 
         final NoteDE note = JstQueryFindJpaRM
-                .findSingle(JstQueryFindSingleJpaPO.withFind(true).withPopulatedEntityContainingIdentity(NoteDataPopulator.noteTwo)
+                .findSingle(JstFindSingleJpaPO.withFind(true).withPopulatedEntityContainingIdentity(NoteDataPopulator.noteTwo)
                         .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
         Assertions.assertThat(note).isNotNull();
@@ -133,7 +133,7 @@ public class JstFindJpaRmTest {
     @Test(expected = JustifyException.class)
     public void testWithoutEntityManager() {
 
-        JstQueryFindJpaRM.findSingle(JstQueryFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
+        JstQueryFindJpaRM.findSingle(JstFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
                 .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));
     }
 
@@ -141,7 +141,7 @@ public class JstFindJpaRmTest {
     public void testWithoutTargetEntity() {
 
         final NoteDE note = JstQueryFindJpaRM
-                .findSingle(JstQueryFindSingleJpaPO.withFind(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+                .findSingle(JstFindSingleJpaPO.withFind(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                         .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));
 
         Assertions.assertThat(note).isNotNull();

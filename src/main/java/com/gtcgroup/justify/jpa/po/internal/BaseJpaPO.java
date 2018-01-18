@@ -25,9 +25,17 @@
  */
 package com.gtcgroup.justify.jpa.po.internal;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
+import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
+
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.CascadePolicy;
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
 
 import com.gtcgroup.justify.core.base.JstBasePO;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
@@ -45,6 +53,27 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
  * @since v.6.2
  */
 public abstract class BaseJpaPO extends JstBasePO {
+
+    /**
+     * These {@link QueryHints} are typically used when there are multiple servers
+     * without cache coordination.
+     */
+    protected static final Map<String, Object> FORCE_DATABASE_TRIP = new HashMap<>();
+
+    static {
+
+        BaseJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+
+        BaseJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+
+        BaseJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+
+        BaseJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH, HintValues.TRUE);
+    }
+
+    public static Map<String, Object> getForceDatabaseTrip() {
+        return BaseJpaPO.FORCE_DATABASE_TRIP;
+    }
 
     protected EntityManager entityManager;
 
@@ -82,10 +111,14 @@ public abstract class BaseJpaPO extends JstBasePO {
 
         if (null == this.entityManager) {
 
-            return JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(this.persistenceUnitName);
-        }
+            final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
+                    .createEntityManagerToBeClosed(this.persistenceUnitName);
 
-        return Optional.of(this.entityManager);
+            if (entityManager.isPresent()) {
+                this.entityManager = entityManager.get();
+            }
+        }
+        return Optional.ofNullable(this.entityManager);
     }
 
     protected void setEntityManager(final EntityManager entityManager) {

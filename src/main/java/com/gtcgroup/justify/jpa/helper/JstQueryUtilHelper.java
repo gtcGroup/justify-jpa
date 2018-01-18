@@ -84,38 +84,44 @@ public enum JstQueryUtilHelper {
         return Optional.empty();
     }
 
-    private static Query decorateQuery(final BaseQueryJpaPO queryPO) {
+    private static Optional<Query> decorateQuery(final BaseQueryJpaPO queryPO) {
 
-        final Query query = queryPO.createQuery();
+        final Optional<Query> queryOptional = queryPO.createQuery();
 
-        if (queryPO.isQueryParameterMap()) {
+        if (queryOptional.isPresent()) {
 
-            for (final Entry<String, Object> stringEntry : queryPO.getQueryHintsMap().entrySet()) {
+            final Query query = queryOptional.get();
 
-                query.setParameter(stringEntry.getKey(), stringEntry.getValue());
+            if (queryPO.isQueryParameterMap()) {
+
+                for (final Entry<String, Object> stringEntry : queryPO.getQueryHints().entrySet()) {
+
+                    query.setParameter(stringEntry.getKey(), stringEntry.getValue());
+                }
             }
+
+            if (queryPO.isForceDatabaseTripWhenNoCacheCoordination()) {
+                query.setHint(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+                query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
+                query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+            }
+
+            if (!queryPO.isReadOnly()) {
+
+                query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+            }
+
+            if (queryPO.isFirstResult()) {
+
+                query.setFirstResult(queryPO.getFirstResult());
+            }
+            if (queryPO.isMaxResults()) {
+
+                query.setMaxResults(queryPO.getMaxResults());
+            }
+            return Optional.of(query);
         }
-
-        if (queryPO.isForceDatabaseTripWhenNoCacheCoordination()) {
-            query.setHint(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
-            query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
-            query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
-        }
-
-        if (!queryPO.isReadOnly()) {
-
-            query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-        }
-
-        if (queryPO.isFirstResult()) {
-
-            query.setFirstResult(queryPO.getFirstResult());
-        }
-        if (queryPO.isMaxResults()) {
-
-            query.setMaxResults(queryPO.getMaxResults());
-        }
-        return query;
+        return Optional.empty();
     }
 
     /**
@@ -125,13 +131,16 @@ public enum JstQueryUtilHelper {
     public static <ENTITY> Optional<List<ENTITY>> queryResultList(final BaseQueryJpaPO queryPO) {
 
         try {
-            final Query query = decorateQuery(queryPO);
-            return Optional.of(query.getResultList());
+            final Optional<Query> query = decorateQuery(queryPO);
+            if (query.isPresent()) {
+                return Optional.of(query.get().getResultList());
+            }
         } catch (@SuppressWarnings("unused") final Exception e) {
-            return Optional.empty();
+            // Continue.
         } finally {
             queryPO.closeEncapsulatedEntityManager();
         }
+        return Optional.empty();
     }
 
     /**
@@ -141,12 +150,15 @@ public enum JstQueryUtilHelper {
     public static <ENTITY> Optional<ENTITY> querySingleResult(final BaseQueryJpaPO queryPO) {
 
         try {
-            final Query query = decorateQuery(queryPO);
-            return (Optional<ENTITY>) Optional.of(query.getSingleResult());
+            final Optional<Query> query = decorateQuery(queryPO);
+            if (query.isPresent()) {
+                return (Optional<ENTITY>) Optional.of(query.get().getSingleResult());
+            }
         } catch (@SuppressWarnings("unused") final Exception e) {
-            return Optional.empty();
+            // Continue.
         } finally {
             queryPO.closeEncapsulatedEntityManager();
         }
+        return Optional.empty();
     }
 }

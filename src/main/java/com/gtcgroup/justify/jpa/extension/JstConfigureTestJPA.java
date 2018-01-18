@@ -43,7 +43,7 @@ public @interface JstConfigureTestJPA {
     // TODO:
     // public Map<String, Object> persistencePropertyMap();
 
-    public Class<? extends JstBaseDataPopulator>[] dataPopulators();
+    public Class<? extends JstBaseDataPopulator>[] dataPopulators() default {};
 
-    public String persistenceUnitName() default "";
+    public String persistenceUnitName();
 }

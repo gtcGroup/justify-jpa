@@ -47,7 +47,10 @@ dependencies {
     //compile 'com.gtcgroup:justify-core:8.3.0' 
     compile 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.+'
     
-    	compile("org.junit.jupiter:junit-jupiter-api:5.+") {
+    compile 'com.github.ben-manes.caffeine:guava:latest.release'
+    compile 'com.h2database:h2:latest.release'
+    
+    compile("org.junit.jupiter:junit-jupiter-api:5.+") {
         exclude group: 'junit', module: 'junit'
     }
     compile("org.junit.platform:junit-platform-launcher:1.+") {
