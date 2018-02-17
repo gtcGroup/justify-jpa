@@ -31,6 +31,8 @@ hs_err_pid*
 
 # Dot Artifacts # 
 .settings
+.classpath
+.project
 
 #Gradle
 gradle*
