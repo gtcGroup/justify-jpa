@@ -43,24 +43,15 @@ import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings("javadoc")
 public class NoteDataPopulator extends JstBaseDataPopulator {
 
 	public static NoteDE noteOne = new NoteDE().setText(ConstantsTestJPA.NOTE_TEXT_ONE)
 			.setUuid(ConstantsTestJPA.NOTE_UUID_ONE);
+
 	public static NoteDE noteTwo = new NoteDE().setText(ConstantsTestJPA.NOTE_TEXT_TWO)
 			.setUuid(ConstantsTestJPA.NOTE_UUID_TWO);
 
-	public static List<Object> populatedList;
-
-	protected static void buildList(final List<Object> populatedList) {
-
-		for (int i = 0; i < 3; i++) {
-
-			populatedList.add(new NoteDE().setUuid("Id: " + i));
-
-		}
-	}
+	public static List<Object> populatedList = new ArrayList<>();
 
 	/**
 	 * @see JstBaseDataPopulator#populateCreateListTM(JstQueryJpaRM)
@@ -68,13 +59,8 @@ public class NoteDataPopulator extends JstBaseDataPopulator {
 	@Override
 	public List<Object> populateCreateListTM(final String persistenceUnitName) {
 
-		final List<Object> populatedList = new ArrayList<>();
 		populatedList.add(NoteDataPopulator.noteOne);
 		populatedList.add(NoteDataPopulator.noteTwo);
-
-		buildList(populatedList);
-
-		NoteDataPopulator.populatedList = populatedList;
 
 		return NoteDataPopulator.populatedList;
 	}

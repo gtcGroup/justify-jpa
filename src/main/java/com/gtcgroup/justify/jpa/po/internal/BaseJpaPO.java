@@ -111,11 +111,11 @@ public abstract class BaseJpaPO extends JstBasePO {
 
         if (null == this.entityManager) {
 
-            final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
+            final Optional<EntityManager> entityManagerTemp = JstEntityManagerFactoryCacheHelper
                     .createEntityManagerToBeClosed(this.persistenceUnitName);
 
-            if (entityManager.isPresent()) {
-                this.entityManager = entityManager.get();
+            if (entityManagerTemp.isPresent()) {
+                this.entityManager = entityManagerTemp.get();
             }
         }
         return Optional.ofNullable(this.entityManager);

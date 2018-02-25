@@ -58,247 +58,246 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
  */
 public enum AssertionsJPA {
 
-    INSTANCE;
+	INSTANCE;
 
-    private static final String DATABASE = "database";
-    private static JstAssertCascadeJpaPO assertionsJpaCascadePO;
-    private static EntityManager entityManagerForCascadeTypes;
-    private static String persistenceUnitNameForCascadeTypes;
-    private static Object parentEntityForCascadeTypes;
+	private static final String DATABASE = "database";
+	private static JstAssertCascadeJpaPO assertionsJpaCascadePO;
+	private static EntityManager entityManagerForCascadeTypes;
+	private static String persistenceUnitNameForCascadeTypes;
+	private static Object parentEntityForCascadeTypes;
 
-    /**
-     * This method verifies cascade annotations. If properly executed, it will
-     * remove any persisted instances used for verification.
-     *
-     * return {@link Optional}
-     */
-    @SuppressWarnings("unchecked")
-    public static <ENTITY> Optional<ENTITY> assertCascadeTypes(final JstAssertCascadeJpaPO assertionsCascadePO) {
+	/**
+	 * This method verifies cascade annotations. If properly executed, it will
+	 * remove any persisted instances used for verification.
+	 *
+	 * return {@link Optional}
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ENTITY> Optional<ENTITY> assertCascadeTypes(final JstAssertCascadeJpaPO assertionsCascadePO) {
 
-        AssertionsJPA.assertionsJpaCascadePO = assertionsCascadePO;
+		AssertionsJPA.assertionsJpaCascadePO = assertionsCascadePO;
 
-        final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
-                .createEntityManagerToBeClosed(assertionsCascadePO.getPersistenceUnitName());
+		final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(assertionsCascadePO.getPersistenceUnitName());
 
-        if (entityManager.isPresent()) {
-            AssertionsJPA.entityManagerForCascadeTypes = entityManager.get();
-            AssertionsJPA.persistenceUnitNameForCascadeTypes = assertionsCascadePO.getPersistenceUnitName();
+		if (entityManager.isPresent()) {
+			AssertionsJPA.entityManagerForCascadeTypes = entityManager.get();
+			AssertionsJPA.persistenceUnitNameForCascadeTypes = assertionsCascadePO.getPersistenceUnitName();
 
-            try {
+			try {
 
-                createParentEntity();
+				createParentEntity();
 
-                verifyCascadeEntitiesPersisted(assertionsCascadePO.getCascadePersistList(), true);
+				verifyCascadeEntitiesPersisted(assertionsCascadePO.getCascadePersistList(), true);
 
-                verifyCascadeEntitiesPersisted(assertionsCascadePO.getCascadeNoPersistList(), false);
+				verifyCascadeEntitiesPersisted(assertionsCascadePO.getCascadeNoPersistList(), false);
 
-                deleteParentEntity();
+				deleteParentEntity();
 
-                verifyCascadeEntitiesRemoved(assertionsCascadePO.getCascadeRemoveList(), false);
+				verifyCascadeEntitiesRemoved(assertionsCascadePO.getCascadeRemoveList(), false);
 
-                verifyCascadeEntitiesRemoved(assertionsCascadePO.getCascadeNoRemoveList(), true);
+				verifyCascadeEntitiesRemoved(assertionsCascadePO.getCascadeNoRemoveList(), true);
 
-            } catch (final Exception e) {
+			} catch (final Exception e) {
 
-                catchBlock(e);
+				catchBlock(e);
 
-            } finally {
+			} finally {
 
-                finallyBlock();
-            }
-            return (Optional<ENTITY>) Optional.of(AssertionsJPA.parentEntityForCascadeTypes);
-        }
-        return Optional.empty();
-    }
+				finallyBlock();
+			}
+			return (Optional<ENTITY>) Optional.of(AssertionsJPA.parentEntityForCascadeTypes);
+		}
+		return Optional.empty();
+	}
 
-    public static <ENTITY> void assertExistsInDatabase(final String persistenceUnitName,
-            final Class<ENTITY> entityClass, final Object entityIdentity) {
+	public static <ENTITY> void assertExistsInDatabase(final String persistenceUnitName,
+			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-        final Optional<ENTITY> entity = JstFindUtilHelper
-                .findSingle(JstFindSingleJpaPO.withPersistenceUnitName(persistenceUnitName).withEntityClass(entityClass)
-                        .withEntityIdentity(entityIdentity));
+		final Optional<ENTITY> entity = JstFindUtilHelper
+				.findSingle(JstFindSingleJpaPO.withPersistenceUnitName(persistenceUnitName).withEntityClass(entityClass)
+						.withEntityIdentity(entityIdentity));
 
-        if (!entity.isPresent()) {
-            assertFailWithMessage(persistenceUnitName, entityClass, AssertionsJPA.DATABASE, "instance unavailable");
-        }
-        return;
-    }
+		if (!entity.isPresent()) {
+			assertFailWithMessage(persistenceUnitName, entityClass, AssertionsJPA.DATABASE, "instance unavailable");
+		}
+		return;
+	}
 
-    public static <ENTITY> void assertExistsInDatabase(final String persistenceUnitName,
-            final List<ENTITY> entityListContainingIdentities) {
+	public static <ENTITY> void assertExistsInDatabase(final String persistenceUnitName,
+			final List<ENTITY> entityListContainingIdentities) {
 
-        assertExistsInDatabase(persistenceUnitName, entityListContainingIdentities.toArray());
-    }
+		assertExistsInDatabase(persistenceUnitName, entityListContainingIdentities.toArray());
+	}
 
-    public static void assertExistsInDatabase(final String persistenceUnitName,
-            final Object... entititiesContainingIdentity) {
+	public static void assertExistsInDatabase(final String persistenceUnitName,
+			final Object... entititiesContainingIdentity) {
 
-        final boolean exists = existsInDatabase(persistenceUnitName, entititiesContainingIdentity);
+		final boolean exists = existsInDatabase(persistenceUnitName, entititiesContainingIdentity);
 
-        if (!exists) {
-            assertFailWithMessage(persistenceUnitName, null, AssertionsJPA.DATABASE, "instance unavailable");
-        }
-        return;
-    }
+		if (!exists) {
+			assertFailWithMessage(persistenceUnitName, null, AssertionsJPA.DATABASE, "instance unavailable");
+		}
+		return;
+	}
 
-    private static <ENTITY> void assertFailWithMessage(final String persistenceUnitName,
-            final Class<ENTITY> entityClassOrNull, final String fromWhere, final String availableOrUnavailable) {
+	public static <ENTITY> void assertNotExistsInDatabase(final String persistenceUnitName,
+			final List<ENTITY> entityListContainingIdentities) {
 
-        final StringBuilder assertionErrorMessage = new StringBuilder();
+		assertNotExistsInDatabase(persistenceUnitName, entityListContainingIdentities.toArray());
 
-        assertionErrorMessage.append("An ");
+	}
 
-        if (null != entityClassOrNull) {
-            assertionErrorMessage.append("of [");
-            assertionErrorMessage.append(entityClassOrNull.getSimpleName());
-            assertionErrorMessage.append("] ");
-        }
+	public static void assertNotExistsInDatabase(final String persistenceUnitName,
+			final Object... entititiesContainingIdentity) {
 
-        assertionErrorMessage.append(availableOrUnavailable);
-        assertionErrorMessage.append(" from the ");
-        assertionErrorMessage.append(fromWhere + " [");
-        assertionErrorMessage.append(persistenceUnitName);
-        assertionErrorMessage.append("].");
+		final boolean exists = existsInDatabase(persistenceUnitName, entititiesContainingIdentity);
 
-        Assert.fail(assertionErrorMessage.toString());
-    }
+		if (exists) {
+			assertFailWithMessage(persistenceUnitName, null, AssertionsJPA.DATABASE, "instance unexpectedly available");
+		}
+		return;
+	}
 
-    public static <ENTITY> void assertNotExistsInDatabase(final String persistenceUnitName,
-            final List<ENTITY> entityListContainingIdentities) {
+	private static <ENTITY> void assertFailWithMessage(final String persistenceUnitName,
+			final Class<ENTITY> entityClassOrNull, final String fromWhere, final String availableOrUnavailable) {
 
-        assertNotExistsInDatabase(persistenceUnitName, entityListContainingIdentities.toArray());
+		final StringBuilder assertionErrorMessage = new StringBuilder();
 
-    }
+		assertionErrorMessage.append("An ");
 
-    public static void assertNotExistsInDatabase(final String persistenceUnitName,
-            final Object... entititiesContainingIdentity) {
+		if (null != entityClassOrNull) {
+			assertionErrorMessage.append("of [");
+			assertionErrorMessage.append(entityClassOrNull.getSimpleName());
+			assertionErrorMessage.append("] ");
+		}
 
-        final boolean exists = existsInDatabase(persistenceUnitName, entititiesContainingIdentity);
+		assertionErrorMessage.append(availableOrUnavailable);
+		assertionErrorMessage.append(" from the ");
+		assertionErrorMessage.append(fromWhere + " [");
+		assertionErrorMessage.append(persistenceUnitName);
+		assertionErrorMessage.append("].");
 
-        if (exists) {
-            assertFailWithMessage(persistenceUnitName, null, AssertionsJPA.DATABASE, "instance unexpectedly available");
-        }
-        return;
-    }
+		Assert.fail(assertionErrorMessage.toString());
+	}
 
-    private static void cascadeError() {
+	private static void cascadeError() {
 
-        Assert.fail("A cascade error has occured for the domain entity ["
-                + AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName() + "].\n\t\t"
-                + "Check both the domain entity and the test Parameter Object to determine the source of the error.");
-    }
+		Assert.fail("A cascade error has occured for the domain entity ["
+				+ AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity().getClass().getSimpleName() + "].\n\t\t"
+				+ "Check both the domain entity and the test Parameter Object to determine the source of the error.");
+	}
 
-    private static <ENTITY> void catchBlock(final Exception e) {
+	private static <ENTITY> void catchBlock(final Exception e) {
 
-        final Optional<List<ENTITY>> entityList = JstTransactionUtilHelper.transactEntities(
-                JstTransactionJpaPO.withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
-                        .withEntityManager(AssertionsJPA.entityManagerForCascadeTypes)
-                        .withDeleteEntities(AssertionsJPA.parentEntityForCascadeTypes));
+		final Optional<List<ENTITY>> entityList = JstTransactionUtilHelper.transactEntities(
+				JstTransactionJpaPO.withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
+						.withEntityManager(AssertionsJPA.entityManagerForCascadeTypes)
+						.withDeleteEntities(AssertionsJPA.parentEntityForCascadeTypes));
 
-        if (entityList.isPresent()) {
-            return;
-        }
+		if (entityList.isPresent()) {
+			return;
+		}
 
-        throw new JustifyException(
-                JstExceptionPO.withMessage(e.getMessage()).withExceptionClassName(AssertionsJPA.class.getSimpleName())
-                        .withExceptionMethodName("assertCascadeTypes"));
-    }
+		throw new JustifyException(
+				JstExceptionPO.withMessage(e.getMessage()).withExceptionClassName(AssertionsJPA.class.getSimpleName())
+						.withExceptionMethodName("assertCascadeTypes"));
+	}
 
-    private static void createParentEntity() {
+	private static void createParentEntity() {
 
-        Object parentEntity = null;
+		Object parentEntity = null;
 
-        final JstTransactionJpaPO transactPO = JstTransactionJpaPO
-                .withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
-                .withEntityManager(AssertionsJPA.entityManagerForCascadeTypes)
-                .withCreateAndUpdateEntities(AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity());
+		final JstTransactionJpaPO transactPO = JstTransactionJpaPO
+				.withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
+				.withEntityManager(AssertionsJPA.entityManagerForCascadeTypes)
+				.withCreateAndUpdateEntities(AssertionsJPA.assertionsJpaCascadePO.getPopulatedEntity());
 
-        parentEntity = JstTransactionJpaRM.transactEntity(transactPO);
+		parentEntity = JstTransactionJpaRM.transactEntity(transactPO);
 
-        AssertionsJPA.parentEntityForCascadeTypes = parentEntity;
-        AssertionsJPA.assertionsJpaCascadePO.replacePopulatedEntity(parentEntity);
-    }
+		AssertionsJPA.parentEntityForCascadeTypes = parentEntity;
+		AssertionsJPA.assertionsJpaCascadePO.replacePopulatedEntity(parentEntity);
+	}
 
-    private static void deleteParentEntity() {
+	private static void deleteParentEntity() {
 
-        if (null != AssertionsJPA.parentEntityForCascadeTypes) {
+		if (null != AssertionsJPA.parentEntityForCascadeTypes) {
 
-            JstTransactionUtilHelper.findAndDeleteEntity(AssertionsJPA.persistenceUnitNameForCascadeTypes,
-                    AssertionsJPA.parentEntityForCascadeTypes);
-        }
-    }
+			JstTransactionUtilHelper.findAndDeleteEntity(AssertionsJPA.persistenceUnitNameForCascadeTypes,
+					AssertionsJPA.parentEntityForCascadeTypes);
+		}
+	}
 
-    private static void deleteRemainingEntities() {
+	private static void deleteRemainingEntities() {
 
-        if (null != AssertionsJPA.parentEntityForCascadeTypes) {
-            for (final String method : AssertionsJPA.assertionsJpaCascadePO.getAfterTheTestCleanupList()) {
+		if (null != AssertionsJPA.parentEntityForCascadeTypes) {
+			for (final String method : AssertionsJPA.assertionsJpaCascadePO.getAfterTheTestCleanupList()) {
 
-                try {
-                    JstTransactionUtilHelper.findAndDeleteRelatedEntity(
-                            AssertionsJPA.persistenceUnitNameForCascadeTypes, AssertionsJPA.parentEntityForCascadeTypes,
-                            method);
-                } catch (@SuppressWarnings("unused") final Exception e) {
-                    // Ignore
-                }
-            }
-        }
-    }
+				try {
+					JstTransactionUtilHelper.findAndDeleteRelatedEntity(
+							AssertionsJPA.persistenceUnitNameForCascadeTypes, AssertionsJPA.parentEntityForCascadeTypes,
+							method);
+				} catch (@SuppressWarnings("unused") final Exception e) {
+					// Ignore
+				}
+			}
+		}
+	}
 
-    private static boolean existsInDatabase(final String persistenceUnitName,
-            final Object... entititiesContainingIdentity) {
+	private static boolean existsInDatabase(final String persistenceUnitName,
+			final Object... entititiesContainingIdentity) {
 
-        return JstFindUtilHelper.existsInDatabase(JstFindInstancesJpaPO.withPersistenceUnitName(persistenceUnitName)
-                .withForceDatabaseTripWhenNoCacheCoordination(true)
-                .withEntitiesContainingIdentity(entititiesContainingIdentity));
-    }
+		return JstFindUtilHelper.existsInDatabase(JstFindInstancesJpaPO.withPersistenceUnitName(persistenceUnitName)
+				.withForceDatabaseTripWhenNoCacheCoordination(true)
+				.withEntitiesContainingIdentity(entititiesContainingIdentity));
+	}
 
-    private static void finallyBlock() {
+	private static void finallyBlock() {
 
-        JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManagerForCascadeTypes);
-        AssertionsJPA.entityManagerForCascadeTypes = null;
+		JstEntityManagerFactoryCacheHelper.closeEntityManager(AssertionsJPA.entityManagerForCascadeTypes);
+		AssertionsJPA.entityManagerForCascadeTypes = null;
 
-        deleteParentEntity();
-        deleteRemainingEntities();
+		deleteParentEntity();
+		deleteRemainingEntities();
 
-    }
+	}
 
-    private static boolean isExists(final List<String> existsList, final boolean expected) {
+	private static boolean isExists(final List<String> existsList, final boolean expected) {
 
-        for (final String methodName : existsList) {
+		for (final String methodName : existsList) {
 
-            final Object entityOrList = JstReflectionUtilHelper.invokePublicMethod(methodName,
-                    AssertionsJPA.parentEntityForCascadeTypes);
+			final Object entityOrList = JstReflectionUtilHelper.invokePublicMethod(methodName,
+					AssertionsJPA.parentEntityForCascadeTypes);
 
-            final boolean actual = JstFindUtilHelper.existsInDatabase(
-                    JstFindInstancesJpaPO.withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
-                            .withEntityManager(AssertionsJPA.entityManagerForCascadeTypes)
-                            .withEntitiesContainingIdentity(entitiesContainingIdentity),
-                    entityOrList);
-            if (expected != actual) {
-                return false;
-            }
-        }
-        return true;
-    }
+			final boolean actual = JstFindUtilHelper.existsInDatabase(
+					JstFindInstancesJpaPO.withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
+							.withEntityManager(AssertionsJPA.entityManagerForCascadeTypes)
+							.withEntitiesContainingIdentity(entityOrList));
+			if (expected != actual) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    private static void verifyCascadeEntitiesPersisted(final List<String> persistList, final boolean expected) {
+	private static void verifyCascadeEntitiesPersisted(final List<String> persistList, final boolean expected) {
 
-        final boolean actual = isExists(persistList, expected);
+		final boolean actual = isExists(persistList, expected);
 
-        if (!actual) {
-            cascadeError();
-        }
-    }
+		if (!actual) {
+			cascadeError();
+		}
+	}
 
-    /**
-     * @throws ClassNotFoundException
-     */
-    private static void verifyCascadeEntitiesRemoved(final List<String> persistList, final boolean expected) {
+	/**
+	 * @throws ClassNotFoundException
+	 */
+	private static void verifyCascadeEntitiesRemoved(final List<String> persistList, final boolean expected) {
 
-        final boolean actual = isExists(persistList, expected);
+		final boolean actual = isExists(persistList, expected);
 
-        if (!actual) {
-            cascadeError();
-        }
-    }
+		if (!actual) {
+			cascadeError();
+		}
+	}
 }

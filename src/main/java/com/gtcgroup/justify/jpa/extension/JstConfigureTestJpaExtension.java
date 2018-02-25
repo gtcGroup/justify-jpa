@@ -30,9 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -42,7 +43,9 @@ import com.gtcgroup.justify.core.po.JstExceptionPO;
 import com.gtcgroup.justify.core.test.base.JstBaseExtension;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.core.test.helper.internal.AnnotationUtilHelper;
+import com.gtcgroup.justify.core.test.helper.internal.LogTestConsoleUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
 
@@ -57,98 +60,117 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
  * @author Marvin Toll
  * @since v8.5
  */
-public class JstConfigureTestJpaExtension extends JstBaseExtension implements BeforeTestExecutionCallback {
+public class JstConfigureTestJpaExtension extends JstBaseExtension
+		implements BeforeAllCallback, BeforeTestExecutionCallback {
 
-    private static List<String> dataPopulatorAlreadyProcessedList = new ArrayList<>();
+	private static List<String> dataPopulatorAlreadyProcessedList = new ArrayList<>();
 
-    private static List<String> dataPopulatorToBeProcessedList = new ArrayList<>();
+	protected Class<? extends JstBaseDataPopulator>[] dataPopulators;
 
-    protected static Class<? extends JstBaseDataPopulator>[] dataPopulators;
+	protected String persistenceUnitName;
 
-    protected static String persistenceUnitName;
+	protected Map<String, Object> persistencePropertyMapOrNull = null;
 
-    protected static boolean determinePopulatorsToBeProcessed() {
+	protected EntityManagerFactory entityManagerFactory;
 
-        for (final Class<?> dataPopulator : JstConfigureTestJpaExtension.dataPopulators) {
+	protected boolean isDataPopulatorSubmitted = false;
 
-            if (!JstBaseDataPopulator.class.isAssignableFrom(dataPopulator)) {
+	private final List<String> dataPopulatorNameList = new ArrayList<>();
 
-                return false;
-            }
+	private final List<Object> dataPopulatorList = new ArrayList<>();
 
-            if (!JstConfigureTestJpaExtension.dataPopulatorAlreadyProcessedList.contains(dataPopulator.getName())
-                    && !JstConfigureTestJpaExtension.dataPopulatorToBeProcessedList.contains(dataPopulator.getName())) {
+	@Override
+	public void beforeAll(final ExtensionContext extensionContext) throws Exception {
 
-                JstConfigureTestJpaExtension.dataPopulatorToBeProcessedList.add(dataPopulator.getName());
-            }
-        }
-        return true;
-    }
+		initializeAnnotationValues(extensionContext);
 
-    protected static void initializeAnnotationValues(final ExtensionContext extensionContext) {
+		final Optional<EntityManager> entityManagerOptional = JstEntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(this.persistenceUnitName, this.persistencePropertyMapOrNull, true);
 
-        @SuppressWarnings("unchecked")
-        final Optional<JstConfigureTestJPA> configureJPA = (Optional<JstConfigureTestJPA>) AnnotationUtilHelper
-                .retrieveAnnotation(extensionContext, JstConfigureTestJPA.class);
+		if (entityManagerOptional.isPresent()) {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManagerOptional.get());
+		}
+	}
 
-        if (configureJPA.isPresent()) {
+	@Override
+	public void beforeTestExecution(final ExtensionContext extensionContext) throws Exception {
 
-            JstConfigureTestJpaExtension.persistenceUnitName = configureJPA.get().persistenceUnitName();
-            JstConfigureTestJpaExtension.dataPopulators = configureJPA.get().dataPopulators();
-        }
-    }
+		if (determinePopulatorsToBeProcessed()) {
 
-    protected static void processDataPopulator(final Class<?> populatorClass) {
+			try {
+				for (final String dataPopulatorName : this.dataPopulatorNameList) {
 
-        @SuppressWarnings("unchecked")
-        final Optional<JstBaseDataPopulator> dataPopulator = (Optional<JstBaseDataPopulator>) JstReflectionUtilHelper
-                .instantiateInstanceUsingPublicConstructorWithNoArgument(populatorClass);
+					final Optional<Class<?>> dataPopulatorClass = JstReflectionUtilHelper
+							.retrieveClass(dataPopulatorName);
 
-        if (dataPopulator.isPresent()) {
+					if (dataPopulatorClass.isPresent()) {
+						compileDataPopulatorList(dataPopulatorClass.get());
 
-            final List<Object> createList = dataPopulator.get()
-                    .populateCreateListTM(JstConfigureTestJpaExtension.persistenceUnitName);
+					} else {
+						throw new JustifyException(JstExceptionPO
+								.withMessage("The data populator [" + dataPopulatorName + "] could not be processed.")
+								.withExceptionClassName(JstConfigureTestJPA.class.getSimpleName()));
+					}
+				}
+				JstConfigureTestJpaExtension.dataPopulatorAlreadyProcessedList.clear();
 
-            final Optional<List<Entity>> entityList = JstTransactionJpaRM.transactMultipleEntities(
-                    JstTransactionJpaPO.withPersistenceUnitName(JstConfigureTestJpaExtension.persistenceUnitName)
-                            .withCreateAndUpdateList(createList));
+				JstTransactionJpaRM
+						.transactMultipleEntities(JstTransactionJpaPO.withPersistenceUnitName(this.persistenceUnitName)
+								.withCreateAndUpdateList(this.dataPopulatorList));
+			} catch (final Exception e) {
+				LogTestConsoleUtilHelper.setTestMethodStatus(extensionContext, LogTestConsoleUtilHelper.STATUS_FAILURE);
+				throw e;
+			}
+		}
+	}
 
-            if (!entityList.isPresent()) {
-                throw new JustifyException(JstExceptionPO.withMessage("The data populator(s) could not be processed.")
-                        .withExceptionClassName(JstConfigureTestJpaExtension.class.getSimpleName()));
-            }
-        }
-    }
+	protected void compileDataPopulatorList(final Class<?> populatorClass) {
 
-    protected Map<String, Object> persistencePropertyMapOrNull = null;
+		@SuppressWarnings("unchecked")
+		final Optional<JstBaseDataPopulator> dataPopulator = (Optional<JstBaseDataPopulator>) JstReflectionUtilHelper
+				.instantiateInstanceUsingPublicConstructorWithNoArgument(populatorClass);
 
-    protected EntityManagerFactory entityManagerFactory;
+		if (dataPopulator.isPresent()) {
 
-    protected boolean isDataPopulatorSubmitted = false;
+			this.dataPopulatorList.addAll(dataPopulator.get().populateCreateListTM(this.persistenceUnitName));
 
-    @Override
-    public void beforeTestExecution(final ExtensionContext extensionContext) throws Exception {
+			JstConfigureTestJpaExtension.dataPopulatorAlreadyProcessedList
+					.add(dataPopulator.get().getClass().getName());
+		}
+	}
 
-        initializeAnnotationValues(extensionContext);
+	protected boolean determinePopulatorsToBeProcessed() {
 
-        if (determinePopulatorsToBeProcessed()) {
+		for (final Class<?> dataPopulator : this.dataPopulators) {
 
-            for (final String dataPopulatorName : JstConfigureTestJpaExtension.dataPopulatorToBeProcessedList) {
+			if (!JstBaseDataPopulator.class.isAssignableFrom(dataPopulator)) {
 
-                final Optional<Class<?>> dataPopulatorClass = JstReflectionUtilHelper.retrieveClass(dataPopulatorName);
+				return false;
+			}
 
-                if (dataPopulatorClass.isPresent()) {
-                    processDataPopulator(dataPopulatorClass.get());
+			if (!JstConfigureTestJpaExtension.dataPopulatorAlreadyProcessedList.contains(dataPopulator.getName())
+					&& !this.dataPopulatorNameList.contains(dataPopulator.getName())) {
 
-                    JstConfigureTestJpaExtension.dataPopulatorAlreadyProcessedList.add(dataPopulatorName);
-                } else {
-                    throw new JustifyException(JstExceptionPO
-                            .withMessage("The data populator [" + dataPopulatorName + "] could not be processed.")
-                            .withExceptionClassName(JstConfigureTestJPA.class.getSimpleName()));
-                }
-            }
-        }
-        JstConfigureTestJpaExtension.dataPopulatorAlreadyProcessedList.clear();
+				this.dataPopulatorNameList.add(dataPopulator.getName());
+			}
+		}
+		return true;
+	}
 
-    }
+	protected void initializeAnnotationValues(final ExtensionContext extensionContext) {
+
+		@SuppressWarnings("unchecked")
+		final Optional<JstConfigureTestJPA> configureJPA = (Optional<JstConfigureTestJPA>) AnnotationUtilHelper
+				.retrieveAnnotation(extensionContext, JstConfigureTestJPA.class);
+
+		if (configureJPA.isPresent()) {
+
+			this.persistenceUnitName = configureJPA.get().persistenceUnitName();
+
+			this.dataPopulators = configureJPA.get().dataPopulators();
+		} else {
+			throw new JustifyException(JstExceptionPO.withMessage("The data populator(s) could not be processed.")
+					.withExceptionClassName(JstConfigureTestJpaExtension.class.getSimpleName()));
+		}
+	}
 }

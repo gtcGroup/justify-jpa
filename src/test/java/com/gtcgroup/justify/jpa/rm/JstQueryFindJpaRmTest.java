@@ -26,17 +26,14 @@
 package com.gtcgroup.justify.jpa.rm;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.rulechain.JstRuleChain;
-import com.gtcgroup.justify.core.si.JstRuleChainSI;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
-import com.gtcgroup.justify.core.test.extension.JstConfigureTestUserIdExtension;
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryAllJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
@@ -52,29 +49,43 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings("all")
-public class JstFindAllRmTest {
+@JstConfigureTestLogToConsole
+// @JstConfigureTestUserId
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
+@SuppressWarnings("static-method")
+public class JstQueryFindJpaRmTest {
 
-    @Rule
-    public JstRuleChainSI ruleChain = JstRuleChain.outerRule(false).around(JstConfigureTestJpaExtension
-            .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU).withDataPopulators(NoteDataPopulator.class))
-            .around(JstConfigureTestUserIdExtension.withUserId());
+	@Test
+	public void testAssertExistsInDatabase_happyPath1() {
 
-    @Test
-    public void testFindAllList_happyPath() {
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, retrieveNoteList());
+	}
 
-        final List<NoteDE> noteList = JstQueryFindAllJpaRM.queryAll(JstQueryAllJpaPO.withQueryAll(false)
-                .withEntityClass(NoteDE.class).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
+	@Test
+	public void testAssertExistsInDatabase_happyPath2() {
 
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);
-    }
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, retrieveNoteList().get(0));
+	}
 
-    @Test(expected = JustifyException.class)
-    public void testFindAllList_noResultClass() {
+	@Test
+	public void testAssertExistsInDatabase_happyPath3() {
 
-        final List<NoteDE> noteList = JstQueryFindAllJpaRM.queryAll(
-                JstQueryAllJpaPO.withQueryAll(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, ConstantsTestJPA.NOTE_UUID_ONE);
+	}
 
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);
-    }
+	// @Test
+	// public void testQueryAll_noResultClass() {
+	//
+	// AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.NOTE_UUID_ONE,
+	// ConstantsTestJPA.JUSTIFY_PU,
+	// retrieveNoteList());
+	// }
+
+	private List<NoteDE> retrieveNoteList() {
+
+		final Optional<List<NoteDE>> noteList = JstQueryFindJpaRM
+				.queryAll(JstQueryAllJpaPO.withQueryAll(ConstantsTestJPA.JUSTIFY_PU).withEntityClass(NoteDE.class));
+
+		return noteList.get();
+	}
 }

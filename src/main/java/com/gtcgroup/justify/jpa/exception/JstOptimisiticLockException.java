@@ -28,6 +28,7 @@ package com.gtcgroup.justify.jpa.exception;
 
 import com.gtcgroup.justify.core.base.JstBaseRuntimeException;
 import com.gtcgroup.justify.core.po.JstExceptionPO;
+import com.gtcgroup.justify.core.test.helper.internal.LogTestConsoleUtilHelper;
 
 /**
  * This {@link Exception} class indicates a special case.
@@ -42,15 +43,17 @@ import com.gtcgroup.justify.core.po.JstExceptionPO;
  */
 public class JstOptimisiticLockException extends JstBaseRuntimeException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public JstOptimisiticLockException(final JstExceptionPO exceptionPO) {
-        super(exceptionPO);
-    }
+	public JstOptimisiticLockException(final JstExceptionPO exceptionPO) {
+		super(exceptionPO);
+	}
 
-    @Override
-    protected void logExceptionTM(final JstExceptionPO exceptionPO) {
-        // TODO Auto-generated method stub
+	@Override
+	protected void logExceptionTM(final JstExceptionPO exceptionPO) {
+		final String message = exceptionPO.getMessage();
+		LogTestConsoleUtilHelper.buildUnexpectedExceptionMessage(this, new StringBuilder(exceptionPO.getMessage()));
+		LogTestConsoleUtilHelper.logToConsole(message);
 
-    }
+	}
 }
