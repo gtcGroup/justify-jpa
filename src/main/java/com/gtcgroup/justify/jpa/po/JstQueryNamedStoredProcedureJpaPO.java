@@ -46,113 +46,111 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  */
 public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
 
-    /**
-     * This method initializes the class.
-     *
-     * @return {@link JstQueryNamedStoredProcedureJpaPO}
-     */
-    public static JstQueryNamedStoredProcedureJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+	/**
+	 * This method initializes the class.
+	 *
+	 * @return {@link JstQueryNamedStoredProcedureJpaPO}
+	 */
+	public static JstQueryNamedStoredProcedureJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-        return new JstQueryNamedStoredProcedureJpaPO(persistenceUnitName);
-    }
+		return new JstQueryNamedStoredProcedureJpaPO(persistenceUnitName);
+	}
 
-    protected String queryName;
+	protected String queryName;
 
-    /**
-     * Constructor
-     */
-    protected JstQueryNamedStoredProcedureJpaPO(final String persistenceUnitName) {
+	/**
+	 * Constructor
+	 */
+	protected JstQueryNamedStoredProcedureJpaPO(final String persistenceUnitName) {
 
-        super(persistenceUnitName);
-        return;
-    }
+		super(persistenceUnitName);
+		return;
+	}
 
-    /**
-     * @return {@link Optional}
-     */
-    @Override
-    public Optional<Query> createQuery() {
+	/**
+	 * @return {@link Optional}
+	 */
+	@Override
+	public Optional<Query> createQuery() {
 
-        final Optional<EntityManager> entityManager = getEntityManager();
+		final EntityManager entityManager = getEntityManager();
 
-        try {
-            if (entityManager.isPresent()) {
-                return Optional.of(entityManager.get().createNamedStoredProcedureQuery(getQueryName()));
-            }
-        } catch (@SuppressWarnings("unused") final Exception e) {
-            // Continue.
-        }
-        return Optional.empty();
-    }
+		try {
+			return Optional.of(entityManager.createNamedStoredProcedureQuery(getQueryName()));
+		} catch (@SuppressWarnings("unused") final Exception e) {
+			// Continue.
+		}
+		return Optional.empty();
+	}
 
-    /**
-     * @return {@link String}
-     */
-    public String getQueryName() {
+	/**
+	 * @return {@link String}
+	 */
+	public String getQueryName() {
 
-        return this.queryName;
-    }
+		return this.queryName;
+	}
 
-    /**
-     * @return {@link JstQueryNamedStoredProcedureJpaPO}
-     */
-    public JstQueryNamedStoredProcedureJpaPO withEntityManager(final EntityManager entityManager) {
+	/**
+	 * @return {@link JstQueryNamedStoredProcedureJpaPO}
+	 */
+	public JstQueryNamedStoredProcedureJpaPO withEntityManager(final EntityManager entityManager) {
 
-        super.setEntityManager(entityManager);
-        return this;
-    }
+		super.setEntityManager(entityManager);
+		return this;
+	}
 
-    /**
-     * @return {@link JstQueryNamedStoredProcedureJpaPO}
-     */
-    public JstQueryNamedStoredProcedureJpaPO withFirstResult(final int firstResult) {
+	/**
+	 * @return {@link JstQueryNamedStoredProcedureJpaPO}
+	 */
+	public JstQueryNamedStoredProcedureJpaPO withFirstResult(final int firstResult) {
 
-        this.firstResult = firstResult;
-        return this;
-    }
+		this.firstResult = firstResult;
+		return this;
+	}
 
-    /**
-     * @return {@link JstQueryNamedStoredProcedureJpaPO}
-     */
-    public JstQueryNamedStoredProcedureJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppress) {
+	/**
+	 * @return {@link JstQueryNamedStoredProcedureJpaPO}
+	 */
+	public JstQueryNamedStoredProcedureJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppress) {
 
-        this.forceDatabaseTripWhenNoCacheCoordination = suppress;
-        return this;
-    }
+		this.forceDatabaseTripWhenNoCacheCoordination = suppress;
+		return this;
+	}
 
-    /**
-     * @return {@link JstQueryNamedStoredProcedureJpaPO}
-     */
-    public JstQueryNamedStoredProcedureJpaPO withMaxResults(final int maxResults) {
+	/**
+	 * @return {@link JstQueryNamedStoredProcedureJpaPO}
+	 */
+	public JstQueryNamedStoredProcedureJpaPO withMaxResults(final int maxResults) {
 
-        this.maxResults = maxResults;
-        return this;
-    }
+		this.maxResults = maxResults;
+		return this;
+	}
 
-    /**
-     * @return {@link JstQueryNamedStoredProcedureJpaPO}
-     */
-    public JstQueryNamedStoredProcedureJpaPO withParameterMap(final Map<String, Object> parameterMap) {
+	/**
+	 * @return {@link JstQueryNamedStoredProcedureJpaPO}
+	 */
+	public JstQueryNamedStoredProcedureJpaPO withParameterMap(final Map<String, Object> parameterMap) {
 
-        this.queryHints = parameterMap;
-        return this;
-    }
+		this.parameterMap = parameterMap;
+		return this;
+	}
 
-    /**
-     * @return {@link JstQueryNamedStoredProcedureJpaPO}
-     */
-    public JstQueryNamedStoredProcedureJpaPO withQueryName(final String queryName) {
+	/**
+	 * @return {@link JstQueryNamedStoredProcedureJpaPO}
+	 */
+	public JstQueryNamedStoredProcedureJpaPO withQueryName(final String queryName) {
 
-        this.queryName = queryName;
-        return this;
-    }
+		this.queryName = queryName;
+		return this;
+	}
 
-    /**
-     * @return {@link JstQueryNamedStoredProcedureJpaPO}
-     */
-    public JstQueryNamedStoredProcedureJpaPO withSuppressReadOnly(final boolean suppress) {
+	/**
+	 * @return {@link JstQueryNamedStoredProcedureJpaPO}
+	 */
+	public JstQueryNamedStoredProcedureJpaPO withSuppressReadOnly(final boolean suppress) {
 
-        this.readOnly = suppress;
-        return this;
-    }
+		this.readOnly = suppress;
+		return this;
+	}
 }

@@ -58,32 +58,29 @@ public enum JstTransactionUtilHelper {
 	 * return boolean
 	 */
 	public static <ENTITY> boolean findAndDeleteEntity(final String persistenceUnitName,
-			final ENTITY entityWithIdentity) {
+			final ENTITY entityContainingIdentity) {
 
-		final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
+		final Optional<EntityManager> entityManagerOptional = JstEntityManagerFactoryCacheHelper
 				.createEntityManagerToBeClosed(persistenceUnitName);
 
-		if (entityManager.isPresent()) {
+		if (entityManagerOptional.isPresent()) {
 
 			try {
-				final Optional<Object> entityIdentity = JstFindUtilHelper.retrieveEntityIdentity(entityManager.get(),
-						entityWithIdentity);
+				final Object entityIdentity = entityManagerOptional.get().getEntityManagerFactory()
+						.getPersistenceUnitUtil().getIdentifier(entityContainingIdentity);
 
-				if (entityIdentity.isPresent()) {
+				Optional<ENTITY> entity = JstFindUtilHelper.findSingle(JstFindSingleJpaPO
+						.withPersistenceUnitName(persistenceUnitName).withEntityIdentity(entityIdentity));
 
-					Optional<ENTITY> entity = JstFindUtilHelper.findSingle(JstFindSingleJpaPO
-							.withPersistenceUnitName(persistenceUnitName).withEntityIdentity(entityIdentity));
+				if (entity.isPresent()) {
 
-					if (entity.isPresent()) {
-
-						entityManager.get().getTransaction().begin();
-						entity = entityManager.get().merge(entity);
-						entityManager.get().remove(entity);
-						entityManager.get().getTransaction().commit();
-					}
+					entityManagerOptional.get().getTransaction().begin();
+					entity = entityManagerOptional.get().merge(entity);
+					entityManagerOptional.get().remove(entity);
+					entityManagerOptional.get().getTransaction().commit();
 				}
 			} finally {
-				JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
+				JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManagerOptional.get());
 			}
 		}
 		return false;

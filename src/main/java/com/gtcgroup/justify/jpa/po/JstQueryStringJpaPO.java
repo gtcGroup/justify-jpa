@@ -46,117 +46,117 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  */
 public class JstQueryStringJpaPO extends BaseQueryJpaPO {
 
-    /**
-     * This method initializes the class.
-     *
-     * @return {@link JstQueryStringJpaPO}
-     */
-    public static JstQueryStringJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+	/**
+	 * This method initializes the class.
+	 *
+	 * @return {@link JstQueryStringJpaPO}
+	 */
+	public static JstQueryStringJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-        return new JstQueryStringJpaPO(persistenceUnitName);
-    }
+		return new JstQueryStringJpaPO(persistenceUnitName);
+	}
 
-    protected String queryLanguageString;
+	protected String queryLanguageString;
 
-    /**
-     * Constructor
-     */
-    protected JstQueryStringJpaPO(final String persistenceUnitName) {
+	/**
+	 * Constructor
+	 */
+	protected JstQueryStringJpaPO(final String persistenceUnitName) {
 
-        super(persistenceUnitName);
-        return;
-    }
+		super(persistenceUnitName);
+		return;
+	}
 
-    /**
-     * @return {@link Optional}
-     */
-    @Override
-    public Optional<Query> createQuery() {
+	/**
+	 * @return {@link Optional}
+	 */
+	@Override
+	public Optional<Query> createQuery() {
 
-        try {
-            if (isResultClass() && isQueryLanaguageString()) {
-                return Optional.of(createQueryLanguageQuery(getQueryLanguageString(), getEntityClass()));
+		try {
+			if (isResultClass() && isQueryLanaguageString()) {
+				return Optional.of(createQueryLanguageQuery(getQueryLanguageString(), getEntityClass()));
 
-            } else if (isQueryLanaguageString()) {
-                return Optional.of(createQueryLanguageQuery(getQueryLanguageString()));
-            }
-        } catch (@SuppressWarnings("unused") final Exception e) {
-            // Continue.
-        }
-        return Optional.empty();
-    }
+			} else if (isQueryLanaguageString()) {
+				return Optional.of(createQueryLanguageQuery(getQueryLanguageString()));
+			}
+		} catch (@SuppressWarnings("unused") final Exception e) {
+			// Continue.
+		}
+		return Optional.empty();
+	}
 
-    /**
-     * @return {@link Query}
-     */
-    protected Query createQueryLanguageQuery(final String queryLanguageString) {
+	/**
+	 * @return {@link Class}
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <ENTITY> Class<ENTITY> getEntityClass() {
 
-        return getEntityManager().get().createQuery(queryLanguageString);
-    }
+		return (Class<ENTITY>) this.entityClass;
+	}
 
-    /**
-     * @return {@link TypedQuery}
-     */
-    protected <ENTITY> TypedQuery<ENTITY> createQueryLanguageQuery(final String queryLanguageString,
-            final Class<ENTITY> resultClass) {
+	public String getQueryLanguageString() {
+		return this.queryLanguageString;
+	}
 
-        return getEntityManager().get().createQuery(queryLanguageString, resultClass);
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isQueryLanaguageString() {
 
-    /**
-     * @return {@link Class}
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public <ENTITY> Class<ENTITY> getEntityClass() {
+		return null != this.queryLanguageString;
+	}
 
-        return (Class<ENTITY>) this.entityClass;
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isResultClass() {
 
-    public String getQueryLanguageString() {
-        return this.queryLanguageString;
-    }
+		return null != this.entityClass;
+	}
 
-    /**
-     * @return boolean
-     */
-    public boolean isQueryLanaguageString() {
+	/**
+	 * @return {@link JstQueryStringJpaPO}
+	 */
+	public <ENTITY> JstQueryStringJpaPO withEntityClass(final Class<ENTITY> entityClass) {
 
-        return null != this.queryLanguageString;
-    }
+		setEntityClass(entityClass);
+		return this;
+	}
 
-    /**
-     * @return boolean
-     */
-    public boolean isResultClass() {
+	/**
+	 * @return {@link JstQueryStringJpaPO}
+	 */
+	public JstQueryStringJpaPO withEntityManager(final EntityManager entityManager) {
 
-        return null != this.entityClass;
-    }
+		super.setEntityManager(entityManager);
+		return this;
+	}
 
-    /**
-     * @return {@link JstQueryStringJpaPO}
-     */
-    public <ENTITY> JstQueryStringJpaPO withEntityClass(final Class<ENTITY> entityClass) {
+	/**
+	 * @return {@link JstQueryStringJpaPO}
+	 */
+	public JstQueryStringJpaPO withQueryLanguageString(final String queryLanguageString) {
 
-        setEntityClass(entityClass);
-        return this;
-    }
+		this.queryLanguageString = queryLanguageString;
+		return this;
+	}
 
-    /**
-     * @return {@link JstQueryStringJpaPO}
-     */
-    public JstQueryStringJpaPO withEntityManager(final EntityManager entityManager) {
+	/**
+	 * @return {@link Query}
+	 */
+	protected Query createQueryLanguageQuery(final String queryLanguageString) {
 
-        super.setEntityManager(entityManager);
-        return this;
-    }
+		return getEntityManager().createQuery(queryLanguageString);
+	}
 
-    /**
-     * @return {@link JstQueryStringJpaPO}
-     */
-    public JstQueryStringJpaPO withQueryLanguageString(final String queryLanguageString) {
+	/**
+	 * @return {@link TypedQuery}
+	 */
+	protected <ENTITY> TypedQuery<ENTITY> createQueryLanguageQuery(final String queryLanguageString,
+			final Class<ENTITY> resultClass) {
 
-        this.queryLanguageString = queryLanguageString;
-        return this;
-    }
+		return getEntityManager().createQuery(queryLanguageString, resultClass);
+	}
 }

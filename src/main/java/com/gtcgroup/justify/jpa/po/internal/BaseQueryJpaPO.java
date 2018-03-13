@@ -25,7 +25,9 @@
  */
 package com.gtcgroup.justify.jpa.po.internal;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.Query;
 
@@ -42,6 +44,8 @@ import javax.persistence.Query;
  * @since v.6.2
  */
 public abstract class BaseQueryJpaPO extends BaseJpaPO {
+
+	protected Map<String, Object> parameterMap = new ConcurrentHashMap<>();
 
 	protected Class<Object> entityClass;
 

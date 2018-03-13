@@ -41,7 +41,6 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstAssertCascadeJpaPO;
-import com.gtcgroup.justify.jpa.po.JstFindListJpaPO;
 import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
@@ -276,12 +275,20 @@ public enum AssertionsJPA {
 			final Object entityOrList = JstReflectionUtilHelper.invokePublicMethod(methodName,
 					AssertionsJPA.parentEntityForCascadeTypes);
 
-			final boolean actual = JstFindUtilHelper.existsInDatabase(
-					JstFindListJpaPO.withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
-							.withEntityManager(AssertionsJPA.entityManagerForCascadeTypes)
-							.withEntitiesContainingIdentity(entityOrList));
-			if (expected != actual) {
-				return false;
+			if (entityOrList instanceof List) {
+
+				@SuppressWarnings("unchecked")
+				final List<Object> entityList = (List<Object>) entityOrList;
+
+				for (final Object entityContainingIdentity : entityList) {
+
+					final boolean actual = existsInDatabase(AssertionsJPA.persistenceUnitNameForCascadeTypes,
+							entityContainingIdentity);
+
+					if (expected != actual) {
+						return false;
+					}
+				}
 			}
 		}
 		return true;
