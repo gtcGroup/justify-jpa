@@ -25,9 +25,9 @@
  */
 package com.gtcgroup.justify.jpa.assertion;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
@@ -51,106 +51,35 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestUserId
+@JstConfigureTestUserId(userId = "assertionsId")
 @JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
 @SuppressWarnings("static-method")
 public class AssertionsJpaTest {
 
-    @Test
-    public void testExistsEntityIdentiesForNote() {
+	@Test
+	public void testExistsInDatabase_happyPath() {
 
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, ConstantsTestJPA.NOTE_UUID_ONE);
-    }
+		assertAll(() -> {
+			AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteOne);
+			AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class,
+					ConstantsTestJPA.NOTE_UUID_ONE);
+		});
+	}
 
-    @Test
-    public void testExistsEntityInstancesForNote() {
+	@Test
+	public void testExistsInDatabase_noEntity() {
 
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteOne);
-    }
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NotAnEntityDE());
+		});
+	}
 
-    @Test(expected = AssertionError.class)
-    public void testExistsInDatabaseWithEntities_no() {
+	@Test
+	public void testNotExistsInDatabase_happyPath() {
 
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NotAnEntityDE());
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testExistsInDatabaseWithEntityIdenties_no() {
-
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, "fake_IDENTITY");
-    }
-
-    @Test
-    public void testExistsInDataBaseWithEntityIdentities_yes() {
-
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, ConstantsTestJPA.NOTE_UUID_ONE);
-
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteOne);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testExistsInDatabaseWithEntityList_no() {
-
-        final List<Object> entityList = new ArrayList<>();
-
-        entityList.add(new NotAnEntityDE());
-
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, entityList);
-    }
-
-    @Test
-    public void testExistsInDatabaseWithEntityList_yes() {
-
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.populatedList);
-
-    }
-
-    @Test
-    public void testExistsInSharedCache() {
-
-        AssertionsJPA.assertExistsInSharedCache(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteTwo);
-    }
-
-    @Test
-    public void testExistsInSharedCacheWithEntityIdentities() {
-
-        AssertionsJPA.assertExistsInSharedCache(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class,
-                NoteDataPopulator.noteTwo.getUuid());
-
-    }
-
-    @Test
-    public void testExistsNotInDatabaseWithEntities_yes() {
-
-        AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NotAnEntityDE());
-    }
-
-    @Test
-    public void testInstanceNotExistsInSharedCache() {
-
-        AssertionsJPA.assertNotExistsInSharedCache(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, "fake_IDENTITY");
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testInstanceNotExistsInSharedCache_not() {
-
-        AssertionsJPA.assertNotExistsInSharedCache(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class,
-                NoteDataPopulator.noteTwo.getUuid());
-    }
-
-    @Test
-    public void testNotExistsInDatabaseWithEntityIdenties_yes() {
-
-        AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, "fake_IDENTITY");
-    }
-
-    @Test
-    public void testNotExistsInDatabaseWithEntityList() {
-
-        final List<Object> entityList = new ArrayList<>();
-
-        entityList.add(new NotAnEntityDE());
-
-        AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, entityList);
-    }
+		assertAll(() -> {
+			AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NoteDE());
+			AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, "fake_IDENTITY");
+		});
+	}
 }

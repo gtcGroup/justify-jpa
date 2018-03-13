@@ -29,16 +29,10 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import javax.persistence.CacheRetrieveMode;
-import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-
-import org.eclipse.persistence.config.CascadePolicy;
-import org.eclipse.persistence.config.HintValues;
-import org.eclipse.persistence.config.QueryHints;
 
 import com.gtcgroup.justify.jpa.po.JstQueryCountJpaPO;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
@@ -56,109 +50,94 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  */
 public enum JstQueryUtilHelper {
 
-    INSTANCE;
+	INSTANCE;
 
-    /**
-     * This method returns the number of records in the table or view.
-     *
-     * @return {@link Optional}
-     */
-    public static Optional<Long> count(final JstQueryCountJpaPO queryPO) {
+	/**
+	 * This method returns the number of records in the table or view.
+	 *
+	 * @return {@link Optional}
+	 */
+	public static Optional<Long> count(final JstQueryCountJpaPO queryPO) {
 
-        final Optional<EntityManager> entityManager = queryPO.getEntityManager();
+		final EntityManager entityManager = queryPO.getEntityManager();
 
-        try {
-            if (entityManager.isPresent()) {
-                final CriteriaBuilder criteriaBuilder = entityManager.get().getCriteriaBuilder();
-                final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+		try {
+			final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 
-                criteriaQuery.select(criteriaBuilder.count(criteriaQuery.from(queryPO.getResultClass())));
+			criteriaQuery.select(criteriaBuilder.count(criteriaQuery.from(queryPO.getResultClass())));
 
-                final Query query = entityManager.get().createQuery(criteriaQuery);
-                final Long count = (Long) query.getSingleResult();
-                return Optional.of(count);
-            }
-        } catch (@SuppressWarnings("unused") final Exception e) {
-            // Continue.
-        }
-        return Optional.empty();
-    }
+			final Query query = entityManager.createQuery(criteriaQuery);
+			final Long count = (Long) query.getSingleResult();
+			return Optional.of(count);
+		} catch (@SuppressWarnings("unused") final Exception e) {
+			// Continue.
+		}
+		return Optional.empty();
+	}
 
-    private static Optional<Query> decorateQuery(final BaseQueryJpaPO queryPO) {
+	/**
+	 * @return {@link Optional}
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ENTITY> Optional<List<ENTITY>> queryResultList(final BaseQueryJpaPO queryPO) {
 
-        final Optional<Query> queryOptional = queryPO.createQuery();
+		try {
+			final Optional<Query> query = decorateQuery(queryPO);
+			if (query.isPresent()) {
+				return Optional.of(query.get().getResultList());
+			}
+		} finally {
+			queryPO.closeEntityManager();
+		}
+		return Optional.empty();
+	}
 
-        if (queryOptional.isPresent()) {
+	/**
+	 * @return {@link Optional}
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ENTITY> Optional<ENTITY> querySingleResult(final BaseQueryJpaPO queryPO) {
 
-            final Query query = queryOptional.get();
+		try {
+			final Optional<Query> query = decorateQuery(queryPO);
+			if (query.isPresent()) {
+				return (Optional<ENTITY>) Optional.of(query.get().getSingleResult());
+			}
+		} catch (@SuppressWarnings("unused") final Exception e) {
+			// Continue.
+		} finally {
+			queryPO.closeEntityManager();
+		}
+		return Optional.empty();
+	}
 
-            if (queryPO.isQueryParameterMap()) {
+	private static Optional<Query> decorateQuery(final BaseQueryJpaPO queryPO) {
 
-                for (final Entry<String, Object> stringEntry : queryPO.getQueryHints().entrySet()) {
+		final Optional<Query> queryOptional = queryPO.createQuery();
 
-                    query.setParameter(stringEntry.getKey(), stringEntry.getValue());
-                }
-            }
+		if (queryOptional.isPresent()) {
 
-            if (queryPO.isForceDatabaseTripWhenNoCacheCoordination()) {
-                query.setHint(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
-                query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
-                query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
-            }
+			final Query query = queryOptional.get();
 
-            if (!queryPO.isReadOnly()) {
+			if (queryPO.isQueryHints()) {
 
-                query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
-            }
+				for (final Entry<String, Object> stringEntry : queryPO.getQueryHints().entrySet()) {
 
-            if (queryPO.isFirstResult()) {
+					query.setParameter(stringEntry.getKey(), stringEntry.getValue());
+				}
+			}
 
-                query.setFirstResult(queryPO.getFirstResult());
-            }
-            if (queryPO.isMaxResults()) {
+			if (queryPO.isFirstResult()) {
 
-                query.setMaxResults(queryPO.getMaxResults());
-            }
-            return Optional.of(query);
-        }
-        return Optional.empty();
-    }
+				query.setFirstResult(queryPO.getFirstResult());
+			}
+			if (queryPO.isMaxResults()) {
 
-    /**
-     * @return {@link Optional}
-     */
-    @SuppressWarnings("unchecked")
-    public static <ENTITY> Optional<List<ENTITY>> queryResultList(final BaseQueryJpaPO queryPO) {
-
-        try {
-            final Optional<Query> query = decorateQuery(queryPO);
-            if (query.isPresent()) {
-                return Optional.of(query.get().getResultList());
-            }
-        } catch (@SuppressWarnings("unused") final Exception e) {
-            // Continue.
-        } finally {
-            queryPO.closeEncapsulatedEntityManager();
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * @return {@link Optional}
-     */
-    @SuppressWarnings("unchecked")
-    public static <ENTITY> Optional<ENTITY> querySingleResult(final BaseQueryJpaPO queryPO) {
-
-        try {
-            final Optional<Query> query = decorateQuery(queryPO);
-            if (query.isPresent()) {
-                return (Optional<ENTITY>) Optional.of(query.get().getSingleResult());
-            }
-        } catch (@SuppressWarnings("unused") final Exception e) {
-            // Continue.
-        } finally {
-            queryPO.closeEncapsulatedEntityManager();
-        }
-        return Optional.empty();
-    }
+				query.setMaxResults(queryPO.getMaxResults());
+			}
+			return Optional.of(query);
+		}
+		return Optional.empty();
+	}
 }

@@ -25,7 +25,7 @@
  */
 package com.gtcgroup.justify.jpa.po.internal;
 
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * This Parameter Object base class supports find operations using the Resource
@@ -41,74 +41,43 @@ import java.util.Map;
  */
 public abstract class BaseFindJpaPO extends BaseJpaPO {
 
-    protected Class<Object> entityClass;
+	protected Class<Object> entityClass;
 
-    protected boolean readOnly = false;
+	/**
+	 * Constructor
+	 */
+	protected BaseFindJpaPO(final String persistenceUnitName) {
+		super(persistenceUnitName);
+	}
 
-    protected Map<String, Object> queryHints;
+	/**
+	 * @return {@link Class}
+	 */
+	@SuppressWarnings("unchecked")
+	public <ENTITY> Class<ENTITY> getEntityClass() {
+		return (Class<ENTITY>) this.entityClass;
+	}
 
-    protected boolean forceDatabaseTripWhenNoCacheCoordination = false;
+	/**
+	 * @return boolean
+	 */
+	public boolean isEntityClass() {
+		return null != this.entityClass;
+	}
 
-    /**
-     * Constructor
-     */
-    protected BaseFindJpaPO(final String persistenceUnitName) {
-        super(persistenceUnitName);
-    }
+	/**
+	 * @return {@link Optional}
+	 */
+	@SuppressWarnings("unchecked")
+	protected <IDENTITY> IDENTITY retrieveEntityIdentity(final Object entityContainingIdentity) {
 
-    /**
-     * @return {@link Class}
-     */
-    @SuppressWarnings("unchecked")
-    public <ENTITY> Class<ENTITY> getEntityClass() {
-        return (Class<ENTITY>) this.entityClass;
-    }
+		return (IDENTITY) getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
+				.getIdentifier(entityContainingIdentity);
+	}
 
-    /**
-     * @return {@link Map}
-     */
-    public Map<String, Object> getQueryHints() {
-        return this.queryHints;
-    }
+	@SuppressWarnings("unchecked")
+	protected <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
+		this.entityClass = (Class<Object>) entityClass;
+	}
 
-    /**
-     * @return boolean
-     */
-    public boolean isEntityClass() {
-        return null != this.entityClass;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isForceDatabaseTripWhenNoCacheCoordination() {
-        return this.forceDatabaseTripWhenNoCacheCoordination;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isQueryParameterMap() {
-        return null != this.queryHints;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isReadOnly() {
-        return this.readOnly;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
-        this.entityClass = (Class<Object>) entityClass;
-    }
-
-    public void setForceDatabaseTripWhenNoCacheCoordination(final boolean forceDatabaseTripWhenNoCacheCoordination) {
-        this.forceDatabaseTripWhenNoCacheCoordination = forceDatabaseTripWhenNoCacheCoordination;
-    }
-
-    public void setQueryHint(final String key, final Object value) {
-        getQueryHints().put(key, value);
-    }
 }

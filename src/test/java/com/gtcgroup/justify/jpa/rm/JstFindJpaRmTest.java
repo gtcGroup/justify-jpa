@@ -25,21 +25,26 @@
  */
 package com.gtcgroup.justify.jpa.rm;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+import java.util.Optional;
+
 import javax.persistence.EntityManager;
 
-import org.junit.Rule;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.rulechain.JstRuleChain;
-import com.gtcgroup.justify.core.si.JstRuleChainSI;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.core.test.helper.internal.LogTestConsoleUtilHelper;
 import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryAllJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
@@ -53,97 +58,123 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings("all")
+@JstConfigureTestLogToConsole
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
 public class JstFindJpaRmTest {
 
-    private static final String FAKE_IDENTITY = "fakeIdentity";
+	private static final String FAKE_IDENTITY = "fakeIdentity";
 
-    @Rule
-    public JstRuleChainSI ruleChain = JstRuleChain.outerRule(false).around(JstConfigureTestJpaExtension
-            .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU).withDataPopulators(NoteDataPopulator.class));
+	private static Optional<NoteDE> findForceDatabaseTripDE(final Class<?> clazz, final String entityIdentity) {
 
-    private NoteDE createFindJpaPO(final boolean suppressExceptionForNull, final Class<?> clazz,
-            final String entityIdentity) {
+		LogTestConsoleUtilHelper
+				.logToConsole(">>> The following [EL Fine] SQL statement indicates a trip to database.");
 
-        final JstFindSingleJpaPO findJpaPO = JstFindSingleJpaPO.withFind(suppressExceptionForNull)
-                .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withEntityClass(clazz)
-                .withEntityIdentity(entityIdentity);
+		final JstFindSingleJpaPO findJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				.withEntityClass(clazz).withEntityIdentity(entityIdentity)
+				.withForceDatabaseTripWhenNoCacheCoordination();
 
-        final NoteDE note = JstQueryFindJpaRM.findSingle(findJpaPO);
-        return note;
-    }
+		final Optional<NoteDE> entityOptional = JstQueryFindJpaRM.findSingle(findJpaPO);
 
-    @Test
-    public void testFindReadOnlySingleOrException() {
+		LogTestConsoleUtilHelper.logToConsole(">>> End of trip to database.");
 
-        final NoteDE note = createFindJpaPO(false, NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO);
+		return entityOptional;
+	}
 
-        Assertions.assertThat(note.getUuid()).isEqualTo(ConstantsTestJPA.NOTE_UUID_TWO);
-    }
+	private static Optional<NoteDE> findNoteDE(final Class<?> clazz, final String entityIdentity) {
 
-    @Test(expected = JustifyException.class)
-    public void testFindReadOnlySingleOrException_exception() {
+		final JstFindSingleJpaPO findJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				.withEntityClass(clazz).withEntityIdentity(entityIdentity);
 
-        createFindJpaPO(false, NotAnEntityDE.class, JstFindJpaRmTest.FAKE_IDENTITY);
-    }
+		return JstQueryFindJpaRM.findSingle(findJpaPO);
+	}
 
-    @Test(expected = JustifyException.class)
-    public void testFindReadOnlySingleOrException_exception_suppress() {
+	private static Optional<NoteDE> findReadOnlyNoteDE(final Class<?> clazz, final String entityIdentity) {
 
-        createFindJpaPO(true, NotAnEntityDE.class, JstFindJpaRmTest.FAKE_IDENTITY);
-    }
+		final JstFindSingleJpaPO findJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				.withEntityClass(clazz).withEntityIdentity(entityIdentity).withReadOnly();
 
-    @Test
-    public void testReadOnlySingleOrException_null() {
+		return JstQueryFindJpaRM.findSingle(findJpaPO);
+	}
 
-        final NoteDE note = createFindJpaPO(true, NoteDE.class, JstFindJpaRmTest.FAKE_IDENTITY);
+	@Test
+	public void testFind() {
 
-        Assertions.assertThat(note).isNull();
-    }
+		assertAll(() -> {
+			assertTrue(findNoteDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
+			assertTrue(findReadOnlyNoteDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
+			assertTrue(findForceDatabaseTripDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
+		});
+	}
 
-    @Test
-    public void testWithEntityManager() {
+	@Test
+	public void testFind_fakeIdentity() {
 
-        EntityManager entityManager = null;
-        NoteDE note;
+		assertFalse(findNoteDE(NoteDE.class, JstFindJpaRmTest.FAKE_IDENTITY).isPresent());
+	}
 
-        try {
-            entityManager = JstEntityManagerFactoryCacheHelper
-                    .createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
+	@Test
+	public void testFind_notAnEntity() {
 
-            note = JstQueryFindJpaRM.findSingle(JstFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
-                    .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO).withEntityManager(entityManager));
-        } finally {
-            JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-        }
+		assertFalse(findReadOnlyNoteDE(NotAnEntityDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
 
-        Assertions.assertThat(note).isNotNull();
-    }
+	}
 
-    @Test
-    public void testWithModifiablePopulatedEntityContainingIdentity() {
+	@Test
+	public void testWithExternalEntityManager() {
 
-        final NoteDE note = JstQueryFindJpaRM
-                .findSingle(JstFindSingleJpaPO.withFind(true).withPopulatedEntityContainingIdentity(NoteDataPopulator.noteTwo)
-                        .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
+		Optional<EntityManager> entityManager = null;
+		Optional<NoteDE> optionalNoteDE = null;
+		Optional<List<NoteDE>> optionalList = null;
 
-        Assertions.assertThat(note).isNotNull();
-    }
+		try {
+			entityManager = JstEntityManagerFactoryCacheHelper
+					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU, null, false);
 
-    @Test(expected = JustifyException.class)
-    public void testWithoutEntityManager() {
+			if (entityManager.isPresent()) {
 
-        JstQueryFindJpaRM.findSingle(JstFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
-                .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));
-    }
+				optionalNoteDE = JstQueryFindJpaRM
+						.findSingle(JstFindSingleJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+								.withEntityClass(NoteDE.class).withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO)
+								.withEntityManager(entityManager.get()).withForceDatabaseTripWhenNoCacheCoordination());
 
-    @Test(expected = JustifyException.class)
-    public void testWithoutTargetEntity() {
+				optionalList = JstQueryFindJpaRM
+						.queryAll(JstQueryAllJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+								.withEntityClass(NoteDE.class).withEntityManager(entityManager.get()).withReadOnly()
+								.withForceDatabaseTripWhenNoCacheCoordination());
+			}
+		} finally {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
+		}
 
-        final NoteDE note = JstQueryFindJpaRM
-                .findSingle(JstFindSingleJpaPO.withFind(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-                        .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));
+		assertTrue(optionalNoteDE.isPresent());
+		assertTrue(optionalList.isPresent());
+	}
 
-        Assertions.assertThat(note).isNotNull();
-    }
+	//
+	// @Test
+	// public void testWithModifiablePopulatedEntityContainingIdentity() {
+	//
+	// final NoteDE note = JstQueryFindJpaRM.findSingle(
+	// JstFindSingleJpaPO.withFind(true).withPopulatedEntityContainingIdentity(NoteDataPopulator.noteTwo)
+	// .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
+	//
+	// Assertions.assertThat(note).isNotNull();
+	// }
+	//
+	// @Test(expected = JustifyException.class)
+	// public void testWithoutEntityManager() {
+	//
+	// JstQueryFindJpaRM.findSingle(JstFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
+	// .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));
+	// }
+	//
+	// @Test(expected = JustifyException.class)
+	// public void testWithoutTargetEntity() {
+	//
+	// final NoteDE note = JstQueryFindJpaRM
+	// .findSingle(JstFindSingleJpaPO.withFind(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+	// .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));
+	//
+	// Assertions.assertThat(note).isNotNull();
+	// }
 }

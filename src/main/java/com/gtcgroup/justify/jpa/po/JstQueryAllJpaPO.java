@@ -49,82 +49,110 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  */
 public class JstQueryAllJpaPO extends BaseQueryJpaPO {
 
-    /**
-     * @return {@link TypedQuery}
-     */
-    protected static <ENTITY> TypedQuery<ENTITY> createCriteriaQuery(final EntityManager entityManager,
-            final Class<ENTITY> resultClass) {
+	/**
+	 * This method initializes the class.
+	 *
+	 * @return {@link JstQueryAllJpaPO}
+	 */
+	public static JstQueryAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-        final CriteriaQuery<ENTITY> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(resultClass);
-        final Root<ENTITY> rootEntry = criteriaQuery.from(resultClass);
-        final CriteriaQuery<ENTITY> criteria = criteriaQuery.select(rootEntry);
+		return new JstQueryAllJpaPO(persistenceUnitName);
+	}
 
-        return entityManager.createQuery(criteria);
-    }
+	/**
+	 * This method initializes the class.
+	 *
+	 * @return {@link JstQueryAllJpaPO}
+	 */
+	public static JstQueryAllJpaPO withQueryAll(final String persistenceUnitName) {
 
-    /**
-     * This method initializes the class.
-     *
-     * @return {@link JstQueryAllJpaPO}
-     */
-    public static JstQueryAllJpaPO withQueryAll(final String persistenceUnitName) {
+		return new JstQueryAllJpaPO(persistenceUnitName);
+	}
 
-        return new JstQueryAllJpaPO(persistenceUnitName);
-    }
+	/**
+	 * @return {@link TypedQuery}
+	 */
+	protected static <ENTITY> TypedQuery<ENTITY> createCriteriaQuery(final EntityManager entityManager,
+			final Class<ENTITY> resultClass) {
 
-    /**
-     * Constructor
-     */
-    protected JstQueryAllJpaPO(final String persistenceUnitName) {
+		final CriteriaQuery<ENTITY> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(resultClass);
+		final Root<ENTITY> rootEntry = criteriaQuery.from(resultClass);
+		final CriteriaQuery<ENTITY> criteria = criteriaQuery.select(rootEntry);
 
-        super(persistenceUnitName);
-        return;
-    }
+		return entityManager.createQuery(criteria);
+	}
 
-    /**
-     * @return {@link Query}
-     */
-    @Override
-    public Optional<Query> createQuery() {
+	/**
+	 * Constructor
+	 */
+	protected JstQueryAllJpaPO(final String persistenceUnitName) {
 
-        final Optional<EntityManager> entityManager = getEntityManager();
+		super(persistenceUnitName);
+		return;
+	}
 
-        try {
-            if (entityManager.isPresent() && isEntityClass()) {
+	/**
+	 * @return {@link Query}
+	 */
+	@Override
+	public Optional<Query> createQuery() {
 
-                return Optional.of(createCriteriaQuery(entityManager.get(), getEntityClass()));
-            }
-        } catch (@SuppressWarnings("unused") final Exception e) {
-            // Continue
-        }
-        return Optional.empty();
-    }
+		final EntityManager entityManager = getEntityManager();
 
-    /**
-     * @return {@link JstQueryAllJpaPO}
-     */
-    @SuppressWarnings("unchecked")
-    public <ENTITY> JstQueryAllJpaPO withEntityClass(final Class<ENTITY> entityClass) {
+		try {
+			if (isEntityClass()) {
 
-        this.entityClass = (Class<Object>) entityClass;
-        return this;
-    }
+				return Optional.of(createCriteriaQuery(entityManager, getEntityClass()));
+			}
+		} catch (@SuppressWarnings("unused") final Exception e) {
+			// Continue
+		}
+		return Optional.empty();
+	}
 
-    /**
-     * @return {@link JstQueryAllJpaPO}
-     */
-    public JstQueryAllJpaPO withEntityManager(final EntityManager entityManager) {
+	/**
+	 * @return {@link JstQueryAllJpaPO}
+	 */
+	@SuppressWarnings("unchecked")
+	public <ENTITY> JstQueryAllJpaPO withEntityClass(final Class<ENTITY> entityClass) {
 
-        super.setEntityManager(entityManager);
-        return this;
-    }
+		this.entityClass = (Class<Object>) entityClass;
+		return this;
+	}
 
-    /**
-     * @return {@link JstQueryAllJpaPO}
-     */
-    public JstQueryAllJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppressForceDatabaseTrip) {
+	/**
+	 * @return {@link JstQueryAllJpaPO}
+	 */
+	public JstQueryAllJpaPO withEntityManager(final EntityManager entityManager) {
 
-        super.setForceDatabaseTripWhenNoCacheCoordination(suppressForceDatabaseTrip);
-        return this;
-    }
+		super.setEntityManager(entityManager);
+		return this;
+	}
+
+	/**
+	 * @return {@link JstQueryAllJpaPO}
+	 */
+	public JstQueryAllJpaPO withForceDatabaseTripWhenNoCacheCoordination() {
+
+		super.setForceDatabaseTripWhenNoCacheCoordination();
+		return this;
+	}
+
+	/**
+	 * @return {@link JstQueryAllJpaPO}
+	 */
+	public JstQueryAllJpaPO withQueryHint(final String key, final Object value) {
+
+		super.setQueryHint(key, value);
+		return this;
+	}
+
+	/**
+	 * @return {@link JstQueryAllJpaPO}
+	 */
+	public JstQueryAllJpaPO withReadOnly() {
+
+		super.setReadOnly();
+		return this;
+	}
 }

@@ -42,77 +42,97 @@ import com.gtcgroup.justify.jpa.po.internal.BaseFindJpaPO;
  */
 public class JstFindSingleJpaPO extends BaseFindJpaPO {
 
-    /**
-     * This method initializes the class.
-     *
-     * @return {@link JstQueryNamedJpaPO}
-     */
-    public static JstFindSingleJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+	/**
+	 * This method initializes the class.
+	 *
+	 * @return {@link JstQueryNamedJpaPO}
+	 */
+	public static JstFindSingleJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
-        return new JstFindSingleJpaPO(persistenceUnitName);
-    }
+		return new JstFindSingleJpaPO(persistenceUnitName);
+	}
 
-    private Object entityIdentity;
+	private Object entityIdentity;
 
-    /**
-     * Constructor
-     */
-    protected JstFindSingleJpaPO(final String persistenceUnitName) {
-        super(persistenceUnitName);
-        return;
-    }
+	/**
+	 * Constructor
+	 */
+	protected JstFindSingleJpaPO(final String persistenceUnitName) {
+		super(persistenceUnitName);
+		return;
+	}
 
-    /**
-     * @return {@link Object}
-     */
-    public Object getEntityIdentity() {
+	/**
+	 * @return {@link Object}
+	 */
+	public Object getEntityIdentity() {
 
-        return this.entityIdentity;
-    }
+		return this.entityIdentity;
+	}
 
-    /**
-     * @return {@link JstFindSingleJpaPO}
-     */
-    @SuppressWarnings("unchecked")
-    public <ENTITY> JstFindSingleJpaPO withEntityClass(final Class<ENTITY> entityClass) {
+	/**
+	 * @return {@link JstFindSingleJpaPO}
+	 */
+	@SuppressWarnings("unchecked")
+	public <ENTITY> JstFindSingleJpaPO withEntityClass(final Class<ENTITY> entityClass) {
 
-        this.entityClass = (Class<Object>) entityClass;
-        return this;
-    }
+		this.entityClass = (Class<Object>) entityClass;
+		return this;
+	}
 
-    /**
-     * @return {@link JstFindSingleJpaPO}
-     */
-    public JstFindSingleJpaPO withEntityIdentity(final Object entityIdentity) {
+	/**
+	 * @return {@link JstFindSingleJpaPO}
+	 */
+	@SuppressWarnings("unchecked")
+	public JstFindSingleJpaPO withEntityContainingIdentity(final Object entityContainingIdentity) {
 
-        this.entityIdentity = entityIdentity;
-        return this;
-    }
+		this.entityClass = (Class<Object>) entityContainingIdentity.getClass();
+		this.entityIdentity = retrieveEntityIdentity(entityContainingIdentity);
+		return this;
+	}
 
-    /**
-     * @return {@link JstFindSingleJpaPO}
-     */
-    public JstFindSingleJpaPO withEntityManager(final EntityManager entityManager) {
+	/**
+	 * @return {@link JstFindSingleJpaPO}
+	 */
+	public JstFindSingleJpaPO withEntityIdentity(final Object entityIdentity) {
 
-        super.setEntityManager(entityManager);
-        return this;
-    }
+		this.entityIdentity = entityIdentity;
+		return this;
+	}
 
-    /**
-     * @return {@link JstFindSingleJpaPO}
-     */
-    public JstFindSingleJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppressForceDatabaseTrip) {
+	/**
+	 * @return {@link JstFindSingleJpaPO}
+	 */
+	public JstFindSingleJpaPO withEntityManager(final EntityManager entityManager) {
 
-        super.setForceDatabaseTripWhenNoCacheCoordination(suppressForceDatabaseTrip);
-        return this;
-    }
+		super.setEntityManager(entityManager);
+		return this;
+	}
 
-    /**
-     * @return {@link JstFindSingleJpaPO}
-     */
-    public JstFindSingleJpaPO withQueryHint(final String key, final Object value) {
+	/**
+	 * @return {@link JstFindSingleJpaPO}
+	 */
+	public JstFindSingleJpaPO withForceDatabaseTripWhenNoCacheCoordination() {
 
-        super.setQueryHint(key, value);
-        return this;
-    }
+		super.setForceDatabaseTripWhenNoCacheCoordination();
+		return this;
+	}
+
+	/**
+	 * @return {@link JstFindSingleJpaPO}
+	 */
+	public JstFindSingleJpaPO withQueryHint(final String key, final Object value) {
+
+		super.setQueryHint(key, value);
+		return this;
+	}
+
+	/**
+	 * @return {@link JstFindSingleJpaPO}
+	 */
+	public JstFindSingleJpaPO withReadOnly() {
+
+		super.setReadOnly();
+		return this;
+	}
 }

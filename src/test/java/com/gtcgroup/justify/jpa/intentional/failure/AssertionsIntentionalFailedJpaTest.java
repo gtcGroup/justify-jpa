@@ -23,14 +23,20 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package com.gtcgroup.justify.jpa.intentional.failure;
 
-package com.gtcgroup.justify.jpa.exception;
+import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.base.JstBaseRuntimeException;
-import com.gtcgroup.justify.core.po.JstExceptionPO;
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestUserId;
+import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
+import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
- * This {@link Exception} class indicates a special case.
+ * Test Class
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -40,17 +46,34 @@ import com.gtcgroup.justify.core.po.JstExceptionPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public class JstOptimisiticLockException extends JstBaseRuntimeException {
+@JstConfigureTestLogToConsole
+@JstConfigureTestUserId(userId = "assertionsId")
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
+@SuppressWarnings("static-method")
+public class AssertionsIntentionalFailedJpaTest {
 
-	private static final long serialVersionUID = 1L;
+	@Test
+	public void testIntentionalExistsInDatabase() {
 
-	public JstOptimisiticLockException(final JstExceptionPO exceptionPO) {
-		super(exceptionPO);
+		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class,
+				ConstantsTestJPA.NOTE_UUID_ONE);
 	}
 
-	@Override
-	protected void logExceptionTM(final JstExceptionPO exceptionPO) {
-		// The intent is for the application to handle (including log) this exception.
+	@Test
+	public void testIntentionalExistsInDatabase_instance() {
 
+		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteOne);
+	}
+
+	@Test
+	public void testIntentionalNotExistsInDatabase() {
+
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, "fake_IDENTITY");
+	}
+
+	@Test
+	public void testIntentionalNotExistsInDatabase_instance() {
+
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NoteDE());
 	}
 }

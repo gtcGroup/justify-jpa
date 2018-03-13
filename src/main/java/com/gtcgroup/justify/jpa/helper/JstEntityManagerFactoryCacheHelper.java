@@ -133,4 +133,24 @@ public enum JstEntityManagerFactoryCacheHelper {
 		}
 		return Optional.empty();
 	}
+
+	/**
+	 * This method
+	 *
+	 * @param persistenceUnitName
+	 * @param persistencePropertyMapOrNull
+	 */
+	public static void startupJPA(final String persistenceUnitName,
+			final Map<String, Object> persistencePropertyMapOrNull) {
+
+		final Optional<EntityManager> entityManagerOptional = JstEntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(persistenceUnitName, persistencePropertyMapOrNull, true);
+
+		if (entityManagerOptional.isPresent()) {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManagerOptional.get());
+		} else {
+			// TODO: fix this
+			throw new RuntimeException(" PPPPPPPPPPPrrrrrrrrooooooooobbbbbbbbllllllllleeeeeeeeemmmmmmmm");
+		}
+	}
 }

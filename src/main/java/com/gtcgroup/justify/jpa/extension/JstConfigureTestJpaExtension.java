@@ -30,11 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -60,8 +58,7 @@ import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
  * @author Marvin Toll
  * @since v8.5
  */
-public class JstConfigureTestJpaExtension extends JstBaseExtension
-		implements BeforeAllCallback, BeforeTestExecutionCallback {
+public class JstConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCallback {
 
 	private static List<String> dataPopulatorAlreadyProcessedList = new ArrayList<>();
 
@@ -84,16 +81,7 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension
 
 		initializeAnnotationValues(extensionContext);
 
-		final Optional<EntityManager> entityManagerOptional = JstEntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(this.persistenceUnitName, this.persistencePropertyMapOrNull, true);
-
-		if (entityManagerOptional.isPresent()) {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManagerOptional.get());
-		}
-	}
-
-	@Override
-	public void beforeTestExecution(final ExtensionContext extensionContext) throws Exception {
+		JstEntityManagerFactoryCacheHelper.startupJPA(this.persistenceUnitName, this.persistencePropertyMapOrNull);
 
 		if (determinePopulatorsToBeProcessed()) {
 
@@ -161,7 +149,7 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension
 
 		@SuppressWarnings("unchecked")
 		final Optional<JstConfigureTestJPA> configureJPA = (Optional<JstConfigureTestJPA>) AnnotationUtilHelper
-				.retrieveAnnotation(extensionContext, JstConfigureTestJPA.class);
+				.retrieveAnnotation(extensionContext.getTestClass(), JstConfigureTestJPA.class);
 
 		if (configureJPA.isPresent()) {
 

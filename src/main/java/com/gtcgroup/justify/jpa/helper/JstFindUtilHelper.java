@@ -29,9 +29,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.jpa.po.JstFindInstancesJpaPO;
 import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
-import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 
 /**
  * This Helper class provides persistence {@link EntityManager} support.
@@ -46,83 +44,24 @@ import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
  */
 public enum JstFindUtilHelper {
 
-    INSTANCE;
+	INSTANCE;
 
-    /**
-     * This method forces a trip to the database without altering the state of
-     * cache.
-     *
-     * @return boolean
-     */
-    @SuppressWarnings("unchecked")
-    public static <ENTITY> boolean existsInDatabase(final JstFindInstancesJpaPO findPO) {
+	/**
+	 * @return {@link Optional}
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ENTITY> Optional<ENTITY> findSingle(final JstFindSingleJpaPO findPO) {
 
-        final Optional<EntityManager> entityManager = findPO.getEntityManager();
-        ENTITY entity = null;
+		final EntityManager entityManager = findPO.getEntityManager();
 
-        try {
-            if (entityManager.isPresent()) {
+		try {
+			return (Optional<ENTITY>) Optional.ofNullable(
+					entityManager.find(findPO.getEntityClass(), findPO.getEntityIdentity(), findPO.getQueryHints()));
+		} catch (@SuppressWarnings("unused") final Exception e) {
+			return Optional.empty();
+		} finally {
+			findPO.closeEntityManager();
+		}
+	}
 
-                for (final Object entityContainingIdentity : findPO.getEntitiesContainingIdentity()) {
-
-                    final Optional<ENTITY> entityIdentity = retrieveEntityIdentity(entityManager.get(),
-                            entityContainingIdentity);
-
-                    if (entityIdentity.isPresent()) {
-
-                        if (findPO.isForceDatabaseTripWhenNoCacheCoordination()) {
-                            entity = (ENTITY) entityManager.get().find(entityContainingIdentity.getClass(),
-                                    entityIdentity.get(), BaseJpaPO.getForceDatabaseTrip());
-                        } else {
-                            entity = (ENTITY) entityManager.get().find(entityContainingIdentity.getClass(),
-                                    entityIdentity.get());
-                        }
-
-                    }
-                }
-            }
-        } catch (@SuppressWarnings("unused") final Exception e) {
-            return false;
-        }
-        return null != entity;
-    }
-
-    /**
-     * @return {@link Optional}
-     */
-    @SuppressWarnings("unchecked")
-    public static <ENTITY> Optional<ENTITY> findSingle(final JstFindSingleJpaPO findPO) {
-
-        final Optional<EntityManager> entityManager = findPO.getEntityManager();
-
-        try {
-            if (entityManager.isPresent()) {
-
-                return (Optional<ENTITY>) Optional.ofNullable(entityManager.get().find(findPO.getEntityClass(),
-                        findPO.getEntityIdentity(), findPO.getQueryHints()));
-            }
-        } catch (@SuppressWarnings("unused") final Exception e) {
-            // Continue.
-        } finally {
-            findPO.closeEncapsulatedEntityManager();
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * @return {@link Optional}
-     */
-    @SuppressWarnings("unchecked")
-    public static <IDENTITY> Optional<IDENTITY> retrieveEntityIdentity(final EntityManager entityManager,
-            final Object entityWithIdentity) {
-
-        try {
-            return (Optional<IDENTITY>) Optional.ofNullable(
-                    entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entityWithIdentity));
-
-        } catch (@SuppressWarnings("unused") final Exception e) {
-            // Continue.
-        }
-        return Optional.empty();
-    }
 }

@@ -25,14 +25,14 @@
  */
 package com.gtcgroup.justify.jpa.po.internal;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.CacheRetrieveMode;
+import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 
-import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
@@ -54,74 +54,86 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
  */
 public abstract class BaseJpaPO extends JstBasePO {
 
-    /**
-     * These {@link QueryHints} are typically used when there are multiple servers
-     * without cache coordination.
-     */
-    protected static final Map<String, Object> FORCE_DATABASE_TRIP = new HashMap<>();
+	private final Map<String, Object> queryHints = new ConcurrentHashMap<>();
 
-    static {
+	protected EntityManager entityManager;
 
-        BaseJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+	protected boolean entityManagerEncapsulated = false;
 
-        BaseJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+	protected String persistenceUnitName;
 
-        BaseJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+	/**
+	 * Constructor
+	 */
+	protected BaseJpaPO(final String persistenceUnitName) {
+		super();
 
-        BaseJpaPO.FORCE_DATABASE_TRIP.put(QueryHints.REFRESH, HintValues.TRUE);
-    }
+		this.persistenceUnitName = persistenceUnitName;
 
-    public static Map<String, Object> getForceDatabaseTrip() {
-        return BaseJpaPO.FORCE_DATABASE_TRIP;
-    }
+		return;
+	}
 
-    protected EntityManager entityManager;
+	/**
+	 * This method closes the {@link EntityManager} if the creation was encapsulated
+	 * within this PO.
+	 */
+	public void closeEntityManager() {
 
-    protected boolean entityManagerEncapsulated = false;
+		if (this.entityManagerEncapsulated) {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
+			this.entityManager = null;
+		}
+	}
 
-    protected String persistenceUnitName;
+	/**
+	 * @return {@link Optional}
+	 */
+	public EntityManager getEntityManager() {
 
-    /**
-     * Constructor
-     */
-    protected BaseJpaPO(final String persistenceUnitName) {
-        super();
+		if (null == this.entityManager) {
 
-        this.persistenceUnitName = persistenceUnitName;
+			final Optional<EntityManager> entityManagerTemp = JstEntityManagerFactoryCacheHelper
+					.createEntityManagerToBeClosed(this.persistenceUnitName);
 
-        return;
-    }
+			if (entityManagerTemp.isPresent()) {
+				this.entityManager = entityManagerTemp.get();
+				this.entityManagerEncapsulated = true;
+			}
+		}
+		return this.entityManager;
+	}
 
-    /**
-     * This method closes the {@link EntityManager} if the creation was encapsulated
-     * within this PO.
-     */
-    public void closeEncapsulatedEntityManager() {
+	/**
+	 * @return {@link Map}
+	 */
+	public Map<String, Object> getQueryHints() {
+		return this.queryHints;
+	}
 
-        if (this.entityManagerEncapsulated) {
-            JstEntityManagerFactoryCacheHelper.closeEntityManager(this.entityManager);
-            this.entityManager = null;
-        }
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isQueryHints() {
+		return null != this.queryHints;
+	}
 
-    /**
-     * @return {@link Optional}
-     */
-    public Optional<EntityManager> getEntityManager() {
+	protected void setEntityManager(final EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
 
-        if (null == this.entityManager) {
+	protected void setForceDatabaseTripWhenNoCacheCoordination() {
 
-            final Optional<EntityManager> entityManagerTemp = JstEntityManagerFactoryCacheHelper
-                    .createEntityManagerToBeClosed(this.persistenceUnitName);
+		getQueryHints().put(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+		getQueryHints().put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
+		getQueryHints().put(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+		getQueryHints().put(QueryHints.REFRESH, HintValues.TRUE);
+	}
 
-            if (entityManagerTemp.isPresent()) {
-                this.entityManager = entityManagerTemp.get();
-            }
-        }
-        return Optional.ofNullable(this.entityManager);
-    }
+	protected void setQueryHint(final String key, final Object value) {
+		getQueryHints().put(key, value);
+	}
 
-    protected void setEntityManager(final EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+	protected void setReadOnly() {
+		getQueryHints().put(QueryHints.READ_ONLY, HintValues.TRUE);
+	}
 }

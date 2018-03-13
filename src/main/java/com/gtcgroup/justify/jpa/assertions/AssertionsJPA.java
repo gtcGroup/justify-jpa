@@ -32,6 +32,7 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.jpa.jpql.Assert;
+import org.opentest4j.AssertionFailedError;
 
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
 import com.gtcgroup.justify.core.po.JstExceptionPO;
@@ -40,7 +41,7 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstAssertCascadeJpaPO;
-import com.gtcgroup.justify.jpa.po.JstFindInstancesJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindListJpaPO;
 import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
@@ -119,66 +120,65 @@ public enum AssertionsJPA {
 						.withEntityIdentity(entityIdentity));
 
 		if (!entity.isPresent()) {
-			assertFailWithMessage(persistenceUnitName, entityClass, AssertionsJPA.DATABASE, "instance unavailable");
+			assertFailedWithMessage(persistenceUnitName, entityClass, AssertionsJPA.DATABASE, "instance unavailable");
 		}
 		return;
 	}
 
-	public static <ENTITY> void assertExistsInDatabase(final String persistenceUnitName,
-			final List<ENTITY> entityListContainingIdentities) {
-
-		assertExistsInDatabase(persistenceUnitName, entityListContainingIdentities.toArray());
-	}
-
 	public static void assertExistsInDatabase(final String persistenceUnitName,
-			final Object... entititiesContainingIdentity) {
+			final Object entitityContainingIdentity) {
 
-		final boolean exists = existsInDatabase(persistenceUnitName, entititiesContainingIdentity);
-
-		if (!exists) {
-			assertFailWithMessage(persistenceUnitName, null, AssertionsJPA.DATABASE, "instance unavailable");
+		if (!existsInDatabase(persistenceUnitName, entitityContainingIdentity)) {
+			assertFailedWithMessage(persistenceUnitName, null, AssertionsJPA.DATABASE, "instance unavailable");
 		}
 		return;
 	}
 
 	public static <ENTITY> void assertNotExistsInDatabase(final String persistenceUnitName,
-			final List<ENTITY> entityListContainingIdentities) {
+			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
-		assertNotExistsInDatabase(persistenceUnitName, entityListContainingIdentities.toArray());
+		final Optional<ENTITY> entity = JstFindUtilHelper
+				.findSingle(JstFindSingleJpaPO.withPersistenceUnitName(persistenceUnitName).withEntityClass(entityClass)
+						.withEntityIdentity(entityIdentity));
 
-	}
-
-	public static void assertNotExistsInDatabase(final String persistenceUnitName,
-			final Object... entititiesContainingIdentity) {
-
-		final boolean exists = existsInDatabase(persistenceUnitName, entititiesContainingIdentity);
-
-		if (exists) {
-			assertFailWithMessage(persistenceUnitName, null, AssertionsJPA.DATABASE, "instance unexpectedly available");
+		if (entity.isPresent()) {
+			assertFailedWithMessage(persistenceUnitName, entityClass, AssertionsJPA.DATABASE, "instance available");
 		}
 		return;
 	}
 
-	private static <ENTITY> void assertFailWithMessage(final String persistenceUnitName,
+	public static void assertNotExistsInDatabase(final String persistenceUnitName,
+			final Object entityContainingIdentity) {
+
+		final boolean exists = existsInDatabase(persistenceUnitName, entityContainingIdentity);
+
+		if (exists) {
+			assertFailedWithMessage(persistenceUnitName, null, AssertionsJPA.DATABASE,
+					"instance unexpectedly available");
+		}
+		return;
+	}
+
+	private static <ENTITY> void assertFailedWithMessage(final String persistenceUnitName,
 			final Class<ENTITY> entityClassOrNull, final String fromWhere, final String availableOrUnavailable) {
 
-		final StringBuilder assertionErrorMessage = new StringBuilder();
+		final StringBuilder assertionFailedMessage = new StringBuilder();
 
-		assertionErrorMessage.append("An ");
+		assertionFailedMessage.append("An ");
 
 		if (null != entityClassOrNull) {
-			assertionErrorMessage.append("of [");
-			assertionErrorMessage.append(entityClassOrNull.getSimpleName());
-			assertionErrorMessage.append("] ");
+			assertionFailedMessage.append("of [");
+			assertionFailedMessage.append(entityClassOrNull.getSimpleName());
+			assertionFailedMessage.append("] ");
 		}
 
-		assertionErrorMessage.append(availableOrUnavailable);
-		assertionErrorMessage.append(" from the ");
-		assertionErrorMessage.append(fromWhere + " [");
-		assertionErrorMessage.append(persistenceUnitName);
-		assertionErrorMessage.append("].");
+		assertionFailedMessage.append(availableOrUnavailable);
+		assertionFailedMessage.append(" from the ");
+		assertionFailedMessage.append(fromWhere + " [");
+		assertionFailedMessage.append(persistenceUnitName);
+		assertionFailedMessage.append("].");
 
-		Assert.fail(assertionErrorMessage.toString());
+		throw new AssertionFailedError(assertionFailedMessage.toString());
 	}
 
 	private static void cascadeError() {
@@ -244,12 +244,19 @@ public enum AssertionsJPA {
 		}
 	}
 
-	private static boolean existsInDatabase(final String persistenceUnitName,
-			final Object... entititiesContainingIdentity) {
+	/**
+	 * This method forces a trip to the database.
+	 *
+	 * @return boolean
+	 */
+	private static boolean existsInDatabase(final String persistenceUnitName, final Object entityContainingIdentity) {
 
-		return JstFindUtilHelper.existsInDatabase(JstFindInstancesJpaPO.withPersistenceUnitName(persistenceUnitName)
-				.withForceDatabaseTripWhenNoCacheCoordination(true)
-				.withEntitiesContainingIdentity(entititiesContainingIdentity));
+		final JstFindSingleJpaPO findSingleJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(persistenceUnitName)
+				.withEntityContainingIdentity(entityContainingIdentity).withReadOnly()
+				.withForceDatabaseTripWhenNoCacheCoordination();
+
+		return JstFindUtilHelper.findSingle(findSingleJpaPO).isPresent();
+
 	}
 
 	private static void finallyBlock() {
@@ -270,7 +277,7 @@ public enum AssertionsJPA {
 					AssertionsJPA.parentEntityForCascadeTypes);
 
 			final boolean actual = JstFindUtilHelper.existsInDatabase(
-					JstFindInstancesJpaPO.withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
+					JstFindListJpaPO.withPersistenceUnitName(AssertionsJPA.persistenceUnitNameForCascadeTypes)
 							.withEntityManager(AssertionsJPA.entityManagerForCascadeTypes)
 							.withEntitiesContainingIdentity(entityOrList));
 			if (expected != actual) {

@@ -25,7 +25,6 @@
  */
 package com.gtcgroup.justify.jpa.po.internal;
 
-import java.util.Map;
 import java.util.Optional;
 
 import javax.persistence.Query;
@@ -44,111 +43,92 @@ import javax.persistence.Query;
  */
 public abstract class BaseQueryJpaPO extends BaseJpaPO {
 
-    protected Class<Object> entityClass;
+	protected Class<Object> entityClass;
 
-    protected int firstResult;
+	protected int firstResult;
 
-    protected int maxResults;
+	protected int maxResults;
 
-    protected boolean readOnly = false;
+	protected boolean readOnly = false;
 
-    protected Map<String, Object> queryHints;
+	protected boolean forceDatabaseTripWhenNoCacheCoordination = false;
 
-    protected boolean forceDatabaseTripWhenNoCacheCoordination = false;
+	/**
+	 * Constructor
+	 */
+	protected BaseQueryJpaPO(final String persistenceUnitName) {
+		super(persistenceUnitName);
+	}
 
-    /**
-     * Constructor
-     */
-    protected BaseQueryJpaPO(final String persistenceUnitName) {
-        super(persistenceUnitName);
-    }
+	/**
+	 * @return {@link Optional}
+	 */
+	public abstract Optional<Query> createQuery();
 
-    /**
-     * @return {@link Optional}
-     */
-    public abstract Optional<Query> createQuery();
+	/**
+	 * @return {@link Class}
+	 */
+	@SuppressWarnings("unchecked")
+	public <ENTITY> Class<ENTITY> getEntityClass() {
+		return (Class<ENTITY>) this.entityClass;
+	}
 
-    /**
-     * @return {@link Class}
-     */
-    @SuppressWarnings("unchecked")
-    public <ENTITY> Class<ENTITY> getEntityClass() {
-        return (Class<ENTITY>) this.entityClass;
-    }
+	/**
+	 * @return int
+	 */
+	public int getFirstResult() {
+		return this.firstResult;
+	}
 
-    /**
-     * @return int
-     */
-    public int getFirstResult() {
-        return this.firstResult;
-    }
+	/**
+	 * @return int}
+	 */
+	public int getMaxResults() {
+		return this.maxResults;
+	}
 
-    /**
-     * @return int}
-     */
-    public int getMaxResults() {
-        return this.maxResults;
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isEntityClass() {
+		return null != this.entityClass;
+	}
 
-    /**
-     * @return {@link Map}
-     */
-    public Map<String, Object> getQueryHints() {
-        return this.queryHints;
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isFirstResult() {
+		return 0 != this.firstResult;
+	}
 
-    /**
-     * @return boolean
-     */
-    public boolean isEntityClass() {
-        return null != this.entityClass;
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isForceDatabaseTripWhenNoCacheCoordination() {
+		return this.forceDatabaseTripWhenNoCacheCoordination;
+	}
 
-    /**
-     * @return boolean
-     */
-    public boolean isFirstResult() {
-        return 0 != this.firstResult;
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isMaxResults() {
+		return 0 != this.maxResults;
+	}
 
-    /**
-     * @return boolean
-     */
-    public boolean isForceDatabaseTripWhenNoCacheCoordination() {
-        return this.forceDatabaseTripWhenNoCacheCoordination;
-    }
+	/**
+	 * @return boolean
+	 */
+	public boolean isReadOnly() {
+		return this.readOnly;
+	}
 
-    /**
-     * @return boolean
-     */
-    public boolean isMaxResults() {
-        return 0 != this.maxResults;
-    }
+	@SuppressWarnings("unchecked")
+	public <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
+		this.entityClass = (Class<Object>) entityClass;
+	}
 
-    /**
-     * @return boolean
-     */
-    public boolean isQueryParameterMap() {
-        return null != this.queryHints;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isReadOnly() {
-        return this.readOnly;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
-        this.entityClass = (Class<Object>) entityClass;
-    }
-
-    public void setForceDatabaseTripWhenNoCacheCoordination(final boolean forceDatabaseTripWhenNoCacheCoordination) {
-        this.forceDatabaseTripWhenNoCacheCoordination = forceDatabaseTripWhenNoCacheCoordination;
-    }
-
-    public void setQueryHint(final String key, final Object value) {
-        getQueryHints().put(key, value);
-    }
+	@Override
+	public void setQueryHint(final String key, final Object value) {
+		getQueryHints().put(key, value);
+	}
 }
