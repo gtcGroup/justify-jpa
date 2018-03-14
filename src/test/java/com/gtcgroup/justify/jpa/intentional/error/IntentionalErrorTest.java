@@ -23,17 +23,17 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.helper;
+package com.gtcgroup.justify.jpa.intentional.error;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstFindListJpaPO;
-import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
+import com.gtcgroup.justify.jpa.populator.dependency.NoteNonDataPopulator;
 
 /**
  * Test Class
@@ -46,15 +46,15 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
  * @author Marvin Toll
  * @since v3.0
  */
+@Tag(value = "intentional")
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteNonDataPopulator.class)
 @SuppressWarnings("static-method")
-public class JstFindUtilHelperTest {
+public class IntentionalErrorTest {
 
-    @Test
-    public void testExistsInDataBaseWithPopulatedEntities_new() {
+	@Test
+	public void testIntentionalExistsInDatabase() {
 
-        Assertions.assertFalse(JstFindUtilHelper.existsInDatabase(JstFindListJpaPO
-                .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withEntitiesContainingIdentity(new NoteDE())));
-    }
+		assertTrue(true);
+	}
 }

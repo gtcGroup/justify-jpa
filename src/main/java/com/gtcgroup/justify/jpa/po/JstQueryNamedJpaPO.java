@@ -25,7 +25,6 @@
  */
 package com.gtcgroup.justify.jpa.po;
 
-import java.util.Map;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -130,9 +129,9 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstQueryNamedJpaPO}
 	 */
-	public JstQueryNamedJpaPO withParameterMap(final Map<String, Object> parameterMap) {
+	public JstQueryNamedJpaPO withParameter(final String key, final Object value) {
 
-		this.parameterMap = parameterMap;
+		setParameter(key, value);
 		return this;
 	}
 
@@ -148,9 +147,9 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstQueryNamedJpaPO}
 	 */
-	public JstQueryNamedJpaPO withSuppressReadOnly(final boolean suppress) {
+	public JstQueryNamedJpaPO withReadOnly() {
 
-		this.readOnly = suppress;
+		setReadOnly();
 		return this;
 	}
 }

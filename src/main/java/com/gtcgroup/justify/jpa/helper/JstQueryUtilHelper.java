@@ -26,6 +26,7 @@
 package com.gtcgroup.justify.jpa.helper;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -100,14 +101,22 @@ public enum JstQueryUtilHelper {
 	public static <ENTITY> Optional<ENTITY> querySingleResult(final BaseQueryJpaPO queryPO) {
 
 		try {
-			final Optional<Query> query = decorateQuery(queryPO);
-			if (query.isPresent()) {
-				return (Optional<ENTITY>) Optional.of(query.get().getSingleResult());
+			final Optional<Query> queryOptional = decorateQuery(queryPO);
+			if (queryOptional.isPresent()) {
+
+				final Query query = queryOptional.get();
+
+				for (final Map.Entry<String, Object> entry : queryPO.getParameterMap().entrySet()) {
+
+					final String key = entry.getKey();
+					final Object value = entry.getValue();
+
+					query.setParameter(key, value);
+				}
+				return (Optional<ENTITY>) Optional.of(query.getSingleResult());
 			}
 		} catch (@SuppressWarnings("unused") final Exception e) {
 			// Continue.
-		} finally {
-			queryPO.closeEntityManager();
 		}
 		return Optional.empty();
 	}

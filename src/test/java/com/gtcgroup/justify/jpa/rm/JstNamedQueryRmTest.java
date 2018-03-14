@@ -62,193 +62,192 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 @SuppressWarnings("all")
 public class JstNamedQueryRmTest {
 
-    private static final String QUERY_NAME_OOOOPPPSSS = "queryOooopppsss!";
-    private static final String QUERY_NOTE_LIST = "queryNoteList";
-    private static final String QUERY_NOTE_LIST_WITH_STRING_PARAMETER = "queryNoteListWithStringParameter";
+	private static final String QUERY_NAME_OOOOPPPSSS = "queryOooopppsss!";
+	private static final String QUERY_NOTE_LIST = "queryNoteList";
+	private static final String QUERY_NOTE_LIST_WITH_STRING_PARAMETER = "queryNoteListWithStringParameter";
 
-    private Map<String, Object> createModifiableParameterMap() {
+	@Test
+	public void testNamedQuerySingle_withParameter() {
 
-        final Map<String, Object> stringParameterMap = new HashMap<>();
-        stringParameterMap.put("text", ConstantsTestJPA.NOTE_TEXT_ONE);
-        return stringParameterMap;
-    }
+		final Optional<NoteDE> optionalNoteDE = JstQueryNamedJpaRM
+				.querySingle(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+						.withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER)
+						.withParameter("text", ConstantsTestJPA.NOTE_TEXT_ONE).withReadOnly());
 
-    private Optional<List<NoteDE>> createNamedQueryListMapPO(final boolean suppressExceptionForNull,
-            final String queryName) {
+		Assertions.assertTrue(optionalNoteDE.isPresent());
+	}
 
-        return JstQueryNamedJpaRM
-                .queryReadOnlyList(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-                        .withQueryName(queryName).withParameterMap(createModifiableParameterMap()));
-    }
+	@Test
+	public void testNamedQueryList() {
 
-    private Optional<List<NoteDE>> createNamedQueryListPO(final boolean suppressExceptionForNull,
-            final String queryName) {
+		final List<NoteDE> noteList = JstQueryNamedJpaRM
+				.queryReadOnlyList(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST);
 
-        return JstQueryNamedJpaRM.queryReadOnlyList(
-                JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withQueryName(queryName));
-    }
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);
+	}
 
-    private NoteDE createNamedQueryMapPO(final boolean suppressExceptionForNull, final String queryName) {
+	@Test
+	public void testNamedQueryList_badName() {
 
-        final EntityManager entityManager = JstEntityManagerFactoryCacheHelper
-                .createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
-        NoteDE note = null;
-        try {
-            note = JstQueryNamedJpaRM.querySingle(JstQueryNamedJpaPO.withPersistenceUnitName(suppressExceptionForNull)
-                    .withEntityManager(entityManager).withQueryName(queryName).withParameterMap(createParameterMap()));
-        } catch (final Exception e) {
-            JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-            throw e;
-        }
-        return note;
-    }
+		Assertions.assertFalse(createNamedQueryListPO(true, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS).isPresent());
+	}
 
-    private Optional<NoteDE> createNamedQuerySingleMapPO(final boolean suppressExceptionForNull,
-            final String queryName) {
+	@Test
+	public void testNamedQueryList_badQueryName() {
 
-        return JstQueryNamedJpaRM.querySingle(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-                .withQueryName(queryName).withParameterMap(createModifiableParameterMap()));
-    }
+		Assertions.assertFalse(((NoteDE) JstQueryNamedJpaRM
+				.querySingle(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+						.withQueryName(JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS)
+						.withParameter("text", ConstantsTestJPA.NOTE_TEXT_ONE))
+				.get()).isPresent());
+	}
 
-    private Map<String, Object> createParameterMap() {
+	@Test
+	public void testNamedQueryList_empty() {
 
-        final Map<String, Object> stringParameterMap = new HashMap<>();
-        stringParameterMap.put("text", ConstantsTestJPA.NOTE_TEXT_TWO);
-        return stringParameterMap;
-    }
+		final List<NoteDE> noteList = new ArrayList<>();
 
-    private Optional<NoteDE> retrieveNamedQuerySingle(final boolean suppressExceptionForNull, final String queryName) {
+		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);
+	}
 
-        final Optional<NoteDE> note = JstQueryNamedJpaRM.querySingle(
-                JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withQueryName(queryName));
-        return note;
-    }
+	@Test
+	public void testNamedQueryList_withParameter() {
 
-    @Test
-    public void testNamedQuery_withParameterMap() {
+		final List<NoteDE> noteList = createNamedQueryListMapPO(true,
+				JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER);
 
-        final NoteDE note = createNamedQuerySingleMapPO(true,
-                JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER);
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);
+	}
 
-        Assertions.assertEquals(ConstantsTestJPA.NOTE_TEXT_ONE, note.getText());
-    }
+	@Test(expected = JustifyException.class)
+	public void testNamedQueryList_withParameter_noSuppress() {
 
-    @Test
-    public void testNamedQueryList() {
+		final Map<String, Object> stringParameterMap = new HashMap<>();
+		stringParameterMap.put("text", "*fake*");
 
-        final List<NoteDE> noteList = createNamedQueryListPO(true, JstNamedQueryRmTest.QUERY_NOTE_LIST);
+		JstQueryNamedJpaRM.queryReadOnlyList(
+				JstQueryNamedJpaPO.withPersistenceUnitName(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+						.withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER)
+						.withParameterMap(stringParameterMap));
+	}
 
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);
-    }
+	@Test
+	public void testNamedQueryList_withParameter_withSuppress() {
 
-    @Test
-    public void testNamedQueryList_badName() {
+		final Map<String, Object> stringParameterMap = new HashMap<>();
+		stringParameterMap.put("text", "*fake*");
 
-        Assertions.assertFalse(createNamedQueryListPO(true, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS).isPresent());
-    }
+		final List<NoteDE> noteList = JstQueryNamedJpaRM.queryReadOnlyList(
+				JstQueryNamedJpaPO.withPersistenceUnitName(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+						.withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER)
+						.withParameterMap(stringParameterMap));
 
-    @Test
-    public void testNamedQueryList_badQueryName() {
+		Assertions.assertThat(noteList).isEmpty();
+	}
 
-        Assertions
-                .assertFalse(createNamedQuerySingleMapPO(true, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS).isPresent());
-    }
+	@Test
+	public void testNamedQueryList_withParameterMap() {
 
-    @Test
-    public void testNamedQueryList_empty() {
+		final List<NoteDE> noteList = createNamedQueryListMapPO(true,
+				JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER);
 
-        final List<NoteDE> noteList = new ArrayList<>();
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_TWO);
+	}
 
-        AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);
-    }
+	@Test(expected = JustifyException.class)
+	public void testNamedQueryList_withParameterMap_exception() {
 
-    @Test
-    public void testNamedQueryList_withParameter() {
+		createNamedQueryListMapPO(true, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS);
+	}
 
-        final List<NoteDE> noteList = createNamedQueryListMapPO(true,
-                JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER);
+	@Test
+	public void testNamedQuerySingle() {
 
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_ONE);
-    }
+		final NoteDE note = retrieveNamedQuerySingle(true, ConstantsTestJPA.QUERY_NOTE_SINGLE_ONE);
 
-    @Test(expected = JustifyException.class)
-    public void testNamedQueryList_withParameter_noSuppress() {
+		Assertions.assertThat(note.getText()).isEqualTo(ConstantsTestJPA.NOTE_TEXT_ONE);
+	}
 
-        final Map<String, Object> stringParameterMap = new HashMap<>();
-        stringParameterMap.put("text", "*fake*");
+	@Test(expected = JustifyException.class)
+	public void testNamedQuerySingle_exception() {
 
-        JstQueryNamedJpaRM.queryReadOnlyList(
-                JstQueryNamedJpaPO.withPersistenceUnitName(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-                        .withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER)
-                        .withParameterMap(stringParameterMap));
-    }
+		retrieveNamedQuerySingle(false, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS);
+	}
 
-    @Test
-    public void testNamedQueryList_withParameter_withSuppress() {
+	@Test
+	public void testNamedQuerySingle_withParameterMap() {
 
-        final Map<String, Object> stringParameterMap = new HashMap<>();
-        stringParameterMap.put("text", "*fake*");
+		final NoteDE note = createNamedQueryMapPO(true, JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER);
 
-        final List<NoteDE> noteList = JstQueryNamedJpaRM.queryReadOnlyList(
-                JstQueryNamedJpaPO.withPersistenceUnitName(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-                        .withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER)
-                        .withParameterMap(stringParameterMap));
+		Assertions.assertThat(note.getText()).isEqualTo(ConstantsTestJPA.NOTE_TEXT_TWO);
+	}
 
-        Assertions.assertThat(noteList).isEmpty();
-    }
+	@Test(expected = JustifyException.class)
+	public void testNamedQuerySingle_withParameterMap_exception() {
 
-    @Test
-    public void testNamedQueryList_withParameterMap() {
+		createNamedQueryMapPO(true, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS);
+	}
 
-        final List<NoteDE> noteList = createNamedQueryListMapPO(true,
-                JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER);
+	@Test(expected = JustifyException.class)
+	public void testQueryNamedModifiableList_withParameterMap_exception() {
 
-        AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, noteList, ConstantsTestJPA.NOTE_UUID_TWO);
-    }
+		createNamedQueryListMapPO(true, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS);
+	}
 
-    @Test(expected = JustifyException.class)
-    public void testNamedQueryList_withParameterMap_exception() {
+	@Test
+	public void testQueryNamedModifiableSingle_exception() {
 
-        createNamedQueryListMapPO(true, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS);
-    }
+		retrieveNamedQuerySingle(true, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS);
+	}
 
-    @Test
-    public void testNamedQuerySingle() {
+	private Map<String, Object> createModifiableParameterMap() {
 
-        final NoteDE note = retrieveNamedQuerySingle(true, ConstantsTestJPA.QUERY_NOTE_SINGLE_ONE);
+		final Map<String, Object> stringParameterMap = new HashMap<>();
+		stringParameterMap.put("text", ConstantsTestJPA.NOTE_TEXT_ONE);
+		return stringParameterMap;
+	}
 
-        Assertions.assertThat(note.getText()).isEqualTo(ConstantsTestJPA.NOTE_TEXT_ONE);
-    }
+	private Optional<List<NoteDE>> createNamedQueryListMapPO(final boolean suppressExceptionForNull,
+			final String queryName) {
 
-    @Test(expected = JustifyException.class)
-    public void testNamedQuerySingle_exception() {
+		return JstQueryNamedJpaRM
+				.queryReadOnlyList(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+						.withQueryName(queryName).withParameterMap(createModifiableParameterMap()));
+	}
 
-        retrieveNamedQuerySingle(false, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS);
-    }
+	private Optional<List<NoteDE>> createNamedQueryListPO(final boolean suppressExceptionForNull,
+			final String queryName) {
 
-    @Test
-    public void testNamedQuerySingle_withParameterMap() {
+		return JstQueryNamedJpaRM.queryReadOnlyList(
+				JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withQueryName(queryName));
+	}
 
-        final NoteDE note = createNamedQueryMapPO(true, JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_STRING_PARAMETER);
+	private NoteDE createNamedQueryMapPO(final boolean suppressExceptionForNull, final String queryName) {
 
-        Assertions.assertThat(note.getText()).isEqualTo(ConstantsTestJPA.NOTE_TEXT_TWO);
-    }
+		final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
+		NoteDE note = null;
+		try {
+			note = JstQueryNamedJpaRM.querySingle(JstQueryNamedJpaPO.withPersistenceUnitName(suppressExceptionForNull)
+					.withEntityManager(entityManager).withQueryName(queryName).withParameterMap(createParameterMap()));
+		} catch (final Exception e) {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+			throw e;
+		}
+		return note;
+	}
 
-    @Test(expected = JustifyException.class)
-    public void testNamedQuerySingle_withParameterMap_exception() {
+	private Map<String, Object> createParameterMap() {
 
-        createNamedQueryMapPO(true, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS);
-    }
+		final Map<String, Object> stringParameterMap = new HashMap<>();
+		stringParameterMap.put("text", ConstantsTestJPA.NOTE_TEXT_TWO);
+		return stringParameterMap;
+	}
 
-    @Test(expected = JustifyException.class)
-    public void testQueryNamedModifiableList_withParameterMap_exception() {
+	private Optional<NoteDE> retrieveNamedQuerySingle(final boolean suppressExceptionForNull, final String queryName) {
 
-        createNamedQueryListMapPO(true, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS);
-    }
-
-    @Test
-    public void testQueryNamedModifiableSingle_exception() {
-
-        retrieveNamedQuerySingle(true, JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS);
-    }
+		final Optional<NoteDE> note = JstQueryNamedJpaRM.querySingle(
+				JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withQueryName(queryName));
+		return note;
+	}
 }

@@ -25,12 +25,18 @@
  */
 package com.gtcgroup.justify.jpa.populator.dependency;
 
+import java.util.List;
+
+import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
+
 /**
  * @since v. 1.0
  */
-public class NoteNonDataPopulator {
+public class NoteNonDataPopulator extends JstBaseDataPopulator {
 
-	@SuppressWarnings("javadoc")
-	public static Object ENTITY_IDENTITY;
+	@Override
+	public List<Object> populateCreateListTM(final String persistenceUnitName) {
+		return null;
+	}
 
 }

@@ -106,7 +106,7 @@ public class JstQueryLanguageRmTest {
     @Test
     public void testQueryList_queryLanguageString() {
 
-        final List<Object> noteList = JstQueryStringJpaRM.queryReadOnlyList(JstQueryStringJpaPO
+        final List<Object> noteList = JstQueryStringJpaRM.queryList(JstQueryStringJpaPO
                 .withPersistenceUnitName(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                 .withQueryLanguageString(JstQueryLanguageRmTest.SELECT_NOTE_LIST).withEntityClass(NoteDE.class));
 
@@ -116,7 +116,7 @@ public class JstQueryLanguageRmTest {
     @Test
     public void testQueryList_queryLanguageString_incomplete() {
 
-        final List<Object> noteList = JstQueryStringJpaRM.queryReadOnlyList(
+        final List<Object> noteList = JstQueryStringJpaRM.queryList(
                 JstQueryStringJpaPO.withPersistenceUnitName(false).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                         .withQueryLanguageString(JstQueryLanguageRmTest.SELECT_NOTE_LIST));
 

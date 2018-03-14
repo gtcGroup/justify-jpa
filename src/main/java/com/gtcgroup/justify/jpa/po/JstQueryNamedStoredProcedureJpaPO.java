@@ -148,9 +148,9 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstQueryNamedStoredProcedureJpaPO}
 	 */
-	public JstQueryNamedStoredProcedureJpaPO withSuppressReadOnly(final boolean suppress) {
+	public JstQueryNamedStoredProcedureJpaPO withReadOnly() {
 
-		this.readOnly = suppress;
+		setReadOnly();
 		return this;
 	}
 }

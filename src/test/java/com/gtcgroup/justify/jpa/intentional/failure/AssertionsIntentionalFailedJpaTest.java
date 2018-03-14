@@ -25,10 +25,10 @@
  */
 package com.gtcgroup.justify.jpa.intentional.failure;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.core.test.extension.JstConfigureTestUserId;
 import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
@@ -46,8 +46,8 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
  * @author Marvin Toll
  * @since v3.0
  */
+@Tag(value = "intentional")
 @JstConfigureTestLogToConsole
-@JstConfigureTestUserId(userId = "assertionsId")
 @JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
 @SuppressWarnings("static-method")
 public class AssertionsIntentionalFailedJpaTest {

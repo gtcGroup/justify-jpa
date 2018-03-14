@@ -63,7 +63,7 @@ public class JstPagingQueryRmTest {
 
     private List<NoteDE> createNamedQueryList(final boolean suppressExceptionForNull, final String queryName) {
 
-        final List<NoteDE> noteList = JstQueryNamedJpaRM.queryReadOnlyList(JstQueryNamedJpaPO
+        final List<NoteDE> noteList = JstQueryNamedJpaRM.queryList(JstQueryNamedJpaPO
                 .withPersistenceUnitName(suppressExceptionForNull).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
                 .withQueryName(queryName).withFirstResult(1).withMaxResults(1));
         return noteList;

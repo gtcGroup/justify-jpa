@@ -53,8 +53,6 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 
 	protected int maxResults;
 
-	protected boolean readOnly = false;
-
 	protected boolean forceDatabaseTripWhenNoCacheCoordination = false;
 
 	/**
@@ -91,6 +89,10 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 		return this.maxResults;
 	}
 
+	public Map<String, Object> getParameterMap() {
+		return this.parameterMap;
+	}
+
 	/**
 	 * @return boolean
 	 */
@@ -119,13 +121,6 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 		return 0 != this.maxResults;
 	}
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isReadOnly() {
-		return this.readOnly;
-	}
-
 	@SuppressWarnings("unchecked")
 	public <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
 		this.entityClass = (Class<Object>) entityClass;
@@ -134,5 +129,10 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 	@Override
 	public void setQueryHint(final String key, final Object value) {
 		getQueryHints().put(key, value);
+	}
+
+	protected void setParameter(final String key, final Object value) {
+
+		getParameterMap().put(key, value);
 	}
 }

@@ -52,7 +52,7 @@ public enum JstQueryNamedJpaRM {
     /**
      * @return {@link Optional}
      */
-    public static <ENTITY> Optional<List<ENTITY>> queryReadOnlyList(final JstQueryNamedJpaPO queryPO) {
+    public static <ENTITY> Optional<List<ENTITY>> queryList(final JstQueryNamedJpaPO queryPO) {
 
         return JstQueryUtilHelper.queryResultList(queryPO);
     }

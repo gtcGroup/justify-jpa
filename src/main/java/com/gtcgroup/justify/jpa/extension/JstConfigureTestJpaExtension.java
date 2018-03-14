@@ -41,7 +41,6 @@ import com.gtcgroup.justify.core.po.JstExceptionPO;
 import com.gtcgroup.justify.core.test.base.JstBaseExtension;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.core.test.helper.internal.AnnotationUtilHelper;
-import com.gtcgroup.justify.core.test.helper.internal.LogTestConsoleUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
@@ -105,9 +104,8 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension implements Be
 				JstTransactionJpaRM
 						.transactMultipleEntities(JstTransactionJpaPO.withPersistenceUnitName(this.persistenceUnitName)
 								.withCreateAndUpdateList(this.dataPopulatorList));
-			} catch (final Exception e) {
-				LogTestConsoleUtilHelper.setTestMethodStatus(extensionContext, LogTestConsoleUtilHelper.STATUS_FAILURE);
-				throw e;
+			} catch (final RuntimeException e) {
+				handleBeforeAllException(extensionContext, e);
 			}
 		}
 	}
