@@ -25,9 +25,7 @@
  */
 package com.gtcgroup.justify.jpa.po.internal;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.Query;
 
@@ -44,8 +42,6 @@ import javax.persistence.Query;
  * @since v.6.2
  */
 public abstract class BaseQueryJpaPO extends BaseJpaPO {
-
-	protected Map<String, Object> parameterMap = new ConcurrentHashMap<>();
 
 	protected Class<Object> entityClass;
 
@@ -65,7 +61,7 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 	/**
 	 * @return {@link Optional}
 	 */
-	public abstract Optional<Query> createQuery();
+	public abstract Query createQuery();
 
 	/**
 	 * @return {@link Class}
@@ -87,10 +83,6 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 	 */
 	public int getMaxResults() {
 		return this.maxResults;
-	}
-
-	public Map<String, Object> getParameterMap() {
-		return this.parameterMap;
 	}
 
 	/**

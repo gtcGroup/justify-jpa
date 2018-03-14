@@ -23,21 +23,16 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.rm;
+package com.gtcgroup.justify.jpa.intentional.failure;
 
-import java.util.List;
-
-import org.junit.Rule;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.rulechain.JstRuleChain;
-import com.gtcgroup.justify.core.si.JstRuleChainSI;
-import com.gtcgroup.justify.core.test.extension.JstConfigureTestUserIdExtension;
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJpaExtension;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstQueryNamedJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
@@ -51,29 +46,34 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
  * @author Marvin Toll
  * @since v3.0
  */
-@SuppressWarnings("all")
-public class JstPagingQueryRmTest {
+@Tag(value = "intentional")
+@JstConfigureTestLogToConsole
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
+@SuppressWarnings("static-method")
+public class IntentionalAssertionFailedTest {
 
-    private static final String QUERY_NOTE_LIST = "queryNoteList";
+	@Test
+	public void testIntentionalExistsInDatabase() {
 
-    @Rule
-    public JstRuleChainSI ruleChain = JstRuleChain.outerRule(false).around(JstConfigureTestJpaExtension
-            .withPersistenceUnit(ConstantsTestJPA.JUSTIFY_PU).withDataPopulators(NoteDataPopulator.class))
-            .around(JstConfigureTestUserIdExtension.withUserId());
+		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class,
+				ConstantsTestJPA.NOTE_UUID_ONE);
+	}
 
-    private List<NoteDE> createNamedQueryList(final boolean suppressExceptionForNull, final String queryName) {
+	@Test
+	public void testIntentionalExistsInDatabase_instance() {
 
-        final List<NoteDE> noteList = JstQueryNamedJpaRM.queryList(JstQueryNamedJpaPO
-                .withPersistenceUnitName(suppressExceptionForNull).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-                .withQueryName(queryName).withFirstResult(1).withMaxResults(1));
-        return noteList;
-    }
+		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteOne);
+	}
 
-    @Test
-    public void testNamedQueryList() {
+	@Test
+	public void testIntentionalNotExistsInDatabase() {
 
-        final List<NoteDE> noteList = createNamedQueryList(true, JstPagingQueryRmTest.QUERY_NOTE_LIST);
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, "fake_IDENTITY");
+	}
 
-        Assertions.assertThat(noteList.size()).isEqualTo(1);
-    }
+	@Test
+	public void testIntentionalNotExistsInDatabase_instance() {
+
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NoteDE());
+	}
 }

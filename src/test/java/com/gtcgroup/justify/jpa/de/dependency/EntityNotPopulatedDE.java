@@ -23,43 +23,21 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package com.gtcgroup.justify.jpa.de.dependency;
 
-package com.gtcgroup.justify.jpa.rm;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import java.util.List;
-import java.util.Optional;
+import com.gtcgroup.justify.jpa.de.BaseUuidDE;
 
-import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstQueryStringJpaPO;
+@Entity
+@Table(name = "NOT_POPULATED")
+@AttributeOverrides({ @AttributeOverride(name = "uuid", column = @Column(name = "NOT_POPULATED_UUID")) })
+public class EntityNotPopulatedDE extends BaseUuidDE {
 
-/**
- * This Resource Manager class supports queries using an SQL or JPQL string.
- *
- * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
- * <a href="http://gtcGroup.com">gtcGroup.com </a>.
- * </p>
- *
- * @author Marvin Toll
- * @since v3.0
- */
-public enum JstQueryStringJpaRM {
+	private static final long serialVersionUID = 1L;
 
-	INTERNAL;
-
-	/**
-	 * @return {@link Optional}
-	 */
-	public static <ENTITY> Optional<List<ENTITY>> queryList(final JstQueryStringJpaPO queryPO) {
-
-		return JstQueryUtilHelper.queryResultList(queryPO);
-	}
-
-	/**
-	 * @return {@link Optional}
-	 */
-	public static <ENTITY> Optional<ENTITY> querySingle(final JstQueryStringJpaPO queryPO) {
-
-		return JstQueryUtilHelper.querySingleResult(queryPO);
-	}
 }

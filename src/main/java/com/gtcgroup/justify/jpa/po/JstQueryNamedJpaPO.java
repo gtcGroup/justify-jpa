@@ -25,8 +25,6 @@
  */
 package com.gtcgroup.justify.jpa.po;
 
-import java.util.Optional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -67,19 +65,12 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
 	}
 
 	/**
-	 * @return {@link Optional}
+	 * @return {@link Query}
 	 */
 	@Override
-	public Optional<Query> createQuery() {
+	public Query createQuery() {
 
-		final EntityManager entityManager = getEntityManager();
-
-		try {
-			return Optional.of(entityManager.createNamedQuery(getQueryName()));
-		} catch (@SuppressWarnings("unused") final Exception e) {
-			// Continue.
-		}
-		return Optional.empty();
+		return getEntityManager().createNamedQuery(getQueryName());
 	}
 
 	/**

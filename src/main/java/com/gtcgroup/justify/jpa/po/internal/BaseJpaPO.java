@@ -56,6 +56,8 @@ public abstract class BaseJpaPO extends JstBasePO {
 
 	private final Map<String, Object> queryHints = new ConcurrentHashMap<>();
 
+	private final Map<String, Object> parameterMap = new ConcurrentHashMap<>();
+
 	protected EntityManager entityManager;
 
 	protected boolean entityManagerEncapsulated = false;
@@ -103,18 +105,15 @@ public abstract class BaseJpaPO extends JstBasePO {
 		return this.entityManager;
 	}
 
+	public Map<String, Object> getParameterMap() {
+		return this.parameterMap;
+	}
+
 	/**
 	 * @return {@link Map}
 	 */
 	public Map<String, Object> getQueryHints() {
 		return this.queryHints;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public boolean isQueryHints() {
-		return null != this.queryHints;
 	}
 
 	protected void setEntityManager(final EntityManager entityManager) {

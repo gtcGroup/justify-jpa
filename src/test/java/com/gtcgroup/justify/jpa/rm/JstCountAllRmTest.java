@@ -25,10 +25,15 @@
  */
 package com.gtcgroup.justify.jpa.rm;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.jpa.de.dependency.EntityNotPopulatedDE;
 import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
@@ -55,9 +60,14 @@ public class JstCountAllRmTest {
 	@Test
 	public void testCount_happyPath() {
 
-		Assertions.assertTrue(JstQueryCountJpaRM
-				.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NoteDE.class))
-				.isPresent());
+		assertAll(() -> {
+			assertTrue(JstQueryCountJpaRM
+					.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NoteDE.class))
+					.isPresent());
+			assertEquals(0, JstQueryCountJpaRM.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU)
+					.withResultClass(EntityNotPopulatedDE.class)).get().longValue());
+		});
+
 	}
 
 	@Test

@@ -47,21 +47,21 @@ import com.gtcgroup.justify.jpa.po.JstQueryAllJpaPO;
  */
 public enum JstQueryFindJpaRM {
 
-    INTERNAL;
+	INTERNAL;
 
-    /**
-     * @return {@link Optional}
-     */
-    public static <ENTITY> Optional<ENTITY> findSingle(final JstFindSingleJpaPO findPO) {
+	/**
+	 * @return ENTITY
+	 */
+	public static <ENTITY> Optional<ENTITY> findSingle(final JstFindSingleJpaPO findPO) {
 
-        return JstFindUtilHelper.findSingle(findPO);
-    }
+		return JstFindUtilHelper.findSingle(findPO);
+	}
 
-    /**
-     * @return {@link Optional}
-     */
-    public static <ENTITY> Optional<List<ENTITY>> queryAll(final JstQueryAllJpaPO queryAllPO) {
+	/**
+	 * @return {@link Optional}
+	 */
+	public static <ENTITY> Optional<List<ENTITY>> queryAll(final JstQueryAllJpaPO queryAllPO) {
 
-        return JstQueryUtilHelper.queryResultList(queryAllPO);
-    }
+		return JstQueryUtilHelper.queryResultList(queryAllPO);
+	}
 }

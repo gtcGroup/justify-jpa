@@ -38,13 +38,14 @@ import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.core.test.helper.internal.LogTestConsoleUtilHelper;
-import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
+import com.gtcgroup.justify.jpa.de.dependency.EntityNotPopulatedDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
 import com.gtcgroup.justify.jpa.po.JstQueryAllJpaPO;
+import com.gtcgroup.justify.jpa.populator.dependency.NoteAdditionalDataPopulator;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 
 /**
@@ -59,10 +60,20 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = { NoteDataPopulator.class,
+		NoteAdditionalDataPopulator.class })
+@SuppressWarnings("static-method")
 public class JstFindJpaRmTest {
 
 	private static final String FAKE_IDENTITY = "fakeIdentity";
+
+	public static Optional<NoteDE> findReadOnlyNoteDE(final Class<?> clazz, final String entityIdentity) {
+
+		final JstFindSingleJpaPO findJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				.withEntityClass(clazz).withEntityIdentity(entityIdentity).withReadOnly();
+
+		return JstQueryFindJpaRM.findSingle(findJpaPO);
+	}
 
 	private static Optional<NoteDE> findForceDatabaseTripDE(final Class<?> clazz, final String entityIdentity) {
 
@@ -88,16 +99,14 @@ public class JstFindJpaRmTest {
 		return JstQueryFindJpaRM.findSingle(findJpaPO);
 	}
 
-	private static Optional<NoteDE> findReadOnlyNoteDE(final Class<?> clazz, final String entityIdentity) {
+	@Test
+	public void testFind_fakeIdentity() {
 
-		final JstFindSingleJpaPO findJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-				.withEntityClass(clazz).withEntityIdentity(entityIdentity).withReadOnly();
-
-		return JstQueryFindJpaRM.findSingle(findJpaPO);
+		assertFalse(findNoteDE(NoteDE.class, JstFindJpaRmTest.FAKE_IDENTITY).isPresent());
 	}
 
 	@Test
-	public void testFind() {
+	public void testFind_happyPath() {
 
 		assertAll(() -> {
 			assertTrue(findNoteDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
@@ -107,24 +116,12 @@ public class JstFindJpaRmTest {
 	}
 
 	@Test
-	public void testFind_fakeIdentity() {
-
-		assertFalse(findNoteDE(NoteDE.class, JstFindJpaRmTest.FAKE_IDENTITY).isPresent());
-	}
-
-	@Test
-	public void testFind_notAnEntity() {
-
-		assertFalse(findReadOnlyNoteDE(NotAnEntityDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
-
-	}
-
-	@Test
 	public void testWithExternalEntityManager() {
 
 		Optional<EntityManager> entityManager = null;
 		Optional<NoteDE> optionalNoteDE = null;
 		Optional<List<NoteDE>> optionalList = null;
+		Optional<List<NoteDE>> optionalEmptyList = null;
 
 		try {
 			entityManager = JstEntityManagerFactoryCacheHelper
@@ -141,6 +138,11 @@ public class JstFindJpaRmTest {
 						.queryAll(JstQueryAllJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 								.withEntityClass(NoteDE.class).withEntityManager(entityManager.get()).withReadOnly()
 								.withForceDatabaseTripWhenNoCacheCoordination());
+
+				optionalEmptyList = JstQueryFindJpaRM
+						.queryAll(JstQueryAllJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+								.withEntityClass(EntityNotPopulatedDE.class).withEntityManager(entityManager.get())
+								.withReadOnly().withForceDatabaseTripWhenNoCacheCoordination());
 			}
 		} finally {
 			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
@@ -148,33 +150,6 @@ public class JstFindJpaRmTest {
 
 		assertTrue(optionalNoteDE.isPresent());
 		assertTrue(optionalList.isPresent());
+		assertFalse(optionalEmptyList.isPresent());
 	}
-
-	//
-	// @Test
-	// public void testWithModifiablePopulatedEntityContainingIdentity() {
-	//
-	// final NoteDE note = JstQueryFindJpaRM.findSingle(
-	// JstFindSingleJpaPO.withFind(true).withPopulatedEntityContainingIdentity(NoteDataPopulator.noteTwo)
-	// .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
-	//
-	// Assertions.assertThat(note).isNotNull();
-	// }
-	//
-	// @Test(expected = JustifyException.class)
-	// public void testWithoutEntityManager() {
-	//
-	// JstQueryFindJpaRM.findSingle(JstFindSingleJpaPO.withFind(true).withEntityClass(NoteDE.class)
-	// .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));
-	// }
-	//
-	// @Test(expected = JustifyException.class)
-	// public void testWithoutTargetEntity() {
-	//
-	// final NoteDE note = JstQueryFindJpaRM
-	// .findSingle(JstFindSingleJpaPO.withFind(true).withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-	// .withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO));
-	//
-	// Assertions.assertThat(note).isNotNull();
-	// }
 }

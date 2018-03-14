@@ -49,19 +49,19 @@ public enum JstFindUtilHelper {
 	/**
 	 * @return {@link Optional}
 	 */
-	@SuppressWarnings("unchecked")
 	public static <ENTITY> Optional<ENTITY> findSingle(final JstFindSingleJpaPO findPO) {
 
-		final EntityManager entityManager = findPO.getEntityManager();
-
 		try {
-			return (Optional<ENTITY>) Optional.ofNullable(
-					entityManager.find(findPO.getEntityClass(), findPO.getEntityIdentity(), findPO.getQueryHints()));
-		} catch (@SuppressWarnings("unused") final Exception e) {
-			return Optional.empty();
+			final ENTITY entity = findPO.getEntityManager().find(findPO.getEntityClass(), findPO.getEntityIdentity(),
+					findPO.getQueryHints());
+
+			if (null == entity) {
+				return Optional.empty();
+			}
+			return Optional.of(entity);
+
 		} finally {
 			findPO.closeEntityManager();
 		}
 	}
-
 }

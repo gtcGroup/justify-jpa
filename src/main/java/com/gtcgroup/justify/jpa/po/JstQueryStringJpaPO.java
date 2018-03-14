@@ -25,8 +25,6 @@
  */
 package com.gtcgroup.justify.jpa.po;
 
-import java.util.Optional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -68,22 +66,15 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
 	}
 
 	/**
-	 * @return {@link Optional}
+	 * @return {@link Query}
 	 */
 	@Override
-	public Optional<Query> createQuery() {
+	public Query createQuery() {
 
-		try {
-			if (isResultClass() && isQueryLanaguageString()) {
-				return Optional.of(createQueryLanguageQuery(getQueryLanguageString(), getEntityClass()));
-
-			} else if (isQueryLanaguageString()) {
-				return Optional.of(createQueryLanguageQuery(getQueryLanguageString()));
-			}
-		} catch (@SuppressWarnings("unused") final Exception e) {
-			// Continue.
+		if (isResultClass()) {
+			return createQueryLanguageQuery(getQueryLanguageString(), getEntityClass());
 		}
-		return Optional.empty();
+		return createQueryLanguageQuery(getQueryLanguageString());
 	}
 
 	/**
@@ -137,9 +128,45 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstQueryStringJpaPO}
 	 */
+	public JstQueryStringJpaPO withFirstResult(final int firstResult) {
+
+		this.firstResult = firstResult;
+		return this;
+	}
+
+	/**
+	 * @return {@link JstQueryStringJpaPO}
+	 */
+	public JstQueryStringJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppress) {
+
+		this.forceDatabaseTripWhenNoCacheCoordination = suppress;
+		return this;
+	}
+
+	/**
+	 * @return {@link JstQueryStringJpaPO}
+	 */
+	public JstQueryStringJpaPO withMaxResults(final int maxResults) {
+
+		this.maxResults = maxResults;
+		return this;
+	}
+
+	/**
+	 * @return {@link JstQueryStringJpaPO}
+	 */
 	public JstQueryStringJpaPO withQueryLanguageString(final String queryLanguageString) {
 
 		this.queryLanguageString = queryLanguageString;
+		return this;
+	}
+
+	/**
+	 * @return {@link JstQueryStringJpaPO}
+	 */
+	public JstQueryStringJpaPO withReadOnly() {
+
+		setReadOnly();
 		return this;
 	}
 

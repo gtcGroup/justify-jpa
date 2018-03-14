@@ -50,10 +50,10 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteNonDataPopulator;
 @JstConfigureTestLogToConsole
 @JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteNonDataPopulator.class)
 @SuppressWarnings("static-method")
-public class IntentionalErrorTest {
+public class IntentionalAnnotationErrorTest {
 
 	@Test
-	public void testIntentionalExistsInDatabase() {
+	public void testIntentionalBadDataPopulator() {
 
 		assertTrue(true);
 	}

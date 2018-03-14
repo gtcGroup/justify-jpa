@@ -25,8 +25,6 @@
  */
 package com.gtcgroup.justify.jpa.po;
 
-import java.util.Optional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -95,19 +93,9 @@ public class JstQueryAllJpaPO extends BaseQueryJpaPO {
 	 * @return {@link Query}
 	 */
 	@Override
-	public Optional<Query> createQuery() {
+	public Query createQuery() {
 
-		final EntityManager entityManager = getEntityManager();
-
-		try {
-			if (isEntityClass()) {
-
-				return Optional.of(createCriteriaQuery(entityManager, getEntityClass()));
-			}
-		} catch (@SuppressWarnings("unused") final Exception e) {
-			// Continue
-		}
-		return Optional.empty();
+		return createCriteriaQuery(getEntityManager(), getEntityClass());
 	}
 
 	/**

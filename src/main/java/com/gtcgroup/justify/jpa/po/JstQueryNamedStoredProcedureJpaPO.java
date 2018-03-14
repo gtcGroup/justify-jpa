@@ -25,9 +25,6 @@
  */
 package com.gtcgroup.justify.jpa.po;
 
-import java.util.Map;
-import java.util.Optional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -68,19 +65,12 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
 	}
 
 	/**
-	 * @return {@link Optional}
+	 * @return {@link Query}
 	 */
 	@Override
-	public Optional<Query> createQuery() {
+	public Query createQuery() {
 
-		final EntityManager entityManager = getEntityManager();
-
-		try {
-			return Optional.of(entityManager.createNamedStoredProcedureQuery(getQueryName()));
-		} catch (@SuppressWarnings("unused") final Exception e) {
-			// Continue.
-		}
-		return Optional.empty();
+		return getEntityManager().createNamedStoredProcedureQuery(getQueryName());
 	}
 
 	/**
@@ -130,9 +120,9 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstQueryNamedStoredProcedureJpaPO}
 	 */
-	public JstQueryNamedStoredProcedureJpaPO withParameterMap(final Map<String, Object> parameterMap) {
+	public JstQueryNamedStoredProcedureJpaPO withParameter(final String key, final Object value) {
 
-		this.parameterMap = parameterMap;
+		setParameter(key, value);
 		return this;
 	}
 

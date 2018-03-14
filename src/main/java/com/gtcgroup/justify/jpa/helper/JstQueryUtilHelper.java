@@ -26,11 +26,11 @@
 package com.gtcgroup.justify.jpa.helper;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -71,10 +71,10 @@ public enum JstQueryUtilHelper {
 			final Query query = entityManager.createQuery(criteriaQuery);
 			final Long count = (Long) query.getSingleResult();
 			return Optional.of(count);
-		} catch (@SuppressWarnings("unused") final Exception e) {
-			// Continue.
+
+		} finally {
+			queryPO.closeEntityManager();
 		}
-		return Optional.empty();
 	}
 
 	/**
@@ -84,14 +84,19 @@ public enum JstQueryUtilHelper {
 	public static <ENTITY> Optional<List<ENTITY>> queryResultList(final BaseQueryJpaPO queryPO) {
 
 		try {
-			final Optional<Query> query = decorateQuery(queryPO);
-			if (query.isPresent()) {
-				return Optional.of(query.get().getResultList());
+			final Query query = decorateQuery(queryPO);
+
+			final List<ENTITY> entityList = query.getResultList();
+
+			if (entityList.isEmpty()) {
+				return Optional.empty();
 			}
+
+			return Optional.of(entityList);
+
 		} finally {
 			queryPO.closeEntityManager();
 		}
-		return Optional.empty();
 	}
 
 	/**
@@ -101,52 +106,46 @@ public enum JstQueryUtilHelper {
 	public static <ENTITY> Optional<ENTITY> querySingleResult(final BaseQueryJpaPO queryPO) {
 
 		try {
-			final Optional<Query> queryOptional = decorateQuery(queryPO);
-			if (queryOptional.isPresent()) {
 
-				final Query query = queryOptional.get();
+			final Query query = decorateQuery(queryPO);
 
-				for (final Map.Entry<String, Object> entry : queryPO.getParameterMap().entrySet()) {
+			return (Optional<ENTITY>) Optional.of(query.getSingleResult());
 
-					final String key = entry.getKey();
-					final Object value = entry.getValue();
+		} catch (@SuppressWarnings("unused") final NoResultException e) {
 
-					query.setParameter(key, value);
-				}
-				return (Optional<ENTITY>) Optional.of(query.getSingleResult());
-			}
-		} catch (@SuppressWarnings("unused") final Exception e) {
-			// Continue.
+			return Optional.empty();
+
+		} finally {
+			queryPO.closeEntityManager();
 		}
-		return Optional.empty();
 	}
 
-	private static Optional<Query> decorateQuery(final BaseQueryJpaPO queryPO) {
+	private static Query decorateQuery(final BaseQueryJpaPO queryPO) {
 
-		final Optional<Query> queryOptional = queryPO.createQuery();
+		final Query query = queryPO.createQuery();
 
-		if (queryOptional.isPresent()) {
+		// Query Hints
+		for (final Entry<String, Object> stringEntry : queryPO.getQueryHints().entrySet()) {
 
-			final Query query = queryOptional.get();
-
-			if (queryPO.isQueryHints()) {
-
-				for (final Entry<String, Object> stringEntry : queryPO.getQueryHints().entrySet()) {
-
-					query.setParameter(stringEntry.getKey(), stringEntry.getValue());
-				}
-			}
-
-			if (queryPO.isFirstResult()) {
-
-				query.setFirstResult(queryPO.getFirstResult());
-			}
-			if (queryPO.isMaxResults()) {
-
-				query.setMaxResults(queryPO.getMaxResults());
-			}
-			return Optional.of(query);
+			query.setHint(stringEntry.getKey(), stringEntry.getValue());
 		}
-		return Optional.empty();
+
+		// Query Parameters
+		for (final Entry<String, Object> stringEntry : queryPO.getParameterMap().entrySet()) {
+
+			query.setParameter(stringEntry.getKey(), stringEntry.getValue());
+		}
+
+		if (queryPO.isFirstResult()) {
+
+			query.setFirstResult(queryPO.getFirstResult());
+		}
+
+		if (queryPO.isMaxResults()) {
+
+			query.setMaxResults(queryPO.getMaxResults());
+		}
+
+		return query;
 	}
 }
