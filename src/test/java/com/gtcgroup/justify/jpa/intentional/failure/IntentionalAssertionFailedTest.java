@@ -53,27 +53,27 @@ import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 public class IntentionalAssertionFailedTest {
 
 	@Test
-	public void testIntentionalExistsInDatabase() {
+	public void testIntentionalExistsInDatabase_fail() {
+
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, "fake_IDENTITY");
+	}
+
+	@Test
+	public void testIntentionalExistsInDatabase_instance() {
+
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NoteDE().setUuid("uuid"));
+	}
+
+	@Test
+	public void testIntentionalNotExistsInDatabase_fail() {
 
 		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class,
 				ConstantsTestJPA.NOTE_UUID_ONE);
 	}
 
 	@Test
-	public void testIntentionalExistsInDatabase_instance() {
-
-		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteOne);
-	}
-
-	@Test
-	public void testIntentionalNotExistsInDatabase() {
-
-		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, "fake_IDENTITY");
-	}
-
-	@Test
 	public void testIntentionalNotExistsInDatabase_instance() {
 
-		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NoteDE());
+		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteOne);
 	}
 }

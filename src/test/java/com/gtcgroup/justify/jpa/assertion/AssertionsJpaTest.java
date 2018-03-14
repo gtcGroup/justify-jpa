@@ -26,8 +26,8 @@
 package com.gtcgroup.justify.jpa.assertion;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
@@ -69,7 +69,7 @@ public class AssertionsJpaTest {
 	@Test
 	public void testExistsInDatabase_noEntity() {
 
-		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+		assertThrows(IllegalArgumentException.class, () -> {
 			AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NotAnEntityDE());
 		});
 	}
@@ -78,7 +78,7 @@ public class AssertionsJpaTest {
 	public void testNotExistsInDatabase_happyPath() {
 
 		assertAll(() -> {
-			AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NoteDE());
+			AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NoteDE().setUuid("uuid"));
 			AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, "fake_IDENTITY");
 		});
 	}

@@ -25,8 +25,6 @@
  */
 package com.gtcgroup.justify.jpa.intentional.error;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -34,10 +32,12 @@ import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.po.JstQueryCountJpaPO;
 import com.gtcgroup.justify.jpa.po.JstQueryNamedJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 import com.gtcgroup.justify.jpa.rm.JstFindJpaRmTest;
 import com.gtcgroup.justify.jpa.rm.JstNamedQueryRmTest;
+import com.gtcgroup.justify.jpa.rm.JstQueryCountJpaRM;
 import com.gtcgroup.justify.jpa.rm.JstQueryNamedJpaRM;
 
 /**
@@ -58,17 +58,30 @@ import com.gtcgroup.justify.jpa.rm.JstQueryNamedJpaRM;
 public class IntentionalQueryErrorTest {
 
 	@Test
+	public void testIntentionalCount_missingResultClass() {
+
+		JstQueryCountJpaRM.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU)).isPresent();
+	}
+
+	@Test
+	public void testIntentionalCount_notAnEntity() {
+
+		JstQueryCountJpaRM
+				.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NotAnEntityDE.class))
+				.isPresent();
+	}
+
+	@Test
 	public void testIntentionalFind_notAnEntity() {
 
-		assertFalse(
-				JstFindJpaRmTest.findReadOnlyNoteDE(NotAnEntityDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
+		JstFindJpaRmTest.findReadOnlyNoteDE(NotAnEntityDE.class, ConstantsTestJPA.NOTE_UUID_TWO);
 
 	}
 
 	@Test
-	public void testNamedQueryList_badName() {
+	public void testIntentionalNamedQueryList_badName() {
 
-		assertFalse(JstQueryNamedJpaRM.queryList(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-				.withQueryName(JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS)).isPresent());
+		JstQueryNamedJpaRM.queryList(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				.withQueryName(JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS));
 	}
 }

@@ -27,9 +27,9 @@ package com.gtcgroup.justify.jpa.rm;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
@@ -73,15 +73,18 @@ public class JstCountAllRmTest {
 	@Test
 	public void testCount_missingResultClass() {
 
-		Assertions.assertFalse(
-				JstQueryCountJpaRM.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU)).isPresent());
+		assertThrows(IllegalArgumentException.class, () -> {
+			JstQueryCountJpaRM.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU)).isPresent();
+		});
 	}
 
 	@Test
 	public void testCount_notAnEntity() {
 
-		Assertions.assertFalse(JstQueryCountJpaRM
-				.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NotAnEntityDE.class))
-				.isPresent());
+		assertThrows(IllegalArgumentException.class, () -> {
+			JstQueryCountJpaRM.count(
+					JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NotAnEntityDE.class))
+					.isPresent();
+		});
 	}
 }
