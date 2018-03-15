@@ -46,31 +46,44 @@ import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
  */
 public enum JstTransactionJpaRM {
 
-    INTERNAL;
+	INTERNAL;
 
-    /**
-     * This method is used for committing a single transaction with a single entity.
-     * If any of the related child objects are not marked for an applicable
-     * {@link CascadeType} then they need to be explicitly handled in the
-     * {@link JstTransactionJpaPO}.
-     *
-     * @return {@link Optional}
-     */
-    public static <ENTITY> Optional<ENTITY> transactEntity(final JstTransactionJpaPO transactionPO) {
+	/**
+	 * This method is used for committing one transaction with multiple entities. If
+	 * any of the related child objects are not marked for an applicable
+	 * {@link CascadeType} then they need to be explicitly handled in the
+	 * {@link JstTransactionJpaPO}.
+	 *
+	 * @return {@link Optional}
+	 */
+	public static <ENTITY> Optional<List<ENTITY>> commitListInOneTransaction(final JstTransactionJpaPO transactionPO) {
 
-        return JstTransactionUtilHelper.transactEntity(transactionPO);
-    }
+		final Optional<List<ENTITY>> optionalEntityList = JstTransactionUtilHelper
+				.commitEntitiesInSingleTransaction(transactionPO);
 
-    /**
-     * This method is used for committing a single transaction with multiple
-     * entities. If any of the related child objects are not marked for an
-     * applicable {@link CascadeType} then they need to be explicitly handled in the
-     * {@link JstTransactionJpaPO}.
-     *
-     * @return {@link Optional}
-     */
-    public static <ENTITY> Optional<List<ENTITY>> transactMultipleEntities(final JstTransactionJpaPO transactionPO) {
+		if (optionalEntityList.isPresent()) {
+			return Optional.of(optionalEntityList.get());
+		}
+		return Optional.empty();
+	}
 
-        return JstTransactionUtilHelper.transactEntities(transactionPO);
-    }
+	/**
+	 * This method is used for committing one transaction with a single entity. If
+	 * any of the related child objects are not marked for an applicable
+	 * {@link CascadeType} then they need to be explicitly handled in the
+	 * {@link JstTransactionJpaPO}.
+	 *
+	 * @return {@link Optional}
+	 */
+	public static <ENTITY> Optional<ENTITY> commitSingleInOneTransaction(final JstTransactionJpaPO transactionPO) {
+
+		final Optional<List<ENTITY>> optionalEntityList = JstTransactionUtilHelper
+				.commitEntitiesInSingleTransaction(transactionPO);
+
+		if (optionalEntityList.isPresent() && 1 == optionalEntityList.get().size()) {
+
+			return Optional.of(optionalEntityList.get().get(0));
+		}
+		return Optional.empty();
+	}
 }

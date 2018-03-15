@@ -28,6 +28,7 @@ package com.gtcgroup.justify.jpa.po;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.gtcgroup.justify.core.base.JstBasePO;
 
@@ -44,165 +45,171 @@ import com.gtcgroup.justify.core.base.JstBasePO;
  */
 public class JstAssertCascadeJpaPO extends JstBasePO {
 
-    /**
-     * This method initializes the class.
-     *
-     * @return {@link JstAssertCascadeJpaPO}
-     */
-    public static JstAssertCascadeJpaPO withPopulatedEntity(final String persistenceUnitName,
-            final Object populatedEntity) {
+	/**
+	 * This method initializes the class.
+	 *
+	 * @return {@link JstAssertCascadeJpaPO}
+	 */
+	public static JstAssertCascadeJpaPO withPopulatedEntity(final String persistenceUnitName,
+			final Object populatedEntity) {
 
-        return new JstAssertCascadeJpaPO(persistenceUnitName, populatedEntity);
-    }
+		return new JstAssertCascadeJpaPO(persistenceUnitName, populatedEntity);
+	}
 
-    private Object populatedEntity;
+	private Object populatedEntity;
 
-    private String persistenceUnitName;
+	private String persistenceUnitName;
 
-    private final List<String> cascadePersistList = new ArrayList<>();
+	private final List<String> cascadePersistList = new ArrayList<>();
 
-    private final List<String> cascadeRemoveList = new ArrayList<>();
+	private final List<String> cascadeRemoveList = new ArrayList<>();
 
-    private final List<String> cascadeNoPersistList = new ArrayList<>();
+	private final List<String> cascadeNoPersistList = new ArrayList<>();
 
-    private final List<String> cascadeNoRemoveList = new ArrayList<>();
+	private final List<String> cascadeNoRemoveList = new ArrayList<>();
 
-    private final List<String> afterTheTestCleanupList = new ArrayList<>();
+	private final List<String> afterTheTestCleanupList = new ArrayList<>();
 
-    /**
-     * Constructor
-     */
-    protected JstAssertCascadeJpaPO(final String persistenceUnitName, final Object populatedEntity) {
+	/**
+	 * Constructor
+	 */
+	protected JstAssertCascadeJpaPO(final String persistenceUnitName, final Object populatedEntity) {
 
-        super();
+		super();
 
-        this.persistenceUnitName = persistenceUnitName;
-        this.populatedEntity = populatedEntity;
+		this.persistenceUnitName = persistenceUnitName;
+		this.populatedEntity = populatedEntity;
 
-        return;
-    }
+		return;
+	}
 
-    /**
-     * @return {@link List}
-     */
-    public List<String> getAfterTheTestCleanupList() {
-        return this.afterTheTestCleanupList;
-    }
+	/**
+	 * @return {@link List}
+	 */
+	public List<String> getAfterTheTestCleanupList() {
+		return this.afterTheTestCleanupList;
+	}
 
-    /**
-     * @return {@link Map}
-     */
-    public List<String> getCascadeNoPersistList() {
-        return this.cascadeNoPersistList;
-    }
+	/**
+	 * @return {@link Map}
+	 */
+	public List<String> getCascadeNoPersistList() {
+		return this.cascadeNoPersistList;
+	}
 
-    /**
-     * @return {@link List}
-     */
-    public List<String> getCascadeNoRemoveList() {
+	/**
+	 * @return {@link List}
+	 */
+	public List<String> getCascadeNoRemoveList() {
 
-        return this.cascadeNoRemoveList;
-    }
+		return this.cascadeNoRemoveList;
+	}
 
-    /**
-     * @return {@link List}
-     */
-    public List<String> getCascadePersistList() {
+	/**
+	 * @return {@link List}
+	 */
+	public List<String> getCascadePersistList() {
 
-        return this.cascadePersistList;
-    }
+		return this.cascadePersistList;
+	}
 
-    /**
-     * @return {@link List}
-     */
-    public List<String> getCascadeRemoveList() {
+	/**
+	 * @return {@link List}
+	 */
+	public List<String> getCascadeRemoveList() {
 
-        return this.cascadeRemoveList;
-    }
+		return this.cascadeRemoveList;
+	}
 
-    /**
-     * @return String
-     */
-    public String getPersistenceUnitName() {
+	/**
+	 * @return String
+	 */
+	public String getPersistenceUnitName() {
 
-        return this.persistenceUnitName;
-    }
+		return this.persistenceUnitName;
+	}
 
-    /**
-     * @return Object
-     */
-    public Object getPopulatedEntity() {
+	/**
+	 * @return Object
+	 */
+	public Object getPopulatedEntity() {
 
-        return this.populatedEntity;
-    }
+		return this.populatedEntity;
+	}
 
-    /**
-     * This method is used to replace merged version of the populated entity.
-     */
-    public void replacePopulatedEntity(final Object populatedEntity) {
-        this.populatedEntity = populatedEntity;
-    }
+	/**
+	 * This method is used to replace merged version of the populated entity.
+	 */
+	public void replacePopulatedEntity(final Optional<Object> populatedEntity) {
 
-    /**
-     * @return {@link JstAssertCascadeJpaPO}
-     */
-    public JstAssertCascadeJpaPO withCascadeAll(final String methodName) {
+		if (populatedEntity.isPresent()) {
+			this.populatedEntity = populatedEntity.get();
+		} else {
+			this.populatedEntity = null;
+		}
 
-        this.cascadePersistList.add(methodName);
-        this.cascadeRemoveList.add(methodName);
+	}
 
-        return this;
-    }
+	/**
+	 * @return {@link JstAssertCascadeJpaPO}
+	 */
+	public JstAssertCascadeJpaPO withCascadeAll(final String methodName) {
 
-    /**
-     * @return {@link JstAssertCascadeJpaPO}
-     */
-    public JstAssertCascadeJpaPO withCascadeAllExceptRemove(final String methodName) {
+		this.cascadePersistList.add(methodName);
+		this.cascadeRemoveList.add(methodName);
 
-        this.cascadePersistList.add(methodName);
-        this.cascadeNoRemoveList.add(methodName);
+		return this;
+	}
 
-        return this;
-    }
+	/**
+	 * @return {@link JstAssertCascadeJpaPO}
+	 */
+	public JstAssertCascadeJpaPO withCascadeAllExceptRemove(final String methodName) {
 
-    /**
-     * @return {@link JstAssertCascadeJpaPO}
-     */
-    public JstAssertCascadeJpaPO withCascadeNone(final String methodName) {
+		this.cascadePersistList.add(methodName);
+		this.cascadeNoRemoveList.add(methodName);
 
-        this.cascadeNoPersistList.add(methodName);
-        this.cascadeNoRemoveList.add(methodName);
+		return this;
+	}
 
-        return this;
-    }
+	/**
+	 * @return {@link JstAssertCascadeJpaPO}
+	 */
+	public JstAssertCascadeJpaPO withCascadeNone(final String methodName) {
 
-    /**
-     * @return {@link JstAssertCascadeJpaPO}
-     */
-    public JstAssertCascadeJpaPO withCascadePersist(final String methodName) {
+		this.cascadeNoPersistList.add(methodName);
+		this.cascadeNoRemoveList.add(methodName);
 
-        this.cascadePersistList.add(methodName);
-        return this;
-    }
+		return this;
+	}
 
-    /**
-     * @return {@link JstAssertCascadeJpaPO}
-     */
-    public JstAssertCascadeJpaPO withCascadeRemove(final String methodName) {
+	/**
+	 * @return {@link JstAssertCascadeJpaPO}
+	 */
+	public JstAssertCascadeJpaPO withCascadePersist(final String methodName) {
 
-        this.cascadeRemoveList.add(methodName);
-        return this;
-    }
+		this.cascadePersistList.add(methodName);
+		return this;
+	}
 
-    /**
-     * @return {@link JstAssertCascadeJpaPO}
-     */
-    public JstAssertCascadeJpaPO withCleanupAfterTheTest(final String... methodNames) {
+	/**
+	 * @return {@link JstAssertCascadeJpaPO}
+	 */
+	public JstAssertCascadeJpaPO withCascadeRemove(final String methodName) {
 
-        for (final String methodName : methodNames) {
-            this.afterTheTestCleanupList.add(methodName);
-        }
+		this.cascadeRemoveList.add(methodName);
+		return this;
+	}
 
-        return this;
-    }
+	/**
+	 * @return {@link JstAssertCascadeJpaPO}
+	 */
+	public JstAssertCascadeJpaPO withCleanupAfterTheTest(final String... methodNames) {
+
+		for (final String methodName : methodNames) {
+			this.afterTheTestCleanupList.add(methodName);
+		}
+
+		return this;
+	}
 }

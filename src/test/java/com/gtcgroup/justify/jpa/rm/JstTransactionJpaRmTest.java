@@ -25,6 +25,8 @@
  */
 package com.gtcgroup.justify.jpa.rm;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -32,10 +34,15 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
+import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
 
@@ -50,70 +57,117 @@ import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
  * @author Marvin Toll
  * @since v3.0
  */
+@JstConfigureTestLogToConsole
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU)
 @SuppressWarnings("static-method")
 public class JstTransactionJpaRmTest {
 
-    @Test
-    public void testDeleteList() {
+	@Test
+	public void testCreateAndDelete() {
 
-        final NoteDE note1 = new NoteDE();
-        note1.setText("One");
+		Optional<List<NoteDE>> optionalNoteList = JstTransactionJpaRM.commitListInOneTransaction(
+				JstTransactionJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+						.withCreateAndUpdateEntities(new NoteDE().setText("text1")));
 
-        final NoteDE note2 = new NoteDE();
-        note2.setText("Two");
+		if (optionalNoteList.isPresent()) {
+			final NoteDE noteDE = optionalNoteList.get().get(0);
 
-        Optional<List<Object>> noteList = JstTransactionJpaRM.transactMultipleEntities(JstTransactionJpaPO
-                .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withCreateAndUpdateEntities(note1, note2));
+			optionalNoteList = JstTransactionJpaRM.commitListInOneTransaction(JstTransactionJpaPO
+					.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withDeleteEntities(noteDE));
 
-        if (noteList.isPresent()) {
+			assertTrue(optionalNoteList.isPresent());
+		}
+	}
 
-            updateWithJDBC();
+	@Test
+	public void testCreateAndDelete_externalEntityManager() {
 
-            noteList = JstTransactionJpaRM.transactMultipleEntities(JstTransactionJpaPO
-                    .withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withDeleteList(noteList.get()));
-        }
-        Assertions.assertTrue(noteList.isPresent());
-    }
+		Optional<EntityManager> entityManager = null;
+		Optional<List<NoteDE>> optionalList = null;
 
-    private void updateWithJDBC() {
-        Connection dbConnection = null;
-        Statement statement = null;
-        try {
-            // Register JDBC driver
-            Class.forName("org.h2.Driver");
+		try {
+			entityManager = JstEntityManagerFactoryCacheHelper
+					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU, null, false);
 
-            // Open a connection
-            dbConnection = DriverManager.getConnection("jdbc:h2:mem:justify-persist;MODE=MSSQLServer", "persist",
-                    "persist");
+			optionalList = JstTransactionJpaRM.commitListInOneTransaction(JstTransactionJpaPO
+					.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+					.withCreateAndUpdateEntities(new NoteDE().setText("text2")).withEntityManager(entityManager.get()));
 
-            // Execute a query
-            statement = dbConnection.createStatement();
-            final String sql = "UPDATE NOTE SET NOTE_TEXT = 'Updated Text' WHERE NOTE_TEXT = 'Two'";
-            statement.execute(sql);
+			if (optionalList.isPresent()) {
+				final NoteDE noteDE = optionalList.get().get(0);
 
-            statement.close();
-            dbConnection.close();
-        } catch (final Exception e) {
+				optionalList = JstTransactionJpaRM.commitListInOneTransaction(
+						JstTransactionJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+								.withDeleteEntities(noteDE).withEntityManager(entityManager.get()));
 
-            e.printStackTrace();
+				assertTrue(optionalList.isPresent());
+			}
+		} finally {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
+		}
+	}
 
-        } finally {
+	@Test
+	public void testUpdateFromOutsideJPA() {
 
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (final SQLException e) {
-                    e.printStackTrace();
-                }
-            }
+		final NoteDE note1 = new NoteDE();
+		note1.setText("One");
 
-            if (dbConnection != null) {
-                try {
-                    dbConnection.close();
-                } catch (final SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+		final NoteDE note2 = new NoteDE();
+		note2.setText("Two");
+
+		Optional<List<Object>> noteList = JstTransactionJpaRM.commitListInOneTransaction(JstTransactionJpaPO
+				.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withCreateAndUpdateEntities(note1, note2));
+
+		if (noteList.isPresent()) {
+
+			updateWithJDBC();
+
+			noteList = JstTransactionJpaRM.commitListInOneTransaction(JstTransactionJpaPO
+					.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withDeleteList(noteList.get()));
+		}
+		Assertions.assertTrue(noteList.isPresent());
+	}
+
+	private void updateWithJDBC() {
+		Connection dbConnection = null;
+		Statement statement = null;
+		try {
+			// Register JDBC driver
+			Class.forName("org.h2.Driver");
+
+			// Open a connection
+			dbConnection = DriverManager.getConnection("jdbc:h2:mem:justify-persist;MODE=MSSQLServer", "persist",
+					"persist");
+
+			// Execute a query
+			statement = dbConnection.createStatement();
+			final String sql = "UPDATE NOTE SET NOTE_TEXT = 'Updated Text' WHERE NOTE_TEXT = 'Two'";
+			statement.execute(sql);
+
+			statement.close();
+			dbConnection.close();
+		} catch (final Exception e) {
+
+			e.printStackTrace();
+
+		} finally {
+
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (final SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (dbConnection != null) {
+				try {
+					dbConnection.close();
+				} catch (final SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 }

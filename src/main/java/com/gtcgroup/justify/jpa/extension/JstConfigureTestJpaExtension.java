@@ -94,7 +94,7 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension implements Be
 				}
 			}
 			this.dataPopulatorNameList.clear();
-			JstTransactionJpaRM.transactMultipleEntities(JstTransactionJpaPO
+			JstTransactionJpaRM.commitListInOneTransaction(JstTransactionJpaPO
 					.withPersistenceUnitName(this.persistenceUnitName).withCreateAndUpdateList(this.deInsertionList));
 			this.deInsertionList.clear();
 		} catch (final RuntimeException e) {
