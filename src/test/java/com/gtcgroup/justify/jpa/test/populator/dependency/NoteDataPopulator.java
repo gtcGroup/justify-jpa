@@ -23,12 +23,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.populator.dependency;
+package com.gtcgroup.justify.jpa.test.populator.dependency;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
+import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
 
 /**
@@ -42,19 +43,25 @@ import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
  * @author Marvin Toll
  * @since v3.0
  */
-public class NoteAdditionalDataPopulator extends JstBaseDataPopulator {
+public class NoteDataPopulator extends JstBaseDataPopulator {
 
-	@SuppressWarnings("javadoc")
-	public final static String ADDITIONAL_UUID = "additionalUUID";
+	public static NoteDE noteOne = new NoteDE().setText(ConstantsTestJPA.NOTE_TEXT_ONE)
+			.setUuid(ConstantsTestJPA.NOTE_UUID_ONE);
+
+	public static NoteDE noteTwo = new NoteDE().setText(ConstantsTestJPA.NOTE_TEXT_TWO)
+			.setUuid(ConstantsTestJPA.NOTE_UUID_TWO);
+
+	public static List<Object> populatedList = new ArrayList<>();
 
 	/**
-	 * @see JstBaseDataPopulator#populateCreateListTM(String)
+	 * @see JstBaseDataPopulator#populateCreateListTM(JstQueryJpaRM)
 	 */
 	@Override
 	public List<Object> populateCreateListTM(final String persistenceUnitName) {
 
-		final List<Object> createList = new ArrayList<>();
-		createList.add(new NoteDE().setUuid(NoteAdditionalDataPopulator.ADDITIONAL_UUID));
-		return createList;
+		populatedList.add(NoteDataPopulator.noteOne);
+		populatedList.add(NoteDataPopulator.noteTwo);
+
+		return NoteDataPopulator.populatedList;
 	}
 }

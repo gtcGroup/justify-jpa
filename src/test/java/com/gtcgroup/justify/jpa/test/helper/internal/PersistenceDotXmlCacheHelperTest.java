@@ -1,7 +1,7 @@
 /*
  * [Licensed per the Open Source "MIT License".]
  *
- * Copyright (c) 2006 - 2017 by
+ * Copyright (c) 2006 - 2018 by
  * Global Technology Consulting Group, Inc. at
  * http://gtcGroup.com
  *
@@ -23,20 +23,32 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.populator.dependency;
+package com.gtcgroup.justify.jpa.test.helper.internal;
 
-import java.util.List;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.jpa.test.helper.internal.PersistenceDotXmlCacheHelper;
 
 /**
- * @since v. 1.0
+ * Test Class
+ *
+ * <p style="font-family:Verdana; font-size:10px; font-style:italic">
+ * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
+ * <a href="http://gtcGroup.com">gtcGroup.com </a>.
+ * </p>
+ *
+ * @author Marvin Toll
+ * @since v3.0
  */
-public class NoteNonDataPopulator extends JstBaseDataPopulator {
+@JstConfigureTestLogToConsole
+@SuppressWarnings("static-method")
+public class PersistenceDotXmlCacheHelperTest {
 
-	@Override
-	public List<Object> populateCreateListTM(final String persistenceUnitName) {
-		return null;
-	}
+    @Test
+    public void testRetrieveJdbcUrlOrNull_fake() {
 
+        Assertions.assertFalse(PersistenceDotXmlCacheHelper.retrieveJdbcUrlOrDatasource("fake", null).isPresent());
+    }
 }

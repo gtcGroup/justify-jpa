@@ -42,8 +42,8 @@ import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
-import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
 /**
  * Test Class
