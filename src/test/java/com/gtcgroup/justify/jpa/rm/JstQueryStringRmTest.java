@@ -39,11 +39,11 @@ import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstQueryStringJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryStringPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 
 /**
  * Test Class
@@ -79,8 +79,8 @@ public class JstQueryStringRmTest {
 	@Test
 	public void testQueryList_happyPath() {
 
-		final Optional<List<NoteDE>> optionalNoteList = JstQueryStringJpaRM
-				.queryList(JstQueryStringJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+		final Optional<List<NoteDE>> optionalNoteList = JstQueryStringRM
+				.queryList(JstQueryStringPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 						.withQueryLanguageString(JstQueryStringRmTest.SELECT_NOTE_LIST).withReadOnly());
 
 		final List<NoteDE> noteList = optionalNoteList.get();
@@ -92,7 +92,7 @@ public class JstQueryStringRmTest {
 	public void testQueryList_noEntity() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			JstQueryStringJpaRM.queryList(JstQueryStringJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+			JstQueryStringRM.queryList(JstQueryStringPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withQueryLanguageString(JstQueryStringRmTest.EXCEPTION_NOTHINGBEAN_LIST));
 		});
 	}
@@ -101,7 +101,7 @@ public class JstQueryStringRmTest {
 	public void testQuerySingle_exceptionString() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			JstQueryStringJpaRM.querySingle(JstQueryStringJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+			JstQueryStringRM.querySingle(JstQueryStringPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withQueryLanguageString(JstQueryStringRmTest.SELECT_NOTE_SINGLE_FAKE));
 		});
 	}
@@ -109,8 +109,8 @@ public class JstQueryStringRmTest {
 	@Test
 	public void testQuerySingle_happyPath() {
 
-		final Optional<NoteDE> optionalNoteDE = JstQueryStringJpaRM
-				.querySingle(JstQueryStringJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+		final Optional<NoteDE> optionalNoteDE = JstQueryStringRM
+				.querySingle(JstQueryStringPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 						.withQueryLanguageString(JstQueryStringRmTest.SELECT_NOTE_SINGLE));
 
 		assertTrue(optionalNoteDE.isPresent());
@@ -120,7 +120,7 @@ public class JstQueryStringRmTest {
 	public void testQuerySingle_noEntity() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			JstQueryStringJpaRM.querySingle(JstQueryStringJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+			JstQueryStringRM.querySingle(JstQueryStringPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withQueryLanguageString(JstQueryStringRmTest.EXCEPTION_NOTHINGBEAN_SINGLE));
 		});
 	}
@@ -129,7 +129,7 @@ public class JstQueryStringRmTest {
 	public void testQuerySingle_noQueryString() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			JstQueryStringJpaRM.querySingle(JstQueryStringJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
+			JstQueryStringRM.querySingle(JstQueryStringPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 		});
 
 	}
@@ -148,18 +148,18 @@ public class JstQueryStringRmTest {
 
 			if (entityManager.isPresent()) {
 
-				optionalNoteDE = JstQueryStringJpaRM
-						.querySingle(JstQueryStringJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				optionalNoteDE = JstQueryStringRM
+						.querySingle(JstQueryStringPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 								.withQueryLanguageString(JstQueryStringRmTest.SELECT_NOTE_SINGLE)
 								.withEntityManager(entityManager.get()));
 
-				optionalList = JstQueryStringJpaRM
-						.queryList(JstQueryStringJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				optionalList = JstQueryStringRM
+						.queryList(JstQueryStringPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 								.withQueryLanguageString(JstQueryStringRmTest.SELECT_NOTE_LIST).withFirstResult(1)
 								.withMaxResults(1).withEntityManager(entityManager.get()));
 
-				optionalEmpty = JstQueryStringJpaRM
-						.querySingle(JstQueryStringJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				optionalEmpty = JstQueryStringRM
+						.querySingle(JstQueryStringPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 								.withQueryLanguageString(JstQueryStringRmTest.SELECT_NOTE_EMPTY)
 								.withEntityManager(entityManager.get()));
 			}

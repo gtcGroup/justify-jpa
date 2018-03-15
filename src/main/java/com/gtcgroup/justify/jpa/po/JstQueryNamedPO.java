@@ -28,7 +28,7 @@ package com.gtcgroup.justify.jpa.po;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
+import com.gtcgroup.justify.jpa.po.internal.BaseQueryPO;
 
 /**
  * This Parameter Object class supports @ queries.
@@ -41,22 +41,22 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
+public class JstQueryNamedPO extends BaseQueryPO {
 
 	/**
 	 * This method initializes the class.
 	 *
-	 * @return {@link JstQueryNamedJpaPO}
+	 * @return {@link JstQueryNamedPO}
 	 */
-	public static JstQueryNamedJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+	public static JstQueryNamedPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		return new JstQueryNamedJpaPO(persistenceUnitName);
+		return new JstQueryNamedPO(persistenceUnitName);
 	}
 
 	/**
 	 * Constructor
 	 */
-	protected JstQueryNamedJpaPO(final String persistenceUnitName) {
+	protected JstQueryNamedPO(final String persistenceUnitName) {
 
 		super(persistenceUnitName);
 		return;
@@ -72,72 +72,72 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
 	}
 
 	/**
-	 * @return {@link JstQueryNamedJpaPO}
+	 * @return {@link JstQueryNamedPO}
 	 */
-	public JstQueryNamedJpaPO withEntityManager(final EntityManager entityManager) {
+	public JstQueryNamedPO withEntityManager(final EntityManager entityManager) {
 
 		super.setEntityManager(entityManager);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstQueryNamedJpaPO}
+	 * @return {@link JstQueryNamedPO}
 	 */
-	public JstQueryNamedJpaPO withFirstResult(final int firstResult) {
+	public JstQueryNamedPO withFirstResult(final int firstResult) {
 
 		setFirstResult(firstResult);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstQueryNamedJpaPO}
+	 * @return {@link JstQueryNamedPO}
 	 */
-	public JstQueryNamedJpaPO withForceDatabaseTripWhenNoCacheCoordination() {
+	public JstQueryNamedPO withForceDatabaseTripWhenNoCacheCoordination() {
 
 		setForceDatabaseTripWhenNoCacheCoordination();
 		return this;
 	}
 
 	/**
-	 * @return {@link JstQueryNamedJpaPO}
+	 * @return {@link JstQueryNamedPO}
 	 */
-	public JstQueryNamedJpaPO withMaxResults(final int maxResults) {
+	public JstQueryNamedPO withMaxResults(final int maxResults) {
 
 		setMaxResults(maxResults);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstQueryNamedJpaPO}
+	 * @return {@link JstQueryNamedPO}
 	 */
-	public JstQueryNamedJpaPO withParameter(final String key, final Object value) {
+	public JstQueryNamedPO withParameter(final String key, final Object value) {
 
 		setParameter(key, value);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstQueryNamedJpaPO}
+	 * @return {@link JstQueryNamedPO}
 	 */
-	public JstQueryNamedJpaPO withQueryHint(final String key, final Object value) {
+	public JstQueryNamedPO withQueryHint(final String key, final Object value) {
 
 		super.setQueryHint(key, value);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstQueryNamedJpaPO}
+	 * @return {@link JstQueryNamedPO}
 	 */
-	public JstQueryNamedJpaPO withQueryName(final String queryName) {
+	public JstQueryNamedPO withQueryName(final String queryName) {
 
 		setQueryName(queryName);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstQueryNamedJpaPO}
+	 * @return {@link JstQueryNamedPO}
 	 */
-	public JstQueryNamedJpaPO withReadOnly() {
+	public JstQueryNamedPO withReadOnly() {
 
 		setReadOnly();
 		return this;

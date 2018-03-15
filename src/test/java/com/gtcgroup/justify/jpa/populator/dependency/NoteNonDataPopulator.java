@@ -27,7 +27,7 @@ package com.gtcgroup.justify.jpa.populator.dependency;
 
 import java.util.List;
 
-import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
 
 /**
  * @since v. 1.0

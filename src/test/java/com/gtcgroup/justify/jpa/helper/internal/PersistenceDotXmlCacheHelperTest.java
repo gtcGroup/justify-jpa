@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.jpa.test.helper.internal.PersistenceDotXmlCacheHelper;
 
 /**
  * Test Class

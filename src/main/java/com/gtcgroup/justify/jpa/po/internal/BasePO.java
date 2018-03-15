@@ -52,7 +52,7 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
  * @author Marvin Toll
  * @since v.6.2
  */
-public abstract class BaseJpaPO extends JstBasePO {
+public abstract class BasePO extends JstBasePO {
 
 	private final Map<String, Object> queryHints = new ConcurrentHashMap<>();
 
@@ -67,7 +67,7 @@ public abstract class BaseJpaPO extends JstBasePO {
 	/**
 	 * Constructor
 	 */
-	protected BaseJpaPO(final String persistenceUnitName) {
+	protected BasePO(final String persistenceUnitName) {
 		super();
 
 		this.persistenceUnitName = persistenceUnitName;

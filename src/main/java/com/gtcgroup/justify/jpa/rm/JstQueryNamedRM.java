@@ -23,13 +23,19 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po.internal;
 
+package com.gtcgroup.justify.jpa.rm;
+
+import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.NamedQueries;
+
+import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
+import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
+
 /**
- * This Parameter Object base class supports find operations using the Resource
- * Manager pattern.
+ * This Resource Manager class supports {@link NamedQueries}.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -37,47 +43,25 @@ import java.util.Optional;
  * </p>
  *
  * @author Marvin Toll
- * @since v.8.5
+ * @since v3.0
  */
-public abstract class BaseFindJpaPO extends BaseJpaPO {
+public enum JstQueryNamedRM {
 
-	protected Class<Object> entityClass;
+    INTERNAL;
 
-	/**
-	 * Constructor
-	 */
-	protected BaseFindJpaPO(final String persistenceUnitName) {
-		super(persistenceUnitName);
-	}
+    /**
+     * @return {@link Optional}
+     */
+    public static <ENTITY> Optional<List<ENTITY>> queryList(final JstQueryNamedPO queryPO) {
 
-	/**
-	 * @return {@link Class}
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getEntityClass() {
-		return (Class<ENTITY>) this.entityClass;
-	}
+        return JstQueryUtilHelper.queryResultList(queryPO);
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public boolean isEntityClass() {
-		return null != this.entityClass;
-	}
+    /**
+     * @return {@link Optional}
+     */
+    public static <ENTITY> Optional<ENTITY> querySingle(final JstQueryNamedPO queryPO) {
 
-	/**
-	 * @return {@link Optional}
-	 */
-	@SuppressWarnings("unchecked")
-	protected <IDENTITY> IDENTITY retrieveEntityIdentity(final Object entityContainingIdentity) {
-
-		return (IDENTITY) getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
-				.getIdentifier(entityContainingIdentity);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
-		this.entityClass = (Class<Object>) entityClass;
-	}
-
+        return JstQueryUtilHelper.querySingleResult(queryPO);
+    }
 }

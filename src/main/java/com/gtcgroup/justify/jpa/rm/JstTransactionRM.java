@@ -31,7 +31,7 @@ import java.util.Optional;
 import javax.persistence.CascadeType;
 
 import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
+import com.gtcgroup.justify.jpa.po.JstTransactionPO;
 
 /**
  * This Resource Manager class supports transactions.
@@ -44,7 +44,7 @@ import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstTransactionJpaRM {
+public enum JstTransactionRM {
 
 	INTERNAL;
 
@@ -52,11 +52,11 @@ public enum JstTransactionJpaRM {
 	 * This method is used for committing one transaction with multiple entities. If
 	 * any of the related child objects are not marked for an applicable
 	 * {@link CascadeType} then they need to be explicitly handled in the
-	 * {@link JstTransactionJpaPO}.
+	 * {@link JstTransactionPO}.
 	 *
 	 * @return {@link Optional}
 	 */
-	public static <ENTITY> Optional<List<ENTITY>> commitListInOneTransaction(final JstTransactionJpaPO transactionPO) {
+	public static <ENTITY> Optional<List<ENTITY>> commitListInOneTransaction(final JstTransactionPO transactionPO) {
 
 		final Optional<List<ENTITY>> optionalEntityList = JstTransactionUtilHelper
 				.commitEntitiesInSingleTransaction(transactionPO);
@@ -71,11 +71,11 @@ public enum JstTransactionJpaRM {
 	 * This method is used for committing one transaction with a single entity. If
 	 * any of the related child objects are not marked for an applicable
 	 * {@link CascadeType} then they need to be explicitly handled in the
-	 * {@link JstTransactionJpaPO}.
+	 * {@link JstTransactionPO}.
 	 *
 	 * @return {@link Optional}
 	 */
-	public static <ENTITY> Optional<ENTITY> commitSingleInOneTransaction(final JstTransactionJpaPO transactionPO) {
+	public static <ENTITY> Optional<ENTITY> commitSingleInOneTransaction(final JstTransactionPO transactionPO) {
 
 		final Optional<List<ENTITY>> optionalEntityList = JstTransactionUtilHelper
 				.commitEntitiesInSingleTransaction(transactionPO);

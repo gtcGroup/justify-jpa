@@ -39,13 +39,13 @@ import org.junit.jupiter.api.Test;
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.de.dependency.EntityNotPopulatedDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
-import com.gtcgroup.justify.jpa.po.JstQueryAllJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
+import com.gtcgroup.justify.jpa.po.JstQueryAllJPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteAdditionalDataPopulator;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 
 /**
  * Test Class
@@ -68,18 +68,18 @@ public class JstFindJpaRmTest {
 
 	public static Optional<NoteDE> findReadOnlyNoteDE(final Class<?> clazz, final String entityIdentity) {
 
-		final JstFindSingleJpaPO findJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+		final JstFindSinglePO findJpaPO = JstFindSinglePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 				.withEntityClass(clazz).withEntityIdentity(entityIdentity).withReadOnly();
 
-		return JstQueryFindJpaRM.findSingle(findJpaPO);
+		return JstQueryFindRM.findSingle(findJpaPO);
 	}
 
 	private static Optional<NoteDE> findNoteDE(final Class<?> clazz, final String entityIdentity) {
 
-		final JstFindSingleJpaPO findJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+		final JstFindSinglePO findJpaPO = JstFindSinglePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 				.withEntityClass(clazz).withEntityIdentity(entityIdentity);
 
-		return JstQueryFindJpaRM.findSingle(findJpaPO);
+		return JstQueryFindRM.findSingle(findJpaPO);
 	}
 
 	@Test
@@ -111,16 +111,16 @@ public class JstFindJpaRmTest {
 
 			if (entityManager.isPresent()) {
 
-				optionalNoteDE = JstQueryFindJpaRM.findSingle(JstFindSingleJpaPO
+				optionalNoteDE = JstQueryFindRM.findSingle(JstFindSinglePO
 						.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withEntityClass(NoteDE.class)
 						.withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO).withEntityManager(entityManager.get()));
 
-				optionalList = JstQueryFindJpaRM
-						.queryAll(JstQueryAllJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				optionalList = JstQueryFindRM
+						.queryAll(JstQueryAllJPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 								.withEntityClass(NoteDE.class).withEntityManager(entityManager.get()).withReadOnly());
 
-				optionalEmpty = JstQueryFindJpaRM
-						.queryAll(JstQueryAllJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				optionalEmpty = JstQueryFindRM
+						.queryAll(JstQueryAllJPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 								.withEntityClass(EntityNotPopulatedDE.class).withEntityManager(entityManager.get())
 								.withReadOnly());
 			}

@@ -24,7 +24,7 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gtcgroup.justify.jpa.assertions;
+package com.gtcgroup.justify.jpa.test.assertion;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,10 +40,10 @@ import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstAssertCascadeJpaPO;
-import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
-import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
-import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
+import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
+import com.gtcgroup.justify.jpa.po.JstTransactionPO;
+import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
+import com.gtcgroup.justify.jpa.test.po.JstAssertCascadePO;
 
 /**
  * This Assertions class provides convenience methods for assertion processing.
@@ -69,7 +69,7 @@ public enum AssertionsJPA {
 	 *
 	 * return {@link Optional}
 	 */
-	public static boolean assertCascadeTypes(final JstAssertCascadeJpaPO assertCascadePO) {
+	public static boolean assertCascadeTypes(final JstAssertCascadePO assertCascadePO) {
 
 		final Optional<EntityManager> optionalEntityManager = JstEntityManagerFactoryCacheHelper
 				.createEntityManagerToBeClosed(assertCascadePO.getPersistenceUnitName());
@@ -157,18 +157,18 @@ public enum AssertionsJPA {
 		throw new AssertionFailedError(assertionFailedMessage.toString());
 	}
 
-	private static void cascadeError(final JstAssertCascadeJpaPO assertCascadePO) {
+	private static void cascadeError(final JstAssertCascadePO assertCascadePO) {
 
 		Assert.fail("A cascade error has occured for the domain entity ["
 				+ assertCascadePO.getPopulatedEntity().getClass().getSimpleName() + "].\n\t\t"
 				+ "Check both the domain entity and the test Parameter Object to determine the source of the error.");
 	}
 
-	private static <ENTITY> void catchBlock(final Exception e, final JstAssertCascadeJpaPO assertCascadePO,
+	private static <ENTITY> void catchBlock(final Exception e, final JstAssertCascadePO assertCascadePO,
 			final EntityManager entityManager) {
 
 		final Optional<List<ENTITY>> entityList = JstTransactionUtilHelper.commitEntitiesInSingleTransaction(
-				JstTransactionJpaPO.withPersistenceUnitName(assertCascadePO.getPersistenceUnitName())
+				JstTransactionPO.withPersistenceUnitName(assertCascadePO.getPersistenceUnitName())
 						.withEntityManager(entityManager).withDeleteEntities(assertCascadePO.getPopulatedEntity()));
 
 		if (entityList.isPresent()) {
@@ -180,25 +180,25 @@ public enum AssertionsJPA {
 						.withExceptionMethodName("assertCascadeTypes"));
 	}
 
-	private static void commitPopulatedEntity(final JstAssertCascadeJpaPO assertCascadePO,
+	private static void commitPopulatedEntity(final JstAssertCascadePO assertCascadePO,
 			final EntityManager cascadeEntityManager) {
 
-		final JstTransactionJpaPO transactPO = JstTransactionJpaPO
+		final JstTransactionPO transactPO = JstTransactionPO
 				.withPersistenceUnitName(assertCascadePO.getPersistenceUnitName())
 				.withEntityManager(cascadeEntityManager)
 				.withCreateAndUpdateEntities(assertCascadePO.getPopulatedEntity());
 
-		assertCascadePO.replacePopulatedEntity(JstTransactionJpaRM.commitSingleInOneTransaction(transactPO));
+		assertCascadePO.replacePopulatedEntity(JstTransactionRM.commitSingleInOneTransaction(transactPO));
 	}
 
-	private static void deleteParentEntity(final JstAssertCascadeJpaPO assertCascadePO,
+	private static void deleteParentEntity(final JstAssertCascadePO assertCascadePO,
 			final EntityManager entityManager) {
 
 		JstTransactionUtilHelper.findAndDeleteEntity(assertCascadePO.getPersistenceUnitName(), entityManager,
 				assertCascadePO.getPopulatedEntity());
 	}
 
-	private static void deleteRemainingEntities(final JstAssertCascadeJpaPO assertCascadePO,
+	private static void deleteRemainingEntities(final JstAssertCascadePO assertCascadePO,
 			final EntityManager entityManager) {
 
 		for (final String method : assertCascadePO.getAfterTheTestCleanupList()) {
@@ -220,7 +220,7 @@ public enum AssertionsJPA {
 	private static <ENTITY> boolean existsInDatabase(final String persistenceUnitName, final Class<ENTITY> entityClass,
 			final Object entityIdentity) {
 
-		final JstFindSingleJpaPO findSingleJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(persistenceUnitName)
+		final JstFindSinglePO findSingleJpaPO = JstFindSinglePO.withPersistenceUnitName(persistenceUnitName)
 				.withEntityClass(entityClass).withEntityIdentity(entityIdentity).withReadOnly()
 				.withForceDatabaseTripWhenNoCacheCoordination();
 
@@ -235,7 +235,7 @@ public enum AssertionsJPA {
 	 */
 	private static boolean existsInDatabase(final String persistenceUnitName, final Object entityContainingIdentity) {
 
-		final JstFindSingleJpaPO findSingleJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(persistenceUnitName)
+		final JstFindSinglePO findSingleJpaPO = JstFindSinglePO.withPersistenceUnitName(persistenceUnitName)
 				.withEntityContainingIdentity(entityContainingIdentity).withReadOnly()
 				.withForceDatabaseTripWhenNoCacheCoordination();
 
@@ -243,7 +243,7 @@ public enum AssertionsJPA {
 
 	}
 
-	private static void finallyBlock(final JstAssertCascadeJpaPO assertCascadePO, final EntityManager entityManager) {
+	private static void finallyBlock(final JstAssertCascadePO assertCascadePO, final EntityManager entityManager) {
 
 		try {
 			deleteParentEntity(assertCascadePO, entityManager);
@@ -254,7 +254,7 @@ public enum AssertionsJPA {
 
 	}
 
-	private static boolean isExists(final List<String> existsList, final JstAssertCascadeJpaPO assertCascadePO,
+	private static boolean isExists(final List<String> existsList, final JstAssertCascadePO assertCascadePO,
 			final boolean expected) {
 
 		for (final String methodName : existsList) {
@@ -281,7 +281,7 @@ public enum AssertionsJPA {
 		return true;
 	}
 
-	private static void verifyCascadeEntitiesDeleted(final JstAssertCascadeJpaPO assertCascadePO) {
+	private static void verifyCascadeEntitiesDeleted(final JstAssertCascadePO assertCascadePO) {
 
 		final boolean actual = isExists(assertCascadePO.getCascadeRemoveList(), assertCascadePO, true);
 
@@ -290,7 +290,7 @@ public enum AssertionsJPA {
 		}
 	}
 
-	private static void verifyCascadeEntitiesNotDeleted(final JstAssertCascadeJpaPO assertCascadePO) {
+	private static void verifyCascadeEntitiesNotDeleted(final JstAssertCascadePO assertCascadePO) {
 
 		final boolean actual = isExists(assertCascadePO.getCascadeRemoveList(), assertCascadePO, false);
 
@@ -299,7 +299,7 @@ public enum AssertionsJPA {
 		}
 	}
 
-	private static void verifyCascadeEntitiesNotPersisted(final JstAssertCascadeJpaPO assertCascadePO) {
+	private static void verifyCascadeEntitiesNotPersisted(final JstAssertCascadePO assertCascadePO) {
 
 		final boolean actual = isExists(assertCascadePO.getCascadeNoPersistList(), assertCascadePO, false);
 
@@ -308,7 +308,7 @@ public enum AssertionsJPA {
 		}
 	}
 
-	private static void verifyCascadeEntitiesPersisted(final JstAssertCascadeJpaPO assertCascadePO) {
+	private static void verifyCascadeEntitiesPersisted(final JstAssertCascadePO assertCascadePO) {
 
 		final boolean actual = isExists(assertCascadePO.getCascadePersistList(), assertCascadePO, true);
 

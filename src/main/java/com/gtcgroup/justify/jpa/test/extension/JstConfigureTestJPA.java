@@ -24,44 +24,26 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gtcgroup.justify.jpa.rm;
+package com.gtcgroup.justify.jpa.test.extension;
 
-import java.util.List;
-import java.util.Optional;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.persistence.NamedQueries;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstQueryNamedJpaPO;
+import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
 
-/**
- * This Resource Manager class supports {@link NamedQueries}.
- *
- * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
- * <a href="http://gtcGroup.com">gtcGroup.com </a>.
- * </p>
- *
- * @author Marvin Toll
- * @since v3.0
- */
-public enum JstQueryNamedJpaRM {
+@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@ExtendWith(JstConfigureTestJpaExtension.class)
+public @interface JstConfigureTestJPA {
 
-    INTERNAL;
+    // TODO:
+    // public Map<String, Object> persistencePropertyMap();
 
-    /**
-     * @return {@link Optional}
-     */
-    public static <ENTITY> Optional<List<ENTITY>> queryList(final JstQueryNamedJpaPO queryPO) {
+    public Class<? extends JstBaseDataPopulator>[] dataPopulators() default {};
 
-        return JstQueryUtilHelper.queryResultList(queryPO);
-    }
-
-    /**
-     * @return {@link Optional}
-     */
-    public static <ENTITY> Optional<ENTITY> querySingle(final JstQueryNamedJpaPO queryPO) {
-
-        return JstQueryUtilHelper.querySingleResult(queryPO);
-    }
+    public String persistenceUnitName();
 }

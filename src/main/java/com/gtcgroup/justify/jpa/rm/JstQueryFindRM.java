@@ -31,8 +31,8 @@ import java.util.Optional;
 
 import com.gtcgroup.justify.jpa.helper.JstFindUtilHelper;
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
-import com.gtcgroup.justify.jpa.po.JstQueryAllJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
+import com.gtcgroup.justify.jpa.po.JstQueryAllJPO;
 
 /**
  * This Resource Manager class supports "find" operations.
@@ -45,14 +45,14 @@ import com.gtcgroup.justify.jpa.po.JstQueryAllJpaPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstQueryFindJpaRM {
+public enum JstQueryFindRM {
 
 	INTERNAL;
 
 	/**
 	 * @return ENTITY
 	 */
-	public static <ENTITY> Optional<ENTITY> findSingle(final JstFindSingleJpaPO findPO) {
+	public static <ENTITY> Optional<ENTITY> findSingle(final JstFindSinglePO findPO) {
 
 		return JstFindUtilHelper.findSingle(findPO);
 	}
@@ -60,7 +60,7 @@ public enum JstQueryFindJpaRM {
 	/**
 	 * @return {@link Optional}
 	 */
-	public static <ENTITY> Optional<List<ENTITY>> queryAll(final JstQueryAllJpaPO queryAllPO) {
+	public static <ENTITY> Optional<List<ENTITY>> queryAll(final JstQueryAllJPO queryAllPO) {
 
 		return JstQueryUtilHelper.queryResultList(queryAllPO);
 	}

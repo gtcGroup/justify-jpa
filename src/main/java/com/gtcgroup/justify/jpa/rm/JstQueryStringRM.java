@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstQueryStringJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryStringPO;
 
 /**
  * This Resource Manager class supports queries using an SQL or JPQL string.
@@ -43,14 +43,14 @@ import com.gtcgroup.justify.jpa.po.JstQueryStringJpaPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstQueryStringJpaRM {
+public enum JstQueryStringRM {
 
 	INTERNAL;
 
 	/**
 	 * @return {@link Optional}
 	 */
-	public static <ENTITY> Optional<List<ENTITY>> queryList(final JstQueryStringJpaPO queryPO) {
+	public static <ENTITY> Optional<List<ENTITY>> queryList(final JstQueryStringPO queryPO) {
 
 		return JstQueryUtilHelper.queryResultList(queryPO);
 	}
@@ -58,7 +58,7 @@ public enum JstQueryStringJpaRM {
 	/**
 	 * @return {@link Optional}
 	 */
-	public static <ENTITY> Optional<ENTITY> querySingle(final JstQueryStringJpaPO queryPO) {
+	public static <ENTITY> Optional<ENTITY> querySingle(final JstQueryStringPO queryPO) {
 
 		return JstQueryUtilHelper.querySingleResult(queryPO);
 	}

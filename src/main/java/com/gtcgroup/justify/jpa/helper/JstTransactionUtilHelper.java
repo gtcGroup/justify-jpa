@@ -35,8 +35,8 @@ import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
 import com.gtcgroup.justify.core.po.JstExceptionPO;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.exception.JstOptimisiticLockException;
-import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
-import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
+import com.gtcgroup.justify.jpa.po.JstTransactionPO;
 
 /**
  * This Helper class provides persistence transaction support.
@@ -56,13 +56,13 @@ public enum JstTransactionUtilHelper {
 	/**
 	 * This method is used for committing multiple entities. If any of the related
 	 * child objects are not marked for an applicable {@link CascadeType} then they
-	 * need to be explicitly in the {@link JstTransactionJpaPO}.
+	 * need to be explicitly in the {@link JstTransactionPO}.
 	 *
 	 * @return {@link Optional}
 	 * @throws JstOptimisiticLockException
 	 */
 	public static <ENTITY> Optional<List<ENTITY>> commitEntitiesInSingleTransaction(
-			final JstTransactionJpaPO transactionPO) {
+			final JstTransactionPO transactionPO) {
 
 		try {
 
@@ -100,7 +100,7 @@ public enum JstTransactionUtilHelper {
 			final EntityManager entityManager, final ENTITY entityContainingIdentity) {
 
 		final Optional<ENTITY> optionalEntity = JstFindUtilHelper
-				.findSingle(JstFindSingleJpaPO.withPersistenceUnitName(persistenceUnitName)
+				.findSingle(JstFindSinglePO.withPersistenceUnitName(persistenceUnitName)
 						.withEntityManager(entityManager).withEntityContainingIdentity(entityContainingIdentity));
 
 		if (optionalEntity.isPresent()) {
@@ -138,7 +138,7 @@ public enum JstTransactionUtilHelper {
 		return findAndDeleteEntity(persistenceUnitName, entityManager, entity);
 	}
 
-	private static void deleteEntities(final EntityManager entityManager, final JstTransactionJpaPO transactionPO) {
+	private static void deleteEntities(final EntityManager entityManager, final JstTransactionPO transactionPO) {
 
 		for (Object entity : transactionPO.getEntityDeleteList()) {
 
@@ -149,7 +149,7 @@ public enum JstTransactionUtilHelper {
 	}
 
 	private static void mergeCreateAndUpdates(final EntityManager entityManager,
-			final JstTransactionJpaPO transactionPO) {
+			final JstTransactionPO transactionPO) {
 
 		for (Object entity : transactionPO.getEntityCreateAndUpdateList()) {
 

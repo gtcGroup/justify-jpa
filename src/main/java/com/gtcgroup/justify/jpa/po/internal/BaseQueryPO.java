@@ -41,7 +41,7 @@ import javax.persistence.Query;
  * @author Marvin Toll
  * @since v.6.2
  */
-public abstract class BaseQueryJpaPO extends BaseJpaPO {
+public abstract class BaseQueryPO extends BasePO {
 
 	private Class<Object> entityClass;
 
@@ -56,7 +56,7 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 	/**
 	 * Constructor
 	 */
-	protected BaseQueryJpaPO(final String persistenceUnitName) {
+	protected BaseQueryPO(final String persistenceUnitName) {
 		super(persistenceUnitName);
 	}
 

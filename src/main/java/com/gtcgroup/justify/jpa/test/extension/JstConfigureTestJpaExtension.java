@@ -23,7 +23,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.extension;
+package com.gtcgroup.justify.jpa.test.extension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +40,10 @@ import com.gtcgroup.justify.core.po.JstExceptionPO;
 import com.gtcgroup.justify.core.test.base.JstBaseExtension;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.core.test.helper.internal.AnnotationUtilHelper;
-import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
-import com.gtcgroup.justify.jpa.rm.JstTransactionJpaRM;
+import com.gtcgroup.justify.jpa.po.JstTransactionPO;
+import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
+import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
 
 /**
  * This {@link Extension} class initializes JPA.
@@ -94,7 +94,7 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension implements Be
 				}
 			}
 			this.dataPopulatorNameList.clear();
-			JstTransactionJpaRM.commitListInOneTransaction(JstTransactionJpaPO
+			JstTransactionRM.commitListInOneTransaction(JstTransactionPO
 					.withPersistenceUnitName(this.persistenceUnitName).withCreateAndUpdateList(this.deInsertionList));
 			this.deInsertionList.clear();
 		} catch (final RuntimeException e) {

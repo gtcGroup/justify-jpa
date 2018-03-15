@@ -23,12 +23,14 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po;
+package com.gtcgroup.justify.jpa.test.po;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.persistence.Entity;
 
 import com.gtcgroup.justify.core.base.JstBasePO;
 
@@ -43,17 +45,16 @@ import com.gtcgroup.justify.core.base.JstBasePO;
  * @author Marvin Toll
  * @since v6.2
  */
-public class JstAssertCascadeJpaPO extends JstBasePO {
+public class JstAssertCascadePO extends JstBasePO {
 
 	/**
 	 * This method initializes the class.
 	 *
-	 * @return {@link JstAssertCascadeJpaPO}
+	 * @return {@link JstAssertCascadePO}
 	 */
-	public static JstAssertCascadeJpaPO withPopulatedEntity(final String persistenceUnitName,
-			final Object populatedEntity) {
+	public static JstAssertCascadePO withPersistenceUnitNamwe(final String persistenceUnitName) {
 
-		return new JstAssertCascadeJpaPO(persistenceUnitName, populatedEntity);
+		return new JstAssertCascadePO(persistenceUnitName);
 	}
 
 	private Object populatedEntity;
@@ -73,12 +74,11 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	/**
 	 * Constructor
 	 */
-	protected JstAssertCascadeJpaPO(final String persistenceUnitName, final Object populatedEntity) {
+	protected JstAssertCascadePO(final String persistenceUnitName) {
 
 		super();
 
 		this.persistenceUnitName = persistenceUnitName;
-		this.populatedEntity = populatedEntity;
 
 		return;
 	}
@@ -151,9 +151,9 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	}
 
 	/**
-	 * @return {@link JstAssertCascadeJpaPO}
+	 * @return {@link JstAssertCascadePO}
 	 */
-	public JstAssertCascadeJpaPO withCascadeAll(final String methodName) {
+	public JstAssertCascadePO withCascadeAll(final String methodName) {
 
 		this.cascadePersistList.add(methodName);
 		this.cascadeRemoveList.add(methodName);
@@ -162,9 +162,9 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	}
 
 	/**
-	 * @return {@link JstAssertCascadeJpaPO}
+	 * @return {@link JstAssertCascadePO}
 	 */
-	public JstAssertCascadeJpaPO withCascadeAllExceptRemove(final String methodName) {
+	public JstAssertCascadePO withCascadeAllExceptRemove(final String methodName) {
 
 		this.cascadePersistList.add(methodName);
 		this.cascadeNoRemoveList.add(methodName);
@@ -173,9 +173,9 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	}
 
 	/**
-	 * @return {@link JstAssertCascadeJpaPO}
+	 * @return {@link JstAssertCascadePO}
 	 */
-	public JstAssertCascadeJpaPO withCascadeNone(final String methodName) {
+	public JstAssertCascadePO withCascadeNone(final String methodName) {
 
 		this.cascadeNoPersistList.add(methodName);
 		this.cascadeNoRemoveList.add(methodName);
@@ -184,32 +184,43 @@ public class JstAssertCascadeJpaPO extends JstBasePO {
 	}
 
 	/**
-	 * @return {@link JstAssertCascadeJpaPO}
+	 * @return {@link JstAssertCascadePO}
 	 */
-	public JstAssertCascadeJpaPO withCascadePersist(final String methodName) {
+	public JstAssertCascadePO withCascadePersist(final String methodName) {
 
 		this.cascadePersistList.add(methodName);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstAssertCascadeJpaPO}
+	 * @return {@link JstAssertCascadePO}
 	 */
-	public JstAssertCascadeJpaPO withCascadeRemove(final String methodName) {
+	public JstAssertCascadePO withCascadeRemove(final String methodName) {
 
 		this.cascadeRemoveList.add(methodName);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstAssertCascadeJpaPO}
+	 * @return {@link JstAssertCascadePO}
 	 */
-	public JstAssertCascadeJpaPO withCleanupAfterTheTest(final String... methodNames) {
+	public JstAssertCascadePO withCleanupAfterTheTest(final String... methodNames) {
 
 		for (final String methodName : methodNames) {
 			this.afterTheTestCleanupList.add(methodName);
 		}
+		return this;
+	}
 
+	/**
+	 * This method signature handles an {@link Entity} that is populated, but not
+	 * committed.
+	 *
+	 * @return {@link JstAssertCascadePO}
+	 */
+	public JstAssertCascadePO withPopulatedEntity(final Object populatedEntity) {
+
+		this.populatedEntity = populatedEntity;
 		return this;
 	}
 }

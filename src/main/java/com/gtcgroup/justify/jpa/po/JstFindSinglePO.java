@@ -26,16 +26,11 @@
 package com.gtcgroup.justify.jpa.po;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
-import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
+import com.gtcgroup.justify.jpa.po.internal.BaseFindPO;
 
 /**
- * This Parameter Object class supports finding all entities from a table or
- * view.
+ * This Parameter Object class supports find operations.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -45,89 +40,97 @@ import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstQueryAllJpaPO extends BaseQueryJpaPO {
+public class JstFindSinglePO extends BaseFindPO {
 
 	/**
 	 * This method initializes the class.
 	 *
-	 * @return {@link JstQueryAllJpaPO}
+	 * @return {@link JstQueryNamedPO}
 	 */
-	public static JstQueryAllJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+	public static JstFindSinglePO withPersistenceUnitName(final String persistenceUnitName) {
 
-		return new JstQueryAllJpaPO(persistenceUnitName);
+		return new JstFindSinglePO(persistenceUnitName);
 	}
 
-	/**
-	 * @return {@link TypedQuery}
-	 */
-	protected static <ENTITY> TypedQuery<ENTITY> createCriteriaQuery(final EntityManager entityManager,
-			final Class<ENTITY> resultClass) {
-
-		final CriteriaQuery<ENTITY> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(resultClass);
-		final Root<ENTITY> rootEntry = criteriaQuery.from(resultClass);
-		final CriteriaQuery<ENTITY> criteria = criteriaQuery.select(rootEntry);
-
-		return entityManager.createQuery(criteria);
-	}
+	private Object entityIdentity;
 
 	/**
 	 * Constructor
 	 */
-	protected JstQueryAllJpaPO(final String persistenceUnitName) {
-
+	protected JstFindSinglePO(final String persistenceUnitName) {
 		super(persistenceUnitName);
 		return;
 	}
 
 	/**
-	 * @return {@link Query}
+	 * @return {@link Object}
 	 */
-	@Override
-	public Query createQueryTM() {
+	public Object getEntityIdentity() {
 
-		return createCriteriaQuery(getEntityManager(), getEntityClass());
+		return this.entityIdentity;
 	}
 
 	/**
-	 * @return {@link JstQueryAllJpaPO}
+	 * @return {@link JstFindSinglePO}
 	 */
-	public <ENTITY> JstQueryAllJpaPO withEntityClass(final Class<ENTITY> entityClass) {
+	@SuppressWarnings("unchecked")
+	public <ENTITY> JstFindSinglePO withEntityClass(final Class<ENTITY> entityClass) {
 
-		setEntityClass(entityClass);
+		this.entityClass = (Class<Object>) entityClass;
 		return this;
 	}
 
 	/**
-	 * @return {@link JstQueryAllJpaPO}
+	 * @return {@link JstFindSinglePO}
 	 */
-	public JstQueryAllJpaPO withEntityManager(final EntityManager entityManager) {
+	@SuppressWarnings("unchecked")
+	public JstFindSinglePO withEntityContainingIdentity(final Object entityContainingIdentity) {
+
+		this.entityClass = (Class<Object>) entityContainingIdentity.getClass();
+		this.entityIdentity = retrieveEntityIdentity(entityContainingIdentity);
+		return this;
+	}
+
+	/**
+	 * @return {@link JstFindSinglePO}
+	 */
+	public JstFindSinglePO withEntityIdentity(final Object entityIdentity) {
+
+		this.entityIdentity = entityIdentity;
+		return this;
+	}
+
+	/**
+	 * @return {@link JstFindSinglePO}
+	 */
+	public JstFindSinglePO withEntityManager(final EntityManager entityManager) {
 
 		super.setEntityManager(entityManager);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstQueryAllJpaPO}
+	 * @return {@link JstFindSinglePO}
 	 */
-	public JstQueryAllJpaPO withForceDatabaseTripWhenNoCacheCoordination() {
+	public JstFindSinglePO withForceDatabaseTripWhenNoCacheCoordination() {
 
 		super.setForceDatabaseTripWhenNoCacheCoordination();
 		return this;
 	}
 
 	/**
-	 * @return {@link JstQueryAllJpaPO}
+	 * @return {@link JstFindSinglePO}
 	 */
-	public JstQueryAllJpaPO withQueryHint(final String key, final Object value) {
+	public JstFindSinglePO withQueryHint(final String key, final Object value) {
 
 		super.setQueryHint(key, value);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstQueryAllJpaPO}
+	 * @return {@link JstFindSinglePO}
 	 */
-	public JstQueryAllJpaPO withReadOnly() {
+	public JstFindSinglePO withReadOnly() {
 
 		super.setReadOnly();
 		return this;

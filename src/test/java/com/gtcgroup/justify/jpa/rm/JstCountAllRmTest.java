@@ -36,10 +36,10 @@ import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.de.dependency.EntityNotPopulatedDE;
 import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstQueryCountJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryCountPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 
 /**
  * Test Class
@@ -61,10 +61,10 @@ public class JstCountAllRmTest {
 	public void testCount_happyPath() {
 
 		assertAll(() -> {
-			assertTrue(JstQueryCountJpaRM
-					.count(JstQueryCountJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NoteDE.class))
+			assertTrue(JstQueryCountRM
+					.count(JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NoteDE.class))
 					.isPresent());
-			assertEquals(0, JstQueryCountJpaRM.count(JstQueryCountJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+			assertEquals(0, JstQueryCountRM.count(JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withResultClass(EntityNotPopulatedDE.class)).get().longValue());
 		});
 
@@ -74,7 +74,7 @@ public class JstCountAllRmTest {
 	public void testCount_missingResultClass() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			JstQueryCountJpaRM.count(JstQueryCountJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)).isPresent();
+			JstQueryCountRM.count(JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)).isPresent();
 		});
 	}
 
@@ -82,8 +82,8 @@ public class JstCountAllRmTest {
 	public void testCount_notAnEntity() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			JstQueryCountJpaRM.count(
-					JstQueryCountJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NotAnEntityDE.class))
+			JstQueryCountRM.count(
+					JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NotAnEntityDE.class))
 					.isPresent();
 		});
 	}

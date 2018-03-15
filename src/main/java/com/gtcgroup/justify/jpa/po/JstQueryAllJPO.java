@@ -26,11 +26,16 @@
 package com.gtcgroup.justify.jpa.po;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
-import com.gtcgroup.justify.jpa.po.internal.BaseFindJpaPO;
+import com.gtcgroup.justify.jpa.po.internal.BaseQueryPO;
 
 /**
- * This Parameter Object class supports find operations.
+ * This Parameter Object class supports finding all entities from a table or
+ * view.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -40,97 +45,89 @@ import com.gtcgroup.justify.jpa.po.internal.BaseFindJpaPO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstFindSingleJpaPO extends BaseFindJpaPO {
+public class JstQueryAllJPO extends BaseQueryPO {
 
 	/**
 	 * This method initializes the class.
 	 *
-	 * @return {@link JstQueryNamedJpaPO}
+	 * @return {@link JstQueryAllJPO}
 	 */
-	public static JstFindSingleJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+	public static JstQueryAllJPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		return new JstFindSingleJpaPO(persistenceUnitName);
+		return new JstQueryAllJPO(persistenceUnitName);
 	}
 
-	private Object entityIdentity;
+	/**
+	 * @return {@link TypedQuery}
+	 */
+	protected static <ENTITY> TypedQuery<ENTITY> createCriteriaQuery(final EntityManager entityManager,
+			final Class<ENTITY> resultClass) {
+
+		final CriteriaQuery<ENTITY> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(resultClass);
+		final Root<ENTITY> rootEntry = criteriaQuery.from(resultClass);
+		final CriteriaQuery<ENTITY> criteria = criteriaQuery.select(rootEntry);
+
+		return entityManager.createQuery(criteria);
+	}
 
 	/**
 	 * Constructor
 	 */
-	protected JstFindSingleJpaPO(final String persistenceUnitName) {
+	protected JstQueryAllJPO(final String persistenceUnitName) {
+
 		super(persistenceUnitName);
 		return;
 	}
 
 	/**
-	 * @return {@link Object}
+	 * @return {@link Query}
 	 */
-	public Object getEntityIdentity() {
+	@Override
+	public Query createQueryTM() {
 
-		return this.entityIdentity;
+		return createCriteriaQuery(getEntityManager(), getEntityClass());
 	}
 
 	/**
-	 * @return {@link JstFindSingleJpaPO}
+	 * @return {@link JstQueryAllJPO}
 	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> JstFindSingleJpaPO withEntityClass(final Class<ENTITY> entityClass) {
+	public <ENTITY> JstQueryAllJPO withEntityClass(final Class<ENTITY> entityClass) {
 
-		this.entityClass = (Class<Object>) entityClass;
+		setEntityClass(entityClass);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstFindSingleJpaPO}
+	 * @return {@link JstQueryAllJPO}
 	 */
-	@SuppressWarnings("unchecked")
-	public JstFindSingleJpaPO withEntityContainingIdentity(final Object entityContainingIdentity) {
-
-		this.entityClass = (Class<Object>) entityContainingIdentity.getClass();
-		this.entityIdentity = retrieveEntityIdentity(entityContainingIdentity);
-		return this;
-	}
-
-	/**
-	 * @return {@link JstFindSingleJpaPO}
-	 */
-	public JstFindSingleJpaPO withEntityIdentity(final Object entityIdentity) {
-
-		this.entityIdentity = entityIdentity;
-		return this;
-	}
-
-	/**
-	 * @return {@link JstFindSingleJpaPO}
-	 */
-	public JstFindSingleJpaPO withEntityManager(final EntityManager entityManager) {
+	public JstQueryAllJPO withEntityManager(final EntityManager entityManager) {
 
 		super.setEntityManager(entityManager);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstFindSingleJpaPO}
+	 * @return {@link JstQueryAllJPO}
 	 */
-	public JstFindSingleJpaPO withForceDatabaseTripWhenNoCacheCoordination() {
+	public JstQueryAllJPO withForceDatabaseTripWhenNoCacheCoordination() {
 
 		super.setForceDatabaseTripWhenNoCacheCoordination();
 		return this;
 	}
 
 	/**
-	 * @return {@link JstFindSingleJpaPO}
+	 * @return {@link JstQueryAllJPO}
 	 */
-	public JstFindSingleJpaPO withQueryHint(final String key, final Object value) {
+	public JstQueryAllJPO withQueryHint(final String key, final Object value) {
 
 		super.setQueryHint(key, value);
 		return this;
 	}
 
 	/**
-	 * @return {@link JstFindSingleJpaPO}
+	 * @return {@link JstQueryAllJPO}
 	 */
-	public JstFindSingleJpaPO withReadOnly() {
+	public JstQueryAllJPO withReadOnly() {
 
 		super.setReadOnly();
 		return this;

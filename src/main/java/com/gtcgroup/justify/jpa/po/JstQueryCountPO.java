@@ -23,16 +23,15 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package com.gtcgroup.justify.jpa.po;
 
-package com.gtcgroup.justify.jpa.helper;
+import javax.persistence.EntityManager;
 
-import java.util.List;
-
-import com.gtcgroup.justify.core.base.JstBaseSuffix;
+import com.gtcgroup.justify.jpa.po.internal.BasePO;
 
 /**
- * This Data Populator base class provides support for populating test data with
- * a Template Method.
+ * This Parameter Object class supports counting all entities from a database
+ * table.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -40,25 +39,56 @@ import com.gtcgroup.justify.core.base.JstBaseSuffix;
  * </p>
  *
  * @author Marvin Toll
- * @since v3.0
+ * @since v.6.2
  */
-public abstract class JstBaseDataPopulator extends JstBaseSuffix {
+public class JstQueryCountPO extends BasePO {
 
-	/**
-	 * @see JstBaseSuffix#assignPatternSuffixTM()
-	 */
-	@Override
-	protected String assignPatternSuffixTM() {
+    /**
+     * This method initializes the class.
+     *
+     * @return {@link JstQueryCountPO}
+     */
+    public static JstQueryCountPO withPersistenceUnitName(final String persistenceUnitName) {
 
-		return "DataPopulator";
-	}
+        return new JstQueryCountPO(persistenceUnitName);
+    }
 
-	/**
-	 * This template method enables the formation of a list of populated
-	 * entities for subsequent database inserts by the Configure JPA Rule.
-	 *
-	 * @return {@link List}
-	 */
-	public abstract List<Object> populateCreateListTM(String persistenceUnitName);
+    protected Class<Object> resultClass;
 
+    /**
+     * Constructor
+     */
+    protected JstQueryCountPO(final String persistenceUnitName) {
+
+        super(persistenceUnitName);
+        return;
+    }
+
+    /**
+     * @return {@link Class}
+     */
+    @SuppressWarnings("unchecked")
+    public <ENTITY> Class<ENTITY> getResultClass() {
+
+        return (Class<ENTITY>) this.resultClass;
+    }
+
+    /**
+     * @return {@link JstQueryCountPO}
+     */
+    public JstQueryCountPO withEntityManager(final EntityManager entityManager) {
+
+        setEntityManager(entityManager);
+        return this;
+    }
+
+    /**
+     * @return {@link JstQueryCountPO}
+     */
+    @SuppressWarnings("unchecked")
+    public <ENTITY> JstQueryCountPO withResultClass(final Class<ENTITY> resultClass) {
+
+        this.resultClass = (Class<Object>) resultClass;
+        return this;
+    }
 }

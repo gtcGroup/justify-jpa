@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
 
 /**
  * Test Class

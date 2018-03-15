@@ -23,15 +23,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po;
+package com.gtcgroup.justify.jpa.po.internal;
 
-import javax.persistence.EntityManager;
-
-import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
+import java.util.Optional;
 
 /**
- * This Parameter Object class supports counting all entities from a database
- * table.
+ * This Parameter Object base class supports find operations using the Resource
+ * Manager pattern.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -39,56 +37,47 @@ import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
  * </p>
  *
  * @author Marvin Toll
- * @since v.6.2
+ * @since v.8.5
  */
-public class JstQueryCountJpaPO extends BaseJpaPO {
+public abstract class BaseFindPO extends BasePO {
 
-    /**
-     * This method initializes the class.
-     *
-     * @return {@link JstQueryCountJpaPO}
-     */
-    public static JstQueryCountJpaPO withPersistenceUnitName(final String persistenceUnitName) {
+	protected Class<Object> entityClass;
 
-        return new JstQueryCountJpaPO(persistenceUnitName);
-    }
+	/**
+	 * Constructor
+	 */
+	protected BaseFindPO(final String persistenceUnitName) {
+		super(persistenceUnitName);
+	}
 
-    protected Class<Object> resultClass;
+	/**
+	 * @return {@link Class}
+	 */
+	@SuppressWarnings("unchecked")
+	public <ENTITY> Class<ENTITY> getEntityClass() {
+		return (Class<ENTITY>) this.entityClass;
+	}
 
-    /**
-     * Constructor
-     */
-    protected JstQueryCountJpaPO(final String persistenceUnitName) {
+	/**
+	 * @return boolean
+	 */
+	public boolean isEntityClass() {
+		return null != this.entityClass;
+	}
 
-        super(persistenceUnitName);
-        return;
-    }
+	/**
+	 * @return {@link Optional}
+	 */
+	@SuppressWarnings("unchecked")
+	protected <IDENTITY> IDENTITY retrieveEntityIdentity(final Object entityContainingIdentity) {
 
-    /**
-     * @return {@link Class}
-     */
-    @SuppressWarnings("unchecked")
-    public <ENTITY> Class<ENTITY> getResultClass() {
+		return (IDENTITY) getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
+				.getIdentifier(entityContainingIdentity);
+	}
 
-        return (Class<ENTITY>) this.resultClass;
-    }
+	@SuppressWarnings("unchecked")
+	protected <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
+		this.entityClass = (Class<Object>) entityClass;
+	}
 
-    /**
-     * @return {@link JstQueryCountJpaPO}
-     */
-    public JstQueryCountJpaPO withEntityManager(final EntityManager entityManager) {
-
-        setEntityManager(entityManager);
-        return this;
-    }
-
-    /**
-     * @return {@link JstQueryCountJpaPO}
-     */
-    @SuppressWarnings("unchecked")
-    public <ENTITY> JstQueryCountJpaPO withResultClass(final Class<ENTITY> resultClass) {
-
-        this.resultClass = (Class<Object>) resultClass;
-        return this;
-    }
 }

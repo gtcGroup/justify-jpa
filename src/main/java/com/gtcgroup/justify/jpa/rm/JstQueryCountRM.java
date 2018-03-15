@@ -24,26 +24,34 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gtcgroup.justify.jpa.extension;
+package com.gtcgroup.justify.jpa.rm;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Optional;
 
-import org.junit.jupiter.api.extension.ExtendWith;
+import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
+import com.gtcgroup.justify.jpa.po.JstQueryCountPO;
 
-import com.gtcgroup.justify.jpa.helper.JstBaseDataPopulator;
+/**
+ * This Resource Manager class supports counting all entities in a database
+ * table or view.
+ *
+ * <p style="font-family:Verdana; font-size:10px; font-style:italic">
+ * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
+ * <a href="http://gtcGroup.com">gtcGroup.com </a>.
+ * </p>
+ *
+ * @author Marvin Toll
+ * @since v3.0
+ */
+public enum JstQueryCountRM {
 
-@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@ExtendWith(JstConfigureTestJpaExtension.class)
-public @interface JstConfigureTestJPA {
+    INTERNAL;
 
-    // TODO:
-    // public Map<String, Object> persistencePropertyMap();
+    /**
+     * @return long
+     */
+    public static Optional<Long> count(final JstQueryCountPO countPO) {
 
-    public Class<? extends JstBaseDataPopulator>[] dataPopulators() default {};
-
-    public String persistenceUnitName();
+        return JstQueryUtilHelper.count(countPO);
+    }
 }

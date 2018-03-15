@@ -24,7 +24,7 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gtcgroup.justify.jpa.helper.internal;
+package com.gtcgroup.justify.jpa.test.helper.internal;
 
 import java.util.Map;
 import java.util.Optional;

@@ -23,7 +23,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.assertion;
+package com.gtcgroup.justify.jpa.test.assertion;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,12 +32,12 @@ import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestUserId;
-import com.gtcgroup.justify.jpa.assertions.AssertionsJPA;
 import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
+import com.gtcgroup.justify.jpa.test.assertion.AssertionsJPA;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 
 /**
  * Test Class

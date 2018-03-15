@@ -24,16 +24,15 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.gtcgroup.justify.jpa.rm;
+package com.gtcgroup.justify.jpa.test.populator;
 
-import java.util.Optional;
+import java.util.List;
 
-import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
-import com.gtcgroup.justify.jpa.po.JstQueryCountJpaPO;
+import com.gtcgroup.justify.core.base.JstBaseSuffix;
 
 /**
- * This Resource Manager class supports counting all entities in a database
- * table or view.
+ * This Data Populator base class provides support for populating test data with
+ * a Template Method.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -43,15 +42,23 @@ import com.gtcgroup.justify.jpa.po.JstQueryCountJpaPO;
  * @author Marvin Toll
  * @since v3.0
  */
-public enum JstQueryCountJpaRM {
+public abstract class JstBaseDataPopulator extends JstBaseSuffix {
 
-    INTERNAL;
+	/**
+	 * @see JstBaseSuffix#assignPatternSuffixTM()
+	 */
+	@Override
+	protected String assignPatternSuffixTM() {
 
-    /**
-     * @return long
-     */
-    public static Optional<Long> count(final JstQueryCountJpaPO countPO) {
+		return "DataPopulator";
+	}
 
-        return JstQueryUtilHelper.count(countPO);
-    }
+	/**
+	 * This template method enables the formation of a list of populated
+	 * entities for subsequent database inserts by the Configure JPA Rule.
+	 *
+	 * @return {@link List}
+	 */
+	public abstract List<Object> populateCreateListTM(String persistenceUnitName);
+
 }

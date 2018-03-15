@@ -41,10 +41,10 @@ import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstTransactionJpaPO;
+import com.gtcgroup.justify.jpa.po.JstTransactionPO;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 
 /**
  * Test Class
@@ -65,14 +65,14 @@ public class JstTransactionJpaRmTest {
 	@Test
 	public void testCreateAndDelete() {
 
-		Optional<List<NoteDE>> optionalNoteList = JstTransactionJpaRM.commitListInOneTransaction(
-				JstTransactionJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+		Optional<List<NoteDE>> optionalNoteList = JstTransactionRM.commitListInOneTransaction(
+				JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 						.withCreateAndUpdateEntities(new NoteDE().setText("text1")));
 
 		if (optionalNoteList.isPresent()) {
 			final NoteDE noteDE = optionalNoteList.get().get(0);
 
-			optionalNoteList = JstTransactionJpaRM.commitListInOneTransaction(JstTransactionJpaPO
+			optionalNoteList = JstTransactionRM.commitListInOneTransaction(JstTransactionPO
 					.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withDeleteEntities(noteDE));
 
 			assertTrue(optionalNoteList.isPresent());
@@ -89,15 +89,15 @@ public class JstTransactionJpaRmTest {
 			entityManager = JstEntityManagerFactoryCacheHelper
 					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU, null, false);
 
-			optionalList = JstTransactionJpaRM.commitListInOneTransaction(JstTransactionJpaPO
+			optionalList = JstTransactionRM.commitListInOneTransaction(JstTransactionPO
 					.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withCreateAndUpdateEntities(new NoteDE().setText("text2")).withEntityManager(entityManager.get()));
 
 			if (optionalList.isPresent()) {
 				final NoteDE noteDE = optionalList.get().get(0);
 
-				optionalList = JstTransactionJpaRM.commitListInOneTransaction(
-						JstTransactionJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				optionalList = JstTransactionRM.commitListInOneTransaction(
+						JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 								.withDeleteEntities(noteDE).withEntityManager(entityManager.get()));
 
 				assertTrue(optionalList.isPresent());
@@ -116,14 +116,14 @@ public class JstTransactionJpaRmTest {
 		final NoteDE note2 = new NoteDE();
 		note2.setText("Two");
 
-		Optional<List<Object>> noteList = JstTransactionJpaRM.commitListInOneTransaction(JstTransactionJpaPO
+		Optional<List<Object>> noteList = JstTransactionRM.commitListInOneTransaction(JstTransactionPO
 				.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withCreateAndUpdateEntities(note1, note2));
 
 		if (noteList.isPresent()) {
 
 			updateWithJDBC();
 
-			noteList = JstTransactionJpaRM.commitListInOneTransaction(JstTransactionJpaPO
+			noteList = JstTransactionRM.commitListInOneTransaction(JstTransactionPO
 					.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withDeleteList(noteList.get()));
 		}
 		Assertions.assertTrue(noteList.isPresent());

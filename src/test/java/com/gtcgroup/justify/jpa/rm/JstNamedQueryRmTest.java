@@ -39,11 +39,11 @@ import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstQueryNamedJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 
 /**
  * Test Class
@@ -69,7 +69,7 @@ public class JstNamedQueryRmTest {
 	public void testQueryList_badQueryName() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			JstQueryNamedJpaRM.queryList(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+			JstQueryNamedRM.queryList(JstQueryNamedPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withQueryName(JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS));
 		});
 	}
@@ -77,8 +77,8 @@ public class JstNamedQueryRmTest {
 	@Test
 	public void testQueryList_happyPath() {
 
-		final Optional<List<NoteDE>> optionalNoteList = JstQueryNamedJpaRM
-				.queryList(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+		final Optional<List<NoteDE>> optionalNoteList = JstQueryNamedRM
+				.queryList(JstQueryNamedPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 						.withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST).withReadOnly());
 
 		assertFalse(optionalNoteList.get().isEmpty());
@@ -87,7 +87,7 @@ public class JstNamedQueryRmTest {
 	@Test
 	public void testQueryList_happyPath_withPaging() {
 
-		final Optional<List<NoteDE>> optionalNoteList = JstQueryNamedJpaRM.queryList(JstQueryNamedJpaPO
+		final Optional<List<NoteDE>> optionalNoteList = JstQueryNamedRM.queryList(JstQueryNamedPO
 				.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST)
 				.withReadOnly().withFirstResult(1).withMaxResults(1));
 
@@ -97,7 +97,7 @@ public class JstNamedQueryRmTest {
 	@Test
 	public void testQueryList_withParameters_empty() {
 
-		final Optional<List<NoteDE>> optionalNoteList = JstQueryNamedJpaRM.queryList(JstQueryNamedJpaPO
+		final Optional<List<NoteDE>> optionalNoteList = JstQueryNamedRM.queryList(JstQueryNamedPO
 				.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 				.withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_PARAMETER).withParameter("text", "*fake*"));
 
@@ -108,7 +108,7 @@ public class JstNamedQueryRmTest {
 	public void testQuerySingle_badQueryName() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			JstQueryNamedJpaRM.querySingle(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+			JstQueryNamedRM.querySingle(JstQueryNamedPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withQueryName(JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS)
 					.withParameter("text", ConstantsTestJPA.NOTE_TEXT_ONE));
 		});
@@ -118,8 +118,8 @@ public class JstNamedQueryRmTest {
 	@Test
 	public void testQuerySingle_happyPath_withParameter() {
 
-		final Optional<NoteDE> optionalNoteDE = JstQueryNamedJpaRM
-				.querySingle(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+		final Optional<NoteDE> optionalNoteDE = JstQueryNamedRM
+				.querySingle(JstQueryNamedPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 						.withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_PARAMETER)
 						.withParameter("text", ConstantsTestJPA.NOTE_TEXT_ONE).withReadOnly());
 
@@ -140,16 +140,16 @@ public class JstNamedQueryRmTest {
 
 			if (entityManager.isPresent()) {
 
-				optionalNoteDE = JstQueryNamedJpaRM.querySingle(JstQueryNamedJpaPO
+				optionalNoteDE = JstQueryNamedRM.querySingle(JstQueryNamedPO
 						.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withEntityManager(entityManager.get())
 						.withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_PARAMETER)
 						.withParameter("text", ConstantsTestJPA.NOTE_TEXT_ONE).withReadOnly());
 
-				optionalList = JstQueryNamedJpaRM.queryList(JstQueryNamedJpaPO
+				optionalList = JstQueryNamedRM.queryList(JstQueryNamedPO
 						.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withEntityManager(entityManager.get())
 						.withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST).withReadOnly());
 
-				optionalEmpty = JstQueryNamedJpaRM.queryList(JstQueryNamedJpaPO
+				optionalEmpty = JstQueryNamedRM.queryList(JstQueryNamedPO
 						.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withEntityManager(entityManager.get())
 						.withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST_WITH_PARAMETER)
 						.withParameter("text", "*fake*"));

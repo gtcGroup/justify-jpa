@@ -35,8 +35,8 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
-import com.gtcgroup.justify.jpa.po.JstQueryCountJpaPO;
-import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryCountPO;
+import com.gtcgroup.justify.jpa.po.internal.BaseQueryPO;
 
 /**
  * This Helper class provides persistence {@link Query} support.
@@ -58,7 +58,7 @@ public enum JstQueryUtilHelper {
 	 *
 	 * @return {@link Optional}
 	 */
-	public static Optional<Long> count(final JstQueryCountJpaPO queryPO) {
+	public static Optional<Long> count(final JstQueryCountPO queryPO) {
 
 		final EntityManager entityManager = queryPO.getEntityManager();
 
@@ -81,7 +81,7 @@ public enum JstQueryUtilHelper {
 	 * @return {@link Optional}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ENTITY> Optional<List<ENTITY>> queryResultList(final BaseQueryJpaPO queryPO) {
+	public static <ENTITY> Optional<List<ENTITY>> queryResultList(final BaseQueryPO queryPO) {
 
 		try {
 			final Query query = decorateQuery(queryPO);
@@ -103,7 +103,7 @@ public enum JstQueryUtilHelper {
 	 * @return {@link Optional}
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ENTITY> Optional<ENTITY> querySingleResult(final BaseQueryJpaPO queryPO) {
+	public static <ENTITY> Optional<ENTITY> querySingleResult(final BaseQueryPO queryPO) {
 
 		try {
 
@@ -120,7 +120,7 @@ public enum JstQueryUtilHelper {
 		}
 	}
 
-	private static Query decorateQuery(final BaseQueryJpaPO queryPO) {
+	private static Query decorateQuery(final BaseQueryPO queryPO) {
 
 		final Query query = queryPO.createQueryTM();
 

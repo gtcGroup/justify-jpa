@@ -29,7 +29,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.jpa.po.JstFindSingleJpaPO;
+import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
 
 /**
  * This Helper class provides persistence {@link EntityManager} support.
@@ -49,7 +49,7 @@ public enum JstFindUtilHelper {
 	/**
 	 * @return {@link Optional}
 	 */
-	public static <ENTITY> Optional<ENTITY> findSingle(final JstFindSingleJpaPO findPO) {
+	public static <ENTITY> Optional<ENTITY> findSingle(final JstFindSinglePO findPO) {
 
 		try {
 			final ENTITY entity = findPO.getEntityManager().find(findPO.getEntityClass(), findPO.getEntityIdentity(),
