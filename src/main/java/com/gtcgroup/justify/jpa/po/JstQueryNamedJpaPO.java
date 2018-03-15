@@ -53,8 +53,6 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
 		return new JstQueryNamedJpaPO(persistenceUnitName);
 	}
 
-	protected String queryName;
-
 	/**
 	 * Constructor
 	 */
@@ -68,17 +66,9 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
 	 * @return {@link Query}
 	 */
 	@Override
-	public Query createQuery() {
+	public Query createQueryTM() {
 
 		return getEntityManager().createNamedQuery(getQueryName());
-	}
-
-	/**
-	 * @return {@link String}
-	 */
-	public String getQueryName() {
-
-		return this.queryName;
 	}
 
 	/**
@@ -95,16 +85,16 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstQueryNamedJpaPO withFirstResult(final int firstResult) {
 
-		this.firstResult = firstResult;
+		setFirstResult(firstResult);
 		return this;
 	}
 
 	/**
 	 * @return {@link JstQueryNamedJpaPO}
 	 */
-	public JstQueryNamedJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppress) {
+	public JstQueryNamedJpaPO withForceDatabaseTripWhenNoCacheCoordination() {
 
-		this.forceDatabaseTripWhenNoCacheCoordination = suppress;
+		setForceDatabaseTripWhenNoCacheCoordination();
 		return this;
 	}
 
@@ -113,7 +103,7 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstQueryNamedJpaPO withMaxResults(final int maxResults) {
 
-		this.maxResults = maxResults;
+		setMaxResults(maxResults);
 		return this;
 	}
 
@@ -129,9 +119,18 @@ public class JstQueryNamedJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstQueryNamedJpaPO}
 	 */
+	public JstQueryNamedJpaPO withQueryHint(final String key, final Object value) {
+
+		super.setQueryHint(key, value);
+		return this;
+	}
+
+	/**
+	 * @return {@link JstQueryNamedJpaPO}
+	 */
 	public JstQueryNamedJpaPO withQueryName(final String queryName) {
 
-		this.queryName = queryName;
+		setQueryName(queryName);
 		return this;
 	}
 

@@ -122,7 +122,7 @@ public enum JstQueryUtilHelper {
 
 	private static Query decorateQuery(final BaseQueryJpaPO queryPO) {
 
-		final Query query = queryPO.createQuery();
+		final Query query = queryPO.createQueryTM();
 
 		// Query Hints
 		for (final Entry<String, Object> stringEntry : queryPO.getQueryHints().entrySet()) {

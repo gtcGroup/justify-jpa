@@ -43,13 +43,15 @@ import javax.persistence.Query;
  */
 public abstract class BaseQueryJpaPO extends BaseJpaPO {
 
-	protected Class<Object> entityClass;
+	private Class<Object> entityClass;
 
-	protected int firstResult;
+	private String queryName;
 
-	protected int maxResults;
+	private int firstResult;
 
-	protected boolean forceDatabaseTripWhenNoCacheCoordination = false;
+	private int maxResults;
+
+	private final boolean forceDatabaseTripWhenNoCacheCoordination = false;
 
 	/**
 	 * Constructor
@@ -61,7 +63,7 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 	/**
 	 * @return {@link Optional}
 	 */
-	public abstract Query createQuery();
+	public abstract Query createQueryTM();
 
 	/**
 	 * @return {@link Class}
@@ -83,6 +85,14 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 	 */
 	public int getMaxResults() {
 		return this.maxResults;
+	}
+
+	/**
+	 * @return {@link String}
+	 */
+	public String getQueryName() {
+
+		return this.queryName;
 	}
 
 	/**
@@ -118,13 +128,17 @@ public abstract class BaseQueryJpaPO extends BaseJpaPO {
 		this.entityClass = (Class<Object>) entityClass;
 	}
 
-	@Override
-	public void setQueryHint(final String key, final Object value) {
-		getQueryHints().put(key, value);
+	protected void setFirstResult(final int firstResult) {
+
+		this.firstResult = firstResult;
 	}
 
-	protected void setParameter(final String key, final Object value) {
+	protected void setMaxResults(final int maxResults) {
 
-		getParameterMap().put(key, value);
+		this.maxResults = maxResults;
+	}
+
+	protected void setQueryName(final String queryName) {
+		this.queryName = queryName;
 	}
 }

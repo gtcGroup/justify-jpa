@@ -34,11 +34,13 @@ import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryCountJpaPO;
 import com.gtcgroup.justify.jpa.po.JstQueryNamedJpaPO;
+import com.gtcgroup.justify.jpa.po.JstQueryStringJpaPO;
 import com.gtcgroup.justify.jpa.populator.dependency.NoteDataPopulator;
 import com.gtcgroup.justify.jpa.rm.JstFindJpaRmTest;
 import com.gtcgroup.justify.jpa.rm.JstNamedQueryRmTest;
 import com.gtcgroup.justify.jpa.rm.JstQueryCountJpaRM;
 import com.gtcgroup.justify.jpa.rm.JstQueryNamedJpaRM;
+import com.gtcgroup.justify.jpa.rm.JstQueryStringJpaRM;
 
 /**
  * Test Class
@@ -60,15 +62,14 @@ public class IntentionalQueryErrorTest {
 	@Test
 	public void testIntentionalCount_missingResultClass() {
 
-		JstQueryCountJpaRM.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU)).isPresent();
+		JstQueryCountJpaRM.count(JstQueryCountJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)).isPresent();
 	}
 
 	@Test
 	public void testIntentionalCount_notAnEntity() {
 
-		JstQueryCountJpaRM
-				.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NotAnEntityDE.class))
-				.isPresent();
+		JstQueryCountJpaRM.count(JstQueryCountJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				.withResultClass(NotAnEntityDE.class)).isPresent();
 	}
 
 	@Test
@@ -83,5 +84,12 @@ public class IntentionalQueryErrorTest {
 
 		JstQueryNamedJpaRM.queryList(JstQueryNamedJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 				.withQueryName(JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS));
+	}
+
+	@Test
+	public void testIntentionalQuerySingle_noQueryString() {
+
+		JstQueryStringJpaRM.querySingle(JstQueryStringJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
+
 	}
 }

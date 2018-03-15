@@ -27,7 +27,6 @@ package com.gtcgroup.justify.jpa.po;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryJpaPO;
 
@@ -69,51 +68,17 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
 	 * @return {@link Query}
 	 */
 	@Override
-	public Query createQuery() {
+	public Query createQueryTM() {
 
-		if (isResultClass()) {
-			return createQueryLanguageQuery(getQueryLanguageString(), getEntityClass());
-		}
-		return createQueryLanguageQuery(getQueryLanguageString());
-	}
-
-	/**
-	 * @return {@link Class}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getEntityClass() {
-
-		return (Class<ENTITY>) this.entityClass;
+		return getEntityManager().createQuery(getQueryLanguageString());
 	}
 
 	public String getQueryLanguageString() {
+
+		if (null == this.queryLanguageString) {
+			this.queryLanguageString = "The Query Language String Was Not Defined";
+		}
 		return this.queryLanguageString;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public boolean isQueryLanaguageString() {
-
-		return null != this.queryLanguageString;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public boolean isResultClass() {
-
-		return null != this.entityClass;
-	}
-
-	/**
-	 * @return {@link JstQueryStringJpaPO}
-	 */
-	public <ENTITY> JstQueryStringJpaPO withEntityClass(final Class<ENTITY> entityClass) {
-
-		setEntityClass(entityClass);
-		return this;
 	}
 
 	/**
@@ -130,16 +95,16 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstQueryStringJpaPO withFirstResult(final int firstResult) {
 
-		this.firstResult = firstResult;
+		setFirstResult(firstResult);
 		return this;
 	}
 
 	/**
 	 * @return {@link JstQueryStringJpaPO}
 	 */
-	public JstQueryStringJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppress) {
+	public JstQueryStringJpaPO withForceDatabaseTripWhenNoCacheCoordination() {
 
-		this.forceDatabaseTripWhenNoCacheCoordination = suppress;
+		setForceDatabaseTripWhenNoCacheCoordination();
 		return this;
 	}
 
@@ -148,7 +113,16 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstQueryStringJpaPO withMaxResults(final int maxResults) {
 
-		this.maxResults = maxResults;
+		setMaxResults(maxResults);
+		return this;
+	}
+
+	/**
+	 * @return {@link JstQueryStringJpaPO}
+	 */
+	public JstQueryStringJpaPO withQueryHint(final String key, final Object value) {
+
+		super.setQueryHint(key, value);
 		return this;
 	}
 
@@ -168,22 +142,5 @@ public class JstQueryStringJpaPO extends BaseQueryJpaPO {
 
 		setReadOnly();
 		return this;
-	}
-
-	/**
-	 * @return {@link Query}
-	 */
-	protected Query createQueryLanguageQuery(final String queryLanguageString) {
-
-		return getEntityManager().createQuery(queryLanguageString);
-	}
-
-	/**
-	 * @return {@link TypedQuery}
-	 */
-	protected <ENTITY> TypedQuery<ENTITY> createQueryLanguageQuery(final String queryLanguageString,
-			final Class<ENTITY> resultClass) {
-
-		return getEntityManager().createQuery(queryLanguageString, resultClass);
 	}
 }

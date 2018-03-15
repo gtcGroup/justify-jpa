@@ -48,7 +48,7 @@ public class JstQueryCountJpaPO extends BaseJpaPO {
      *
      * @return {@link JstQueryCountJpaPO}
      */
-    public static JstQueryCountJpaPO withQuery(final String persistenceUnitName) {
+    public static JstQueryCountJpaPO withPersistenceUnitName(final String persistenceUnitName) {
 
         return new JstQueryCountJpaPO(persistenceUnitName);
     }

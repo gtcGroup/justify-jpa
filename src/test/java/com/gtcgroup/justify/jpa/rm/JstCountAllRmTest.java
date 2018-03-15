@@ -62,9 +62,9 @@ public class JstCountAllRmTest {
 
 		assertAll(() -> {
 			assertTrue(JstQueryCountJpaRM
-					.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NoteDE.class))
+					.count(JstQueryCountJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NoteDE.class))
 					.isPresent());
-			assertEquals(0, JstQueryCountJpaRM.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU)
+			assertEquals(0, JstQueryCountJpaRM.count(JstQueryCountJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withResultClass(EntityNotPopulatedDE.class)).get().longValue());
 		});
 
@@ -74,7 +74,7 @@ public class JstCountAllRmTest {
 	public void testCount_missingResultClass() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			JstQueryCountJpaRM.count(JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU)).isPresent();
+			JstQueryCountJpaRM.count(JstQueryCountJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)).isPresent();
 		});
 	}
 
@@ -83,7 +83,7 @@ public class JstCountAllRmTest {
 
 		assertThrows(IllegalArgumentException.class, () -> {
 			JstQueryCountJpaRM.count(
-					JstQueryCountJpaPO.withQuery(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NotAnEntityDE.class))
+					JstQueryCountJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NotAnEntityDE.class))
 					.isPresent();
 		});
 	}

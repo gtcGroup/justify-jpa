@@ -53,8 +53,6 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
 		return new JstQueryNamedStoredProcedureJpaPO(persistenceUnitName);
 	}
 
-	protected String queryName;
-
 	/**
 	 * Constructor
 	 */
@@ -68,17 +66,9 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
 	 * @return {@link Query}
 	 */
 	@Override
-	public Query createQuery() {
+	public Query createQueryTM() {
 
 		return getEntityManager().createNamedStoredProcedureQuery(getQueryName());
-	}
-
-	/**
-	 * @return {@link String}
-	 */
-	public String getQueryName() {
-
-		return this.queryName;
 	}
 
 	/**
@@ -95,16 +85,16 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstQueryNamedStoredProcedureJpaPO withFirstResult(final int firstResult) {
 
-		this.firstResult = firstResult;
+		setFirstResult(firstResult);
 		return this;
 	}
 
 	/**
 	 * @return {@link JstQueryNamedStoredProcedureJpaPO}
 	 */
-	public JstQueryNamedStoredProcedureJpaPO withForceDatabaseTripWhenNoCacheCoordination(final boolean suppress) {
+	public JstQueryNamedStoredProcedureJpaPO withForceDatabaseTripWhenNoCacheCoordination() {
 
-		this.forceDatabaseTripWhenNoCacheCoordination = suppress;
+		setForceDatabaseTripWhenNoCacheCoordination();
 		return this;
 	}
 
@@ -113,7 +103,7 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstQueryNamedStoredProcedureJpaPO withMaxResults(final int maxResults) {
 
-		this.maxResults = maxResults;
+		setMaxResults(maxResults);
 		return this;
 	}
 
@@ -131,7 +121,7 @@ public class JstQueryNamedStoredProcedureJpaPO extends BaseQueryJpaPO {
 	 */
 	public JstQueryNamedStoredProcedureJpaPO withQueryName(final String queryName) {
 
-		this.queryName = queryName;
+		setQueryName(queryName);
 		return this;
 	}
 

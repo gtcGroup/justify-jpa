@@ -58,16 +58,6 @@ public class JstQueryAllJpaPO extends BaseQueryJpaPO {
 	}
 
 	/**
-	 * This method initializes the class.
-	 *
-	 * @return {@link JstQueryAllJpaPO}
-	 */
-	public static JstQueryAllJpaPO withQueryAll(final String persistenceUnitName) {
-
-		return new JstQueryAllJpaPO(persistenceUnitName);
-	}
-
-	/**
 	 * @return {@link TypedQuery}
 	 */
 	protected static <ENTITY> TypedQuery<ENTITY> createCriteriaQuery(final EntityManager entityManager,
@@ -93,7 +83,7 @@ public class JstQueryAllJpaPO extends BaseQueryJpaPO {
 	 * @return {@link Query}
 	 */
 	@Override
-	public Query createQuery() {
+	public Query createQueryTM() {
 
 		return createCriteriaQuery(getEntityManager(), getEntityClass());
 	}
@@ -101,10 +91,9 @@ public class JstQueryAllJpaPO extends BaseQueryJpaPO {
 	/**
 	 * @return {@link JstQueryAllJpaPO}
 	 */
-	@SuppressWarnings("unchecked")
 	public <ENTITY> JstQueryAllJpaPO withEntityClass(final Class<ENTITY> entityClass) {
 
-		this.entityClass = (Class<Object>) entityClass;
+		setEntityClass(entityClass);
 		return this;
 	}
 

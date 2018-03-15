@@ -58,11 +58,11 @@ public abstract class BaseJpaPO extends JstBasePO {
 
 	private final Map<String, Object> parameterMap = new ConcurrentHashMap<>();
 
-	protected EntityManager entityManager;
+	private EntityManager entityManager;
 
-	protected boolean entityManagerEncapsulated = false;
+	private boolean entityManagerEncapsulated = false;
 
-	protected String persistenceUnitName;
+	private String persistenceUnitName;
 
 	/**
 	 * Constructor
@@ -126,6 +126,11 @@ public abstract class BaseJpaPO extends JstBasePO {
 		getQueryHints().put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
 		getQueryHints().put(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
 		getQueryHints().put(QueryHints.REFRESH, HintValues.TRUE);
+	}
+
+	protected void setParameter(final String key, final Object value) {
+
+		getParameterMap().put(key, value);
 	}
 
 	protected void setQueryHint(final String key, final Object value) {

@@ -37,7 +37,6 @@ import javax.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.core.test.helper.internal.LogTestConsoleUtilHelper;
 import com.gtcgroup.justify.jpa.de.dependency.EntityNotPopulatedDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.extension.JstConfigureTestJPA;
@@ -75,22 +74,6 @@ public class JstFindJpaRmTest {
 		return JstQueryFindJpaRM.findSingle(findJpaPO);
 	}
 
-	private static Optional<NoteDE> findForceDatabaseTripDE(final Class<?> clazz, final String entityIdentity) {
-
-		LogTestConsoleUtilHelper
-				.logToConsole(">>> The following [EL Fine] SQL statement indicates a trip to database.");
-
-		final JstFindSingleJpaPO findJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-				.withEntityClass(clazz).withEntityIdentity(entityIdentity)
-				.withForceDatabaseTripWhenNoCacheCoordination();
-
-		final Optional<NoteDE> entityOptional = JstQueryFindJpaRM.findSingle(findJpaPO);
-
-		LogTestConsoleUtilHelper.logToConsole(">>> End of trip to database.");
-
-		return entityOptional;
-	}
-
 	private static Optional<NoteDE> findNoteDE(final Class<?> clazz, final String entityIdentity) {
 
 		final JstFindSingleJpaPO findJpaPO = JstFindSingleJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
@@ -111,7 +94,6 @@ public class JstFindJpaRmTest {
 		assertAll(() -> {
 			assertTrue(findNoteDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
 			assertTrue(findReadOnlyNoteDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
-			assertTrue(findForceDatabaseTripDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
 		});
 	}
 
@@ -121,7 +103,7 @@ public class JstFindJpaRmTest {
 		Optional<EntityManager> entityManager = null;
 		Optional<NoteDE> optionalNoteDE = null;
 		Optional<List<NoteDE>> optionalList = null;
-		Optional<List<NoteDE>> optionalEmptyList = null;
+		Optional<List<NoteDE>> optionalEmpty = null;
 
 		try {
 			entityManager = JstEntityManagerFactoryCacheHelper
@@ -129,20 +111,18 @@ public class JstFindJpaRmTest {
 
 			if (entityManager.isPresent()) {
 
-				optionalNoteDE = JstQueryFindJpaRM
-						.findSingle(JstFindSingleJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-								.withEntityClass(NoteDE.class).withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO)
-								.withEntityManager(entityManager.get()).withForceDatabaseTripWhenNoCacheCoordination());
+				optionalNoteDE = JstQueryFindJpaRM.findSingle(JstFindSingleJpaPO
+						.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withEntityClass(NoteDE.class)
+						.withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO).withEntityManager(entityManager.get()));
 
 				optionalList = JstQueryFindJpaRM
 						.queryAll(JstQueryAllJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-								.withEntityClass(NoteDE.class).withEntityManager(entityManager.get()).withReadOnly()
-								.withForceDatabaseTripWhenNoCacheCoordination());
+								.withEntityClass(NoteDE.class).withEntityManager(entityManager.get()).withReadOnly());
 
-				optionalEmptyList = JstQueryFindJpaRM
+				optionalEmpty = JstQueryFindJpaRM
 						.queryAll(JstQueryAllJpaPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 								.withEntityClass(EntityNotPopulatedDE.class).withEntityManager(entityManager.get())
-								.withReadOnly().withForceDatabaseTripWhenNoCacheCoordination());
+								.withReadOnly());
 			}
 		} finally {
 			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
@@ -150,6 +130,6 @@ public class JstFindJpaRmTest {
 
 		assertTrue(optionalNoteDE.isPresent());
 		assertTrue(optionalList.isPresent());
-		assertFalse(optionalEmptyList.isPresent());
+		assertFalse(optionalEmpty.isPresent());
 	}
 }
