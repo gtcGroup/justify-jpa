@@ -52,7 +52,7 @@ public enum JstTransactionRM {
 	 * This method is used for committing one transaction with multiple entities. If
 	 * any of the related child objects are not marked for an applicable
 	 * {@link CascadeType} then they need to be explicitly handled in the
-	 * {@link JstTransactionPO}.
+	 * {@link JstTransactionPO}. Creates (inserts) and updates are supported.
 	 *
 	 * @return {@link Optional}
 	 */
@@ -71,7 +71,7 @@ public enum JstTransactionRM {
 	 * This method is used for committing one transaction with a single entity. If
 	 * any of the related child objects are not marked for an applicable
 	 * {@link CascadeType} then they need to be explicitly handled in the
-	 * {@link JstTransactionPO}.
+	 * {@link JstTransactionPO}. Creates (inserts) and updates are supported.
 	 *
 	 * @return {@link Optional}
 	 */

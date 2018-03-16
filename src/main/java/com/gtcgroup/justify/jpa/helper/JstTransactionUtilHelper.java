@@ -30,10 +30,9 @@ import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
+import javax.persistence.RollbackException;
 
-import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
 import com.gtcgroup.justify.core.po.JstExceptionPO;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.exception.JstOptimisiticLockException;
 import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
@@ -81,7 +80,7 @@ public enum JstTransactionUtilHelper {
 			return Optional.of(transactionPO.getEntityCommittedList());
 
 		} catch (final javax.persistence.OptimisticLockException
-				| org.eclipse.persistence.exceptions.OptimisticLockException e) {
+				| org.eclipse.persistence.exceptions.OptimisticLockException | RollbackException e) {
 
 			throw new JstOptimisiticLockException(JstExceptionPO.withMessage(e.getMessage())
 					.withExceptionClassName(JstTransactionUtilHelper.class.getSimpleName())
@@ -113,31 +112,6 @@ public enum JstTransactionUtilHelper {
 		return true;
 	}
 
-	/**
-	 * This convenience method deletes of child objects (typically not marked for
-	 * cascading remove) that require programmatic delete from a parent entity.
-	 *
-	 * return boolean
-	 */
-	public static <ENTITY> boolean findAndDeleteRelatedEntity(final String persistenceUnitName,
-			final Object entityWithReleatedEnitity, final String relatedEntityGetterMethodName,
-			final EntityManager entityManager) {
-
-		@SuppressWarnings("unchecked")
-		final Optional<ENTITY> entity = (Optional<ENTITY>) JstReflectionUtilHelper
-				.invokePublicMethod(relatedEntityGetterMethodName, entityWithReleatedEnitity);
-
-		if (!entity.isPresent()) {
-			throw new JustifyException(JstExceptionPO
-					.withMessage("The entity represented by the method [" + relatedEntityGetterMethodName
-							+ "] could not be found for deletion (removal).")
-					.withExceptionClassName(JstTransactionUtilHelper.class.getSimpleName())
-					.withExceptionMethodName("findAndDeleteRelatedEntity"));
-		}
-
-		return findAndDeleteEntity(persistenceUnitName, entityManager, entity);
-	}
-
 	private static void deleteEntities(final EntityManager entityManager, final JstTransactionPO transactionPO) {
 
 		for (Object entity : transactionPO.getEntityDeleteList()) {
@@ -148,8 +122,7 @@ public enum JstTransactionUtilHelper {
 		}
 	}
 
-	private static void mergeCreateAndUpdates(final EntityManager entityManager,
-			final JstTransactionPO transactionPO) {
+	private static void mergeCreateAndUpdates(final EntityManager entityManager, final JstTransactionPO transactionPO) {
 
 		for (Object entity : transactionPO.getEntityCreateAndUpdateList()) {
 

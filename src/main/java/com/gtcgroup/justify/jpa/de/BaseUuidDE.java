@@ -35,46 +35,51 @@ import javax.persistence.MappedSuperclass;
 
 import org.eclipse.persistence.annotations.UuidGenerator;
 
-@SuppressWarnings("javadoc")
 @MappedSuperclass
 public abstract class BaseUuidDE extends BaseAuditDE {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @UuidGenerator(name = "UUID")
-    @GeneratedValue(generator = "UUID")
-    @Column(length = 36, insertable = true, updatable = false, name = "KEY_UUID", nullable = false)
-    private String uuid;
+	@Id
+	@UuidGenerator(name = "UUID")
+	@GeneratedValue(generator = "UUID")
+	@Column(length = 36, insertable = true, updatable = false, name = "KEY_UUID", nullable = false)
+	private String uuid;
 
-    @Override
-    public boolean equals(final Object obj) {
+	@Override
+	public boolean equals(final Object obj) {
 
-        if (!super.equals(obj)) {
-            return false;
-        }
+		if (obj == null) {
+			return false;
+		}
 
-        final BaseUuidDE other = (BaseUuidDE) obj;
-        return Objects.equals(this.uuid, other.uuid);
-    }
+		final BaseUuidDE other = (BaseUuidDE) obj;
+		return Objects.equals(this.uuid, other.uuid);
+	}
 
-    @SuppressWarnings("unchecked")
-    public <CONCRETE extends BaseUuidDE> CONCRETE generateUuid() {
+	@SuppressWarnings("unchecked")
+	public <CONCRETE extends BaseUuidDE> CONCRETE generateUuid() {
 
-        this.uuid = UUID.randomUUID().toString();
+		this.uuid = UUID.randomUUID().toString();
 
-        return (CONCRETE) this;
-    }
+		return (CONCRETE) this;
+	}
 
-    public String getUuid() {
-        return this.uuid;
-    }
+	public String getUuid() {
+		return this.uuid;
+	}
 
-    @SuppressWarnings("unchecked")
-    public <CONCRETE extends BaseUuidDE> CONCRETE setUuid(final String uuid) {
+	@Override
+	public int hashCode() {
 
-        this.uuid = uuid;
+		return super.hashCode();
+	}
 
-        return (CONCRETE) this;
-    }
+	@SuppressWarnings("unchecked")
+	public <CONCRETE extends BaseUuidDE> CONCRETE setUuid(final String uuid) {
+
+		this.uuid = uuid;
+
+		return (CONCRETE) this;
+	}
 }

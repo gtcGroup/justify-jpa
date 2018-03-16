@@ -25,12 +25,16 @@
  */
 package com.gtcgroup.justify.jpa.rm;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +45,7 @@ import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
+import com.gtcgroup.justify.jpa.exception.JstOptimisiticLockException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
@@ -63,24 +68,7 @@ import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 public class JstTransactionJpaRmTest {
 
 	@Test
-	public void testCreateAndDelete() {
-
-		Optional<List<NoteDE>> optionalNoteList = JstTransactionRM.commitListInOneTransaction(
-				JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-						.withCreateAndUpdateEntities(new NoteDE().setText("text1")));
-
-		if (optionalNoteList.isPresent()) {
-			final NoteDE noteDE = optionalNoteList.get().get(0);
-
-			optionalNoteList = JstTransactionRM.commitListInOneTransaction(JstTransactionPO
-					.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withDeleteEntities(noteDE));
-
-			assertTrue(optionalNoteList.isPresent());
-		}
-	}
-
-	@Test
-	public void testCreateAndDelete_externalEntityManager() {
+	public void testCommitListInOneTransaction_externalEntityManager() {
 
 		Optional<EntityManager> entityManager = null;
 		Optional<List<NoteDE>> optionalList = null;
@@ -97,14 +85,62 @@ public class JstTransactionJpaRmTest {
 				final NoteDE noteDE = optionalList.get().get(0);
 
 				optionalList = JstTransactionRM.commitListInOneTransaction(
-						JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-								.withDeleteEntities(noteDE).withEntityManager(entityManager.get()));
+						JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withDeleteEntities(noteDE)
+								.withEntityManager(entityManager.get()));
 
 				assertTrue(optionalList.isPresent());
 			}
 		} finally {
 			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
 		}
+	}
+
+	@Test
+	public void testCommitListInOneTransaction_happyPath() {
+
+		Optional<List<NoteDE>> optionalNoteList = JstTransactionRM
+				.commitListInOneTransaction(JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+						.withCreateAndUpdateEntities(new NoteDE().setText("text1")));
+
+		if (optionalNoteList.isPresent()) {
+			final NoteDE noteDE = optionalNoteList.get().get(0);
+
+			optionalNoteList = JstTransactionRM.commitListInOneTransaction(
+					JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withDeleteEntities(noteDE));
+
+			assertTrue(optionalNoteList.isPresent());
+		}
+	}
+
+	@Test
+	public void testCommitSingleInOneTransaction_optimisticLock() {
+
+		final Optional<NoteDE> optionalNoteDE = JstTransactionRM
+				.commitSingleInOneTransaction(JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+						.withCreateAndUpdateEntities(new NoteDE().setText("text1")));
+
+		if (optionalNoteDE.isPresent()) {
+
+			final NoteDE noteDE = optionalNoteDE.get();
+
+			final Date date = new Date();
+			noteDE.setUpdateTime(new Timestamp(date.getTime()));
+
+			assertThrows(JstOptimisiticLockException.class, () -> {
+				JstTransactionRM.commitSingleInOneTransaction(JstTransactionPO
+						.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withCreateAndUpdateEntities(noteDE));
+			});
+		}
+	}
+
+	@Test
+	public void testSingleInOneTransaction() {
+
+		final Optional<NoteDE> optionalNoteDE = JstTransactionRM
+				.commitSingleInOneTransaction(JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+						.withCreateAndUpdateEntities(new NoteDE().setText("text1"), new NoteDE().setText("text2")));
+
+		assertFalse(optionalNoteDE.isPresent());
 	}
 
 	@Test

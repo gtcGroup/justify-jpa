@@ -40,99 +40,96 @@ import com.gtcgroup.justify.core.test.base.JstBaseExtension;
 @MappedSuperclass
 public abstract class BaseAuditDE extends JstBaseDE {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Column(insertable = true, updatable = false, unique = false, name = "CREATE_TIME", nullable = false, columnDefinition = "timestamp")
-    private Timestamp createTime;
+	@Column(insertable = true, updatable = false, unique = false, name = "CREATE_TIME", nullable = false, columnDefinition = "timestamp")
+	private Timestamp createTime;
 
-    @Version
-    @Column(insertable = true, updatable = true, unique = false, name = "UPDATE_TIME", nullable = false, columnDefinition = "timestamp")
-    private Timestamp updateTime;
+	@Version
+	@Column(insertable = true, updatable = true, unique = false, name = "UPDATE_TIME", nullable = false, columnDefinition = "timestamp")
+	private Timestamp updateTime;
 
-    @Column(insertable = true, updatable = false, unique = false, name = "CREATE_USER", nullable = false)
-    private String createUser;
+	@Column(insertable = true, updatable = false, unique = false, name = "CREATE_USER", nullable = false)
+	private String createUser;
 
-    @Column(insertable = true, updatable = true, unique = false, name = "UPDATE_USER", nullable = false)
-    private String updateUser;
+	@Column(insertable = true, updatable = true, unique = false, name = "UPDATE_USER", nullable = false)
+	private String updateUser;
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		return this.getClass() != obj.getClass();
+	}
 
-    public Timestamp getCreateTime() {
-        return this.createTime;
-    }
+	public Timestamp getCreateTime() {
+		return this.createTime;
+	}
 
-    public String getCreateUser() {
-        return this.createUser;
-    }
+	public String getCreateUser() {
+		return this.createUser;
+	}
 
-    public Timestamp getUpdateTime() {
-        return this.updateTime;
-    }
+	public Timestamp getUpdateTime() {
+		return this.updateTime;
+	}
 
-    public String getUpdateUser() {
-        return this.updateUser;
-    }
+	public String getUpdateUser() {
+		return this.updateUser;
+	}
 
-    /**
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
 
-        return super.hashCode();
-    }
+		return super.hashCode();
+	}
 
-    @PrePersist
-    protected void prePersistAuditFields() {
+	@SuppressWarnings("unchecked")
+	public <CONCRETE extends BaseAuditDE> CONCRETE setCreateTime(final Timestamp createTime) {
 
-        final Date date = new Date();
-        this.setCreateTime(new Timestamp(date.getTime()));
-        final String user = JstBaseExtension.getUserId();
+		this.createTime = createTime;
+		return (CONCRETE) this;
+	}
 
-        this.setCreateUser(user);
-        this.setUpdateUser(user);
-    }
+	@SuppressWarnings("unchecked")
+	public <CONCRETE extends BaseAuditDE> CONCRETE setCreateUser(final String createUser) {
 
-    @PreUpdate
-    protected void preUpdateAuditFields() {
+		this.createUser = createUser;
+		return (CONCRETE) this;
+	}
 
-        this.setUpdateUser(JstBaseExtension.getUserId());
-    }
+	@SuppressWarnings("unchecked")
+	public <CONCRETE extends BaseAuditDE> CONCRETE setUpdateTime(final Timestamp updateTime) {
 
-    @SuppressWarnings("unchecked")
-    public <CONCRETE extends BaseAuditDE> CONCRETE setCreateTime(final Timestamp createTime) {
+		this.updateTime = updateTime;
+		return (CONCRETE) this;
+	}
 
-        this.createTime = createTime;
-        return (CONCRETE) this;
-    }
+	@SuppressWarnings("unchecked")
+	public <CONCRETE extends BaseAuditDE> CONCRETE setUpdateUser(final String updateUser) {
 
-    @SuppressWarnings("unchecked")
-    public <CONCRETE extends BaseAuditDE> CONCRETE setCreateUser(final String createUser) {
+		this.updateUser = updateUser;
+		return (CONCRETE) this;
+	}
 
-        this.createUser = createUser;
-        return (CONCRETE) this;
-    }
+	@PrePersist
+	protected void prePersistAuditFields() {
 
-    @SuppressWarnings("unchecked")
-    public <CONCRETE extends BaseAuditDE> CONCRETE setUpdateTime(final Timestamp updateTime) {
+		final Date date = new Date();
+		this.setCreateTime(new Timestamp(date.getTime()));
+		final String user = JstBaseExtension.getUserId();
 
-        this.updateTime = updateTime;
-        return (CONCRETE) this;
-    }
+		this.setCreateUser(user);
+		this.setUpdateUser(user);
+	}
 
-    @SuppressWarnings("unchecked")
-    public <CONCRETE extends BaseAuditDE> CONCRETE setUpdateUser(final String updateUser) {
+	@PreUpdate
+	protected void preUpdateAuditFields() {
 
-        this.updateUser = updateUser;
-        return (CONCRETE) this;
-    }
+		this.setUpdateUser(JstBaseExtension.getUserId());
+	}
 }

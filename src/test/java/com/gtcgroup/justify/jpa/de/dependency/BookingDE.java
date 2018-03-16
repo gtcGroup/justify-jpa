@@ -25,6 +25,9 @@
  */
 package com.gtcgroup.justify.jpa.de.dependency;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
@@ -39,7 +42,6 @@ import com.gtcgroup.justify.jpa.de.BaseUuidDE;
 @Entity
 @Table(name = "BOOKING")
 @AttributeOverrides({ @AttributeOverride(name = "uuid", column = @Column(name = "BOOKING_UUID")) })
-@SuppressWarnings("javadoc")
 public class BookingDE extends BaseUuidDE {
 
 	private static final long serialVersionUID = 1L;
@@ -55,6 +57,8 @@ public class BookingDE extends BaseUuidDE {
 	@JoinColumn(name = "CUSTOMER_UUID", referencedColumnName = "CUSTOMER_UUID")
 	private CustomerDE customer;
 
+	private final List<Object> unmappedList = new ArrayList<>();
+
 	public CustomerDE getCustomer() {
 
 		return this.customer;
@@ -66,6 +70,12 @@ public class BookingDE extends BaseUuidDE {
 
 	public NoteDE getNote() {
 		return this.note;
+	}
+
+	public List<Object> getUnmappedList() {
+
+		this.unmappedList.add(this);
+		return this.unmappedList;
 	}
 
 	public BookingDE setCustomer(final CustomerDE customerDE) {
