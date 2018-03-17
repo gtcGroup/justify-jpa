@@ -36,8 +36,6 @@ import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
-import com.gtcgroup.justify.core.po.JstExceptionPO;
-import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.core.test.extension.JstBaseExtension;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
@@ -84,32 +82,16 @@ class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCal
 				final Optional<Class<?>> dataPopulatorClass = JstReflectionUtilHelper.retrieveClass(dataPopulatorName);
 
 				if (dataPopulatorClass.isPresent()) {
-					compileInsertionList(dataPopulatorClass.get());
-
-				} else {
-					throw new JustifyException(JstExceptionPO
-							.withMessage("The data populator [" + dataPopulatorName + "] could not be processed.")
-							.withExceptionClassName(JstConfigureTestJPA.class.getSimpleName()));
+					populateInsertionList(dataPopulatorClass.get());
 				}
 			}
 			this.dataPopulatorNameList.clear();
 			JstTransactionRM.commitListInOneTransaction(JstTransactionPO
 					.withPersistenceUnitName(this.persistenceUnitName).withCreateAndUpdateList(this.createList));
 			this.createList.clear();
+
 		} catch (final RuntimeException e) {
-			handleBeforeAllException(extensionContext, e);
-		}
-	}
-
-	protected void compileInsertionList(final Class<?> populatorClass) {
-
-		@SuppressWarnings("unchecked")
-		final Optional<JstBaseDataPopulator> dataPopulator = (Optional<JstBaseDataPopulator>) JstReflectionUtilHelper
-				.instantiateInstanceUsingPublicConstructorWithNoArgument(populatorClass);
-
-		if (dataPopulator.isPresent()) {
-
-			this.createList.addAll(dataPopulator.get().populateCreateListTM(this.persistenceUnitName));
+			handleBeforeAllException(extensionContext, e); // Covered.
 		}
 	}
 
@@ -122,6 +104,18 @@ class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCal
 
 		this.annotationDefinedDataPopulators = configureJPA.dataPopulators();
 
+	}
+
+	protected void populateInsertionList(final Class<?> populatorClass) {
+
+		@SuppressWarnings("unchecked")
+		final Optional<JstBaseDataPopulator> dataPopulator = (Optional<JstBaseDataPopulator>) JstReflectionUtilHelper
+				.instantiateInstanceUsingPublicConstructorWithNoArgument(populatorClass);
+
+		if (dataPopulator.isPresent()) {
+
+			this.createList.addAll(dataPopulator.get().populateCreateListTM(this.persistenceUnitName));
+		}
 	}
 
 	protected void registerPopulatorsToBeProcessed() {

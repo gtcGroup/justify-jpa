@@ -85,15 +85,14 @@ public enum AssertionsJPA {
 
 				createSucceededPopulatedEntity = true;
 
-				verifyCascadeEntitiesPersisted(assertCascadePO); // Covered
+				verifyCascadeEntitiesPersisted(assertCascadePO);
 
-				verifyEntitiesNotPersisted(assertCascadePO); // Covered
-
+				verifyEntitiesNotPersisted(assertCascadePO);
 				deleteAttemptedPopulatedEntity = true;
 
 				deleteParentEntity(assertCascadePO, cascadeEntityManager);
 
-				verifyCascadeEntitiesDeleted(assertCascadePO); // Covered
+				verifyCascadeEntitiesDeleted(assertCascadePO);
 
 				verifyEntitiesNotDeleted(assertCascadePO);
 
@@ -117,7 +116,7 @@ public enum AssertionsJPA {
 			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
 		if (!existsInDatabase(persistenceUnitName, entityClass, entityIdentity)) {
-			throwAssertFailedWithMessage(persistenceUnitName, entityClass.getSimpleName() + UNAVAILABLE);
+			throwAssertFailedWithMessage(persistenceUnitName, entityClass.getSimpleName() + UNAVAILABLE); // Covered.
 		}
 		return;
 	}
@@ -136,7 +135,7 @@ public enum AssertionsJPA {
 			final Class<ENTITY> entityClass, final Object entityIdentity) {
 
 		if (existsInDatabase(persistenceUnitName, entityClass, entityIdentity)) {
-			throwAssertFailedWithMessage(persistenceUnitName, entityClass.getSimpleName() + UNEXPECTEDLY_AVAILABLE);
+			throwAssertFailedWithMessage(persistenceUnitName, entityClass.getSimpleName() + UNEXPECTEDLY_AVAILABLE); // Covered.
 		}
 		return;
 	}
@@ -300,7 +299,7 @@ public enum AssertionsJPA {
 				}
 
 			} else {
-				throwAssertCascadeFailed(assertCascadePO);
+				throwAssertCascadeFailed(assertCascadePO); // Covered.
 			}
 		}
 		return true;
@@ -331,7 +330,7 @@ public enum AssertionsJPA {
 		final boolean actual = isExists(assertCascadePO.getCascadeRemoveList(), assertCascadePO, false);
 
 		if (!actual) {
-			throwAssertCascadeFailed(assertCascadePO);
+			throwAssertCascadeFailed(assertCascadePO); // Covered.
 		}
 	}
 
@@ -358,7 +357,7 @@ public enum AssertionsJPA {
 		final boolean actual = isExists(assertCascadePO.getCascadeNoPersistList(), assertCascadePO, false);
 
 		if (!actual) {
-			throwAssertCascadeFailed(assertCascadePO);
+			throwAssertCascadeFailed(assertCascadePO); // Covered.
 		}
 	}
 }

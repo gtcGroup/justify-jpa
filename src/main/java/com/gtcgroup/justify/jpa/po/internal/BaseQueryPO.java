@@ -51,8 +51,6 @@ public abstract class BaseQueryPO extends BasePO {
 
 	private int maxResults;
 
-	private final boolean forceDatabaseTripWhenNoCacheCoordination = false;
-
 	/**
 	 * Constructor
 	 */
@@ -98,22 +96,8 @@ public abstract class BaseQueryPO extends BasePO {
 	/**
 	 * @return boolean
 	 */
-	public boolean isEntityClass() {
-		return null != this.entityClass;
-	}
-
-	/**
-	 * @return boolean
-	 */
 	public boolean isFirstResult() {
 		return 0 != this.firstResult;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public boolean isForceDatabaseTripWhenNoCacheCoordination() {
-		return this.forceDatabaseTripWhenNoCacheCoordination;
 	}
 
 	/**
