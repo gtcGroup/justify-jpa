@@ -113,6 +113,15 @@ public class JstTransactionJpaRmTest {
 	}
 
 	@Test
+	public void testCommitSingleInOneTransaction_noEntities() {
+
+		final Optional<NoteDE> optionalNoteDE = JstTransactionRM
+				.commitSingleInOneTransaction(JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
+
+		assertFalse(optionalNoteDE.isPresent());
+	}
+
+	@Test
 	public void testCommitSingleInOneTransaction_optimisticLock() {
 
 		final Optional<NoteDE> optionalNoteDE = JstTransactionRM
@@ -134,12 +143,13 @@ public class JstTransactionJpaRmTest {
 	}
 
 	@Test
-	public void testSingleInOneTransaction() {
+	public void testCommitSingleInOneTransaction_twoCommitted() {
 
 		final Optional<NoteDE> optionalNoteDE = JstTransactionRM
 				.commitSingleInOneTransaction(JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 						.withCreateAndUpdateEntities(new NoteDE().setText("text1"), new NoteDE().setText("text2")));
 
+		// Both NoteDEs were committed... however, neither is returned.
 		assertFalse(optionalNoteDE.isPresent());
 	}
 

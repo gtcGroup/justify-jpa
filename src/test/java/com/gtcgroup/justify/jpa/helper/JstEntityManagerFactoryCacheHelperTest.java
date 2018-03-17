@@ -51,23 +51,30 @@ import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 @SuppressWarnings("static-method")
 public class JstEntityManagerFactoryCacheHelperTest {
 
-    @Test
-    public void testCloseEntityManager() {
+	@Test
+	public void testCloseEntityManager() {
 
-        final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
-                .createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
+		final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
 
-        if (entityManager.isPresent()) {
-            JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
-            JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
-        }
+		if (entityManager.isPresent()) {
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
+		}
 
-    }
+	}
 
-    @Test
-    public void testRetrieve() {
+	@Test
+	public void testCreateEntityManagerFactory() {
 
-        JstEntityManagerFactoryCacheHelper.createEntityManagerFactory("fakePU", null, false);
+		JstEntityManagerFactoryCacheHelper.createEntityManagerFactory("fakePU", null, false);
 
-    }
+	}
+
+	@Test
+	public void testCreateEntityManagerToBeClosed() {
+
+		JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed("fakePU", null, false);
+
+	}
 }

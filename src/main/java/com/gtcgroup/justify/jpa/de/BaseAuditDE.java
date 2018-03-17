@@ -35,7 +35,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 
 import com.gtcgroup.justify.core.base.JstBaseDE;
-import com.gtcgroup.justify.core.test.base.JstBaseExtension;
+import com.gtcgroup.justify.core.test.extension.JstBaseExtension;
 
 @MappedSuperclass
 public abstract class BaseAuditDE extends JstBaseDE {
@@ -54,14 +54,6 @@ public abstract class BaseAuditDE extends JstBaseDE {
 
 	@Column(insertable = true, updatable = true, unique = false, name = "UPDATE_USER", nullable = false)
 	private String updateUser;
-
-	@Override
-	public boolean equals(final Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		return this.getClass() != obj.getClass();
-	}
 
 	public Timestamp getCreateTime() {
 		return this.createTime;

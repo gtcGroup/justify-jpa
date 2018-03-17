@@ -35,6 +35,8 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
@@ -109,9 +111,10 @@ public class JstQueryStringRmTest {
 	@Test
 	public void testQuerySingle_happyPath() {
 
-		final Optional<NoteDE> optionalNoteDE = JstQueryStringRM
-				.querySingle(JstQueryStringPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-						.withQueryLanguageString(JstQueryStringRmTest.SELECT_NOTE_SINGLE));
+		final Optional<NoteDE> optionalNoteDE = JstQueryStringRM.querySingle(JstQueryStringPO
+				.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				.withQueryLanguageString(JstQueryStringRmTest.SELECT_NOTE_SINGLE)
+				.withQueryHint(QueryHints.READ_ONLY, HintValues.TRUE).withForceDatabaseTripWhenNoCacheCoordination());
 
 		assertTrue(optionalNoteDE.isPresent());
 	}

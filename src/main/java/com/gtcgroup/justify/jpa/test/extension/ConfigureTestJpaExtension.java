@@ -37,9 +37,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
 import com.gtcgroup.justify.core.po.JstExceptionPO;
-import com.gtcgroup.justify.core.test.base.JstBaseExtension;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
-import com.gtcgroup.justify.core.test.helper.internal.AnnotationUtilHelper;
+import com.gtcgroup.justify.core.test.extension.JstBaseExtension;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
@@ -56,7 +55,7 @@ import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
  * @author Marvin Toll
  * @since v8.5
  */
-public class JstConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCallback {
+class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCallback {
 
 	private static Map<String, Object> jpaStore = new ConcurrentHashMap<>();
 
@@ -68,12 +67,12 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension implements Be
 
 	private final List<String> dataPopulatorNameList = new ArrayList<>();
 
-	private final List<Object> deInsertionList = new ArrayList<>();
+	private final List<Object> createList = new ArrayList<>();
 
 	@Override
 	public void beforeAll(final ExtensionContext extensionContext) throws Exception {
 
-		initializeAnnotationValues(extensionContext);
+		initializePropertiesFromAnnotation(extensionContext);
 
 		JstEntityManagerFactoryCacheHelper.startupJPA(this.persistenceUnitName, this.persistencePropertyMapOrNull);
 
@@ -95,8 +94,8 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension implements Be
 			}
 			this.dataPopulatorNameList.clear();
 			JstTransactionRM.commitListInOneTransaction(JstTransactionPO
-					.withPersistenceUnitName(this.persistenceUnitName).withCreateAndUpdateList(this.deInsertionList));
-			this.deInsertionList.clear();
+					.withPersistenceUnitName(this.persistenceUnitName).withCreateAndUpdateList(this.createList));
+			this.createList.clear();
 		} catch (final RuntimeException e) {
 			handleBeforeAllException(extensionContext, e);
 		}
@@ -110,25 +109,19 @@ public class JstConfigureTestJpaExtension extends JstBaseExtension implements Be
 
 		if (dataPopulator.isPresent()) {
 
-			this.deInsertionList.addAll(dataPopulator.get().populateCreateListTM(this.persistenceUnitName));
+			this.createList.addAll(dataPopulator.get().populateCreateListTM(this.persistenceUnitName));
 		}
 	}
 
-	protected void initializeAnnotationValues(final ExtensionContext extensionContext) {
+	@Override
+	protected void initializePropertiesFromAnnotation(final ExtensionContext extensionContext) {
+		final JstConfigureTestJPA configureJPA = (JstConfigureTestJPA) retrieveAnnotation(
+				extensionContext.getRequiredTestClass(), JstConfigureTestJPA.class);
 
-		@SuppressWarnings("unchecked")
-		final Optional<JstConfigureTestJPA> configureJPA = (Optional<JstConfigureTestJPA>) AnnotationUtilHelper
-				.retrieveAnnotation(extensionContext.getTestClass(), JstConfigureTestJPA.class);
+		this.persistenceUnitName = configureJPA.persistenceUnitName();
 
-		if (configureJPA.isPresent()) {
+		this.annotationDefinedDataPopulators = configureJPA.dataPopulators();
 
-			this.persistenceUnitName = configureJPA.get().persistenceUnitName();
-
-			this.annotationDefinedDataPopulators = configureJPA.get().dataPopulators();
-		} else {
-			throw new JustifyException(JstExceptionPO.withMessage("The data populator(s) could not be processed.")
-					.withExceptionClassName(JstConfigureTestJpaExtension.class.getSimpleName()));
-		}
 	}
 
 	protected void registerPopulatorsToBeProcessed() {

@@ -67,8 +67,6 @@ public class JstAssertCascadePO extends JstBasePO {
 
 	private final List<String> cascadeNoPersistList = new ArrayList<>();
 
-	private final List<String> cascadeNoRemoveList = new ArrayList<>();
-
 	private final List<String> afterTheTestCleanupList = new ArrayList<>();
 
 	/**
@@ -95,14 +93,6 @@ public class JstAssertCascadePO extends JstBasePO {
 	 */
 	public List<String> getCascadeNoPersistList() {
 		return this.cascadeNoPersistList;
-	}
-
-	/**
-	 * @return {@link List}
-	 */
-	public List<String> getCascadeNoRemoveList() {
-
-		return this.cascadeNoRemoveList;
 	}
 
 	/**
@@ -153,21 +143,12 @@ public class JstAssertCascadePO extends JstBasePO {
 	/**
 	 * @return {@link JstAssertCascadePO}
 	 */
-	public JstAssertCascadePO withCascadeAll(final String methodName) {
+	public JstAssertCascadePO withCascadeAll(final String... methodNames) {
 
-		this.cascadePersistList.add(methodName);
-		this.cascadeRemoveList.add(methodName);
-
-		return this;
-	}
-
-	/**
-	 * @return {@link JstAssertCascadePO}
-	 */
-	public JstAssertCascadePO withCascadeAllExceptRemove(final String methodName) {
-
-		this.cascadePersistList.add(methodName);
-		this.cascadeNoRemoveList.add(methodName);
+		for (final String methodName : methodNames) {
+			this.cascadePersistList.add(methodName);
+			this.cascadeRemoveList.add(methodName);
+		}
 
 		return this;
 	}
@@ -175,10 +156,11 @@ public class JstAssertCascadePO extends JstBasePO {
 	/**
 	 * @return {@link JstAssertCascadePO}
 	 */
-	public JstAssertCascadePO withCascadeNone(final String methodName) {
+	public JstAssertCascadePO withCascadeAllExceptRemove(final String... methodNames) {
 
-		this.cascadeNoPersistList.add(methodName);
-		this.cascadeNoRemoveList.add(methodName);
+		for (final String methodName : methodNames) {
+			this.cascadePersistList.add(methodName);
+		}
 
 		return this;
 	}
@@ -186,18 +168,35 @@ public class JstAssertCascadePO extends JstBasePO {
 	/**
 	 * @return {@link JstAssertCascadePO}
 	 */
-	public JstAssertCascadePO withCascadePersist(final String methodName) {
+	public JstAssertCascadePO withCascadeNone(final String... methodNames) {
 
-		this.cascadePersistList.add(methodName);
+		for (final String methodName : methodNames) {
+			this.cascadeNoPersistList.add(methodName);
+		}
+
 		return this;
 	}
 
 	/**
 	 * @return {@link JstAssertCascadePO}
 	 */
-	public JstAssertCascadePO withCascadeRemove(final String methodName) {
+	public JstAssertCascadePO withCascadePersist(final String... methodNames) {
 
-		this.cascadeRemoveList.add(methodName);
+		for (final String methodName : methodNames) {
+			this.cascadePersistList.add(methodName);
+		}
+		return this;
+	}
+
+	/**
+	 * @return {@link JstAssertCascadePO}
+	 */
+	public JstAssertCascadePO withCascadeRemove(final String... methodNames) {
+
+		for (final String methodName : methodNames) {
+			this.cascadeRemoveList.add(methodName);
+		}
+
 		return this;
 	}
 

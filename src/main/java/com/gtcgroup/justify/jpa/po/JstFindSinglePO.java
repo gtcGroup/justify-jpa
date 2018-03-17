@@ -73,20 +73,18 @@ public class JstFindSinglePO extends BaseFindPO {
 	/**
 	 * @return {@link JstFindSinglePO}
 	 */
-	@SuppressWarnings("unchecked")
 	public <ENTITY> JstFindSinglePO withEntityClass(final Class<ENTITY> entityClass) {
 
-		this.entityClass = (Class<Object>) entityClass;
+		setEntityClass(entityClass);
 		return this;
 	}
 
 	/**
 	 * @return {@link JstFindSinglePO}
 	 */
-	@SuppressWarnings("unchecked")
 	public JstFindSinglePO withEntityContainingIdentity(final Object entityContainingIdentity) {
 
-		this.entityClass = (Class<Object>) entityContainingIdentity.getClass();
+		setEntityClass(entityContainingIdentity.getClass());
 		this.entityIdentity = retrieveEntityIdentity(entityContainingIdentity);
 		return this;
 	}

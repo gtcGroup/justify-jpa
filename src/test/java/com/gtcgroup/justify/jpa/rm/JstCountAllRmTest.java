@@ -30,12 +30,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.de.dependency.EntityNotPopulatedDE;
 import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryCountPO;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
@@ -60,14 +65,16 @@ public class JstCountAllRmTest {
 	@Test
 	public void testCount_happyPath() {
 
-		assertAll(() -> {
-			assertTrue(JstQueryCountRM
-					.count(JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NoteDE.class))
-					.isPresent());
-			assertEquals(0, JstQueryCountRM.count(JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-					.withResultClass(EntityNotPopulatedDE.class)).get().longValue());
-		});
-
+		assertAll(
+				() -> assertTrue(
+						JstQueryCountRM
+								.count(JstQueryCountPO
+										.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withResultClass(
+												NoteDE.class))
+								.isPresent()),
+				() -> assertEquals(0,
+						JstQueryCountRM.count(JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+								.withResultClass(EntityNotPopulatedDE.class)).get().longValue()));
 	}
 
 	@Test
@@ -82,9 +89,34 @@ public class JstCountAllRmTest {
 	public void testCount_notAnEntity() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			JstQueryCountRM.count(
-					JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withResultClass(NotAnEntityDE.class))
-					.isPresent();
+			JstQueryCountRM.count(JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+					.withResultClass(NotAnEntityDE.class)).isPresent();
 		});
+	}
+
+	@Test
+	public void testWithExternalEntityManager() {
+
+		final Optional<EntityManager> optionalEntityManager = JstEntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU, null, false);
+		if (optionalEntityManager.isPresent()) {
+			try {
+
+				assertAll(
+						() -> assertTrue(JstQueryCountRM.count(
+								JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withResultClass(
+										NoteDE.class).withEntityManager(
+												optionalEntityManager.get()))
+								.isPresent()),
+						() -> assertEquals(0,
+								JstQueryCountRM
+										.count(JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+												.withResultClass(EntityNotPopulatedDE.class)
+												.withEntityManager(optionalEntityManager.get()))
+										.get().longValue()));
+			} finally {
+				JstEntityManagerFactoryCacheHelper.closeEntityManager(optionalEntityManager.get());
+			}
+		}
 	}
 }

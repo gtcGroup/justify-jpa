@@ -99,7 +99,7 @@ public class AssertionsJpaCascadeTest {
 
 		assertThrows(AssertionFailedError.class, () -> {
 			AssertionsJPA.assertCascadeTypes(JstAssertCascadePO.withPersistenceUnitNamwe(ConstantsTestJPA.JUSTIFY_PU)
-					.withPopulatedEntity(populateBooking()).withCascadeAll(GET_NOTE).withCascadeAll(GET_CUSTOMER)
+					.withPopulatedEntity(populateBooking()).withCascadeAll(GET_NOTE, GET_CUSTOMER)
 					.withCleanupAfterTheTest(GET_CUSTOMER));
 		});
 	}
@@ -148,8 +148,7 @@ public class AssertionsJpaCascadeTest {
 
 		final JstAssertCascadePO assertJpaPO = JstAssertCascadePO.withPersistenceUnitNamwe(ConstantsTestJPA.JUSTIFY_PU)
 				.withPopulatedEntity(populateBooking()).withCascadeAll(GET_NOTE).withCascadeAll("getUnmappedList")
-				.withCascadeAllExceptRemove(GET_CUSTOMER).withCleanupAfterTheTest(GET_CUSTOMER)
-				.withCleanupAfterTheTest("getUnmappedList");
+				.withCascadeAllExceptRemove(GET_CUSTOMER).withCleanupAfterTheTest(GET_CUSTOMER, "getUnmappedList");
 
 		AssertionsJPA.assertCascadeTypes(assertJpaPO);
 	}

@@ -35,6 +35,8 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
@@ -89,7 +91,8 @@ public class JstNamedQueryRmTest {
 
 		final Optional<List<NoteDE>> optionalNoteList = JstQueryNamedRM.queryList(JstQueryNamedPO
 				.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST)
-				.withReadOnly().withFirstResult(1).withMaxResults(1));
+				.withQueryHint(QueryHints.READ_ONLY, HintValues.TRUE).withForceDatabaseTripWhenNoCacheCoordination()
+				.withFirstResult(1).withMaxResults(1));
 
 		assertEquals(1, optionalNoteList.get().size());
 	}

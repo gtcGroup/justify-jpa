@@ -34,6 +34,8 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
@@ -74,6 +76,15 @@ public class JstFindJpaRmTest {
 		return JstQueryFindRM.findSingle(findJpaPO);
 	}
 
+	private static Optional<NoteDE> findHintNoteDE(final Class<?> clazz, final String entityIdentity) {
+
+		final JstFindSinglePO findJpaPO = JstFindSinglePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				.withEntityClass(clazz).withEntityIdentity(entityIdentity)
+				.withQueryHint(QueryHints.READ_ONLY, HintValues.TRUE);
+
+		return JstQueryFindRM.findSingle(findJpaPO);
+	}
+
 	private static Optional<NoteDE> findNoteDE(final Class<?> clazz, final String entityIdentity) {
 
 		final JstFindSinglePO findJpaPO = JstFindSinglePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
@@ -91,10 +102,9 @@ public class JstFindJpaRmTest {
 	@Test
 	public void testFind_happyPath() {
 
-		assertAll(() -> {
-			assertTrue(findNoteDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
-			assertTrue(findReadOnlyNoteDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent());
-		});
+		assertAll(() -> assertTrue(findNoteDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent()),
+				() -> assertTrue(findReadOnlyNoteDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent()),
+				() -> assertTrue(findHintNoteDE(NoteDE.class, ConstantsTestJPA.NOTE_UUID_TWO).isPresent()));
 	}
 
 	@Test
@@ -122,7 +132,8 @@ public class JstFindJpaRmTest {
 				optionalEmpty = JstQueryFindRM
 						.queryAll(JstQueryAllJPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 								.withEntityClass(EntityNotPopulatedDE.class).withEntityManager(entityManager.get())
-								.withReadOnly());
+								.withQueryHint(QueryHints.READ_ONLY, HintValues.TRUE)
+								.withForceDatabaseTripWhenNoCacheCoordination());
 			}
 		} finally {
 			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());

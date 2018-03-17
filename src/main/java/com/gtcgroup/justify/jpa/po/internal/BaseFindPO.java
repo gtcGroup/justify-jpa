@@ -41,7 +41,7 @@ import java.util.Optional;
  */
 public abstract class BaseFindPO extends BasePO {
 
-	protected Class<Object> entityClass;
+	private Class<Object> entityClass;
 
 	/**
 	 * Constructor
@@ -56,13 +56,6 @@ public abstract class BaseFindPO extends BasePO {
 	@SuppressWarnings("unchecked")
 	public <ENTITY> Class<ENTITY> getEntityClass() {
 		return (Class<ENTITY>) this.entityClass;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public boolean isEntityClass() {
-		return null != this.entityClass;
 	}
 
 	/**

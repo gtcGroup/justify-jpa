@@ -37,7 +37,7 @@ import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
 
 @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@ExtendWith(JstConfigureTestJpaExtension.class)
+@ExtendWith(ConfigureTestJpaExtension.class)
 public @interface JstConfigureTestJPA {
 
     // TODO:
