@@ -23,28 +23,37 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package com.gtcgroup.justify.jpa.test.intentional.error;
 
-package com.gtcgroup.justify.jpa.test.extension;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.junit.jupiter.api.Test;
 
-import org.junit.jupiter.api.extension.ExtendWith;
+import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.po.dependency.EntityManagerFactoryPropertyLoggingPO;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
-import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
-import com.gtcgroup.justify.jpa.po.internal.DefaultManagerFactoryPropertyPO;
-import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
+/**
+ * Test Class
+ *
+ * <p style="font-family:Verdana; font-size:10px; font-style:italic">
+ * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
+ * <a href="http://gtcGroup.com">gtcGroup.com </a>.
+ * </p>
+ *
+ * @author Marvin Toll
+ * @since v8.5
+ */
+@JstConfigureTestLogToConsole
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class, entityManagerFactoryPropertyClass = EntityManagerFactoryPropertyLoggingPO.class)
+@SuppressWarnings("static-method")
+public class Intentional1AnnotationPersistenceUnitNameTest {
 
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@ExtendWith(ConfigureTestJpaExtension.class)
-public @interface JstConfigureTestJPA {
+	@Test
+	public void testIntentionalBadDataPopulator() {
 
-	String persistenceUnitName();
-
-	Class<? extends JstBaseDataPopulator>[] dataPopulators() default {};
-
-	Class<? extends JstEntityManagerFactoryPropertyPO> entityManagerFactoryPropertyClass() default DefaultManagerFactoryPropertyPO.class;
+		assertTrue(true);
+	}
 }

@@ -75,7 +75,7 @@ public class JstTransactionJpaRmTest {
 
 		try {
 			entityManager = JstEntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU, null, false);
+					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
 
 			optionalList = JstTransactionRM.commitListInOneTransaction(JstTransactionPO
 					.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)

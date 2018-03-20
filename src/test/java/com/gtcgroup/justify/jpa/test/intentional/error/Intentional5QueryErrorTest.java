@@ -23,17 +23,24 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.helper;
+package com.gtcgroup.justify.jpa.test.intentional.error;
 
-import java.util.Optional;
-
-import javax.persistence.EntityManager;
-
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.po.JstQueryCountPO;
+import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
+import com.gtcgroup.justify.jpa.po.JstQueryStringPO;
+import com.gtcgroup.justify.jpa.rm.JstFindJpaRmTest;
+import com.gtcgroup.justify.jpa.rm.JstNamedQueryRmTest;
+import com.gtcgroup.justify.jpa.rm.JstQueryCountRM;
+import com.gtcgroup.justify.jpa.rm.JstQueryNamedRM;
+import com.gtcgroup.justify.jpa.rm.JstQueryStringRM;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
 /**
  * Test Class
@@ -44,30 +51,45 @@ import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
  * </p>
  *
  * @author Marvin Toll
- * @since v3.0
+ * @since v8.5
  */
+@Tag(value = "intentional")
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU)
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
 @SuppressWarnings("static-method")
-public class JstEntityManagerFactoryCacheHelperTest {
+public class Intentional5QueryErrorTest {
 
 	@Test
-	public void testCloseEntityManager() {
+	public void testIntentionalCount_missingResultClass() {
 
-		final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
+		JstQueryCountRM.count(JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)).isPresent();
+	}
 
-		if (entityManager.isPresent()) {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
-		}
+	@Test
+	public void testIntentionalCount_notAnEntity() {
+
+		JstQueryCountRM.count(JstQueryCountPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				.withResultClass(NotAnEntityDE.class)).isPresent();
+	}
+
+	@Test
+	public void testIntentionalFind_notAnEntity() {
+
+		JstFindJpaRmTest.findReadOnlyNoteDE(NotAnEntityDE.class, ConstantsTestJPA.NOTE_UUID_TWO);
 
 	}
 
 	@Test
-	public void testCreateEntityManagerToBeClosed() {
+	public void testIntentionalNamedQueryList_badName() {
 
-		JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed("fakePU");
+		JstQueryNamedRM.queryList(JstQueryNamedPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+				.withQueryName(JstNamedQueryRmTest.QUERY_NAME_OOOOPPPSSS));
+	}
+
+	@Test
+	public void testIntentionalQuerySingle_noQueryString() {
+
+		JstQueryStringRM.querySingle(JstQueryStringPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU));
 
 	}
 }

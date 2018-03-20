@@ -117,7 +117,7 @@ public class JstFindJpaRmTest {
 
 		try {
 			entityManager = JstEntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU, null, false);
+					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
 
 			if (entityManager.isPresent()) {
 

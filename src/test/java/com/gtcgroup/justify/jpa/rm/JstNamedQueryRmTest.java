@@ -44,6 +44,7 @@ import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
+import com.gtcgroup.justify.jpa.po.dependency.EntityManagerFactoryPropertyLoggingPO;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
@@ -59,7 +60,7 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class, entityManagerFactoryPropertyClass = EntityManagerFactoryPropertyLoggingPO.class)
 @SuppressWarnings("static-method")
 public class JstNamedQueryRmTest {
 
@@ -139,7 +140,7 @@ public class JstNamedQueryRmTest {
 
 		try {
 			entityManager = JstEntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU, null, false);
+					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
 
 			if (entityManager.isPresent()) {
 

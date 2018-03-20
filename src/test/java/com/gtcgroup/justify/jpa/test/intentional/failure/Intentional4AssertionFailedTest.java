@@ -23,17 +23,17 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.test.intentional.error;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+package com.gtcgroup.justify.jpa.test.intentional.failure;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.test.assertion.AssertionsJPA;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
-import com.gtcgroup.justify.jpa.test.populator.dependency.NoteNonDataPopulator;
+import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
 /**
  * Test Class
@@ -44,17 +44,36 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteNonDataPopulator;
  * </p>
  *
  * @author Marvin Toll
- * @since v3.0
+ * @since v8.5
  */
 @Tag(value = "intentional")
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteNonDataPopulator.class)
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
 @SuppressWarnings("static-method")
-public class IntentionalAnnotationErrorTest {
+public class Intentional4AssertionFailedTest {
 
 	@Test
-	public void testIntentionalBadDataPopulator() {
+	public void testIntentionalExistsInDatabase_fail() {
 
-		assertTrue(true);
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, "fake_IDENTITY");
+	}
+
+	@Test
+	public void testIntentionalExistsInDatabase_instance() {
+
+		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NoteDE().setUuid("uuid"));
+	}
+
+	@Test
+	public void testIntentionalNotExistsInDatabase_fail() {
+
+		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class,
+				ConstantsTestJPA.NOTE_UUID_ONE);
+	}
+
+	@Test
+	public void testIntentionalNotExistsInDatabase_instance() {
+
+		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteOne);
 	}
 }

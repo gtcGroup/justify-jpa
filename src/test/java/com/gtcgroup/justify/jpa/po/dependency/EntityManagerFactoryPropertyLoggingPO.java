@@ -23,32 +23,30 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.test.helper.internal;
+package com.gtcgroup.justify.jpa.po.dependency;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import java.util.Map;
 
-import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.jpa.test.helper.internal.PersistenceDotXmlCacheHelper;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+
+import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
 
 /**
- * Test Class
- *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
  * @author Marvin Toll
- * @since v3.0
+ * @since v8.5
  */
-@JstConfigureTestLogToConsole
-@SuppressWarnings("static-method")
-public class PersistenceDotXmlCacheHelperTest {
+public class EntityManagerFactoryPropertyLoggingPO extends JstEntityManagerFactoryPropertyPO {
 
-    @Test
-    public void testRetrieveJdbcUrlOrNull_fake() {
+	@Override
+	protected void populateTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
 
-        Assertions.assertFalse(PersistenceDotXmlCacheHelper.retrieveJdbcUrlOrDatasource("fake", null).isPresent());
-    }
+		entityManagerFactoryPropertyMap.put(PersistenceUnitProperties.LOGGING_LEVEL, "FINER");
+		entityManagerFactoryPropertyMap.put(PersistenceUnitProperties.JDBC_URL,
+				"jdbc:h2:mem:justify-finest;MODE=MSSQLServer");
+	}
 }

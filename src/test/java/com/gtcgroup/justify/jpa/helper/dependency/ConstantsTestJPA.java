@@ -36,29 +36,31 @@ package com.gtcgroup.justify.jpa.helper.dependency;
  */
 public enum ConstantsTestJPA {
 
-    INSTANCE;
+	INSTANCE;
 
-    public final static String NOTE_TEXT_ONE = "testTextOne";
+	public final static String NOTE_TEXT_ONE = "testTextOne";
 
-    public final static String NOTE_TEXT_TWO = "testTextTwo";
+	public final static String NOTE_TEXT_TWO = "testTextTwo";
 
-    public final static String QUERY_NOTE_SINGLE_ONE = "queryNoteSingleOne";
+	public final static String QUERY_NOTE_SINGLE_ONE = "queryNoteSingleOne";
 
-    public final static String QUERY_NOTE_SINGLE_TWO = "queryNoteSingleTwo";
+	public final static String QUERY_NOTE_SINGLE_TWO = "queryNoteSingleTwo";
 
-    public static final String NOTE_UUID_ONE = "noteIdentityOne";
+	public static final String NOTE_UUID_ONE = "noteIdentityOne";
 
-    public static final String NOTE_UUID_TWO = "noteIdentityTwo";
+	public static final String NOTE_UUID_TWO = "noteIdentityTwo";
 
-    public static final String JUSTIFY_PU = "justify-pu";
+	public static final String JUSTIFY_PU = "justify-pu";
 
-    public static final String JUSTIFY_SECOND_PU = "justify-second-pu";
+	public static final String JUSTIFY_FINER = "justify-finer";
 
-    public static final String CUSTOMER_ENTITY_IDENTITY = "customerIdentity";
+	public static final String JUSTIFY_SECOND_PU = "justify-second-pu";
 
-    public static final String RANDOM_ENTITY_IDENTITY = "J!u@s#t$i%f^y";
+	public static final String CUSTOMER_ENTITY_IDENTITY = "customerIdentity";
 
-    public static final String SQL_NATIVE_NOTE_LIST = "SELECT * FROM NOTE";
+	public static final String RANDOM_ENTITY_IDENTITY = "J!u@s#t$i%f^y";
 
-    public static final String SQL_NATIVE_NOTE_SINGLE = "SELECT * FROM NOTE WHERE NOTE_TEXT = ?";
+	public static final String SQL_NATIVE_NOTE_LIST = "SELECT * FROM NOTE";
+
+	public static final String SQL_NATIVE_NOTE_SINGLE = "SELECT * FROM NOTE WHERE NOTE_TEXT = ?";
 }

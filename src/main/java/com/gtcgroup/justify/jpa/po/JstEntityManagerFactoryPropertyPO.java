@@ -23,20 +23,17 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.test.intentional.failure;
+package com.gtcgroup.justify.jpa.po;
 
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.test.assertion.AssertionsJPA;
-import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
-import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
+import javax.persistence.EntityManagerFactory;
 
 /**
- * Test Class
+ * This {@link HashMap} class supports configuring an
+ * {@link EntityManagerFactory}.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -44,36 +41,27 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
  * </p>
  *
  * @author Marvin Toll
- * @since v3.0
+ * @since v.8.5
  */
-@Tag(value = "intentional")
-@JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
-@SuppressWarnings("static-method")
-public class IntentionalAssertionFailedTest {
+public abstract class JstEntityManagerFactoryPropertyPO {
 
-	@Test
-	public void testIntentionalExistsInDatabase_fail() {
+	private final Map<String, Object> entityManagerFactoryPropertyMap = new ConcurrentHashMap<>();
 
-		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class, "fake_IDENTITY");
+	private String persistenceUnitName;
+
+	public Map<String, Object> getEntityManagerFactoryPropertyMap() {
+		populateTM(this.entityManagerFactoryPropertyMap);
+		return this.entityManagerFactoryPropertyMap;
 	}
 
-	@Test
-	public void testIntentionalExistsInDatabase_instance() {
+	public String getPersistenceUnitName() {
 
-		AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, new NoteDE().setUuid("uuid"));
+		return this.persistenceUnitName;
 	}
 
-	@Test
-	public void testIntentionalNotExistsInDatabase_fail() {
-
-		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class,
-				ConstantsTestJPA.NOTE_UUID_ONE);
+	public void setPersistenceUnitName(final String persistenceUnitName) {
+		this.persistenceUnitName = persistenceUnitName;
 	}
 
-	@Test
-	public void testIntentionalNotExistsInDatabase_instance() {
-
-		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteOne);
-	}
+	protected abstract void populateTM(Map<String, Object> entityManagerFactoryPropertyMap);
 }

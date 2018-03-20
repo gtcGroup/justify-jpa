@@ -98,7 +98,7 @@ public class JstCountAllRmTest {
 	public void testWithExternalEntityManager() {
 
 		final Optional<EntityManager> optionalEntityManager = JstEntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU, null, false);
+				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
 		if (optionalEntityManager.isPresent()) {
 			try {
 

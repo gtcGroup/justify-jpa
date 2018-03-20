@@ -26,6 +26,7 @@
 package com.gtcgroup.justify.jpa.test.extension;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
 import com.gtcgroup.justify.core.test.extension.JstBaseExtension;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
+import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
 import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
@@ -55,28 +57,27 @@ import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
  */
 class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCallback {
 
-	private static Map<String, Object> jpaStore = new ConcurrentHashMap<>();
-
-	protected Class<? extends JstBaseDataPopulator>[] annotationDefinedDataPopulators;
+	protected static Map<String, Map<String, Object>> jpaStore = new ConcurrentHashMap<>();
 
 	protected String persistenceUnitName;
 
-	protected Map<String, Object> persistencePropertyMapOrNull = null;
+	protected Class<? extends JstBaseDataPopulator>[] annotationDefinedDataPopulators;
 
-	private final List<String> dataPopulatorNameList = new ArrayList<>();
+	protected Class<? extends JstEntityManagerFactoryPropertyPO> entityManagerFactoryPropertyClass;
 
-	private final List<Object> createList = new ArrayList<>();
+	protected final List<String> dataPopulatorNameList = new ArrayList<>();
+
+	protected final List<Object> createList = new ArrayList<>();
 
 	@Override
 	public void beforeAll(final ExtensionContext extensionContext) throws Exception {
 
-		initializePropertiesFromAnnotation(extensionContext);
-
-		JstEntityManagerFactoryCacheHelper.startupJPA(this.persistenceUnitName, this.persistencePropertyMapOrNull);
-
-		registerPopulatorsToBeProcessed();
-
 		try {
+
+			initializePropertiesFromAnnotation(extensionContext);
+
+			registerPopulatorsToBeProcessed();
+
 			for (final String dataPopulatorName : this.dataPopulatorNameList) {
 
 				final Optional<Class<?>> dataPopulatorClass = JstReflectionUtilHelper.retrieveClass(dataPopulatorName);
@@ -85,18 +86,20 @@ class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCal
 					populateInsertionList(dataPopulatorClass.get());
 				}
 			}
-			this.dataPopulatorNameList.clear();
+
 			JstTransactionRM.commitListInOneTransaction(JstTransactionPO
 					.withPersistenceUnitName(this.persistenceUnitName).withCreateAndUpdateList(this.createList));
-			this.createList.clear();
 
-		} catch (final RuntimeException e) {
+		} catch (
+
+		final RuntimeException e) {
 			handleBeforeAllException(extensionContext, e); // Covered.
 		}
 	}
 
 	@Override
 	protected void initializePropertiesFromAnnotation(final ExtensionContext extensionContext) {
+
 		final JstConfigureTestJPA configureJPA = (JstConfigureTestJPA) retrieveAnnotation(
 				extensionContext.getRequiredTestClass(), JstConfigureTestJPA.class);
 
@@ -104,6 +107,9 @@ class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCal
 
 		this.annotationDefinedDataPopulators = configureJPA.dataPopulators();
 
+		this.entityManagerFactoryPropertyClass = configureJPA.entityManagerFactoryPropertyClass();
+
+		JstEntityManagerFactoryCacheHelper.startupJPA(this.persistenceUnitName, this.entityManagerFactoryPropertyClass);
 	}
 
 	protected void populateInsertionList(final Class<?> populatorClass) {
@@ -120,16 +126,28 @@ class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCal
 
 	protected void registerPopulatorsToBeProcessed() {
 
+		final String key = JstEntityManagerFactoryCacheHelper.retrievePersistenceKey(this.persistenceUnitName,
+				this.entityManagerFactoryPropertyClass);
+
+		Map<String, Object> dataPopulatorClassMap = new HashMap<>();
+
+		if (jpaStore.containsKey(key)) {
+			dataPopulatorClassMap = jpaStore.get(key);
+		}
+
 		for (final Class<?> dataPopulatorClass : this.annotationDefinedDataPopulators) {
 
-			final Object object = jpaStore.get(dataPopulatorClass.getName());
+			// Has the populator been processed?
+			final Object object = dataPopulatorClassMap.get(dataPopulatorClass.getName());
 
 			if (null == object) {
 
 				this.dataPopulatorNameList.add(dataPopulatorClass.getName());
-				jpaStore.put(dataPopulatorClass.getName(), dataPopulatorClass.getSimpleName());
+				dataPopulatorClassMap.put(dataPopulatorClass.getName(), dataPopulatorClass.getSimpleName());
 			}
 		}
+
+		jpaStore.replace(key, dataPopulatorClassMap);
 	}
 
 }

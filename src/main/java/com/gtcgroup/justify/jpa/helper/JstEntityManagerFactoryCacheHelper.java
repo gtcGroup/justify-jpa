@@ -34,7 +34,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import com.gtcgroup.justify.jpa.test.helper.internal.PersistenceDotXmlCacheHelper;
+import com.gtcgroup.justify.core.po.JstExceptionPO;
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
+import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
+import com.gtcgroup.justify.jpa.po.internal.DefaultManagerFactoryPropertyPO;
 
 /**
  * This Helper class caches {@link EntityManagerFactory}(s).
@@ -54,6 +57,8 @@ public enum JstEntityManagerFactoryCacheHelper {
 
 	private static Map<String, EntityManagerFactory> entityManagerFactoryMap = new ConcurrentHashMap<>();
 
+	private static Map<String, EntityManagerFactory> currentEntityManagerFactory = new ConcurrentHashMap<>();
+
 	public static void closeEntityManager(final EntityManager entityManager) {
 
 		if (null != entityManager && entityManager.isOpen()) {
@@ -64,87 +69,47 @@ public enum JstEntityManagerFactoryCacheHelper {
 	}
 
 	/**
-	 * @return boolean
-	 */
-	public static boolean createEntityManagerFactory(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMapOrNull, final boolean forceReplacement) {
-
-		if (JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.containsKey(persistenceUnitName)
-				&& !forceReplacement) {
-			return true;
-		}
-
-		final Optional<String> jdbcUrlOrDatasource = PersistenceDotXmlCacheHelper
-				.retrieveJdbcUrlOrDatasource(persistenceUnitName, persistencePropertyMapOrNull);
-
-		if (jdbcUrlOrDatasource.isPresent()) {
-
-			try {
-				final EntityManagerFactory entityManagerFactory = Persistence
-						.createEntityManagerFactory(persistenceUnitName, persistencePropertyMapOrNull);
-
-				final EntityManager entityManager = entityManagerFactory.createEntityManager();
-
-				JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
-
-				JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.put(persistenceUnitName,
-						entityManagerFactory);
-
-				return true;
-
-			} catch (@SuppressWarnings("unused") final Exception e) {
-
-				// Continue.
-			}
-			return false;
-		}
-		return false;
-	}
-
-	/**
 	 * @return {@link Optional}
 	 */
 	public static Optional<EntityManager> createEntityManagerToBeClosed(final String persistenceUnitName) {
 
-		final boolean isEntityManagerFactory = createEntityManagerFactory(persistenceUnitName, null, false);
+		if (null == persistenceUnitName) {
+			throw new JustifyException(JstExceptionPO.withMessage("The persistence unit name is null."));
+		}
+
+		// Early Return
+		if (currentEntityManagerFactory.containsKey(persistenceUnitName)) {
+			return Optional.of(currentEntityManagerFactory.get(persistenceUnitName).createEntityManager());
+		}
+
+		final DefaultManagerFactoryPropertyPO defaultManagerFactoryPropertyPO = new DefaultManagerFactoryPropertyPO();
+		defaultManagerFactoryPropertyPO.setPersistenceUnitName(persistenceUnitName);
+
+		final boolean isEntityManagerFactory = createEntityManagerFactory(defaultManagerFactoryPropertyPO);
 
 		if (isEntityManagerFactory) {
-
-			return Optional.of(JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.get(persistenceUnitName)
-					.createEntityManager());
+			return Optional.of(currentEntityManagerFactory.get(persistenceUnitName).createEntityManager());
 		}
 		return Optional.empty();
 	}
 
-	/**
-	 * @return {@link Optional}
-	 */
-	public static Optional<EntityManager> createEntityManagerToBeClosed(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMapOrNull,
-			final boolean forceReplacementEntityManagerFactory) {
+	public static String retrievePersistenceKey(final String persistenceUnitName,
+			final Class<? extends JstEntityManagerFactoryPropertyPO> entityManagerFactoryPropertyClassPO) {
 
-		final boolean isEntityManagerFactory = createEntityManagerFactory(persistenceUnitName,
-				persistencePropertyMapOrNull, forceReplacementEntityManagerFactory);
-
-		if (isEntityManagerFactory) {
-
-			return Optional.of(JstEntityManagerFactoryCacheHelper.entityManagerFactoryMap.get(persistenceUnitName)
-					.createEntityManager());
-		}
-		return Optional.empty();
+		return persistenceUnitName + "/" + entityManagerFactoryPropertyClassPO.getName();
 	}
 
 	/**
 	 * This method
 	 *
 	 * @param persistenceUnitName
-	 * @param persistencePropertyMapOrNull
+	 * @param optionalEntityManagerFactoryPropertyMap
 	 */
 	public static void startupJPA(final String persistenceUnitName,
-			final Map<String, Object> persistencePropertyMapOrNull) {
+			final Class<? extends JstEntityManagerFactoryPropertyPO> entityManagerFactoryPropertyPO) {
 
 		final Optional<EntityManager> entityManagerOptional = JstEntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(persistenceUnitName, persistencePropertyMapOrNull, true);
+				.createEntityManagerToBeClosed(persistenceUnitName, entityManagerFactoryPropertyPO);
 
 		if (entityManagerOptional.isPresent()) {
 			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManagerOptional.get());
@@ -152,5 +117,64 @@ public enum JstEntityManagerFactoryCacheHelper {
 			// TODO: fix this
 			throw new RuntimeException(" PPPPPPPPPPPrrrrrrrrooooooooobbbbbbbbllllllllleeeeeeeeemmmmmmmm");
 		}
+	}
+
+	/**
+	 * @return boolean
+	 */
+	private static boolean createEntityManagerFactory(
+			final JstEntityManagerFactoryPropertyPO entityManagerFactoryPropertyPO) {
+
+		final String key = retrievePersistenceKey(entityManagerFactoryPropertyPO.getPersistenceUnitName(),
+				entityManagerFactoryPropertyPO.getClass());
+
+		if (entityManagerFactoryMap.containsKey(key)) {
+			currentEntityManagerFactory.put(entityManagerFactoryPropertyPO.getPersistenceUnitName(),
+					entityManagerFactoryMap.get(key));
+			return true;
+		}
+
+		final Map<String, Object> entityManagerFactoryPropertyMap = entityManagerFactoryPropertyPO
+				.getEntityManagerFactoryPropertyMap();
+
+		try {
+			final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(
+					entityManagerFactoryPropertyPO.getPersistenceUnitName(), entityManagerFactoryPropertyMap);
+
+			final EntityManager entityManager = entityManagerFactory.createEntityManager();
+
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
+
+			entityManagerFactoryMap.put(key, entityManagerFactory);
+			currentEntityManagerFactory.put(entityManagerFactoryPropertyPO.getPersistenceUnitName(),
+					entityManagerFactory);
+
+			return true;
+
+		} catch (@SuppressWarnings("unused") final Exception e) {
+
+			// Continue.
+		}
+		return false;
+	}
+
+	private static Optional<EntityManager> createEntityManagerToBeClosed(final String persistenceUnitName,
+			final Class<? extends JstEntityManagerFactoryPropertyPO> entityManagerFactoryPropertyClassPO) {
+
+		JstEntityManagerFactoryPropertyPO entityManagerFactoryPropertyInstancePO = null;
+
+		try {
+			entityManagerFactoryPropertyInstancePO = entityManagerFactoryPropertyClassPO.newInstance();
+		} catch (@SuppressWarnings("unused") final Exception e) {
+			throw new JustifyException(
+					JstExceptionPO.withMessage("The [" + JstEntityManagerFactoryPropertyPO.class.getSimpleName()
+							+ "] class should be extended with an instance containing property values."));
+		}
+
+		entityManagerFactoryPropertyInstancePO.setPersistenceUnitName(persistenceUnitName);
+
+		createEntityManagerFactory(entityManagerFactoryPropertyInstancePO);
+
+		return createEntityManagerToBeClosed(persistenceUnitName);
 	}
 }
