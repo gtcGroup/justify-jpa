@@ -44,7 +44,6 @@ import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
  */
 public class NoteAdditionalDataPopulator extends JstBaseDataPopulator {
 
-	@SuppressWarnings("javadoc")
 	public final static String ADDITIONAL_UUID = "additionalUUID";
 
 	/**

@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -110,37 +109,30 @@ public class JstFindJpaRmTest {
 	@Test
 	public void testWithExternalEntityManager() {
 
-		Optional<EntityManager> entityManager = null;
-		Optional<NoteDE> optionalNoteDE = null;
-		Optional<List<NoteDE>> optionalList = null;
-		Optional<List<NoteDE>> optionalEmpty = null;
+		final EntityManager entityManager = JstEntityManagerFactoryCacheHelper
+				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU).get();
 
 		try {
-			entityManager = JstEntityManagerFactoryCacheHelper
-					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
 
-			if (entityManager.isPresent()) {
+			assertAll(() -> assertTrue(
 
-				optionalNoteDE = JstQueryFindRM.findSingle(JstFindSinglePO
-						.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withEntityClass(NoteDE.class)
-						.withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO).withEntityManager(entityManager.get()));
+					JstQueryFindRM.findSingle(JstFindSinglePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+							.withEntityClass(NoteDE.class).withEntityIdentity(ConstantsTestJPA.NOTE_UUID_TWO)
+							.withEntityManager(entityManager)).isPresent()),
 
-				optionalList = JstQueryFindRM
-						.queryAll(JstQueryAllJPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-								.withEntityClass(NoteDE.class).withEntityManager(entityManager.get()).withReadOnly());
+					() -> assertTrue(JstQueryFindRM
+							.queryAll(JstQueryAllJPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+									.withEntityClass(NoteDE.class).withEntityManager(entityManager).withReadOnly())
+							.isPresent()),
 
-				optionalEmpty = JstQueryFindRM
-						.queryAll(JstQueryAllJPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-								.withEntityClass(EntityNotPopulatedDE.class).withEntityManager(entityManager.get())
-								.withQueryHint(QueryHints.READ_ONLY, HintValues.TRUE)
-								.withForceDatabaseTripWhenNoCacheCoordination());
-			}
+					() -> assertFalse(
+							JstQueryFindRM.queryAll(JstQueryAllJPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+									.withEntityClass(EntityNotPopulatedDE.class).withEntityManager(entityManager)
+									.withQueryHint(QueryHints.READ_ONLY, HintValues.TRUE)
+									.withForceDatabaseTripWhenNoCacheCoordination()).isPresent()));
 		} finally {
-			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
+			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
 
-		assertTrue(optionalNoteDE.isPresent());
-		assertTrue(optionalList.isPresent());
-		assertFalse(optionalEmpty.isPresent());
 	}
 }

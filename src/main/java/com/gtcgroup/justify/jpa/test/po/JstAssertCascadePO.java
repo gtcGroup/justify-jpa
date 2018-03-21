@@ -52,7 +52,7 @@ public class JstAssertCascadePO extends JstBasePO {
 	 *
 	 * @return {@link JstAssertCascadePO}
 	 */
-	public static JstAssertCascadePO withPersistenceUnitNamwe(final String persistenceUnitName) {
+	public static JstAssertCascadePO withPersistenceUnitName(final String persistenceUnitName) {
 
 		return new JstAssertCascadePO(persistenceUnitName);
 	}

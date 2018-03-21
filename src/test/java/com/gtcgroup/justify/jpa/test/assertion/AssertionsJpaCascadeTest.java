@@ -76,7 +76,7 @@ public class AssertionsJpaCascadeTest {
 	public void testCascadeTypesForBooking_badMethodName() {
 
 		assertThrows(AssertionFailedError.class, () -> {
-			AssertionsJPA.assertCascadeTypes(JstAssertCascadePO.withPersistenceUnitNamwe(ConstantsTestJPA.JUSTIFY_PU)
+			AssertionsJPA.assertCascadeTypes(JstAssertCascadePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withPopulatedEntity(populateBooking()).withCascadeAll(BAD_METHOD_NAME)
 					.withCleanupAfterTheTest(GET_CUSTOMER));
 		});
@@ -87,7 +87,7 @@ public class AssertionsJpaCascadeTest {
 	public void testCascadeTypesForBooking_cleanupBadMethod() {
 
 		assertThrows(AssertionFailedError.class, () -> {
-			AssertionsJPA.assertCascadeTypes(JstAssertCascadePO.withPersistenceUnitNamwe(ConstantsTestJPA.JUSTIFY_PU)
+			AssertionsJPA.assertCascadeTypes(JstAssertCascadePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withPopulatedEntity(populateBooking()).withCascadeAll(GET_NOTE)
 					.withCascadeAllExceptRemove(GET_CUSTOMER).withCleanupAfterTheTest(BAD_METHOD_NAME));
 		});
@@ -98,7 +98,7 @@ public class AssertionsJpaCascadeTest {
 	public void testCascadeTypesForBooking_customerAll() {
 
 		assertThrows(AssertionFailedError.class, () -> {
-			AssertionsJPA.assertCascadeTypes(JstAssertCascadePO.withPersistenceUnitNamwe(ConstantsTestJPA.JUSTIFY_PU)
+			AssertionsJPA.assertCascadeTypes(JstAssertCascadePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withPopulatedEntity(populateBooking()).withCascadeAll(GET_NOTE, GET_CUSTOMER)
 					.withCleanupAfterTheTest(GET_CUSTOMER));
 		});
@@ -108,7 +108,7 @@ public class AssertionsJpaCascadeTest {
 	public void testCascadeTypesForBooking_customerNone() {
 
 		assertThrows(AssertionFailedError.class, () -> {
-			AssertionsJPA.assertCascadeTypes(JstAssertCascadePO.withPersistenceUnitNamwe(ConstantsTestJPA.JUSTIFY_PU)
+			AssertionsJPA.assertCascadeTypes(JstAssertCascadePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 					.withPopulatedEntity(populateBooking()).withCascadeAll(GET_NOTE).withCascadeNone(GET_CUSTOMER)
 					.withCleanupAfterTheTest(GET_CUSTOMER));
 		});
@@ -117,7 +117,7 @@ public class AssertionsJpaCascadeTest {
 	@Test
 	public void testCascadeTypesForBooking_happyPath_explicit() {
 
-		final JstAssertCascadePO assertJpaPO = JstAssertCascadePO.withPersistenceUnitNamwe(ConstantsTestJPA.JUSTIFY_PU)
+		final JstAssertCascadePO assertJpaPO = JstAssertCascadePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 				.withPopulatedEntity(populateBooking()).withCascadePersist(GET_NOTE).withCascadeRemove(GET_NOTE)
 				.withCascadeAllExceptRemove(GET_CUSTOMER).withCleanupAfterTheTest(GET_CUSTOMER);
 
@@ -127,7 +127,7 @@ public class AssertionsJpaCascadeTest {
 	@Test
 	public void testCascadeTypesForBooking_happyPath1() {
 
-		final JstAssertCascadePO assertJpaPO = JstAssertCascadePO.withPersistenceUnitNamwe(ConstantsTestJPA.JUSTIFY_PU)
+		final JstAssertCascadePO assertJpaPO = JstAssertCascadePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 				.withPopulatedEntity(populateBooking()).withCascadeAll(GET_NOTE)
 				.withCascadeAllExceptRemove(GET_CUSTOMER).withCleanupAfterTheTest(GET_CUSTOMER);
 
@@ -137,7 +137,7 @@ public class AssertionsJpaCascadeTest {
 	@Test
 	public void testCascadeTypesForBooking_happyPath2() {
 
-		final JstAssertCascadePO assertJpaPO = JstAssertCascadePO.withPersistenceUnitNamwe(ConstantsTestJPA.JUSTIFY_PU)
+		final JstAssertCascadePO assertJpaPO = JstAssertCascadePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 				.withPopulatedEntity(new NoteDE());
 
 		AssertionsJPA.assertCascadeTypes(assertJpaPO);
@@ -146,7 +146,7 @@ public class AssertionsJpaCascadeTest {
 	@Test
 	public void testCascadeTypesForBooking_happyPath3() {
 
-		final JstAssertCascadePO assertJpaPO = JstAssertCascadePO.withPersistenceUnitNamwe(ConstantsTestJPA.JUSTIFY_PU)
+		final JstAssertCascadePO assertJpaPO = JstAssertCascadePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
 				.withPopulatedEntity(populateBooking()).withCascadeAll(GET_NOTE).withCascadeAll("getUnmappedList")
 				.withCascadeAllExceptRemove(GET_CUSTOMER).withCleanupAfterTheTest(GET_CUSTOMER, "getUnmappedList");
 
@@ -158,7 +158,7 @@ public class AssertionsJpaCascadeTest {
 
 		assertThrows(AssertionFailedError.class, () -> {
 			AssertionsJPA.assertCascadeTypes(
-					JstAssertCascadePO.withPersistenceUnitNamwe(ConstantsTestJPA.JUSTIFY_PU).withPopulatedEntity(null));
+					JstAssertCascadePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withPopulatedEntity(null));
 		});
 	}
 
@@ -167,7 +167,7 @@ public class AssertionsJpaCascadeTest {
 
 		assertThrows(AssertionFailedError.class, () -> {
 			AssertionsJPA.assertCascadeTypes(
-					JstAssertCascadePO.withPersistenceUnitNamwe("bad_PU").withPopulatedEntity(null));
+					JstAssertCascadePO.withPersistenceUnitName("bad_PU").withPopulatedEntity(null));
 		});
 	}
 }

@@ -25,12 +25,15 @@
  */
 package com.gtcgroup.justify.jpa.helper;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.Test;
 
+import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
@@ -52,7 +55,14 @@ import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 public class JstEntityManagerFactoryCacheHelperTest {
 
 	@Test
-	public void testCloseEntityManager() {
+	public void testCreateEntityManagerToBeClosed() {
+
+		JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed("fakePU");
+
+	}
+
+	@Test
+	public void testCreateEntityManagerToBeClosed_happyPath() {
 
 		final Optional<EntityManager> entityManager = JstEntityManagerFactoryCacheHelper
 				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
@@ -61,13 +71,13 @@ public class JstEntityManagerFactoryCacheHelperTest {
 			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
 			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager.get());
 		}
-
 	}
 
 	@Test
-	public void testCreateEntityManagerToBeClosed() {
+	public void testCreateEntityManagerToBeClosed_null() {
 
-		JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed("fakePU");
-
+		assertThrows(JustifyException.class, () -> {
+			JstEntityManagerFactoryCacheHelper.createEntityManagerToBeClosed(null);
+		});
 	}
 }

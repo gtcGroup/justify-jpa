@@ -1,7 +1,7 @@
 /*
  * [Licensed per the Open Source "MIT License".]
  *
- * Copyright (c) 2006 - 2017 by
+ * Copyright (c) 2006 - 2018 by
  * Global Technology Consulting Group, Inc. at
  * http://gtcGroup.com
  *
@@ -23,14 +23,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.test.populator.dependency;
+package com.gtcgroup.justify.jpa.test.po;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
-import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
-import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test Class
@@ -41,27 +38,15 @@ import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
  * </p>
  *
  * @author Marvin Toll
- * @since v3.0
+ * @since v8.5
  */
-public class NoteDataPopulator extends JstBaseDataPopulator {
+@SuppressWarnings("static-method")
+public class JstAssertCascadePoTest {
 
-	public static NoteDE noteOne = new NoteDE().setText(ConstantsTestJPA.NOTE_TEXT_ONE)
-			.setUuid(ConstantsTestJPA.NOTE_UUID_ONE);
+	@Test
+	public void testReplacePopulatedEntity() {
 
-	public static NoteDE noteTwo = new NoteDE().setText(ConstantsTestJPA.NOTE_TEXT_TWO)
-			.setUuid(ConstantsTestJPA.NOTE_UUID_TWO);
+		JstAssertCascadePO.withPersistenceUnitName("fakePU").replacePopulatedEntity(Optional.empty());
 
-	public List<Object> populatedList = new ArrayList<>();
-
-	/**
-	 * @see JstBaseDataPopulator#populateCreateListTM(JstQueryJpaRM)
-	 */
-	@Override
-	public List<Object> populateCreateListTM(final String persistenceUnitName) {
-
-		this.populatedList.add(NoteDataPopulator.noteOne);
-		this.populatedList.add(NoteDataPopulator.noteTwo);
-
-		return this.populatedList;
 	}
 }
