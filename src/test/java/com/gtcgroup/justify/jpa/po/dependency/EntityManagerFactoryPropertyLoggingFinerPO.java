@@ -40,7 +40,7 @@ import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
  * @author Marvin Toll
  * @since v8.5
  */
-public class EntityManagerFactoryPropertyLoggingPO extends JstEntityManagerFactoryPropertyPO {
+public class EntityManagerFactoryPropertyLoggingFinerPO extends JstEntityManagerFactoryPropertyPO {
 
 	@Override
 	protected void populateTM(final Map<String, Object> entityManagerFactoryPropertyMap) {

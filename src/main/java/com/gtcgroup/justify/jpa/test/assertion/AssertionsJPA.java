@@ -200,36 +200,31 @@ public enum AssertionsJPA {
 
 		for (final String methodName : assertCascadePO.getAfterTheTestCleanupList()) {
 
-			try {
+			final Optional<Object> optionalEntityOrList = JstReflectionUtilHelper.invokePublicMethod(methodName,
+					assertCascadePO.getPopulatedEntity());
 
-				final Optional<Object> optionalEntityOrList = JstReflectionUtilHelper.invokePublicMethod(methodName,
-						assertCascadePO.getPopulatedEntity());
+			if (optionalEntityOrList.isPresent()) {
 
-				if (optionalEntityOrList.isPresent()) {
+				final Object entityOrList = optionalEntityOrList.get();
 
-					final Object entityOrList = optionalEntityOrList.get();
+				if (entityOrList instanceof List) {
 
-					if (entityOrList instanceof List) {
+					@SuppressWarnings("unchecked")
+					final List<Object> entityList = (List<Object>) entityOrList;
 
-						@SuppressWarnings("unchecked")
-						final List<Object> entityList = (List<Object>) entityOrList;
+					for (final Object entity : entityList) {
 
-						for (final Object entity : entityList) {
-
-							JstTransactionUtilHelper.findAndDeleteEntity(assertCascadePO.getPersistenceUnitName(),
-									entityManager, entity);
-						}
-					} else {
 						JstTransactionUtilHelper.findAndDeleteEntity(assertCascadePO.getPersistenceUnitName(),
-								entityManager, entityOrList);
+								entityManager, entity);
 					}
 				} else {
-					throw new AssertionFailedError("The attempt to clean up remaining entities with a ["
-							+ assertCascadePO.getPopulatedEntity().getClass().getSimpleName() + "] method ["
-							+ methodName + "] was unsuccessful.");
+					JstTransactionUtilHelper.findAndDeleteEntity(assertCascadePO.getPersistenceUnitName(),
+							entityManager, entityOrList);
 				}
-			} catch (@SuppressWarnings("unused") final Exception e) {
-				throwAssertCascadeFailed(assertCascadePO);
+			} else {
+				throw new AssertionFailedError("The attempt to clean up remaining entities with a ["
+						+ assertCascadePO.getPopulatedEntity().getClass().getSimpleName() + "] method [" + methodName
+						+ "] was unsuccessful.");
 			}
 		}
 	}

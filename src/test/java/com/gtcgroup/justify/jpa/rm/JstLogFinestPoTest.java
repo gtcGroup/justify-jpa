@@ -23,15 +23,20 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.test.intentional.error;
+package com.gtcgroup.justify.jpa.rm;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.dependency.EntityManagerFactoryPropertyLoggingFinerPO;
+import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
+import com.gtcgroup.justify.jpa.po.dependency.EntityManagerFactoryPropertyLoggingFinestPO;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
@@ -44,16 +49,21 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
  * </p>
  *
  * @author Marvin Toll
- * @since v8.5
+ * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class, entityManagerFactoryPropertyClass = EntityManagerFactoryPropertyLoggingFinerPO.class)
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class, entityManagerFactoryPropertyClass = EntityManagerFactoryPropertyLoggingFinestPO.class)
 @SuppressWarnings("static-method")
-public class Intentional1AnnotationPersistenceUnitNameTest {
+public class JstLogFinestPoTest {
 
 	@Test
-	public void testIntentionalBadDataPopulator() {
+	public void testQueryList_happyPath() {
 
-		assertTrue(true);
+		final Optional<List<NoteDE>> optionalNoteList = JstQueryNamedRM
+				.queryList(JstQueryNamedPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
+						.withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST).withReadOnly());
+
+		assertFalse(optionalNoteList.get().isEmpty());
 	}
+
 }

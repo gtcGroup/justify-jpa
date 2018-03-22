@@ -44,7 +44,7 @@ import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
-import com.gtcgroup.justify.jpa.po.dependency.EntityManagerFactoryPropertyLoggingPO;
+import com.gtcgroup.justify.jpa.po.dependency.EntityManagerFactoryPropertyLoggingFinerPO;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
@@ -60,12 +60,12 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class, entityManagerFactoryPropertyClass = EntityManagerFactoryPropertyLoggingPO.class)
+@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class, entityManagerFactoryPropertyClass = EntityManagerFactoryPropertyLoggingFinerPO.class)
 @SuppressWarnings("static-method")
 public class JstNamedQueryRmTest {
 
 	public static final String QUERY_NAME_OOOOPPPSSS = "queryOooopppsss!";
-	private static final String QUERY_NOTE_LIST = "queryNoteList";
+	public static final String QUERY_NOTE_LIST = "queryNoteList";
 	private static final String QUERY_NOTE_LIST_WITH_PARAMETER = "queryNoteListWithStringParameter";
 
 	@Test

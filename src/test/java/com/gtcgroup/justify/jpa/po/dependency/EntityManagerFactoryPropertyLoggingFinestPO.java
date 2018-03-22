@@ -26,7 +26,6 @@
 package com.gtcgroup.justify.jpa.po.dependency;
 
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
@@ -41,11 +40,11 @@ import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
  * @author Marvin Toll
  * @since v8.5
  */
-public class EntityManagerFactoryPropertyProblemPO extends JstEntityManagerFactoryPropertyPO {
+public class EntityManagerFactoryPropertyLoggingFinestPO extends JstEntityManagerFactoryPropertyPO {
 
 	@Override
 	protected void populateTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
 
-		entityManagerFactoryPropertyMap.put(PersistenceUnitProperties.LOGGING_LEVEL, Level.FINEST);
+		entityManagerFactoryPropertyMap.put(PersistenceUnitProperties.LOGGING_LEVEL, "Finest");
 	}
 }
