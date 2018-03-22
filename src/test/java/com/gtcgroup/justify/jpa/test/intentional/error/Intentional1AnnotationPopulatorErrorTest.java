@@ -31,9 +31,8 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.po.dependency.ConfigureNonDataPopulatorPO;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
-import com.gtcgroup.justify.jpa.test.populator.dependency.NoteNonDataPopulator;
 
 /**
  * Test Class
@@ -48,7 +47,7 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteNonDataPopulator;
  */
 @Tag(value = "intentional")
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteNonDataPopulator.class)
+@JstConfigureTestJPA(configureTestJpaPO = ConfigureNonDataPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class Intentional1AnnotationPopulatorErrorTest {
 

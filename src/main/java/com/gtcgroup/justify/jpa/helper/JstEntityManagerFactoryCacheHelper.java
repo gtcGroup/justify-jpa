@@ -34,12 +34,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-
 import com.gtcgroup.justify.core.po.JstExceptionPO;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
-import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
-import com.gtcgroup.justify.jpa.po.internal.DefaultManagerFactoryPropertyPO;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJpaPO;
 
 /**
  * This Helper class caches {@link EntityManagerFactory}(s).
@@ -88,43 +85,43 @@ public enum JstEntityManagerFactoryCacheHelper {
 	}
 
 	/**
-	 * This method
+	 * This method returns a populated {@link Optional} if this is the first time an
+	 * {@link EntityManagerFactory} was instantiated.
 	 *
-	 * @param persistenceUnitName
-	 * @param optionalEntityManagerFactoryPropertyMap
+	 * @return {@link Optional}
 	 */
-	public static boolean initializeEntityManagerFactory(final String persistenceUnitName,
-			final Class<? extends JstEntityManagerFactoryPropertyPO> entityManagerFactoryPropertyPO) {
+	public static Optional<JstConfigureTestJpaPO> initializeEntityManagerFactory(
+			final Class<? extends JstConfigureTestJpaPO> configureTestClassPO) {
 
-		JstEntityManagerFactoryPropertyPO entityManagerFactoryPropertyInstancePO = null;
+		JstConfigureTestJpaPO configureTestInstancePO = null;
 
 		try {
-			entityManagerFactoryPropertyInstancePO = entityManagerFactoryPropertyPO.newInstance();
+			configureTestInstancePO = configureTestClassPO.newInstance();
 		} catch (@SuppressWarnings("unused") final Exception e) {
-			throw new JustifyException(
-					JstExceptionPO.withMessage("The [" + JstEntityManagerFactoryPropertyPO.class.getSimpleName()
-							+ "] class should be extended with an instance containing property values."));
+			throw new JustifyException(JstExceptionPO.withMessage("The [" + JstConfigureTestJpaPO.class.getSimpleName()
+					+ "] class should be extended with an instance containing property values."));
 		}
 
-		entityManagerFactoryPropertyInstancePO.setPersistenceUnitName(persistenceUnitName);
-
-		final boolean isNewJdbcURL = JstEntityManagerFactoryCacheHelper
-				.createEntityManagerFactory(entityManagerFactoryPropertyInstancePO);
+		final boolean isFirstUseOfFactory = JstEntityManagerFactoryCacheHelper
+				.createEntityManagerFactory(configureTestInstancePO);
 
 		final Optional<EntityManager> optionalEntityManager = JstEntityManagerFactoryCacheHelper
-				.createEntityManagerToBeClosed(persistenceUnitName);
+				.createEntityManagerToBeClosed(configureTestInstancePO.getPersistenceUnitName());
 
 		EntityManager entityManager = null;
 
 		try {
 			if (optionalEntityManager.isPresent()) {
 				entityManager = optionalEntityManager.get();
-				JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 			}
 		} finally {
 			JstEntityManagerFactoryCacheHelper.closeEntityManager(entityManager);
 		}
-		return isNewJdbcURL;
+
+		if (isFirstUseOfFactory) {
+			return Optional.of(configureTestInstancePO);
+		}
+		return Optional.empty();
 	}
 
 	public static EntityManagerFactory retrieveCurrentEntityManagerFactory(final String persistenceUnitName) {
@@ -132,7 +129,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 	}
 
 	public static String retrievePersistenceKey(final String persistenceUnitName,
-			final Class<? extends JstEntityManagerFactoryPropertyPO> entityManagerFactoryPropertyClassPO) {
+			final Class<? extends JstConfigureTestJpaPO> entityManagerFactoryPropertyClassPO) {
 
 		return persistenceUnitName + "/" + entityManagerFactoryPropertyClassPO.getName();
 	}
@@ -140,8 +137,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 	/**
 	 * @return boolean
 	 */
-	private static boolean createEntityManagerFactory(
-			final JstEntityManagerFactoryPropertyPO entityManagerFactoryPropertyPO) {
+	private static boolean createEntityManagerFactory(final JstConfigureTestJpaPO entityManagerFactoryPropertyPO) {
 
 		final String key = retrievePersistenceKey(entityManagerFactoryPropertyPO.getPersistenceUnitName(),
 				entityManagerFactoryPropertyPO.getClass());
@@ -149,7 +145,9 @@ public enum JstEntityManagerFactoryCacheHelper {
 		if (entityManagerFactoryMap.containsKey(key)) {
 			currentEntityManagerFactory.replace(entityManagerFactoryPropertyPO.getPersistenceUnitName(),
 					entityManagerFactoryMap.get(key));
-			return true;
+
+			// isFirstUseOfFactory
+			return false;
 		}
 
 		final Map<String, Object> entityManagerFactoryPropertyMap = entityManagerFactoryPropertyPO
@@ -165,8 +163,7 @@ public enum JstEntityManagerFactoryCacheHelper {
 		entityManagerFactoryMap.put(key, entityManagerFactory);
 		currentEntityManagerFactory.put(entityManagerFactoryPropertyPO.getPersistenceUnitName(), entityManagerFactory);
 
-		// Determine if a new database is in play.
-		return entityManagerFactoryPropertyMap.containsKey(PersistenceUnitProperties.JDBC_URL)
-				|| entityManagerFactoryPropertyPO.getClass().isAssignableFrom(DefaultManagerFactoryPropertyPO.class);
+		// isFirstUseOfFactory
+		return true;
 	}
 }

@@ -23,21 +23,18 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.test.intentional.error;
+package com.gtcgroup.justify.jpa.po.dependency;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+import java.util.Map;
 
-import org.junit.jupiter.api.Test;
-
-import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.dependency.EntityManagerFactoryPropertyLoggingFinerPO;
-import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJpaPO;
+import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.test.populator.dependency.NoteAdditionalDataPopulator;
 import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
 /**
- * Test Class
- *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
@@ -46,14 +43,21 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
  * @author Marvin Toll
  * @since v8.5
  */
-@JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class, entityManagerFactoryPropertyClass = EntityManagerFactoryPropertyLoggingFinerPO.class)
-@SuppressWarnings("static-method")
-public class Intentional1AnnotationPersistenceUnitNameTest {
+public class ConfigureJustifyAdditionalPopulatorPO extends JstConfigureTestJpaPO {
 
-	@Test
-	public void testIntentionalBadDataPopulator() {
+	@Override
+	protected String definePersistenceUnitNameTM() {
+		return ConstantsTestJPA.JUSTIFY_PU;
+	}
 
-		assertTrue(true);
+	@Override
+	protected void populateDataPopulatorListTM(final List<Class<? extends JstBaseDataPopulator>> dataPopulatorList) {
+		dataPopulatorList.add(NoteDataPopulator.class);
+		dataPopulatorList.add(NoteAdditionalDataPopulator.class);
+	}
+
+	@Override
+	protected void populateEntityManagerFactoryPropertiesTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
+		// Empty Block
 	}
 }

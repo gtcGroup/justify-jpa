@@ -44,9 +44,8 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
 import com.gtcgroup.justify.jpa.po.JstQueryAllJPO;
+import com.gtcgroup.justify.jpa.po.dependency.ConfigureJustifyAdditionalPopulatorPO;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
-import com.gtcgroup.justify.jpa.test.populator.dependency.NoteAdditionalDataPopulator;
-import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
 /**
  * Test Class
@@ -60,8 +59,7 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = { NoteDataPopulator.class,
-		NoteAdditionalDataPopulator.class })
+@JstConfigureTestJPA(configureTestJpaPO = ConfigureJustifyAdditionalPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class JstFindJpaRmTest {
 

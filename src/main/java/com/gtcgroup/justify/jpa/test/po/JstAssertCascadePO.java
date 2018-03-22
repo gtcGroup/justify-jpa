@@ -67,7 +67,7 @@ public class JstAssertCascadePO extends JstBasePO {
 
 	private final List<String> cascadeNoPersistList = new ArrayList<>();
 
-	private final List<String> afterTheTestCleanupList = new ArrayList<>();
+	private final List<String> afterVerificationCleanupList = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -85,7 +85,7 @@ public class JstAssertCascadePO extends JstBasePO {
 	 * @return {@link List}
 	 */
 	public List<String> getAfterTheTestCleanupList() {
-		return this.afterTheTestCleanupList;
+		return this.afterVerificationCleanupList;
 	}
 
 	/**
@@ -203,10 +203,10 @@ public class JstAssertCascadePO extends JstBasePO {
 	/**
 	 * @return {@link JstAssertCascadePO}
 	 */
-	public JstAssertCascadePO withCleanupAfterTheTest(final String... methodNames) {
+	public JstAssertCascadePO withCleanupAfterVerification(final String... methodNames) {
 
 		for (final String methodName : methodNames) {
-			this.afterTheTestCleanupList.add(methodName);
+			this.afterVerificationCleanupList.add(methodName);
 		}
 		return this;
 	}

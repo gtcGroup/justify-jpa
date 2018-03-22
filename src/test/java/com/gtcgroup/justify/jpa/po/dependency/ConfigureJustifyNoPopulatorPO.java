@@ -23,32 +23,38 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po.internal;
+package com.gtcgroup.justify.jpa.po.dependency;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
-
-import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
+import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJpaPO;
+import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
 
 /**
- * This {@link HashMap} class supports configuring an
- * {@link EntityManagerFactory}.
- *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
  * @author Marvin Toll
- * @since v.8.5
+ * @since v8.5
  */
-public class DefaultManagerFactoryPropertyPO extends JstEntityManagerFactoryPropertyPO {
+public class ConfigureJustifyNoPopulatorPO extends JstConfigureTestJpaPO {
 
 	@Override
-	protected void populateTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
-		// Unused for default.
+	protected String definePersistenceUnitNameTM() {
+		return ConstantsTestJPA.JUSTIFY_PU;
 	}
 
+	@Override
+	protected void populateDataPopulatorListTM(final List<Class<? extends JstBaseDataPopulator>> dataPopulatorList) {
+		// Empty Block
+	}
+
+	@Override
+	protected void populateEntityManagerFactoryPropertiesTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
+		// Empty Block
+	}
 }

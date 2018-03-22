@@ -23,46 +23,45 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.rm;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
+package com.gtcgroup.justify.jpa.po.dependency;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
-import org.junit.jupiter.api.Test;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 
-import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
-import com.gtcgroup.justify.jpa.po.dependency.ConfigureLoggingFinestPO;
-import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJpaPO;
+import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
 /**
- * Test Class
- *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
  * @author Marvin Toll
- * @since v3.0
+ * @since v8.5
  */
-@JstConfigureTestLogToConsole
-@JstConfigureTestJPA(configureTestJpaPO = ConfigureLoggingFinestPO.class)
-@SuppressWarnings("static-method")
-public class JstLogFinestPoTest {
+public class ConfigureLoggingFinerPO extends JstConfigureTestJpaPO {
 
-	@Test
-	public void testQueryList_happyPath() {
-
-		final Optional<List<NoteDE>> optionalNoteList = JstQueryNamedRM
-				.queryList(JstQueryNamedPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)
-						.withQueryName(JstNamedQueryRmTest.QUERY_NOTE_LIST).withReadOnly());
-
-		assertFalse(optionalNoteList.get().isEmpty());
+	@Override
+	protected String definePersistenceUnitNameTM() {
+		return ConstantsTestJPA.JUSTIFY_PU;
 	}
 
+	@Override
+	protected void populateDataPopulatorListTM(final List<Class<? extends JstBaseDataPopulator>> dataPopulatorList) {
+		dataPopulatorList.add(NoteDataPopulator.class);
+
+	}
+
+	@Override
+	protected void populateEntityManagerFactoryPropertiesTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
+
+		entityManagerFactoryPropertyMap.put(PersistenceUnitProperties.LOGGING_LEVEL, "FINER");
+		entityManagerFactoryPropertyMap.put(PersistenceUnitProperties.JDBC_URL,
+				"jdbc:h2:mem:justify-finer;MODE=MSSQLServer");
+	}
 }

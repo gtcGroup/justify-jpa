@@ -23,13 +23,20 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po;
+package com.gtcgroup.justify.jpa.test.extension;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.EntityManagerFactory;
+
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+
+import com.gtcgroup.justify.core.test.extension.JstBaseExtension;
+import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
 
 /**
  * This {@link HashMap} class supports configuring an
@@ -43,25 +50,66 @@ import javax.persistence.EntityManagerFactory;
  * @author Marvin Toll
  * @since v.8.5
  */
-public abstract class JstEntityManagerFactoryPropertyPO {
-
-	private final Map<String, Object> entityManagerFactoryPropertyMap = new ConcurrentHashMap<>();
+public abstract class JstConfigureTestJpaPO {
 
 	private String persistenceUnitName;
 
+	private final List<Class<? extends JstBaseDataPopulator>> dataPopulatorList = new ArrayList<>();
+
+	private final Map<String, Object> entityManagerFactoryPropertyMap = new ConcurrentHashMap<>();
+
+	private boolean isConnectionString = false;
+
+	private boolean isFirstInvocation = true;
+
+	public List<Class<? extends JstBaseDataPopulator>> getDataPopulatorList() {
+		populateDataPopulatorListTM(this.dataPopulatorList);
+		return this.dataPopulatorList;
+	}
+
 	public Map<String, Object> getEntityManagerFactoryPropertyMap() {
-		populateTM(this.entityManagerFactoryPropertyMap);
+		populateEntityManagerFactoryPropertiesTM(this.entityManagerFactoryPropertyMap);
+		// If the Property File contains an connection string.
+		if (this.entityManagerFactoryPropertyMap.containsKey(PersistenceUnitProperties.JDBC_URL)) {
+			this.isConnectionString = true;
+		}
+
 		return this.entityManagerFactoryPropertyMap;
 	}
 
 	public String getPersistenceUnitName() {
 
+		this.persistenceUnitName = definePersistenceUnitNameTM();
 		return this.persistenceUnitName;
 	}
 
-	public void setPersistenceUnitName(final String persistenceUnitName) {
-		this.persistenceUnitName = persistenceUnitName;
+	boolean isConnectionString() {
+		return this.isConnectionString;
 	}
 
-	protected abstract void populateTM(Map<String, Object> entityManagerFactoryPropertyMap);
+	/**
+	 * This method changes the value upon the first invocation. It is intended for
+	 * use by a subclass of {@link JstBaseExtension}.
+	 *
+	 * @return
+	 */
+	boolean isFirstInvocation() {
+
+		boolean returnValue = false;
+
+		if (this.isFirstInvocation) {
+
+			returnValue = true;
+			this.isFirstInvocation = false;
+		}
+		return returnValue;
+	}
+
+	protected abstract String definePersistenceUnitNameTM();
+
+	protected abstract void populateDataPopulatorListTM(
+			final List<Class<? extends JstBaseDataPopulator>> dataPopulatorList);
+
+	protected abstract void populateEntityManagerFactoryPropertiesTM(
+			Map<String, Object> entityManagerFactoryPropertyMap);
 }

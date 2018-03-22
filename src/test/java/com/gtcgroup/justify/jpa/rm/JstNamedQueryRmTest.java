@@ -44,9 +44,8 @@ import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
-import com.gtcgroup.justify.jpa.po.dependency.EntityManagerFactoryPropertyLoggingFinerPO;
+import com.gtcgroup.justify.jpa.po.dependency.ConfigureLoggingFinerPO;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
-import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
 /**
  * Test Class
@@ -60,7 +59,7 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class, entityManagerFactoryPropertyClass = EntityManagerFactoryPropertyLoggingFinerPO.class)
+@JstConfigureTestJPA(configureTestJpaPO = ConfigureLoggingFinerPO.class)
 @SuppressWarnings("static-method")
 public class JstNamedQueryRmTest {
 

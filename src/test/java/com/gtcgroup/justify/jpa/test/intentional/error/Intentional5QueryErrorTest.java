@@ -34,13 +34,13 @@ import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryCountPO;
 import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
 import com.gtcgroup.justify.jpa.po.JstQueryStringPO;
+import com.gtcgroup.justify.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
 import com.gtcgroup.justify.jpa.rm.JstFindJpaRmTest;
 import com.gtcgroup.justify.jpa.rm.JstNamedQueryRmTest;
 import com.gtcgroup.justify.jpa.rm.JstQueryCountRM;
 import com.gtcgroup.justify.jpa.rm.JstQueryNamedRM;
 import com.gtcgroup.justify.jpa.rm.JstQueryStringRM;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
-import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
 /**
  * Test Class
@@ -55,7 +55,7 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
  */
 @Tag(value = "intentional")
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
+@JstConfigureTestJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class Intentional5QueryErrorTest {
 

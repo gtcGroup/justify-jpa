@@ -25,11 +25,13 @@
  */
 package com.gtcgroup.justify.jpa.po.dependency;
 
+import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-
-import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
+import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJpaPO;
+import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.test.populator.dependency.NoteNonDataPopulator;
 
 /**
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
@@ -40,11 +42,22 @@ import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
  * @author Marvin Toll
  * @since v8.5
  */
-public class EntityManagerFactoryPropertyLoggingFinestPO extends JstEntityManagerFactoryPropertyPO {
+public class ConfigureNonDataPopulatorPO extends JstConfigureTestJpaPO {
 
 	@Override
-	protected void populateTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
+	protected String definePersistenceUnitNameTM() {
+		return ConstantsTestJPA.JUSTIFY_PU;
+	}
 
-		entityManagerFactoryPropertyMap.put(PersistenceUnitProperties.LOGGING_LEVEL, "Finest");
+	@Override
+	protected void populateDataPopulatorListTM(final List<Class<? extends JstBaseDataPopulator>> dataPopulatorList) {
+		dataPopulatorList.add(NoteNonDataPopulator.class);
+
+	}
+
+	@Override
+	protected void populateEntityManagerFactoryPropertiesTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
+
+		// Empty Block
 	}
 }

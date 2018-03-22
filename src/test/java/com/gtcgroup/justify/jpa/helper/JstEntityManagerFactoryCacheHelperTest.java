@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.core.test.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.justify.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 
 /**
@@ -50,7 +51,7 @@ import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU)
+@JstConfigureTestJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class JstEntityManagerFactoryCacheHelperTest {
 

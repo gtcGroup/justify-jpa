@@ -49,6 +49,7 @@ import com.gtcgroup.justify.jpa.exception.JstOptimisiticLockException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
+import com.gtcgroup.justify.jpa.po.dependency.ConfigureJustifyNoPopulatorPO;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
 
 /**
@@ -63,7 +64,7 @@ import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU)
+@JstConfigureTestJPA(configureTestJpaPO = ConfigureJustifyNoPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class JstTransactionJpaRmTest {
 

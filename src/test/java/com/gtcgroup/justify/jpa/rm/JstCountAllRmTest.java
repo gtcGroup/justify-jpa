@@ -43,8 +43,8 @@ import com.gtcgroup.justify.jpa.de.dependency.NoteDE;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 import com.gtcgroup.justify.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.justify.jpa.po.JstQueryCountPO;
+import com.gtcgroup.justify.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
-import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
 
 /**
  * Test Class
@@ -58,7 +58,7 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(persistenceUnitName = ConstantsTestJPA.JUSTIFY_PU, dataPopulators = NoteDataPopulator.class)
+@JstConfigureTestJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class JstCountAllRmTest {
 

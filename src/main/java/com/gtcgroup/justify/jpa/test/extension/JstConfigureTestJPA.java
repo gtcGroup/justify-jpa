@@ -33,18 +33,14 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
-import com.gtcgroup.justify.jpa.po.internal.DefaultManagerFactoryPropertyPO;
-import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
-
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(ConfigureTestJpaExtension.class)
 public @interface JstConfigureTestJPA {
 
-	String persistenceUnitName();
+	// String persistenceUnitName();
+	//
+	// Class<? extends JstBaseDataPopulator>[] dataPopulators() default {};
 
-	Class<? extends JstBaseDataPopulator>[] dataPopulators() default {};
-
-	Class<? extends JstEntityManagerFactoryPropertyPO> entityManagerFactoryPropertyClass() default DefaultManagerFactoryPropertyPO.class;
+	Class<? extends JstConfigureTestJpaPO> configureTestJpaPO();
 }

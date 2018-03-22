@@ -31,8 +31,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -40,7 +38,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
 import com.gtcgroup.justify.core.test.extension.JstBaseExtension;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
-import com.gtcgroup.justify.jpa.po.JstEntityManagerFactoryPropertyPO;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
 import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
@@ -58,110 +55,28 @@ import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
  */
 class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCallback {
 
-	protected static Map<Integer, List<String>> entityManagerFactoryMap = new ConcurrentHashMap<>();
+	protected static Map<String, List<String>> entityManagerFactoryMap = new ConcurrentHashMap<>();
 
-	private static Integer buildEntityManagerFactoryKey(final EntityManagerFactory entityManagerFactory) {
-		return Integer.valueOf(System.identityHashCode(entityManagerFactory));
-	}
-
-	private static void updateDataPopulatorClassMap(final Integer entityManagerFactoryKey,
-			final List<String> dataPopulatorClassNameList) {
-
-		if (entityManagerFactoryMap.containsKey(entityManagerFactoryKey)) {
-
-			final List<String> dataPopulatorList = entityManagerFactoryMap.get(entityManagerFactoryKey);
-
-			for (final String dataPopulatorClassName : dataPopulatorClassNameList) {
-
-				dataPopulatorList.add(dataPopulatorClassName);
-
-			}
-
-			entityManagerFactoryMap.replace(entityManagerFactoryKey, dataPopulatorList);
-
-		} else {
-
-			final List<String> dataPopulatorList = new ArrayList<>();
-
-			for (final String dataPopulatorClassName : dataPopulatorClassNameList) {
-
-				dataPopulatorList.add(dataPopulatorClassName);
-
-			}
-
-			entityManagerFactoryMap.put(entityManagerFactoryKey, dataPopulatorList);
-		}
-	}
-
-	protected String persistenceUnitName;
-
-	protected Class<? extends JstBaseDataPopulator>[] annotationDefinedDataPopulators;
-
-	protected Class<? extends JstEntityManagerFactoryPropertyPO> entityManagerFactoryPropertyClass;
-
-	@Override
-	public void beforeAll(final ExtensionContext extensionContext) throws Exception {
-
-		try {
-
-			final boolean isNewJdbcURL = initializePropertiesFromAnnotation(extensionContext);
-
-			final EntityManagerFactory entityManagerFactory = JstEntityManagerFactoryCacheHelper
-					.retrieveCurrentEntityManagerFactory(this.persistenceUnitName);
-
-			final Integer entityManagerFactoryKey = buildEntityManagerFactoryKey(entityManagerFactory);
-
-			final List<String> newDataPopulatorList = loadDataPopulatorClassNameList(entityManagerFactoryKey);
-
-			final List<String> createList = loadEntityCreateList(newDataPopulatorList);
-
-			if (isNewJdbcURL) {
-				JstTransactionRM.commitListInOneTransaction(JstTransactionPO
-						.withPersistenceUnitName(this.persistenceUnitName).withCreateAndUpdateList(createList));
-			}
-
-			updateDataPopulatorClassMap(entityManagerFactoryKey, newDataPopulatorList);
-
-		} catch (
-
-		final RuntimeException e) {
-			handleBeforeAllException(extensionContext, e); // Covered.
-		}
-	}
-
-	@Override
-	protected Boolean initializePropertiesFromAnnotation(final ExtensionContext extensionContext) {
-
-		final JstConfigureTestJPA configureJPA = (JstConfigureTestJPA) retrieveAnnotation(
-				extensionContext.getRequiredTestClass(), JstConfigureTestJPA.class);
-
-		this.persistenceUnitName = configureJPA.persistenceUnitName();
-
-		this.annotationDefinedDataPopulators = configureJPA.dataPopulators();
-
-		this.entityManagerFactoryPropertyClass = configureJPA.entityManagerFactoryPropertyClass();
-
-		return JstEntityManagerFactoryCacheHelper.initializeEntityManagerFactory(this.persistenceUnitName,
-				this.entityManagerFactoryPropertyClass);
-
-	}
-
-	protected List<String> loadDataPopulatorClassNameList(final Integer entityManagerFactoryKey) {
+	protected static List<String> loadDataPopulatorClassNameList(final JstConfigureTestJpaPO configureTestJpaPO) {
 
 		List<String> currentDataPopulatorClassNameList;
 
 		final List<String> newDataPopulatorList = new ArrayList<>();
 
-		if (entityManagerFactoryMap.containsKey(entityManagerFactoryKey)) {
-			currentDataPopulatorClassNameList = entityManagerFactoryMap.get(entityManagerFactoryKey);
+		if (entityManagerFactoryMap.containsKey(configureTestJpaPO.getPersistenceUnitName())) {
+			currentDataPopulatorClassNameList = entityManagerFactoryMap
+					.get(configureTestJpaPO.getPersistenceUnitName());
 		} else {
 			currentDataPopulatorClassNameList = new ArrayList<>();
 		}
 
-		for (final Class<?> dataPopulatorClass : this.annotationDefinedDataPopulators) {
+		for (final Class<?> dataPopulatorClass : configureTestJpaPO.getDataPopulatorList()) {
 
-			// Has the populator been processed?
-			if (!currentDataPopulatorClassNameList.contains(dataPopulatorClass.getName())) {
+			if (configureTestJpaPO.isConnectionString()) {
+
+				newDataPopulatorList.add(dataPopulatorClass.getName());
+
+			} else if (!currentDataPopulatorClassNameList.contains(dataPopulatorClass.getName())) {
 
 				newDataPopulatorList.add(dataPopulatorClass.getName());
 			}
@@ -169,8 +84,14 @@ class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCal
 		return newDataPopulatorList;
 	}
 
+	// private static Integer buildEntityManagerFactoryMapKey(final
+	// EntityManagerFactory entityManagerFactory) {
+	// return Integer.valueOf(System.identityHashCode(entityManagerFactory));
+	// }
+
 	@SuppressWarnings("unchecked")
-	protected <ENTITY> List<ENTITY> loadEntityCreateList(final List<String> dataPopulatorList) {
+	private static <ENTITY> List<ENTITY> loadEntityCreateList(final List<String> dataPopulatorList,
+			final String persistenceUnitName) {
 
 		final List<ENTITY> createEntityList = new ArrayList<>();
 
@@ -186,12 +107,88 @@ class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCal
 				if (dataPopulator.isPresent()) {
 
 					final List<ENTITY> entityList = (List<ENTITY>) dataPopulator.get()
-							.populateCreateListTM(this.persistenceUnitName);
+							.populateCreateListTM(persistenceUnitName);
 
 					createEntityList.addAll(entityList);
 				}
 			}
 		}
 		return createEntityList;
+	}
+
+	private static void updateDataPopulatorClassMap(final String persistenceUnitName,
+			final List<String> dataPopulatorClassNameList) {
+
+		if (entityManagerFactoryMap.containsKey(persistenceUnitName)) {
+
+			final List<String> dataPopulatorList = entityManagerFactoryMap.get(persistenceUnitName);
+
+			for (final String dataPopulatorClassName : dataPopulatorClassNameList) {
+
+				dataPopulatorList.add(dataPopulatorClassName);
+
+			}
+
+			entityManagerFactoryMap.replace(persistenceUnitName, dataPopulatorList);
+
+		} else {
+
+			final List<String> dataPopulatorList = new ArrayList<>();
+
+			for (final String dataPopulatorClassName : dataPopulatorClassNameList) {
+
+				dataPopulatorList.add(dataPopulatorClassName);
+
+			}
+
+			entityManagerFactoryMap.put(persistenceUnitName, dataPopulatorList);
+		}
+	}
+
+	@Override
+	public void beforeAll(final ExtensionContext extensionContext) throws Exception {
+
+		try {
+
+			final Class<? extends JstConfigureTestJpaPO> configureTestJpaClassPO = initializePropertiesFromAnnotation(
+					extensionContext);
+
+			final Optional<JstConfigureTestJpaPO> optionalConfigureTestJpaPO = JstEntityManagerFactoryCacheHelper
+					.initializeEntityManagerFactory(configureTestJpaClassPO);
+
+			if (optionalConfigureTestJpaPO.isPresent()) {
+
+				final JstConfigureTestJpaPO configureTestJpaPO = optionalConfigureTestJpaPO.get();
+
+				if (configureTestJpaPO.isFirstInvocation()) {
+
+					final List<String> newDataPopulatorList = loadDataPopulatorClassNameList(configureTestJpaPO);
+
+					final List<String> createList = loadEntityCreateList(newDataPopulatorList,
+							configureTestJpaPO.getPersistenceUnitName());
+
+					JstTransactionRM.commitListInOneTransaction(
+							JstTransactionPO.withPersistenceUnitName(configureTestJpaPO.getPersistenceUnitName())
+									.withCreateAndUpdateList(createList));
+
+					updateDataPopulatorClassMap(configureTestJpaPO.getPersistenceUnitName(), newDataPopulatorList);
+				}
+			}
+
+		} catch (
+
+		final RuntimeException e) {
+			handleBeforeAllException(extensionContext, e); // Covered.
+		}
+	}
+
+	@Override
+	protected Class<? extends JstConfigureTestJpaPO> initializePropertiesFromAnnotation(
+			final ExtensionContext extensionContext) {
+
+		final JstConfigureTestJPA configureJPA = (JstConfigureTestJPA) retrieveAnnotation(
+				extensionContext.getRequiredTestClass(), JstConfigureTestJPA.class);
+
+		return configureJPA.configureTestJpaPO();
 	}
 }
