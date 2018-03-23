@@ -84,11 +84,6 @@ class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCal
 		return newDataPopulatorList;
 	}
 
-	// private static Integer buildEntityManagerFactoryMapKey(final
-	// EntityManagerFactory entityManagerFactory) {
-	// return Integer.valueOf(System.identityHashCode(entityManagerFactory));
-	// }
-
 	@SuppressWarnings("unchecked")
 	private static <ENTITY> List<ENTITY> loadEntityCreateList(final List<String> dataPopulatorList,
 			final String persistenceUnitName) {
