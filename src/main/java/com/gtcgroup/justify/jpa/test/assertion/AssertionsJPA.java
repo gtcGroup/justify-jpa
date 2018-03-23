@@ -184,7 +184,7 @@ public enum AssertionsJPA {
 		} catch (final Exception e) {
 
 			throw new AssertionFailedError("The populated entity could not be processed due to an exception ["
-					+ e.getClass().getSimpleName() + "].");
+					+ e.getClass().getSimpleName() + "].\n\t\t" + e.getMessage());
 		}
 	}
 

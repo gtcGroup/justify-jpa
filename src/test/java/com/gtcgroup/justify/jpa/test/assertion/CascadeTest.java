@@ -157,10 +157,10 @@ public class CascadeTest {
 	@Test()
 	public void testCascadeTypesForBooking_null() {
 
-		assertThrows(AssertionFailedError.class, () -> {
-			AssertionsJPA.assertCascadeTypes(
-					JstAssertCascadePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withPopulatedEntity(null));
-		});
+		// assertThrows(AssertionFailedError.class, () -> {
+		AssertionsJPA.assertCascadeTypes(
+				JstAssertCascadePO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU).withPopulatedEntity(null));
+		// });
 	}
 
 	@Test()

@@ -7,9 +7,13 @@ JPA MODULE: Justify supports JUnit testing with "real" (functionally equivalent)
 
 ### <a name="changes"></a>Release Notes
 
+#### Version 8.5.0-? <span class="date">2018-mm-dd</span>
+
+*   25 License and Javadoc Cleanup](https://github.com/gtcGroup/justify-jpa/issues/25)
+
 #### Version 8.5.0-alpha <span class="date">2018-03-22</span>
 
-*   24 [Convert to JUnit5 from JUnit4](https://github.com/gtcGroup/justify-core/issues/24)
+*   24 [Convert to JUnit5 from JUnit4](https://github.com/gtcGroup/justify-jpa/issues/24)
 
 #### Version 8.3.9 & 6.3.9 <span class="date">2017-09-18</span>
 
