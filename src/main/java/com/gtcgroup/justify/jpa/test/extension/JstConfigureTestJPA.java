@@ -38,9 +38,5 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(ConfigureTestJpaExtension.class)
 public @interface JstConfigureTestJPA {
 
-	// String persistenceUnitName();
-	//
-	// Class<? extends JstBaseDataPopulator>[] dataPopulators() default {};
-
 	Class<? extends JstConfigureTestJpaPO> configureTestJpaPO();
 }

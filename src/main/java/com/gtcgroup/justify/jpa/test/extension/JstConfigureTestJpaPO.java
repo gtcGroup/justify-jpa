@@ -26,7 +26,6 @@
 package com.gtcgroup.justify.jpa.test.extension;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +38,7 @@ import com.gtcgroup.justify.core.test.extension.JstBaseExtension;
 import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
 
 /**
- * This {@link HashMap} class supports configuring an
+ * This Parameter Object class supports configuring an
  * {@link EntityManagerFactory}.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">

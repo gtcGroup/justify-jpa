@@ -23,7 +23,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.test.po;
+package com.gtcgroup.justify.jpa.test.assertion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,65 +79,6 @@ public class JstAssertCascadePO extends JstBasePO {
 		this.persistenceUnitName = persistenceUnitName;
 
 		return;
-	}
-
-	/**
-	 * @return {@link List}
-	 */
-	public List<String> getAfterTheTestCleanupList() {
-		return this.afterVerificationCleanupList;
-	}
-
-	/**
-	 * @return {@link Map}
-	 */
-	public List<String> getCascadeNoPersistList() {
-		return this.cascadeNoPersistList;
-	}
-
-	/**
-	 * @return {@link List}
-	 */
-	public List<String> getCascadePersistList() {
-
-		return this.cascadePersistList;
-	}
-
-	/**
-	 * @return {@link List}
-	 */
-	public List<String> getCascadeRemoveList() {
-
-		return this.cascadeRemoveList;
-	}
-
-	/**
-	 * @return String
-	 */
-	public String getPersistenceUnitName() {
-
-		return this.persistenceUnitName;
-	}
-
-	/**
-	 * @return Object
-	 */
-	public Object getPopulatedEntity() {
-
-		return this.populatedEntity;
-	}
-
-	/**
-	 * This method is used to replace merged version of the populated entity.
-	 */
-	public void replacePopulatedEntity(final Optional<Object> populatedEntity) {
-
-		if (populatedEntity.isPresent()) {
-			this.populatedEntity = populatedEntity.get();
-		} else {
-			this.populatedEntity = null;
-		}
-
 	}
 
 	/**
@@ -221,5 +162,64 @@ public class JstAssertCascadePO extends JstBasePO {
 
 		this.populatedEntity = populatedEntity;
 		return this;
+	}
+
+	/**
+	 * @return {@link List}
+	 */
+	protected List<String> getAfterTheTestCleanupList() {
+		return this.afterVerificationCleanupList;
+	}
+
+	/**
+	 * @return {@link Map}
+	 */
+	protected List<String> getCascadeNoPersistList() {
+		return this.cascadeNoPersistList;
+	}
+
+	/**
+	 * @return {@link List}
+	 */
+	protected List<String> getCascadePersistList() {
+
+		return this.cascadePersistList;
+	}
+
+	/**
+	 * @return {@link List}
+	 */
+	protected List<String> getCascadeRemoveList() {
+
+		return this.cascadeRemoveList;
+	}
+
+	/**
+	 * @return String
+	 */
+	protected String getPersistenceUnitName() {
+
+		return this.persistenceUnitName;
+	}
+
+	/**
+	 * @return Object
+	 */
+	protected Object getPopulatedEntity() {
+
+		return this.populatedEntity;
+	}
+
+	/**
+	 * This method is used to replace merged version of the populated entity.
+	 */
+	protected void replacePopulatedEntity(final Optional<Object> populatedEntity) {
+
+		if (populatedEntity.isPresent()) {
+			this.populatedEntity = populatedEntity.get();
+		} else {
+			this.populatedEntity = null;
+		}
+
 	}
 }

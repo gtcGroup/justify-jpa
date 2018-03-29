@@ -23,11 +23,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.test.po;
+package com.gtcgroup.justify.jpa.test.assertion;
 
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+
+import com.gtcgroup.justify.jpa.test.assertion.JstAssertCascadePO;
 
 /**
  * Test Class

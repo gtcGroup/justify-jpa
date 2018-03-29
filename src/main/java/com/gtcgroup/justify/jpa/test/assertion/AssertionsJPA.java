@@ -40,7 +40,6 @@ import com.gtcgroup.justify.jpa.helper.JstTransactionUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
-import com.gtcgroup.justify.jpa.test.po.JstAssertCascadePO;
 
 /**
  * This Assertions class provides convenience methods for assertion processing.
