@@ -37,6 +37,17 @@ import javax.persistence.Version;
 import com.gtcgroup.justify.core.base.JstBaseDE;
 import com.gtcgroup.justify.core.test.extension.JstBaseExtension;
 
+/**
+ * This Domain Entity base class supports audit columns.
+ *
+ * <p style="font-family:Verdana; font-size:10px; font-style:italic">
+ * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
+ * <a href="http://gtcGroup.com">gtcGroup.com </a>.
+ * </p>
+ *
+ * @author Marvin Toll
+ * @since 8.5
+ */
 @MappedSuperclass
 public abstract class BaseAuditDE extends JstBaseDE {
 
@@ -69,15 +80,6 @@ public abstract class BaseAuditDE extends JstBaseDE {
 
 	public String getUpdateUser() {
 		return this.updateUser;
-	}
-
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-
-		return super.hashCode();
 	}
 
 	@SuppressWarnings("unchecked")

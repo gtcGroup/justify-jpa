@@ -27,12 +27,10 @@ package com.gtcgroup.justify.jpa.helper;
 
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-
 import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
 
 /**
- * This Helper class provides persistence {@link EntityManager} support.
+ * This Util Helper class searches for an entity.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at

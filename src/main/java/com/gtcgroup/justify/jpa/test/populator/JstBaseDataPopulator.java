@@ -32,7 +32,7 @@ import com.gtcgroup.justify.core.JstPatternEnabledDevelopmentSuffix;
 
 /**
  * This Data Populator base class provides support for populating test data with
- * a Template Method.
+ * the Template Method pattern.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -45,16 +45,13 @@ import com.gtcgroup.justify.core.JstPatternEnabledDevelopmentSuffix;
 public abstract class JstBaseDataPopulator extends JstPatternEnabledDevelopmentSuffix {
 
 	/**
-	 * This template method enables the formation of a list of populated entities
-	 * for subsequent database inserts by the Configure JPA Rule.
+	 * This template method enables the populating entities for subsequent database
+	 * inserts.
 	 *
 	 * @return {@link List}
 	 */
 	public abstract List<Object> populateCreateListTM(String persistenceUnitName);
 
-	/**
-	 * @see JstBaseSuffix#assignPatternSuffixTM()
-	 */
 	@Override
 	protected String assignPatternSuffixTM() {
 

@@ -26,12 +26,13 @@
 package com.gtcgroup.justify.jpa.po;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NamedQueries;
 import javax.persistence.Query;
 
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryPO;
 
 /**
- * This Parameter Object class supports @ queries.
+ * This Parameter Object class supports {@link NamedQueries}s.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at

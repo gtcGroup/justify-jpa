@@ -94,7 +94,7 @@ signing {
 
 group = "com.gtcgroup"
 archivesBaseName = "justify-jpa"
-version = "8.5.0-alpha"
+version = "8.5.0-alpha2"
 
 task writeTestPOM << {
     pom {

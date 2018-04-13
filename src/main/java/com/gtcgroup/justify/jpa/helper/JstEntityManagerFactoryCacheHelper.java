@@ -39,7 +39,7 @@ import com.gtcgroup.justify.core.test.exception.internal.JustifyException;
 import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJpaPO;
 
 /**
- * This Helper class caches {@link EntityManagerFactory}(s).
+ * This Cache Helper class manages {@link EntityManagerFactory}(s).
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -85,9 +85,6 @@ public enum JstEntityManagerFactoryCacheHelper {
 	}
 
 	/**
-	 * This method returns a populated {@link Optional} if this is the first time an
-	 * {@link EntityManagerFactory} was instantiated.
-	 *
 	 * @return {@link Optional}
 	 */
 	public static Optional<JstConfigureTestJpaPO> initializeEntityManagerFactory(
@@ -124,10 +121,16 @@ public enum JstEntityManagerFactoryCacheHelper {
 		return Optional.empty();
 	}
 
+	/**
+	 * @return {@link EntityManagerFactory}
+	 */
 	public static EntityManagerFactory retrieveCurrentEntityManagerFactory(final String persistenceUnitName) {
 		return currentEntityManagerFactory.get(persistenceUnitName);
 	}
 
+	/**
+	 * @return {@link String}
+	 */
 	public static String retrievePersistenceKey(final String persistenceUnitName,
 			final Class<? extends JstConfigureTestJpaPO> entityManagerFactoryPropertyClassPO) {
 

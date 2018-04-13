@@ -30,8 +30,8 @@ import java.util.Optional;
 import javax.persistence.Query;
 
 /**
- * This Parameter Object base class supports queries using the Resource Manager
- * pattern.
+ * This Parameter Object base class supports {@link Query}s using the Resource
+ * Manager pattern.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at

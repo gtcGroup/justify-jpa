@@ -38,7 +38,7 @@ import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
 
 /**
- * This Helper class provides persistence transaction support.
+ * This Util Helper class provides persistence transaction support.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at

@@ -29,11 +29,14 @@ package com.gtcgroup.justify.jpa.rm;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.Query;
+
 import com.gtcgroup.justify.jpa.helper.JstQueryUtilHelper;
 import com.gtcgroup.justify.jpa.po.JstQueryStringPO;
 
 /**
- * This Resource Manager class supports queries using an SQL or JPQL string.
+ * This Resource Manager class supports {@link Query}s using SQL or JPQL
+ * {@link String}s.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at

@@ -31,7 +31,8 @@ import javax.persistence.Query;
 import com.gtcgroup.justify.jpa.po.internal.BaseQueryPO;
 
 /**
- * This Parameter Object class supports native and query language queries.
+ * This Parameter Object class supports native and query language
+ * {@link Query}s.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at

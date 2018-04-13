@@ -35,6 +35,17 @@ import javax.persistence.MappedSuperclass;
 
 import org.eclipse.persistence.annotations.UuidGenerator;
 
+/**
+ * This Domain Entity base class supports identity generation.
+ *
+ * <p style="font-family:Verdana; font-size:10px; font-style:italic">
+ * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
+ * <a href="http://gtcGroup.com">gtcGroup.com </a>.
+ * </p>
+ *
+ * @author Marvin Toll
+ * @since 8.5
+ */
 @MappedSuperclass
 public abstract class BaseUuidDE extends BaseAuditDE {
 
@@ -50,6 +61,10 @@ public abstract class BaseUuidDE extends BaseAuditDE {
 	public boolean equals(final Object obj) {
 
 		if (obj == null) {
+			return false;
+		}
+
+		if (this.getClass() != obj.getClass()) {
 			return false;
 		}
 

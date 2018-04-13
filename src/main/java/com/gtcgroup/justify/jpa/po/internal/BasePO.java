@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
@@ -41,8 +42,8 @@ import com.gtcgroup.justify.core.base.JstBasePO;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerFactoryCacheHelper;
 
 /**
- * This Parameter Object base class supports queries and transactions using a
- * Resource Manager.
+ * This Parameter Object base class supports {@link Query}s and transactions
+ * using the Resource Manager pattern.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at

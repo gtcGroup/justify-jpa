@@ -35,7 +35,7 @@ import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
 import com.gtcgroup.justify.jpa.po.JstQueryAllJPO;
 
 /**
- * This Resource Manager class supports "find" operations.
+ * This Resource Manager class supports find operations.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
