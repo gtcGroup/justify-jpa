@@ -15,7 +15,12 @@ http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
  -->
 		<!-- DOMAIN ENTITIES -->
 
-		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<class>com.gtcgroup.justify.jpa.de.dependency.NoteDE</class>
+		<class>com.gtcgroup.justify.jpa.de.dependency.BookingDE</class>		
+		<class>com.gtcgroup.justify.jpa.de.dependency.CustomerDE</class>
+		<class>com.gtcgroup.justify.jpa.de.dependency.EntityNotPopulatedDE</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<properties>
 

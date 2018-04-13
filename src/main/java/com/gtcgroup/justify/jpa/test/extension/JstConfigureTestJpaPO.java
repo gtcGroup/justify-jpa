@@ -47,7 +47,7 @@ import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
  * </p>
  *
  * @author Marvin Toll
- * @since v.8.5
+ * @since 8.5
  */
 public abstract class JstConfigureTestJpaPO {
 

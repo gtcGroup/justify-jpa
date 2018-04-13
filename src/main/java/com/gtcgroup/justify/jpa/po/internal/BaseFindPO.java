@@ -37,7 +37,7 @@ import java.util.Optional;
  * </p>
  *
  * @author Marvin Toll
- * @since v.8.5
+ * @since 8.5
  */
 public abstract class BaseFindPO extends BasePO {
 

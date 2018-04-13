@@ -28,7 +28,7 @@ package com.gtcgroup.justify.jpa.test.populator;
 
 import java.util.List;
 
-import com.gtcgroup.justify.core.base.JstBaseSuffix;
+import com.gtcgroup.justify.core.JstPatternEnabledDevelopmentSuffix;
 
 /**
  * This Data Populator base class provides support for populating test data with
@@ -42,7 +42,15 @@ import com.gtcgroup.justify.core.base.JstBaseSuffix;
  * @author Marvin Toll
  * @since v3.0
  */
-public abstract class JstBaseDataPopulator extends JstBaseSuffix {
+public abstract class JstBaseDataPopulator extends JstPatternEnabledDevelopmentSuffix {
+
+	/**
+	 * This template method enables the formation of a list of populated entities
+	 * for subsequent database inserts by the Configure JPA Rule.
+	 *
+	 * @return {@link List}
+	 */
+	public abstract List<Object> populateCreateListTM(String persistenceUnitName);
 
 	/**
 	 * @see JstBaseSuffix#assignPatternSuffixTM()
@@ -52,13 +60,5 @@ public abstract class JstBaseDataPopulator extends JstBaseSuffix {
 
 		return "DataPopulator";
 	}
-
-	/**
-	 * This template method enables the formation of a list of populated
-	 * entities for subsequent database inserts by the Configure JPA Rule.
-	 *
-	 * @return {@link List}
-	 */
-	public abstract List<Object> populateCreateListTM(String persistenceUnitName);
 
 }

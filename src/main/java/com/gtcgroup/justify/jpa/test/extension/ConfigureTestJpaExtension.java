@@ -51,7 +51,7 @@ import com.gtcgroup.justify.jpa.test.populator.JstBaseDataPopulator;
  * </p>
  *
  * @author Marvin Toll
- * @since v8.5
+ * @since 8.5
  */
 class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCallback {
 

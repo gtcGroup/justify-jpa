@@ -51,7 +51,7 @@ import com.gtcgroup.justify.jpa.test.extension.JstConfigureTestJPA;
  * </p>
  *
  * @author Marvin Toll
- * @since v8.5
+ * @since 8.5
  */
 @Tag(value = "intentional")
 @JstConfigureTestLogToConsole

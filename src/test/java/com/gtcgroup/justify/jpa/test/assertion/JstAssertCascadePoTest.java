@@ -29,8 +29,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.jpa.test.assertion.JstAssertCascadePO;
-
 /**
  * Test Class
  *
@@ -40,7 +38,7 @@ import com.gtcgroup.justify.jpa.test.assertion.JstAssertCascadePO;
  * </p>
  *
  * @author Marvin Toll
- * @since v8.5
+ * @since 8.5
  */
 @SuppressWarnings("static-method")
 public class JstAssertCascadePoTest {

@@ -56,23 +56,11 @@ repositories {
 dependencies {
 
     //compile project(':justify-core')
-    compile 'com.gtcgroup:justify-core:8.5.0-alpha' 
-    compile 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.7.1'
-    
-    testCompile 'com.h2database:h2:1.4.197'
-    
-    testCompile("org.junit.jupiter:junit-jupiter-api:5.1.0") {
-        exclude group: 'junit', module: 'junit'
-    }
-   
-    testCompile("org.junit.platform:junit-platform-launcher:1.1.0") {
-        exclude group: 'junit', module: 'junit'
-    }
-    testCompile("org.junit.jupiter:junit-jupiter-engine:5.1.0") {
-        exclude group: 'junit', module: 'junit'
-    }
-} 
-/* 
+    compile 'com.gtcgroup:justify-core:8.5.+' 
+    compile 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.+'
+    compile 'com.h2database:h2:1.4.+'
+}
+ 
 test {
     useJUnitPlatform {
         excludeTags 'intentional'
@@ -80,8 +68,7 @@ test {
     }
 
     failFast = false
-}
-*/ 
+} 
     
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
@@ -119,7 +106,7 @@ task writeTestPOM << {
 artifacts {
     archives javadocJar, sourcesJar
 }
-
+/*
 uploadArchives {
   repositories {
     mavenDeployer {
@@ -164,3 +151,4 @@ uploadArchives {
     }
   }
 }
+*/

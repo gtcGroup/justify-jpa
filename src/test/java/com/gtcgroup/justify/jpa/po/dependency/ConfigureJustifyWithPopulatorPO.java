@@ -40,7 +40,7 @@ import com.gtcgroup.justify.jpa.test.populator.dependency.NoteDataPopulator;
  * </p>
  *
  * @author Marvin Toll
- * @since v8.5
+ * @since 8.5
  */
 public class ConfigureJustifyWithPopulatorPO extends JstConfigureTestJpaPO {
 
