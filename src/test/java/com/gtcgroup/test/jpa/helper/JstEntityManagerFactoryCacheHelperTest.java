@@ -23,16 +23,25 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po.internal;
+package com.gtcgroup.test.jpa.helper;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Optional;
 
-import com.gtcgroup.justify.core.po.JstExceptionPO;
+import javax.persistence.EntityManager;
+
+import org.junit.jupiter.api.Test;
+
 import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJPA;
+import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
 
 /**
- * This Parameter Object base class supports find operations using the Resource
- * Manager pattern.
+ * Test Class
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -40,44 +49,37 @@ import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
  * </p>
  *
  * @author Marvin Toll
- * @since 8.5
+ * @since v3.0
  */
-public abstract class BaseFindPO extends BaseJpaPO {
+@JstConfigureTestLogToConsole
+@JstConfigureTestJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
+@SuppressWarnings("static-method")
+public class JstEntityManagerFactoryCacheHelperTest {
 
-	private Class<Object> entityClass;
+	@Test
+	public void testCreateEntityManagerToBeClosed() {
 
-	/**
-	 * Constructor
-	 */
-	protected BaseFindPO(final String persistenceUnitName) {
-		super(persistenceUnitName);
+		JstEntityManagerCacheHelper.createEntityManagerToBeClosed("fakePU");
+
 	}
 
-	/**
-	 * @return {@link Class}
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getEntityClass() {
+	@Test
+	public void testCreateEntityManagerToBeClosed_happyPath() {
 
-		if (null == this.entityClass) {
-			throw new JustifyException(JstExceptionPO.withMessage("No Entity Class was assigned for this function."));
+		final Optional<EntityManager> entityManager = JstEntityManagerCacheHelper
+				.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
+
+		if (entityManager.isPresent()) {
+			JstEntityManagerCacheHelper.closeEntityManager(entityManager.get());
+			JstEntityManagerCacheHelper.closeEntityManager(entityManager.get());
 		}
-		return (Class<ENTITY>) this.entityClass;
 	}
 
-	/**
-	 * @return {@link Optional}
-	 */
-	@SuppressWarnings("unchecked")
-	protected <IDENTITY> IDENTITY retrieveEntityIdentity(final Object entityContainingIdentity) {
+	@Test
+	public void testCreateEntityManagerToBeClosed_null() {
 
-		return (IDENTITY) getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
-				.getIdentifier(entityContainingIdentity);
+		assertThrows(JustifyException.class, () -> {
+			JstEntityManagerCacheHelper.createEntityManagerToBeClosed(null);
+		});
 	}
-
-	@SuppressWarnings("unchecked")
-	protected <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
-		this.entityClass = (Class<Object>) entityClass;
-	}
-
 }

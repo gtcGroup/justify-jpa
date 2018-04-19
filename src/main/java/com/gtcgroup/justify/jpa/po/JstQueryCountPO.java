@@ -27,7 +27,7 @@ package com.gtcgroup.justify.jpa.po;
 
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.jpa.po.internal.BasePO;
+import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 
 /**
  * This Parameter Object class supports counting all entities from a database
@@ -41,7 +41,7 @@ import com.gtcgroup.justify.jpa.po.internal.BasePO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstQueryCountPO extends BasePO {
+public class JstQueryCountPO extends BaseJpaPO {
 
     /**
      * This method initializes the class.

@@ -31,7 +31,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import com.gtcgroup.justify.jpa.po.internal.BasePO;
+import com.gtcgroup.justify.jpa.po.internal.BaseJpaPO;
 
 /**
  * This Parameter Object class supports transactions.
@@ -44,7 +44,7 @@ import com.gtcgroup.justify.jpa.po.internal.BasePO;
  * @author Marvin Toll
  * @since v.6.2
  */
-public class JstTransactionPO extends BasePO {
+public class JstTransactionPO extends BaseJpaPO {
 
 	/**
 	 * This method initializes the class.

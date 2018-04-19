@@ -23,16 +23,17 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po.internal;
+package com.gtcgroup.test.jpa.testing.populator.dependency;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.gtcgroup.justify.core.po.JstExceptionPO;
-import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
+import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
+import com.gtcgroup.test.jpa.de.dependency.NoteDE;
+import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
 
 /**
- * This Parameter Object base class supports find operations using the Resource
- * Manager pattern.
+ * Test Class
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -40,44 +41,35 @@ import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
  * </p>
  *
  * @author Marvin Toll
- * @since 8.5
+ * @since v3.0
  */
-public abstract class BaseFindPO extends BaseJpaPO {
+public class NoteDataPopulator extends JstBaseDataPopulator {
 
-	private Class<Object> entityClass;
+	public static NoteDE noteOne = new NoteDE();
+
+	static {
+		noteOne.setText(ConstantsTestJPA.NOTE_TEXT_ONE);
+		noteOne.setUuid(ConstantsTestJPA.NOTE_UUID_ONE);
+	}
+
+	public static NoteDE noteTwo = new NoteDE();
+
+	static {
+		noteTwo.setText(ConstantsTestJPA.NOTE_TEXT_TWO);
+		noteTwo.setUuid(ConstantsTestJPA.NOTE_UUID_TWO);
+	}
+
+	public List<Object> populatedList = new ArrayList<>();
 
 	/**
-	 * Constructor
+	 * @see JstBaseDataPopulator#populateCreateListTM(JstQueryJpaRM)
 	 */
-	protected BaseFindPO(final String persistenceUnitName) {
-		super(persistenceUnitName);
+	@Override
+	public List<Object> populateCreateListTM(final String persistenceUnitName) {
+
+		this.populatedList.add(NoteDataPopulator.noteOne);
+		this.populatedList.add(NoteDataPopulator.noteTwo);
+
+		return this.populatedList;
 	}
-
-	/**
-	 * @return {@link Class}
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getEntityClass() {
-
-		if (null == this.entityClass) {
-			throw new JustifyException(JstExceptionPO.withMessage("No Entity Class was assigned for this function."));
-		}
-		return (Class<ENTITY>) this.entityClass;
-	}
-
-	/**
-	 * @return {@link Optional}
-	 */
-	@SuppressWarnings("unchecked")
-	protected <IDENTITY> IDENTITY retrieveEntityIdentity(final Object entityContainingIdentity) {
-
-		return (IDENTITY) getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
-				.getIdentifier(entityContainingIdentity);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
-		this.entityClass = (Class<Object>) entityClass;
-	}
-
 }

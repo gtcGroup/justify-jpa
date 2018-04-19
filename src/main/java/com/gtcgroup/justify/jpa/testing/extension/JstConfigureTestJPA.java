@@ -23,16 +23,19 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po.internal;
 
-import java.util.Optional;
+package com.gtcgroup.justify.jpa.testing.extension;
 
-import com.gtcgroup.justify.core.po.JstExceptionPO;
-import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * This Parameter Object base class supports find operations using the Resource
- * Manager pattern.
+ * This {@link Annotation} supports initializing JPA.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -42,42 +45,11 @@ import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
  * @author Marvin Toll
  * @since 8.5
  */
-public abstract class BaseFindPO extends BaseJpaPO {
 
-	private Class<Object> entityClass;
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@ExtendWith(ConfigureTestJpaExtension.class)
+public @interface JstConfigureTestJPA {
 
-	/**
-	 * Constructor
-	 */
-	protected BaseFindPO(final String persistenceUnitName) {
-		super(persistenceUnitName);
-	}
-
-	/**
-	 * @return {@link Class}
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getEntityClass() {
-
-		if (null == this.entityClass) {
-			throw new JustifyException(JstExceptionPO.withMessage("No Entity Class was assigned for this function."));
-		}
-		return (Class<ENTITY>) this.entityClass;
-	}
-
-	/**
-	 * @return {@link Optional}
-	 */
-	@SuppressWarnings("unchecked")
-	protected <IDENTITY> IDENTITY retrieveEntityIdentity(final Object entityContainingIdentity) {
-
-		return (IDENTITY) getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
-				.getIdentifier(entityContainingIdentity);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
-		this.entityClass = (Class<Object>) entityClass;
-	}
-
+	Class<? extends JstConfigureTestJpaPO> configureTestJpaPO();
 }

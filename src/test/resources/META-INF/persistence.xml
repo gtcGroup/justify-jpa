@@ -15,10 +15,10 @@ http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
  -->
 		<!-- DOMAIN ENTITIES -->
 
-		<class>com.gtcgroup.justify.jpa.de.dependency.NoteDE</class>
-		<class>com.gtcgroup.justify.jpa.de.dependency.BookingDE</class>		
-		<class>com.gtcgroup.justify.jpa.de.dependency.CustomerDE</class>
-		<class>com.gtcgroup.justify.jpa.de.dependency.EntityNotPopulatedDE</class>
+		<class>com.gtcgroup.test.jpa.de.dependency.NoteDE</class>
+		<class>com.gtcgroup.test.jpa.de.dependency.VacationDE</class>		
+		<class>com.gtcgroup.test.jpa.de.dependency.CustomerDE</class>
+		<class>com.gtcgroup.test.jpa.de.dependency.EntityNotPopulatedDE</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

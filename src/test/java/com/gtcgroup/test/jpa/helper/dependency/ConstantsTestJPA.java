@@ -23,61 +23,44 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po.internal;
-
-import java.util.Optional;
-
-import com.gtcgroup.justify.core.po.JstExceptionPO;
-import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
+package com.gtcgroup.test.jpa.helper.dependency;
 
 /**
- * This Parameter Object base class supports find operations using the Resource
- * Manager pattern.
- *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
  * </p>
  *
  * @author Marvin Toll
- * @since 8.5
+ * @since v3.0
  */
-public abstract class BaseFindPO extends BaseJpaPO {
+public enum ConstantsTestJPA {
 
-	private Class<Object> entityClass;
+	INSTANCE;
 
-	/**
-	 * Constructor
-	 */
-	protected BaseFindPO(final String persistenceUnitName) {
-		super(persistenceUnitName);
-	}
+	public final static String NOTE_TEXT_ONE = "testTextOne";
 
-	/**
-	 * @return {@link Class}
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getEntityClass() {
+	public final static String NOTE_TEXT_TWO = "testTextTwo";
 
-		if (null == this.entityClass) {
-			throw new JustifyException(JstExceptionPO.withMessage("No Entity Class was assigned for this function."));
-		}
-		return (Class<ENTITY>) this.entityClass;
-	}
+	public final static String QUERY_NOTE_SINGLE_ONE = "queryNoteSingleOne";
 
-	/**
-	 * @return {@link Optional}
-	 */
-	@SuppressWarnings("unchecked")
-	protected <IDENTITY> IDENTITY retrieveEntityIdentity(final Object entityContainingIdentity) {
+	public final static String QUERY_NOTE_SINGLE_TWO = "queryNoteSingleTwo";
 
-		return (IDENTITY) getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
-				.getIdentifier(entityContainingIdentity);
-	}
+	public static final String NOTE_UUID_ONE = "noteIdentityOne";
 
-	@SuppressWarnings("unchecked")
-	protected <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
-		this.entityClass = (Class<Object>) entityClass;
-	}
+	public static final String NOTE_UUID_TWO = "noteIdentityTwo";
 
+	public static final String JUSTIFY_PU = "justify-pu";
+
+	public static final String JUSTIFY_FINER = "justify-finer";
+
+	public static final String JUSTIFY_SECOND_PU = "justify-second-pu";
+
+	public static final String CUSTOMER_ENTITY_IDENTITY = "customerIdentity";
+
+	public static final String RANDOM_ENTITY_IDENTITY = "J!u@s#t$i%f^y";
+
+	public static final String SQL_NATIVE_NOTE_LIST = "SELECT * FROM NOTE";
+
+	public static final String SQL_NATIVE_NOTE_SINGLE = "SELECT * FROM NOTE WHERE NOTE_TEXT = ?";
 }

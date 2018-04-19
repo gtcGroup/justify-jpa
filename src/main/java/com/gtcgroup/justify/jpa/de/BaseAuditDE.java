@@ -35,7 +35,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 
 import com.gtcgroup.justify.core.base.JstBaseDE;
-import com.gtcgroup.justify.core.test.extension.JstBaseExtension;
+import com.gtcgroup.justify.core.testing.extension.JstBaseExtension;
 
 /**
  * This Domain Entity base class supports audit columns.
@@ -82,48 +82,40 @@ public abstract class BaseAuditDE extends JstBaseDE {
 		return this.updateUser;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <CONCRETE extends BaseAuditDE> CONCRETE setCreateTime(final Timestamp createTime) {
+	public void setCreateTime(final Timestamp createTime) {
 
 		this.createTime = createTime;
-		return (CONCRETE) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <CONCRETE extends BaseAuditDE> CONCRETE setCreateUser(final String createUser) {
+	public void setCreateUser(final String createUser) {
 
 		this.createUser = createUser;
-		return (CONCRETE) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <CONCRETE extends BaseAuditDE> CONCRETE setUpdateTime(final Timestamp updateTime) {
+	public void setUpdateTime(final Timestamp updateTime) {
 
 		this.updateTime = updateTime;
-		return (CONCRETE) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <CONCRETE extends BaseAuditDE> CONCRETE setUpdateUser(final String updateUser) {
+	public void setUpdateUser(final String updateUser) {
 
 		this.updateUser = updateUser;
-		return (CONCRETE) this;
 	}
 
 	@PrePersist
 	protected void prePersistAuditFields() {
 
 		final Date date = new Date();
-		this.setCreateTime(new Timestamp(date.getTime()));
+		setCreateTime(new Timestamp(date.getTime()));
 		final String user = JstBaseExtension.getUserId();
 
-		this.setCreateUser(user);
-		this.setUpdateUser(user);
+		setCreateUser(user);
+		setUpdateUser(user);
 	}
 
 	@PreUpdate
 	protected void preUpdateAuditFields() {
 
-		this.setUpdateUser(JstBaseExtension.getUserId());
+		setUpdateUser(JstBaseExtension.getUserId());
 	}
 }

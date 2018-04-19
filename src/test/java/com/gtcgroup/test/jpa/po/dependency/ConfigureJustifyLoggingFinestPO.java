@@ -23,17 +23,19 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po.internal;
+package com.gtcgroup.test.jpa.po.dependency;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
-import com.gtcgroup.justify.core.po.JstExceptionPO;
-import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJpaPO;
+import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
+import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.populator.dependency.NoteDataPopulator;
 
 /**
- * This Parameter Object base class supports find operations using the Resource
- * Manager pattern.
- *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
  * <a href="http://gtcGroup.com">gtcGroup.com </a>.
@@ -42,42 +44,22 @@ import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
  * @author Marvin Toll
  * @since 8.5
  */
-public abstract class BaseFindPO extends BaseJpaPO {
+public class ConfigureJustifyLoggingFinestPO extends JstConfigureTestJpaPO {
 
-	private Class<Object> entityClass;
-
-	/**
-	 * Constructor
-	 */
-	protected BaseFindPO(final String persistenceUnitName) {
-		super(persistenceUnitName);
+	@Override
+	protected String definePersistenceUnitNameTM() {
+		return ConstantsTestJPA.JUSTIFY_PU;
 	}
 
-	/**
-	 * @return {@link Class}
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getEntityClass() {
+	@Override
+	protected void populateCreateListTM(final List<Class<? extends JstBaseDataPopulator>> dataPopulatorList) {
+		dataPopulatorList.add(NoteDataPopulator.class);
 
-		if (null == this.entityClass) {
-			throw new JustifyException(JstExceptionPO.withMessage("No Entity Class was assigned for this function."));
-		}
-		return (Class<ENTITY>) this.entityClass;
 	}
 
-	/**
-	 * @return {@link Optional}
-	 */
-	@SuppressWarnings("unchecked")
-	protected <IDENTITY> IDENTITY retrieveEntityIdentity(final Object entityContainingIdentity) {
+	@Override
+	protected void populateEntityManagerFactoryPropertiesTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
 
-		return (IDENTITY) getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
-				.getIdentifier(entityContainingIdentity);
+		entityManagerFactoryPropertyMap.put(PersistenceUnitProperties.LOGGING_LEVEL, "Finest");
 	}
-
-	@SuppressWarnings("unchecked")
-	protected <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
-		this.entityClass = (Class<Object>) entityClass;
-	}
-
 }

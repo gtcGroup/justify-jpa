@@ -90,11 +90,8 @@ public abstract class BaseUuidDE extends BaseAuditDE {
 		return super.hashCode();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <CONCRETE extends BaseUuidDE> CONCRETE setUuid(final String uuid) {
+	public void setUuid(final String uuid) {
 
 		this.uuid = uuid;
-
-		return (CONCRETE) this;
 	}
 }

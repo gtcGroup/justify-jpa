@@ -23,16 +23,19 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.justify.jpa.po.internal;
+package com.gtcgroup.test.jpa.testing.intentional.error;
 
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.gtcgroup.justify.core.po.JstExceptionPO;
-import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJpaPO;
 
 /**
- * This Parameter Object base class supports find operations using the Resource
- * Manager pattern.
+ * Test Class
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
@@ -42,42 +45,15 @@ import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
  * @author Marvin Toll
  * @since 8.5
  */
-public abstract class BaseFindPO extends BaseJpaPO {
+@Tag(value = "intentional")
+@JstConfigureTestLogToConsole
+@JstConfigureTestJPA(configureTestJpaPO = JstConfigureTestJpaPO.class)
+@SuppressWarnings("static-method")
+public class Intentional1AnnotationPropertyErrorTest {
+	@Test
+	public void testIntentionalBadDataPopulator() {
 
-	private Class<Object> entityClass;
-
-	/**
-	 * Constructor
-	 */
-	protected BaseFindPO(final String persistenceUnitName) {
-		super(persistenceUnitName);
-	}
-
-	/**
-	 * @return {@link Class}
-	 */
-	@SuppressWarnings("unchecked")
-	public <ENTITY> Class<ENTITY> getEntityClass() {
-
-		if (null == this.entityClass) {
-			throw new JustifyException(JstExceptionPO.withMessage("No Entity Class was assigned for this function."));
-		}
-		return (Class<ENTITY>) this.entityClass;
-	}
-
-	/**
-	 * @return {@link Optional}
-	 */
-	@SuppressWarnings("unchecked")
-	protected <IDENTITY> IDENTITY retrieveEntityIdentity(final Object entityContainingIdentity) {
-
-		return (IDENTITY) getEntityManager().getEntityManagerFactory().getPersistenceUnitUtil()
-				.getIdentifier(entityContainingIdentity);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected <ENTITY> void setEntityClass(final Class<ENTITY> entityClass) {
-		this.entityClass = (Class<Object>) entityClass;
+		assertTrue(true);
 	}
 
 }

@@ -41,7 +41,7 @@ import javax.persistence.Query;
  * @author Marvin Toll
  * @since v.6.2
  */
-public abstract class BaseQueryPO extends BasePO {
+public abstract class BaseQueryPO extends BaseJpaPO {
 
 	private Class<Object> entityClass;
 
