@@ -30,7 +30,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
-import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJpaPO;
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
 import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
 import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.test.jpa.testing.populator.dependency.NoteDataPopulator;
@@ -44,7 +44,7 @@ import com.gtcgroup.test.jpa.testing.populator.dependency.NoteDataPopulator;
  * @author Marvin Toll
  * @since 8.5
  */
-public class ConfigureJustifyLoggingFinerPO extends JstConfigureTestJpaPO {
+public class ConfigureJustifyLoggingFinerPO extends JstConfigureTestingJpaPO {
 
 	@Override
 	protected String definePersistenceUnitNameTM() {

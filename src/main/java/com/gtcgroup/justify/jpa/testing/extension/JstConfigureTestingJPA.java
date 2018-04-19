@@ -48,8 +48,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@ExtendWith(ConfigureTestJpaExtension.class)
-public @interface JstConfigureTestJPA {
+@ExtendWith(ConfigureTestingJpaExtension.class)
+public @interface JstConfigureTestingJPA {
 
-	Class<? extends JstConfigureTestJpaPO> configureTestJpaPO();
+	Class<? extends JstConfigureTestingJpaPO> configureTestJpaPO();
 }

@@ -40,7 +40,7 @@ import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstQueryCountPO;
 import com.gtcgroup.justify.jpa.rm.JstQueryCountRM;
-import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.EntityNotPopulatedDE;
 import com.gtcgroup.test.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
@@ -59,7 +59,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class JstCountAllRmTest {
 

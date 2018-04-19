@@ -44,7 +44,7 @@ import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
 import com.gtcgroup.justify.jpa.po.JstQueryAllJPO;
 import com.gtcgroup.justify.jpa.rm.JstQueryFindRM;
-import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.EntityNotPopulatedDE;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
 import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
@@ -62,7 +62,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyAdditionalPopulatorPO
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(configureTestJpaPO = ConfigureJustifyAdditionalPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyAdditionalPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class JstFindJpaRmTest {
 

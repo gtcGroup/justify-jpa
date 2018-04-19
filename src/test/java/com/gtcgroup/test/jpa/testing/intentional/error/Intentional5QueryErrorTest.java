@@ -35,7 +35,7 @@ import com.gtcgroup.justify.jpa.po.JstQueryStringPO;
 import com.gtcgroup.justify.jpa.rm.JstQueryCountRM;
 import com.gtcgroup.justify.jpa.rm.JstQueryNamedRM;
 import com.gtcgroup.justify.jpa.rm.JstQueryStringRM;
-import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
@@ -55,7 +55,7 @@ import com.gtcgroup.test.jpa.rm.JstNamedQueryRmTest;
  */
 @Tag(value = "intentional")
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class Intentional5QueryErrorTest {
 

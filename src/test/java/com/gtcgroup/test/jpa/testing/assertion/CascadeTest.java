@@ -34,7 +34,7 @@ import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
 import com.gtcgroup.justify.core.testing.extension.JstConfigureTestUserId;
 import com.gtcgroup.justify.jpa.testing.assertion.AssertionsJPA;
 import com.gtcgroup.justify.jpa.testing.assertion.JstAssertCascadePO;
-import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.CustomerDE;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
 import com.gtcgroup.test.jpa.de.dependency.VacationDE;
@@ -54,7 +54,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
  */
 @JstConfigureTestLogToConsole
 @JstConfigureTestUserId
-@JstConfigureTestJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class CascadeTest {
 

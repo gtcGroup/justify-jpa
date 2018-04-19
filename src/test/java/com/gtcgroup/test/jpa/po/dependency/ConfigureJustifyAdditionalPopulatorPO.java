@@ -28,7 +28,7 @@ package com.gtcgroup.test.jpa.po.dependency;
 import java.util.List;
 import java.util.Map;
 
-import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJpaPO;
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
 import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
 import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.test.jpa.testing.populator.dependency.NoteAdditionalDataPopulator;
@@ -43,7 +43,7 @@ import com.gtcgroup.test.jpa.testing.populator.dependency.NoteDataPopulator;
  * @author Marvin Toll
  * @since 8.5
  */
-public class ConfigureJustifyAdditionalPopulatorPO extends JstConfigureTestJpaPO {
+public class ConfigureJustifyAdditionalPopulatorPO extends JstConfigureTestingJpaPO {
 
 	@Override
 	protected String definePersistenceUnitNameTM() {

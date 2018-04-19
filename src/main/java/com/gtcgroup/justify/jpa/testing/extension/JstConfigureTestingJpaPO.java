@@ -49,7 +49,7 @@ import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
  * @author Marvin Toll
  * @since 8.5
  */
-public abstract class JstConfigureTestJpaPO {
+public abstract class JstConfigureTestingJpaPO {
 
 	private String persistenceUnitName;
 

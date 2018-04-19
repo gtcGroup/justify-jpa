@@ -53,11 +53,11 @@ import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
  * @author Marvin Toll
  * @since 8.5
  */
-class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCallback {
+class ConfigureTestingJpaExtension extends JstBaseExtension implements BeforeAllCallback {
 
 	protected static Map<String, List<String>> entityManagerFactoryMap = new ConcurrentHashMap<>();
 
-	protected static List<String> loadDataPopulatorClassNameList(final JstConfigureTestJpaPO configureTestJpaPO) {
+	protected static List<String> loadDataPopulatorClassNameList(final JstConfigureTestingJpaPO configureTestJpaPO) {
 
 		List<String> currentDataPopulatorClassNameList;
 
@@ -145,15 +145,15 @@ class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCal
 
 		try {
 
-			final Class<? extends JstConfigureTestJpaPO> configureTestJpaClassPO = initializePropertiesFromAnnotation(
+			final Class<? extends JstConfigureTestingJpaPO> configureTestJpaClassPO = initializePropertiesFromAnnotation(
 					extensionContext);
 
-			final Optional<JstConfigureTestJpaPO> optionalConfigureTestJpaPO = JstEntityManagerCacheHelper
+			final Optional<JstConfigureTestingJpaPO> optionalConfigureTestJpaPO = JstEntityManagerCacheHelper
 					.initializeEntityManagerFactory(configureTestJpaClassPO);
 
 			if (optionalConfigureTestJpaPO.isPresent()) {
 
-				final JstConfigureTestJpaPO configureTestJpaPO = optionalConfigureTestJpaPO.get();
+				final JstConfigureTestingJpaPO configureTestJpaPO = optionalConfigureTestJpaPO.get();
 
 				if (configureTestJpaPO.isFirstInvocation()) {
 
@@ -178,11 +178,11 @@ class ConfigureTestJpaExtension extends JstBaseExtension implements BeforeAllCal
 	}
 
 	@Override
-	protected Class<? extends JstConfigureTestJpaPO> initializePropertiesFromAnnotation(
+	protected Class<? extends JstConfigureTestingJpaPO> initializePropertiesFromAnnotation(
 			final ExtensionContext extensionContext) {
 
-		final JstConfigureTestJPA configureJPA = (JstConfigureTestJPA) retrieveAnnotation(
-				extensionContext.getRequiredTestClass(), JstConfigureTestJPA.class);
+		final JstConfigureTestingJPA configureJPA = (JstConfigureTestingJPA) retrieveAnnotation(
+				extensionContext.getRequiredTestClass(), JstConfigureTestingJPA.class);
 
 		return configureJPA.configureTestJpaPO();
 	}

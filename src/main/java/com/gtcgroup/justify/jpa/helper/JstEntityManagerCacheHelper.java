@@ -36,7 +36,7 @@ import javax.persistence.Persistence;
 
 import com.gtcgroup.justify.core.po.JstExceptionPO;
 import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
-import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJpaPO;
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
 
 /**
  * This Cache Helper class manages {@link EntityManagerFactory}(s).
@@ -87,15 +87,15 @@ public enum JstEntityManagerCacheHelper {
 	/**
 	 * @return {@link Optional}
 	 */
-	public static Optional<JstConfigureTestJpaPO> initializeEntityManagerFactory(
-			final Class<? extends JstConfigureTestJpaPO> configureTestClassPO) {
+	public static Optional<JstConfigureTestingJpaPO> initializeEntityManagerFactory(
+			final Class<? extends JstConfigureTestingJpaPO> configureTestClassPO) {
 
-		JstConfigureTestJpaPO configureTestInstancePO = null;
+		JstConfigureTestingJpaPO configureTestInstancePO = null;
 
 		try {
 			configureTestInstancePO = configureTestClassPO.newInstance();
 		} catch (@SuppressWarnings("unused") final Exception e) {
-			throw new JustifyException(JstExceptionPO.withMessage("The [" + JstConfigureTestJpaPO.class.getSimpleName()
+			throw new JustifyException(JstExceptionPO.withMessage("The [" + JstConfigureTestingJpaPO.class.getSimpleName()
 					+ "] class should be extended with an instance containing property values."));
 		}
 
@@ -131,7 +131,7 @@ public enum JstEntityManagerCacheHelper {
 	/**
 	 * @return boolean
 	 */
-	private static boolean createEntityManagerFactory(final JstConfigureTestJpaPO entityManagerFactoryPropertyPO) {
+	private static boolean createEntityManagerFactory(final JstConfigureTestingJpaPO entityManagerFactoryPropertyPO) {
 
 		final String key = entityManagerFactoryPropertyPO.getPersistenceUnitName() + "/" + entityManagerFactoryPropertyPO.getClass().getName();
 

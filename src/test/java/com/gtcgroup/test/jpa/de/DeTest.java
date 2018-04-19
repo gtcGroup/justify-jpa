@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestJPA;
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
 import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyNoPopulatorPO;
 
@@ -50,7 +50,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyNoPopulatorPO;
  * @since 8.5
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestJPA(configureTestJpaPO = ConfigureJustifyNoPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyNoPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class DeTest {
 
