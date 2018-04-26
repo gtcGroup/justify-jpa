@@ -35,7 +35,7 @@ import javax.persistence.EntityManagerFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.gtcgroup.justify.core.testing.extension.JstBaseExtension;
-import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
 
 /**
  * This Parameter Object class supports configuring an
@@ -53,7 +53,7 @@ public abstract class JstConfigureTestingJpaPO {
 
 	private String persistenceUnitName;
 
-	private final List<Class<? extends JstBaseDataPopulator>> dataPopulatorList = new ArrayList<>();
+	private final List<Class<? extends JstBaseTestingPopulator>> dataPopulatorList = new ArrayList<>();
 
 	private final Map<String, Object> entityManagerFactoryPropertyMap = new ConcurrentHashMap<>();
 
@@ -61,7 +61,7 @@ public abstract class JstConfigureTestingJpaPO {
 
 	private boolean isFirstInvocation = true;
 
-	public List<Class<? extends JstBaseDataPopulator>> getDataPopulatorList() {
+	public List<Class<? extends JstBaseTestingPopulator>> getDataPopulatorList() {
 		populateCreateListTM(this.dataPopulatorList);
 		return this.dataPopulatorList;
 	}
@@ -107,7 +107,7 @@ public abstract class JstConfigureTestingJpaPO {
 	protected abstract String definePersistenceUnitNameTM();
 
 	protected abstract void populateCreateListTM(
-			final List<Class<? extends JstBaseDataPopulator>> dataPopulatorList);
+			final List<Class<? extends JstBaseTestingPopulator>> dataPopulatorList);
 
 	protected abstract void populateEntityManagerFactoryPropertiesTM(
 			Map<String, Object> entityManagerFactoryPropertyMap);

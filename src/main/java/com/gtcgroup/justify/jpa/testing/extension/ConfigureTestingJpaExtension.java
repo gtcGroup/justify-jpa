@@ -40,7 +40,7 @@ import com.gtcgroup.justify.core.testing.extension.JstBaseExtension;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
-import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
 
 /**
  * This {@link Extension} class initializes JPA.
@@ -96,7 +96,7 @@ class ConfigureTestingJpaExtension extends JstBaseExtension implements BeforeAll
 
 			if (dataPopulatorClass.isPresent()) {
 
-				final Optional<JstBaseDataPopulator> dataPopulator = (Optional<JstBaseDataPopulator>) JstReflectionUtilHelper
+				final Optional<JstBaseTestingPopulator> dataPopulator = (Optional<JstBaseTestingPopulator>) JstReflectionUtilHelper
 						.instantiateInstanceUsingPublicConstructorWithNoArgument(dataPopulatorClass.get());
 
 				if (dataPopulator.isPresent()) {
@@ -184,6 +184,6 @@ class ConfigureTestingJpaExtension extends JstBaseExtension implements BeforeAll
 		final JstConfigureTestingJPA configureJPA = (JstConfigureTestingJPA) retrieveAnnotation(
 				extensionContext.getRequiredTestClass(), JstConfigureTestingJPA.class);
 
-		return configureJPA.configureTestJpaPO();
+		return configureJPA.configureTestingJpaPO();
 	}
 }

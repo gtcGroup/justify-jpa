@@ -29,10 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
-import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
 import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.test.jpa.testing.populator.dependency.NoteAdditionalDataPopulator;
-import com.gtcgroup.test.jpa.testing.populator.dependency.NoteDataPopulator;
+import com.gtcgroup.test.jpa.testing.populator.dependency.NoteAdditionalTestingPopulator;
+import com.gtcgroup.test.jpa.testing.populator.dependency.NoteTestingPopulator;
 
 /**
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
@@ -51,9 +51,9 @@ public class ConfigureJustifyAdditionalPopulatorPO extends JstConfigureTestingJp
 	}
 
 	@Override
-	protected void populateCreateListTM(final List<Class<? extends JstBaseDataPopulator>> dataPopulatorList) {
-		dataPopulatorList.add(NoteDataPopulator.class);
-		dataPopulatorList.add(NoteAdditionalDataPopulator.class);
+	protected void populateCreateListTM(final List<Class<? extends JstBaseTestingPopulator>> dataPopulatorList) {
+		dataPopulatorList.add(NoteTestingPopulator.class);
+		dataPopulatorList.add(NoteAdditionalTestingPopulator.class);
 	}
 
 	@Override

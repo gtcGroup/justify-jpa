@@ -60,7 +60,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyLoggingFinerPO;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyLoggingFinerPO.class)
+@JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyLoggingFinerPO.class)
 @SuppressWarnings("static-method")
 public class JstNamedQueryRmTest {
 

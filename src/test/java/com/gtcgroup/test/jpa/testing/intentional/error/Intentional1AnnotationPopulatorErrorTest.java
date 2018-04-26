@@ -47,7 +47,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyNonDataPopulatorPO;
  */
 @Tag(value = "intentional")
 @JstConfigureTestLogToConsole
-@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyNonDataPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyNonDataPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class Intentional1AnnotationPopulatorErrorTest {
 

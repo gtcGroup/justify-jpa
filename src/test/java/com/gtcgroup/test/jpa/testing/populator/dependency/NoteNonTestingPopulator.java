@@ -25,37 +25,18 @@
  */
 package com.gtcgroup.test.jpa.testing.populator.dependency;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
-import com.gtcgroup.test.jpa.de.dependency.NoteDE;
+import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
 
 /**
- * Test Class
- *
- * <p style="font-family:Verdana; font-size:10px; font-style:italic">
- * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at
- * <a href="http://gtcGroup.com">gtcGroup.com </a>.
- * </p>
- *
- * @author Marvin Toll
- * @since v3.0
+ * @since v. 1.0
  */
-public class NoteAdditionalDataPopulator extends JstBaseDataPopulator {
+public class NoteNonTestingPopulator extends JstBaseTestingPopulator {
 
-	public final static String ADDITIONAL_UUID = "additionalUUID";
-
-	/**
-	 * @see JstBaseDataPopulator#populateCreateListTM(String)
-	 */
 	@Override
 	public List<Object> populateCreateListTM(final String persistenceUnitName) {
-
-		final List<Object> createList = new ArrayList<>();
-		final NoteDE note = new NoteDE();
-		note.setUuid(NoteAdditionalDataPopulator.ADDITIONAL_UUID);
-		createList.add(note);
-		return createList;
+		return null;
 	}
+
 }

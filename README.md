@@ -1,5 +1,5 @@
 # justify-jpa
-JPA MODULE: PED Central is the home for the open-source “Justify” suite of software engineering modules.
+JPA MODULE: PED Central is the home for the open-source ï¿½Justifyï¿½ suite of software engineering modules.
 Justify seeks API alignment between Java 1.8+ application code and JUnit 5 test code.
 
 <a href="http://pedcentral.com/justify/" target="_blank">
@@ -7,6 +7,10 @@ Justify seeks API alignment between Java 1.8+ application code and JUnit 5 test 
 </a>
 
 ### <a name="changes"></a>Release Notes
+
+#### Version 8.5.0-alpha5 <span class="date">2018-xx-xx</span>
+
+*   28 [Final alpha5 tweaks.](https://github.com/gtcGroup/justify-jpa/issues/28)
 
 #### Version 8.5.0-alpha4 <span class="date">2018-04-19</span>
 

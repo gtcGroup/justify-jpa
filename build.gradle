@@ -59,6 +59,17 @@ dependencies {
     compile 'com.gtcgroup:justify-core:8.5.0-alpha4' 
     compile 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.+'
     compile 'com.h2database:h2:1.4.+'
+    
+    // TODO: REMOVE THIS!!!!!
+    compile("org.junit.jupiter:junit-jupiter-api:5.+") {
+        exclude group: 'junit', module: 'junit'
+    }
+    compile("org.junit.platform:junit-platform-launcher:1.+") {
+        exclude group: 'junit', module: 'junit'
+    }
+    compile("org.junit.jupiter:junit-jupiter-engine:5.+") {
+        exclude group: 'junit', module: 'junit'
+    }
 }
  
 test {

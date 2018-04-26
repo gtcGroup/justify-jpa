@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
-import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
 import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
 
 /**
@@ -49,7 +49,7 @@ public class ConfigureJustifyNoPopulatorPO extends JstConfigureTestingJpaPO {
 	}
 
 	@Override
-	protected void populateCreateListTM(final List<Class<? extends JstBaseDataPopulator>> dataPopulatorList) {
+	protected void populateCreateListTM(final List<Class<? extends JstBaseTestingPopulator>> dataPopulatorList) {
 		// Empty Block
 	}
 

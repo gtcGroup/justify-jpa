@@ -62,7 +62,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyAdditionalPopulatorPO
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyAdditionalPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyAdditionalPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class JstFindJpaRmTest {
 

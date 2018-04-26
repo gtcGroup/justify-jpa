@@ -52,7 +52,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyLoggingFinestPO;
  * @since v3.0
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyLoggingFinestPO.class)
+@JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyLoggingFinestPO.class)
 @SuppressWarnings("static-method")
 public class JstLogFinestPoTest {
 

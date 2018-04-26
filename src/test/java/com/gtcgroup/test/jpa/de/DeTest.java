@@ -50,7 +50,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyNoPopulatorPO;
  * @since 8.5
  */
 @JstConfigureTestLogToConsole
-@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyNoPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyNoPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class DeTest {
 

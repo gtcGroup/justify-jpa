@@ -47,7 +47,7 @@ import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
  */
 @Tag(value = "intentional")
 @JstConfigureTestLogToConsole
-@JstConfigureTestingJPA(configureTestJpaPO = JstConfigureTestingJpaPO.class)
+@JstConfigureTestingJPA(configureTestingJpaPO = JstConfigureTestingJpaPO.class)
 @SuppressWarnings("static-method")
 public class Intentional1AnnotationPropertyErrorTest {
 	@Test

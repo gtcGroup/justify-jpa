@@ -42,7 +42,7 @@ import com.gtcgroup.justify.core.JstPatternEnabledDevelopmentSuffix;
  * @author Marvin Toll
  * @since v3.0
  */
-public abstract class JstBaseDataPopulator extends JstPatternEnabledDevelopmentSuffix {
+public abstract class JstBaseTestingPopulator extends JstPatternEnabledDevelopmentSuffix {
 
 	/**
 	 * This template method enables the populating entities for subsequent database
@@ -55,7 +55,7 @@ public abstract class JstBaseDataPopulator extends JstPatternEnabledDevelopmentS
 	@Override
 	protected String assignPatternSuffixTM() {
 
-		return "DataPopulator";
+		return "TestingPopulator";
 	}
 
 }

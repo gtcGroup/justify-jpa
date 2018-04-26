@@ -54,7 +54,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
  */
 @JstConfigureTestLogToConsole
 @JstConfigureTestUserId
-@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class CascadeTest {
 

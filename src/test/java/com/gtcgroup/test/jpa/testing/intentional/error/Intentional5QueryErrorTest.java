@@ -55,7 +55,7 @@ import com.gtcgroup.test.jpa.rm.JstNamedQueryRmTest;
  */
 @Tag(value = "intentional")
 @JstConfigureTestLogToConsole
-@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class Intentional5QueryErrorTest {
 

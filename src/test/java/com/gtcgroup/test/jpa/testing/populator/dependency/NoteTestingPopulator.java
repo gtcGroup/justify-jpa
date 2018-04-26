@@ -28,7 +28,7 @@ package com.gtcgroup.test.jpa.testing.populator.dependency;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.gtcgroup.justify.jpa.testing.populator.JstBaseDataPopulator;
+import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
 import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
 
@@ -43,7 +43,7 @@ import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
  * @author Marvin Toll
  * @since v3.0
  */
-public class NoteDataPopulator extends JstBaseDataPopulator {
+public class NoteTestingPopulator extends JstBaseTestingPopulator {
 
 	public static NoteDE noteOne = new NoteDE();
 
@@ -62,13 +62,13 @@ public class NoteDataPopulator extends JstBaseDataPopulator {
 	public List<Object> populatedList = new ArrayList<>();
 
 	/**
-	 * @see JstBaseDataPopulator#populateCreateListTM(JstQueryJpaRM)
+	 * @see JstBaseTestingPopulator#populateCreateListTM(JstQueryJpaRM)
 	 */
 	@Override
 	public List<Object> populateCreateListTM(final String persistenceUnitName) {
 
-		this.populatedList.add(NoteDataPopulator.noteOne);
-		this.populatedList.add(NoteDataPopulator.noteTwo);
+		this.populatedList.add(NoteTestingPopulator.noteOne);
+		this.populatedList.add(NoteTestingPopulator.noteTwo);
 
 		return this.populatedList;
 	}

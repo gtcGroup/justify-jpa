@@ -34,7 +34,7 @@ import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
 import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
-import com.gtcgroup.test.jpa.testing.populator.dependency.NoteDataPopulator;
+import com.gtcgroup.test.jpa.testing.populator.dependency.NoteTestingPopulator;
 
 /**
  * Test Class
@@ -49,7 +49,7 @@ import com.gtcgroup.test.jpa.testing.populator.dependency.NoteDataPopulator;
  */
 @Tag(value = "intentional")
 @JstConfigureTestLogToConsole
-@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class Intentional4AssertionFailedTest {
 
@@ -77,6 +77,6 @@ public class Intentional4AssertionFailedTest {
 	@Test
 	public void testIntentionalNotExistsInDatabase_instance() {
 
-		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteOne);
+		AssertionsJPA.assertNotExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteTestingPopulator.noteOne);
 	}
 }

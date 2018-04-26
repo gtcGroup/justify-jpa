@@ -38,7 +38,7 @@ import com.gtcgroup.test.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
 import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
 import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
-import com.gtcgroup.test.jpa.testing.populator.dependency.NoteDataPopulator;
+import com.gtcgroup.test.jpa.testing.populator.dependency.NoteTestingPopulator;
 
 /**
  * Test Class
@@ -53,7 +53,7 @@ import com.gtcgroup.test.jpa.testing.populator.dependency.NoteDataPopulator;
  */
 @JstConfigureTestLogToConsole
 @JstConfigureTestUserId(userId = "assertionsId")
-@JstConfigureTestingJPA(configureTestJpaPO = ConfigureJustifyWithPopulatorPO.class)
+@JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class AssertionsJpaTest {
 
@@ -61,7 +61,7 @@ public class AssertionsJpaTest {
 	public void testExistsInDatabase_happyPath() {
 
 		assertAll(() -> {
-			AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDataPopulator.noteOne);
+			AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteTestingPopulator.noteOne);
 			AssertionsJPA.assertExistsInDatabase(ConstantsTestJPA.JUSTIFY_PU, NoteDE.class,
 					ConstantsTestJPA.NOTE_UUID_ONE);
 		});

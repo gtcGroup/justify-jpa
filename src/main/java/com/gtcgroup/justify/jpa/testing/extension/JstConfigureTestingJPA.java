@@ -51,5 +51,5 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(ConfigureTestingJpaExtension.class)
 public @interface JstConfigureTestingJPA {
 
-	Class<? extends JstConfigureTestingJpaPO> configureTestJpaPO();
+	Class<? extends JstConfigureTestingJpaPO> configureTestingJpaPO();
 }
