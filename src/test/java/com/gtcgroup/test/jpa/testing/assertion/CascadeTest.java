@@ -30,16 +30,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
-import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.core.testing.extension.JstConfigureTestUserId;
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestingLogToConsole;
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestingUserId;
 import com.gtcgroup.justify.jpa.testing.assertion.AssertionsJPA;
 import com.gtcgroup.justify.jpa.testing.assertion.JstAssertCascadePO;
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.CustomerDE;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
 import com.gtcgroup.test.jpa.de.dependency.VacationDE;
-import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
+import com.gtcgroup.test.jpa.testing.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.po.dependency.ConfigureJustifyWithPopulatorPO;
 
 /**
  * Test Class
@@ -52,8 +52,8 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
  * @author Marvin Toll
  * @since v6.2
  */
-@JstConfigureTestLogToConsole
-@JstConfigureTestUserId
+@JstConfigureTestingLogToConsole
+@JstConfigureTestingUserId
 @JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class CascadeTest {

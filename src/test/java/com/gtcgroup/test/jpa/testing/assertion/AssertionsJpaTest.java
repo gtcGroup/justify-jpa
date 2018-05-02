@@ -30,14 +30,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
-import com.gtcgroup.justify.core.testing.extension.JstConfigureTestUserId;
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestingLogToConsole;
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestingUserId;
 import com.gtcgroup.justify.jpa.testing.assertion.AssertionsJPA;
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.NotAnEntityDE;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
-import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
+import com.gtcgroup.test.jpa.testing.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.po.dependency.ConfigureJustifyWithPopulatorPO;
 import com.gtcgroup.test.jpa.testing.populator.dependency.NoteTestingPopulator;
 
 /**
@@ -51,8 +51,8 @@ import com.gtcgroup.test.jpa.testing.populator.dependency.NoteTestingPopulator;
  * @author Marvin Toll
  * @since v3.0
  */
-@JstConfigureTestLogToConsole
-@JstConfigureTestUserId(userId = "assertionsId")
+@JstConfigureTestingLogToConsole
+@JstConfigureTestingUserId(userId = "assertionsId")
 @JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class AssertionsJpaTest {

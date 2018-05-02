@@ -33,12 +33,12 @@ import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
-import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.core.testing.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestingLogToConsole;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
-import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
+import com.gtcgroup.test.jpa.testing.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.po.dependency.ConfigureJustifyWithPopulatorPO;
 
 /**
  * Test Class
@@ -51,7 +51,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
  * @author Marvin Toll
  * @since v3.0
  */
-@JstConfigureTestLogToConsole
+@JstConfigureTestingLogToConsole
 @JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class JstEntityManagerFactoryCacheHelperTest {
@@ -78,7 +78,7 @@ public class JstEntityManagerFactoryCacheHelperTest {
 	@Test
 	public void testCreateEntityManagerToBeClosed_null() {
 
-		assertThrows(JustifyException.class, () -> {
+		assertThrows(JustifyTestingException.class, () -> {
 			JstEntityManagerCacheHelper.createEntityManagerToBeClosed(null);
 		});
 	}

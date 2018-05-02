@@ -30,7 +30,7 @@ import java.util.List;
 
 import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
-import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.helper.dependency.ConstantsTestJPA;
 
 /**
  * Test Class

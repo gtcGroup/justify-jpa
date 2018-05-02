@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestingLogToConsole;
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
 
@@ -46,7 +46,7 @@ import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
  * @since 8.5
  */
 @Tag(value = "intentional")
-@JstConfigureTestLogToConsole
+@JstConfigureTestingLogToConsole
 @JstConfigureTestingJPA(configureTestingJpaPO = JstConfigureTestingJpaPO.class)
 @SuppressWarnings("static-method")
 public class Intentional1AnnotationPropertyErrorTest {

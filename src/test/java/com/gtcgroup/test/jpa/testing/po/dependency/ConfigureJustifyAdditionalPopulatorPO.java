@@ -23,14 +23,15 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.test.jpa.po.dependency;
+package com.gtcgroup.test.jpa.testing.po.dependency;
 
 import java.util.List;
 import java.util.Map;
 
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
 import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
-import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.populator.dependency.NoteAdditionalTestingPopulator;
 import com.gtcgroup.test.jpa.testing.populator.dependency.NoteTestingPopulator;
 
 /**
@@ -42,7 +43,7 @@ import com.gtcgroup.test.jpa.testing.populator.dependency.NoteTestingPopulator;
  * @author Marvin Toll
  * @since 8.5
  */
-public class ConfigureJustifyWithPopulatorPO extends JstConfigureTestingJpaPO {
+public class ConfigureJustifyAdditionalPopulatorPO extends JstConfigureTestingJpaPO {
 
 	@Override
 	protected String definePersistenceUnitNameTM() {
@@ -52,6 +53,7 @@ public class ConfigureJustifyWithPopulatorPO extends JstConfigureTestingJpaPO {
 	@Override
 	protected void populateCreateListTM(final List<Class<? extends JstBaseTestingPopulator>> dataPopulatorList) {
 		dataPopulatorList.add(NoteTestingPopulator.class);
+		dataPopulatorList.add(NoteAdditionalTestingPopulator.class);
 	}
 
 	@Override

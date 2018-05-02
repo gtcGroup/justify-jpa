@@ -56,7 +56,7 @@ repositories {
 dependencies {
 
     //compile project(':justify-core')
-    compile 'com.gtcgroup:justify-core:8.5.0-alpha4' 
+    compile 'com.gtcgroup:justify-core:8.5.0-alpha5' 
     compile 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.+'
     compile 'com.h2database:h2:1.4.+'
     
@@ -105,7 +105,7 @@ signing {
 
 group = "com.gtcgroup"
 archivesBaseName = "justify-jpa"
-version = "8.5.0-alpha4"
+version = "8.5.0-alpha5"
 
 task writeTestPOM << {
     pom {
@@ -135,7 +135,7 @@ uploadArchives {
         name 'Justify JPA'
         packaging 'jar'
 
-        description 'JPA MODULE: PED Central is the home for the open-source “Justify” suite of software engineering modules. Justify seeks API alignment between Java 1.8+ application code and JUnit 5 test code.'
+        description 'JPA MODULE: PED Central is the home for the open-source ï¿½Justifyï¿½ suite of software engineering modules. Justify seeks API alignment between Java 1.8+ application code and JUnit 5 test code.'
         url 'http://pedCentral.com/justify'
 
         scm {

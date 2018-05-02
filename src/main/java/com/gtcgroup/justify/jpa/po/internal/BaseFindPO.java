@@ -28,7 +28,7 @@ package com.gtcgroup.justify.jpa.po.internal;
 import java.util.Optional;
 
 import com.gtcgroup.justify.core.po.JstExceptionPO;
-import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
+import com.gtcgroup.justify.core.testing.exception.internal.JustifyTestingException;
 
 /**
  * This Parameter Object base class supports find operations using the Resource
@@ -60,7 +60,8 @@ public abstract class BaseFindPO extends BaseJpaPO {
 	public <ENTITY> Class<ENTITY> getEntityClass() {
 
 		if (null == this.entityClass) {
-			throw new JustifyException(JstExceptionPO.withMessage("No Entity Class was assigned for this function."));
+			throw new JustifyTestingException(
+					JstExceptionPO.withMessage("No Entity Class was assigned for this function."));
 		}
 		return (Class<ENTITY>) this.entityClass;
 	}

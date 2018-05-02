@@ -28,7 +28,7 @@ package com.gtcgroup.test.jpa.testing.intentional.error;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestingLogToConsole;
 import com.gtcgroup.justify.jpa.po.JstQueryCountPO;
 import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
 import com.gtcgroup.justify.jpa.po.JstQueryStringPO;
@@ -37,10 +37,10 @@ import com.gtcgroup.justify.jpa.rm.JstQueryNamedRM;
 import com.gtcgroup.justify.jpa.rm.JstQueryStringRM;
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.NotAnEntityDE;
-import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyWithPopulatorPO;
 import com.gtcgroup.test.jpa.rm.JstFindJpaRmTest;
 import com.gtcgroup.test.jpa.rm.JstNamedQueryRmTest;
+import com.gtcgroup.test.jpa.testing.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.po.dependency.ConfigureJustifyWithPopulatorPO;
 
 /**
  * Test Class
@@ -54,7 +54,7 @@ import com.gtcgroup.test.jpa.rm.JstNamedQueryRmTest;
  * @since 8.5
  */
 @Tag(value = "intentional")
-@JstConfigureTestLogToConsole
+@JstConfigureTestingLogToConsole
 @JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyWithPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class Intentional5QueryErrorTest {

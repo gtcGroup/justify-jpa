@@ -38,8 +38,8 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
-import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.core.testing.exception.internal.JustifyTestingException;
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestingLogToConsole;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstFindSinglePO;
 import com.gtcgroup.justify.jpa.po.JstQueryAllJPO;
@@ -47,8 +47,8 @@ import com.gtcgroup.justify.jpa.rm.JstQueryFindRM;
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.EntityNotPopulatedDE;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
-import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyAdditionalPopulatorPO;
+import com.gtcgroup.test.jpa.testing.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.po.dependency.ConfigureJustifyAdditionalPopulatorPO;
 
 /**
  * Test Class
@@ -61,7 +61,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyAdditionalPopulatorPO
  * @author Marvin Toll
  * @since v3.0
  */
-@JstConfigureTestLogToConsole
+@JstConfigureTestingLogToConsole
 @JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyAdditionalPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class JstFindJpaRmTest {
@@ -118,7 +118,7 @@ public class JstFindJpaRmTest {
 	@Test
 	public void testFind_noEntityClass() {
 
-		assertThrows(JustifyException.class, () -> {
+		assertThrows(JustifyTestingException.class, () -> {
 			findReadOnlyNoteDE_problem(ConstantsTestJPA.NOTE_UUID_TWO);
 		});
 	}

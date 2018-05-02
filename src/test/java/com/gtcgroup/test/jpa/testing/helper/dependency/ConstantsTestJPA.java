@@ -23,14 +23,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.test.jpa.po.dependency;
-
-import java.util.List;
-import java.util.Map;
-
-import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
-import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
-import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
+package com.gtcgroup.test.jpa.testing.helper.dependency;
 
 /**
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
@@ -39,22 +32,33 @@ import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
  * </p>
  *
  * @author Marvin Toll
- * @since 8.5
+ * @since v3.0
  */
-public class ConfigureJustifyNoPopulatorPO extends JstConfigureTestingJpaPO {
+public enum ConstantsTestJPA {
 
-	@Override
-	protected String definePersistenceUnitNameTM() {
-		return ConstantsTestJPA.JUSTIFY_PU;
-	}
+	INSTANCE;
 
-	@Override
-	protected void populateCreateListTM(final List<Class<? extends JstBaseTestingPopulator>> dataPopulatorList) {
-		// Empty Block
-	}
+	public final static String NOTE_TEXT_ONE = "testTextOne";
 
-	@Override
-	protected void populateEntityManagerFactoryPropertiesTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
-		// Empty Block
-	}
+	public final static String NOTE_TEXT_TWO = "testTextTwo";
+
+	public final static String QUERY_NOTE_SINGLE_ONE = "queryNoteSingleOne";
+
+	public final static String QUERY_NOTE_SINGLE_TWO = "queryNoteSingleTwo";
+
+	public static final String NOTE_UUID_ONE = "noteIdentityOne";
+
+	public static final String NOTE_UUID_TWO = "noteIdentityTwo";
+
+	public static final String JUSTIFY_PU = "justify-pu";
+
+	public static final String JUSTIFY_FINER = "justify-finer";
+
+	public static final String JUSTIFY_SECOND_PU = "justify-second-pu";
+
+	public static final String CUSTOMER_ENTITY_IDENTITY = "customerIdentity";
+
+	public static final String RANDOM_ENTITY_IDENTITY = "J!u@s#t$i%f^y";
+
+	public static final String SQL_NATIVE_NOTE_LIST = "SELECT * FROM NOTE";
 }

@@ -34,7 +34,6 @@ import javax.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
-import com.gtcgroup.justify.core.testing.extension.JstBaseExtension;
 import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
 
 /**
@@ -50,8 +49,6 @@ import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
  * @since 8.5
  */
 public abstract class JstConfigureTestingJpaPO {
-
-	private String persistenceUnitName;
 
 	private final List<Class<? extends JstBaseTestingPopulator>> dataPopulatorList = new ArrayList<>();
 
@@ -78,8 +75,7 @@ public abstract class JstConfigureTestingJpaPO {
 
 	public String getPersistenceUnitName() {
 
-		this.persistenceUnitName = definePersistenceUnitNameTM();
-		return this.persistenceUnitName;
+		return definePersistenceUnitNameTM();
 	}
 
 	boolean isConnectionString() {

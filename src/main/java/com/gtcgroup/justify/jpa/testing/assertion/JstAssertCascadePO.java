@@ -35,7 +35,8 @@ import javax.persistence.Entity;
 import com.gtcgroup.justify.core.base.JstBasePO;
 
 /**
- * This Parameter Object class supports testing of Domain Entity cascade types.
+ * This Parameter Object class supports testing of Domain {@link Entity} cascade
+ * types.
  *
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
  * Copyright (c) 2006 - 2018 by Global Technology Consulting Group, Inc. at

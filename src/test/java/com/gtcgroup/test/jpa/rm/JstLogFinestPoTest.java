@@ -32,13 +32,13 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestingLogToConsole;
 import com.gtcgroup.justify.jpa.po.JstQueryNamedPO;
 import com.gtcgroup.justify.jpa.rm.JstQueryNamedRM;
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
-import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyLoggingFinestPO;
+import com.gtcgroup.test.jpa.testing.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.po.dependency.ConfigureJustifyLoggingFinestPO;
 
 /**
  * Test Class
@@ -51,7 +51,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyLoggingFinestPO;
  * @author Marvin Toll
  * @since v3.0
  */
-@JstConfigureTestLogToConsole
+@JstConfigureTestingLogToConsole
 @JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyLoggingFinestPO.class)
 @SuppressWarnings("static-method")
 public class JstLogFinestPoTest {

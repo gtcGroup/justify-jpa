@@ -23,7 +23,15 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.test.jpa.helper.dependency;
+package com.gtcgroup.test.jpa.testing.po.dependency;
+
+import java.util.List;
+import java.util.Map;
+
+import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
+import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
+import com.gtcgroup.test.jpa.testing.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.populator.dependency.NoteNonTestingPopulator;
 
 /**
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
@@ -32,35 +40,24 @@ package com.gtcgroup.test.jpa.helper.dependency;
  * </p>
  *
  * @author Marvin Toll
- * @since v3.0
+ * @since 8.5
  */
-public enum ConstantsTestJPA {
+public class ConfigureJustifyNonDataPopulatorPO extends JstConfigureTestingJpaPO {
 
-	INSTANCE;
+	@Override
+	protected String definePersistenceUnitNameTM() {
+		return ConstantsTestJPA.JUSTIFY_PU;
+	}
 
-	public final static String NOTE_TEXT_ONE = "testTextOne";
+	@Override
+	protected void populateCreateListTM(final List<Class<? extends JstBaseTestingPopulator>> dataPopulatorList) {
+		dataPopulatorList.add(NoteNonTestingPopulator.class);
 
-	public final static String NOTE_TEXT_TWO = "testTextTwo";
+	}
 
-	public final static String QUERY_NOTE_SINGLE_ONE = "queryNoteSingleOne";
+	@Override
+	protected void populateEntityManagerFactoryPropertiesTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
 
-	public final static String QUERY_NOTE_SINGLE_TWO = "queryNoteSingleTwo";
-
-	public static final String NOTE_UUID_ONE = "noteIdentityOne";
-
-	public static final String NOTE_UUID_TWO = "noteIdentityTwo";
-
-	public static final String JUSTIFY_PU = "justify-pu";
-
-	public static final String JUSTIFY_FINER = "justify-finer";
-
-	public static final String JUSTIFY_SECOND_PU = "justify-second-pu";
-
-	public static final String CUSTOMER_ENTITY_IDENTITY = "customerIdentity";
-
-	public static final String RANDOM_ENTITY_IDENTITY = "J!u@s#t$i%f^y";
-
-	public static final String SQL_NATIVE_NOTE_LIST = "SELECT * FROM NOTE";
-
-	public static final String SQL_NATIVE_NOTE_SINGLE = "SELECT * FROM NOTE WHERE NOTE_TEXT = ?";
+		// Empty Block
+	}
 }

@@ -23,15 +23,17 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gtcgroup.test.jpa.po.dependency;
+package com.gtcgroup.test.jpa.testing.po.dependency;
 
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
 import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
-import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.test.jpa.testing.populator.dependency.NoteNonTestingPopulator;
+import com.gtcgroup.test.jpa.testing.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.populator.dependency.NoteTestingPopulator;
 
 /**
  * <p style="font-family:Verdana; font-size:10px; font-style:italic">
@@ -42,7 +44,7 @@ import com.gtcgroup.test.jpa.testing.populator.dependency.NoteNonTestingPopulato
  * @author Marvin Toll
  * @since 8.5
  */
-public class ConfigureJustifyNonDataPopulatorPO extends JstConfigureTestingJpaPO {
+public class ConfigureJustifyLoggingFinerPO extends JstConfigureTestingJpaPO {
 
 	@Override
 	protected String definePersistenceUnitNameTM() {
@@ -51,13 +53,15 @@ public class ConfigureJustifyNonDataPopulatorPO extends JstConfigureTestingJpaPO
 
 	@Override
 	protected void populateCreateListTM(final List<Class<? extends JstBaseTestingPopulator>> dataPopulatorList) {
-		dataPopulatorList.add(NoteNonTestingPopulator.class);
+		dataPopulatorList.add(NoteTestingPopulator.class);
 
 	}
 
 	@Override
 	protected void populateEntityManagerFactoryPropertiesTM(final Map<String, Object> entityManagerFactoryPropertyMap) {
 
-		// Empty Block
+		entityManagerFactoryPropertyMap.put(PersistenceUnitProperties.LOGGING_LEVEL, "FINER");
+		entityManagerFactoryPropertyMap.put(PersistenceUnitProperties.JDBC_URL,
+				"jdbc:h2:mem:justify-finer;MODE=MSSQLServer");
 	}
 }

@@ -35,7 +35,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import com.gtcgroup.justify.core.po.JstExceptionPO;
-import com.gtcgroup.justify.core.testing.exception.internal.JustifyException;
+import com.gtcgroup.justify.core.testing.exception.internal.JustifyTestingException;
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJpaPO;
 
 /**
@@ -73,7 +73,7 @@ public enum JstEntityManagerCacheHelper {
 	public static Optional<EntityManager> createEntityManagerToBeClosed(final String persistenceUnitName) {
 
 		if (null == persistenceUnitName) {
-			throw new JustifyException(JstExceptionPO.withMessage("The persistence unit name is null."));
+			throw new JustifyTestingException(JstExceptionPO.withMessage("The persistence unit name is null."));
 		}
 
 		// Early Return
@@ -95,8 +95,9 @@ public enum JstEntityManagerCacheHelper {
 		try {
 			configureTestInstancePO = configureTestClassPO.newInstance();
 		} catch (@SuppressWarnings("unused") final Exception e) {
-			throw new JustifyException(JstExceptionPO.withMessage("The [" + JstConfigureTestingJpaPO.class.getSimpleName()
-					+ "] class should be extended with an instance containing property values."));
+			throw new JustifyTestingException(
+					JstExceptionPO.withMessage("The [" + JstConfigureTestingJpaPO.class.getSimpleName()
+							+ "] class should be extended with an instance containing proper values."));
 		}
 
 		final boolean isFirstUseOfFactory = JstEntityManagerCacheHelper
@@ -133,7 +134,8 @@ public enum JstEntityManagerCacheHelper {
 	 */
 	private static boolean createEntityManagerFactory(final JstConfigureTestingJpaPO entityManagerFactoryPropertyPO) {
 
-		final String key = entityManagerFactoryPropertyPO.getPersistenceUnitName() + "/" + entityManagerFactoryPropertyPO.getClass().getName();
+		final String key = entityManagerFactoryPropertyPO.getPersistenceUnitName() + "/"
+				+ entityManagerFactoryPropertyPO.getClass().getName();
 
 		if (entityManagerFactoryMap.containsKey(key)) {
 			currentEntityManagerFactory.replace(entityManagerFactoryPropertyPO.getPersistenceUnitName(),

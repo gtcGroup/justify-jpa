@@ -35,7 +35,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 
 import com.gtcgroup.justify.core.base.JstBaseDE;
-import com.gtcgroup.justify.core.testing.extension.JstBaseExtension;
+import com.gtcgroup.justify.core.testing.extension.JstBaseTestingExtension;
 
 /**
  * This Domain Entity base class supports audit columns.
@@ -107,7 +107,7 @@ public abstract class BaseAuditDE extends JstBaseDE {
 
 		final Date date = new Date();
 		setCreateTime(new Timestamp(date.getTime()));
-		final String user = JstBaseExtension.getUserId();
+		final String user = JstBaseTestingExtension.getUserId();
 
 		setCreateUser(user);
 		setUpdateUser(user);
@@ -116,6 +116,6 @@ public abstract class BaseAuditDE extends JstBaseDE {
 	@PreUpdate
 	protected void preUpdateAuditFields() {
 
-		setUpdateUser(JstBaseExtension.getUserId());
+		setUpdateUser(JstBaseTestingExtension.getUserId());
 	}
 }

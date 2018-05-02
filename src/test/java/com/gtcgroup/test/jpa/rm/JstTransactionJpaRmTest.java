@@ -43,15 +43,15 @@ import javax.persistence.EntityManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.gtcgroup.justify.core.testing.extension.JstConfigureTestLogToConsole;
+import com.gtcgroup.justify.core.testing.extension.JstConfigureTestingLogToConsole;
 import com.gtcgroup.justify.jpa.exception.JstOptimisiticLockException;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
 import com.gtcgroup.justify.jpa.testing.extension.JstConfigureTestingJPA;
 import com.gtcgroup.test.jpa.de.dependency.NoteDE;
-import com.gtcgroup.test.jpa.helper.dependency.ConstantsTestJPA;
-import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyNoPopulatorPO;
+import com.gtcgroup.test.jpa.testing.helper.dependency.ConstantsTestJPA;
+import com.gtcgroup.test.jpa.testing.po.dependency.ConfigureJustifyNoPopulatorPO;
 
 /**
  * Test Class
@@ -64,7 +64,7 @@ import com.gtcgroup.test.jpa.po.dependency.ConfigureJustifyNoPopulatorPO;
  * @author Marvin Toll
  * @since v3.0
  */
-@JstConfigureTestLogToConsole
+@JstConfigureTestingLogToConsole
 @JstConfigureTestingJPA(configureTestingJpaPO = ConfigureJustifyNoPopulatorPO.class)
 @SuppressWarnings("static-method")
 public class JstTransactionJpaRmTest {
@@ -76,8 +76,7 @@ public class JstTransactionJpaRmTest {
 		Optional<List<NoteDE>> optionalList = null;
 
 		try {
-			entityManager = JstEntityManagerCacheHelper
-					.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
+			entityManager = JstEntityManagerCacheHelper.createEntityManagerToBeClosed(ConstantsTestJPA.JUSTIFY_PU);
 
 			optionalList = JstTransactionRM
 					.commitListInOneTransaction(JstTransactionPO.withPersistenceUnitName(ConstantsTestJPA.JUSTIFY_PU)

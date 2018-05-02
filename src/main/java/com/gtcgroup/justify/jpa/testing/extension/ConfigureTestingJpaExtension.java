@@ -36,7 +36,7 @@ import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import com.gtcgroup.justify.core.helper.JstReflectionUtilHelper;
-import com.gtcgroup.justify.core.testing.extension.JstBaseExtension;
+import com.gtcgroup.justify.core.testing.extension.JstBaseTestingExtension;
 import com.gtcgroup.justify.jpa.helper.JstEntityManagerCacheHelper;
 import com.gtcgroup.justify.jpa.po.JstTransactionPO;
 import com.gtcgroup.justify.jpa.rm.JstTransactionRM;
@@ -53,7 +53,7 @@ import com.gtcgroup.justify.jpa.testing.populator.JstBaseTestingPopulator;
  * @author Marvin Toll
  * @since 8.5
  */
-class ConfigureTestingJpaExtension extends JstBaseExtension implements BeforeAllCallback {
+class ConfigureTestingJpaExtension extends JstBaseTestingExtension implements BeforeAllCallback {
 
 	protected static Map<String, List<String>> entityManagerFactoryMap = new ConcurrentHashMap<>();
 
@@ -72,11 +72,8 @@ class ConfigureTestingJpaExtension extends JstBaseExtension implements BeforeAll
 
 		for (final Class<?> dataPopulatorClass : configureTestJpaPO.getDataPopulatorList()) {
 
-			if (configureTestJpaPO.isConnectionString()) {
-
-				newDataPopulatorList.add(dataPopulatorClass.getName());
-
-			} else if (!currentDataPopulatorClassNameList.contains(dataPopulatorClass.getName())) {
+			if (configureTestJpaPO.isConnectionString()
+					|| !currentDataPopulatorClassNameList.contains(dataPopulatorClass.getName())) {
 
 				newDataPopulatorList.add(dataPopulatorClass.getName());
 			}

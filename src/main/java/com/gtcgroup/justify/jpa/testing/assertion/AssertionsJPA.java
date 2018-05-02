@@ -260,6 +260,23 @@ public enum AssertionsJPA {
 
 	}
 
+	private static boolean existsList(final JstAssertCascadePO assertCascadePO, final boolean expected,
+			final Object entityOrList) {
+
+		@SuppressWarnings("unchecked")
+		final List<Object> entityList = (List<Object>) entityOrList;
+
+		for (final Object entityContainingIdentity : entityList) {
+
+			final boolean actual = existsInDatabase(assertCascadePO.getPersistenceUnitName(), entityContainingIdentity);
+
+			if (expected != actual) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private static boolean isExists(final List<String> existsList, final JstAssertCascadePO assertCascadePO,
 			final boolean expected) {
 
@@ -274,18 +291,7 @@ public enum AssertionsJPA {
 
 				if (entityOrList instanceof List) {
 
-					@SuppressWarnings("unchecked")
-					final List<Object> entityList = (List<Object>) entityOrList;
-
-					for (final Object entityContainingIdentity : entityList) {
-
-						final boolean actual = existsInDatabase(assertCascadePO.getPersistenceUnitName(),
-								entityContainingIdentity);
-
-						if (expected != actual) {
-							return false;
-						}
-					}
+					return existsList(assertCascadePO, expected, entityOrList);
 				} else {
 					final boolean actual = existsInDatabase(assertCascadePO.getPersistenceUnitName(), entityOrList);
 					if (expected != actual) {
